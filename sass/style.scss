@@ -1,0 +1,17 @@
+a {
+  cursor: pointer;
+  color: #fff;
+  text-decoration: none;
+  border-bottom: 1px solid #333;
+}
+
+a:hover {
+  background-color: #000;
+  color: #fff;
+}
+
+.dark,
+.dark pre {
+  background-color: #000;
+  background-color: #1a1c20;
+}
