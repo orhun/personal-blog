@@ -1,0 +1,25 @@
+name: Continuous Integration
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  schedule:
+    - cron: "0 0 * * 0"
+
+jobs:
+  link-checker:
+    name: Check links
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@master
+      - name: Check the links
+        uses: lycheeverse/lychee-action@v1
+        with:
+          args: --exclude "patreon|request_uri" -v content/*.md
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
