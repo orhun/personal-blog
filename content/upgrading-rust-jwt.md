@@ -1,6 +1,6 @@
 +++
 title = "How hard upgrading a Rust JWT library could be?"
-date = 2022-04-21
+date = 2022-04-22
 
 [taxonomies]
 categories = ["Activities"]
