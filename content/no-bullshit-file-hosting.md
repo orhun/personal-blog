@@ -10,7 +10,7 @@ A guide for spinning up your own instance of 0x0, a no-bullshit file hosting and
 
 <!-- more -->
 
-[0x0](https://github.com/mia-0/0x0) (AKA "The Null Pointer") is a "no-bullshit file hosting and URL shortening service" that I've been using for a couple of months now. It's very easy to use, simple and straightforward. Although you can use the homepage of the project ([0x0.st](https://0x0.st/)) for hosting files and shortening links, I'd like to tell you how did I spin up my own instance of [0x0](https://github.com/mia-0/0x0) because (as the author of the project says) _centralization is bad!_
+[0x0](https://git.0x0.st/mia/0x0) (AKA "The Null Pointer") is a "no-bullshit file hosting and URL shortening service" that I've been using for a couple of months now. It's very easy to use, simple and straightforward. Although you can use the homepage of the project ([0x0.st](https://0x0.st/)) for hosting files and shortening links, I'd like to tell you how did I spin up my own instance of [0x0](https://git.0x0.st/mia/0x0) because (as the author of the project says) _centralization is bad!_
 
 - [Requirements](#requirements)
 - [Configuring 0x0](#configuring-0x0)
@@ -27,7 +27,7 @@ A guide for spinning up your own instance of 0x0, a no-bullshit file hosting and
 - A server and preferably a domain. (I'll be using Ubuntu 20.04.1 from [AWS Free Tier](https://aws.amazon.com/free/) and a [free domain](https://www.freenom.com/en/freeandpaiddomains.html))
 - Linux dependencies: [Nginx](https://ubuntu.com/tutorials/install-and-configure-nginx), [Certbot](https://certbot.eff.org/docs/install.html), [Python3](https://www.digitalocean.com/community/tutorials/how-to-install-python-3-and-set-up-a-programming-environment-on-an-ubuntu-20-04-server)
 - Python dependencies: [uWSGI](https://uwsgi-docs.readthedocs.io/en/latest/Install.html), [python-pip](https://pip.pypa.io/en/stable/installation/)
-    - pip install -r [requirements.txt](https://github.com/mia-0/0x0/blob/master/requirements.txt)
+    - pip install -r [requirements.txt](https://git.0x0.st/mia/0x0/src/branch/master/requirements.txt)
 
 ## Configuring 0x0
 
@@ -35,10 +35,10 @@ Connect to your server via SSH and clone the repository:
 
 ```sh
 cd $HOME/
-git clone https://github.com/mia-0/0x0 && cd 0x0/
+git clone https://git.0x0.st/mia/0x0 && cd 0x0/
 ```
 
-Then you can tweak some settings like maximum file size and storage path in [fhost.py](https://github.com/mia-0/0x0/blob/master/fhost.py) or in `instance/config.py`.
+Then you can tweak some settings like maximum file size and storage path in [fhost.py](https://git.0x0.st/mia/0x0/src/branch/master/fhost.py) or in `instance/config.py`.
 
 Don't forget to create the configuration file and initialize the database before proceeding:
 
@@ -50,7 +50,7 @@ python3 fhost.py db upgrade
 
 ## Testing 0x0 with uWSGI
 
-After you [install](https://uwsgi-docs.readthedocs.io/en/latest/Install.html) uWSGI, you can simply test if 0x0 runs with the following command[*](https://github.com/mia-0/0x0/issues/8#issuecomment-630987364):
+After you [install](https://uwsgi-docs.readthedocs.io/en/latest/Install.html) uWSGI, you can simply test if 0x0 runs with the following command[*](https://git.0x0.st/mia/0x0/issues/8):
 
 ```sh
 uwsgi --socket 0.0.0.0:8080 --protocol=http --wsgi-file fhost.py --callable app
