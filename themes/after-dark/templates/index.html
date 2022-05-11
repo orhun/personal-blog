@@ -52,7 +52,7 @@
                         <h1>{{ config.extra.after_dark_title }}</h1>
                     </header>
                 {% endif %}
-                {% for page in paginator.pages %}
+                {% for page in paginator.pages | sort(attribute="date") | reverse %}
                     {{ post_macros::page_in_list(page=page) }}
                 {% endfor %}
 
