@@ -1,6 +1,6 @@
 +++
 title = "Move away from streaming platforms & take your music offline"
-date = 2022-05-27
+date = 2022-06-03
 
 [taxonomies]
 categories = ["Guides"]
