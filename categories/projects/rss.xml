@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+    <channel>
+      <title>Orhun&#x27;s Blog - Projects</title>
+        <link>https://blog.orhun.dev</link>
+        <description>FOSS • Linux • Programming</description>
+        <generator>Zola</generator>
+        <language>en</language>
+        <atom:link href="https://blog.orhun.dev/categories/projects/rss.xml" rel="self" type="application/rss+xml"/>
+        <lastBuildDate>Sun, 17 Apr 2022 00:00:00 +0000</lastBuildDate>
+        <item>
+            <title>Rewriting sysctl(8) in Rust: systeroid</title>
+            <pubDate>Sun, 17 Apr 2022 00:00:00 +0000</pubDate>
+            <link>https://blog.orhun.dev/rewriting-sysctl-in-rust/</link>
+            <guid>https://blog.orhun.dev/rewriting-sysctl-in-rust/</guid>
+            <description>&lt;p&gt;&lt;a href=&quot;https:&#x2F;&#x2F;en.wikipedia.org&#x2F;wiki&#x2F;Sysctl&quot;&gt;sysctl&lt;&#x2F;a&gt; is a simple and great tool for modifying the kernel parameters. It does its job very well by providing an easy-to-use interface for &lt;code&gt;&#x2F;proc&#x2F;sys&lt;&#x2F;code&gt;. It is maintained as a part of &lt;a href=&quot;https:&#x2F;&#x2F;gitlab.com&#x2F;procps-ng&#x2F;procps&quot;&gt;procps&lt;&#x2F;a&gt; toolkit for years and it can easily be considered a legacy tool today. So why not push it to its limits and turn it into a more user-friendly and even more useful tool with the power of Rust?&lt;&#x2F;p&gt;
+</description>
+        </item>
+        <item>
+            <title>git-cliff 0.5.0</title>
+            <pubDate>Wed, 15 Dec 2021 00:00:00 +0000</pubDate>
+            <link>https://blog.orhun.dev/git-cliff-0-5-0/</link>
+            <guid>https://blog.orhun.dev/git-cliff-0-5-0/</guid>
+            <description>&lt;p&gt;git-cliff is a highly customizable changelog generator that follows conventional commit specifications ⛰️ In this post, I&#x27;m explaining the new features in the 0.5.0 release while giving insight into the different use-cases.&lt;&#x2F;p&gt;
+</description>
+        </item>
+        <item>
+            <title>Introducing gpg-tui, a Terminal User Interface for GnuPG</title>
+            <pubDate>Sat, 29 May 2021 00:00:00 +0000</pubDate>
+            <link>https://blog.orhun.dev/introducing-gpg-tui/</link>
+            <guid>https://blog.orhun.dev/introducing-gpg-tui/</guid>
+            <description>&lt;p&gt;gpg-tui is a TUI for managing the GnuPG keys 🔐 In this post, I&#x27;m giving a brief introduction to the project as well as describing the thought process and main development challenges behind it.&lt;&#x2F;p&gt;
+</description>
+        </item>
+        <item>
+            <title>Kmon! Let&#x27;s manage the Linux kernel modules!</title>
+            <pubDate>Thu, 02 Apr 2020 00:00:00 +0000</pubDate>
+            <link>https://blog.orhun.dev/introducing-kmon/</link>
+            <guid>https://blog.orhun.dev/introducing-kmon/</guid>
+            <description>&lt;p&gt;Introducing kmon, a Linux kernel manager and activity monitor 🐧💻&lt;&#x2F;p&gt;
+</description>
+        </item>
+    </channel>
+</rss>

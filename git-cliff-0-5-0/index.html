@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <meta http-equiv="content-type" content="text/html; charset=utf-8">
+      <meta property="og:type" content="website" />
+      <meta property="og:url" content="https:&#x2F;&#x2F;blog.orhun.dev"/>
+      <meta property="og:title" content="Orhun&#x27;s Blog" />
+      <meta property="og:description" content="FOSS • Linux • Programming"/>
+      <meta property="og:image" content="https:&#x2F;&#x2F;blog.orhun.dev/crow.png" />
+
+      <!-- Enable responsiveness on mobile devices-->
+      <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+      <link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png">
+      <link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png">
+      <link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png">
+      <link rel="manifest" href="/favicon/site.webmanifest">
+
+      <script async defer data-website-id="56ca5ca7-ba9f-416e-8bee-a132c155d56b" src="https://umami.orhun.dev/umami.js"></script>
+
+      <title>Orhun&#x27;s Blog</title>
+
+      
+        <link rel="alternate" type="application/rss+xml" title="RSS" href="https://blog.orhun.dev/rss.xml">
+      
+
+      
+          <link rel="stylesheet" href="https://blog.orhun.dev/site.css">
+      
+
+      
+      
+    </head>
+
+    <body class="hack dark main container">
+        
+    
+        
+                
+                    <header>
+                        <nav itemscope itemtype="http://schema.org/SiteNavigationElement">
+                        
+                            <a itemprop="url"
+                               class=""
+                               href="https:&#x2F;&#x2F;blog.orhun.dev">
+                                <span itemprop="name">Home
+                                </span></a>
+                        
+                            <a itemprop="url"
+                               class=""
+                               href="https:&#x2F;&#x2F;blog.orhun.dev&#x2F;categories">
+                                <span itemprop="name">Categories
+                                </span></a>
+                        
+                            <a itemprop="url"
+                               class=""
+                               href="https:&#x2F;&#x2F;github.com&#x2F;orhun&#x2F;personal-blog">
+                                <span itemprop="name">Source
+                                </span></a>
+                        
+                            <a itemprop="url"
+                               class=""
+                               href="https:&#x2F;&#x2F;blog.orhun.dev&#x2F;rss.xml">
+                                <span itemprop="name">RSS
+                                </span></a>
+                        
+                            <a itemprop="url"
+                               class=""
+                               href="https:&#x2F;&#x2F;orhun.dev">
+                                <span itemprop="name">About
+                                </span></a>
+                        
+                        </nav>
+                    </header>
+                
+            
+    
+
+<article itemscope itemtype="http://schema.org/BlogPosting">
+    <header>
+        <h1 itemprop="headline">git-cliff 0.5.0</h1>
+        <span class="muted">
+    <svg style="margin-bottom:-3px" class="i-clock" viewBox="0 0 32 32"
+         width="16" height="16" fill="none" stroke="currentcolor"
+         stroke-linecap="round" stroke-linejoin="round" stroke-width="6.25%">
+        <circle cx="16" cy="16" r="14"/>
+        <path d="M16 8 L16 16 20 20"/>
+    </svg>
+    <span>8 minute read</span>
+    <svg style="margin-bottom: -3px" class="i-edit" viewBox="0 0 32 32"
+         width="16" height="16" fill="none" stroke="currentcolor"
+         stroke-linecap="round" stroke-linejoin="round" stroke-width="6.25%">
+        <path d="M30 7 L25 2 5 22 3 29 10 27 Z M21 6 L26 11 Z M5 22 L10 27 Z"/>
+    </svg>
+
+    Published: 2021-12-15
+</span>
+    </header>
+    <div itemprop="articleBody">
+      <p>git-cliff is a highly customizable changelog generator that follows conventional commit specifications ⛰️ In this post, I'm explaining the new features in the 0.5.0 release while giving insight into the different use-cases.</p>
+<span id="continue-reading"></span><a href="https://github.com/orhun/git-cliff">
+    <img src="https://user-images.githubusercontent.com/24392180/146058022-494a7a28-34a9-473e-8c80-85fd7294783c.jpg" width="600">
+</a>
+<h2 id="git-cliff-0-5-0">git-cliff ~ <code>0.5.0</code></h2>
+<p><a href="https://github.com/orhun/git-cliff"><strong>git-cliff</strong></a> is a command-line tool (written in <a href="https://www.rust-lang.org/">Rust</a>) that provides a highly customizable way to generate changelogs from git history. It supports using <a href="https://github.com/orhun/git-cliff#commit_parsers">custom regular expressions</a> to alter changelogs which are mostly based on <a href="https://github.com/orhun/git-cliff#conventional_commits">conventional commits</a>. With a single <a href="https://github.com/orhun/git-cliff#configuration-file">configuration file</a>, a big variety of formats can be applied for a changelog, thanks to the Jinja2/Django-inspired <a href="https://github.com/orhun/git-cliff#templating">template engine</a>. More information and examples can be found in the <a href="https://github.com/orhun/git-cliff">GitHub repository</a>.</p>
+<p>Today I released the new version (0.5.0) of <code>git-cliff</code>. There are a couple of major features that I believe are interesting and they can potentially help with different use cases. Also, it has been a while since I post something on my blog. Must be exciting, let's have a look!</p>
+<h2 id="what-s-new">What's new?</h2>
+<h3 id="topo-order"><code>--topo-order</code></h3>
+<p><code>--topo-order : Sorts the tags topologically</code></p>
+<p>Imagine you are working on parallel code lines and you have the following git history:</p>
+<pre style="background-color:#191919;color:#ffffff;"><code><span>* 0000025 (tag: v0.1.1, fix_v1) fix: patch on v0.1.x
+</span><span>| * 0000050 (HEAD -&gt; master) feat: fifth commit on master
+</span><span>| * 0000040 (tag: v0.2.0) feat: fourth commit on master
+</span><span>| * 0000030 chore: third commit on master
+</span><span>|/
+</span><span>* 0000020 (tag: v0.1.0) fix: second commit on master
+</span><span>* 0000010 feat: first commit on master
+</span></code></pre>
+<p>In this scenario, we can pretend that after your fifth commit on <code>master</code> you had to fix something about <code>v0.1.0</code> and check out a new branch (<code>fix_v1</code>). After that, you committed a patch and created a new tag. (<code>v0.1.1</code>)</p>
+<p>Now let's say you decided to generate a changelog for the unreleased commits. Since previous versions of <code>git-cliff</code> sort the tags chronologically as default, you would get something like this:</p>
+<pre data-lang="sh" style="background-color:#191919;color:#ffffff;" class="language-sh "><code class="language-sh" data-lang="sh"><span style="color:#cccccc;">$ git cliff</span><span style="font-style:italic;color:#8aa6c1;"> --unreleased
+</span><span style="color:#cccccc;">
+</span><span style="background-color:#171717;color:#616161;"># Changelog
+</span><span style="background-color:#171717;color:#616161;">## [unreleased]
+</span><span style="background-color:#171717;color:#616161;">### Features
+</span><span style="color:#cccccc;">- Fifth commit on master
+</span><span style="color:#cccccc;">
+</span><span style="background-color:#171717;color:#616161;">## [0.2.0] - 2021-10-22
+</span><span style="background-color:#171717;color:#616161;">### Features
+</span><span style="color:#cccccc;">- Fourth commit on master
+</span><span style="color:#cccccc;">
+</span><span style="background-color:#171717;color:#616161;">### Miscellaneous Tasks
+</span><span style="color:#cccccc;">- Third commit on master
+</span></code></pre>
+<p>This is because <code>--unreleased</code> flag implicitly uses a commit range such as <code>0000025..HEAD</code>, since it sorts the tags chronologically, as previously stated. This situation can now be prevented by using the <code>--topo-order</code> flag, which disables the automatic sorting and processes the tags as they appear in the git history:</p>
+<pre data-lang="sh" style="background-color:#191919;color:#ffffff;" class="language-sh "><code class="language-sh" data-lang="sh"><span style="color:#cccccc;">$ git cliff</span><span style="font-style:italic;color:#8aa6c1;"> --topo-order --unreleased
+</span><span style="color:#cccccc;">
+</span><span style="background-color:#171717;color:#616161;"># Changelog
+</span><span style="background-color:#171717;color:#616161;">## [unreleased]
+</span><span style="background-color:#171717;color:#616161;">### Features
+</span><span style="color:#cccccc;">- Fifth commit on master
+</span></code></pre>
+<p>Now, the correct range of commits (<code>0000040..HEAD</code>) is processed. In other words, <code>v0.2.0</code> is accepted as the latest tag in the <code>master</code> branch.</p>
+<p>Tracking issue: <a href="https://github.com/orhun/git-cliff/issues/29">#29</a></p>
+<h3 id="include-path-exclude-path"><code>--include-path</code> &amp;&amp; <code>--exclude-path</code></h3>
+<p><code>--include-path &lt;PATTERN&gt;... : Sets the path to include related commits</code>
+<code>--exclude-path &lt;PATTERN&gt;... : Sets the path to exclude related commits</code></p>
+<p>Let's say you have a <a href="https://en.wikipedia.org/wiki/Monorepo">monorepo</a> and you want to generate a changelog that includes or excludes some commits that concern certain files/directories in the working directory. To explain it further, let's think that you have the following directory structure:</p>
+<pre style="background-color:#191919;color:#ffffff;"><code><span>Cargo.toml
+</span><span>apps/
+</span><span>└── application-related files
+</span><span>libs/
+</span><span>└── library files
+</span><span>other/
+</span><span>└── miscellaneous files
+</span></code></pre>
+<p>In the previous versions of <code>git-cliff</code>, it was possible to only include commits in the changelog if the changes are against a path under e.g. &quot;apps&quot;. This could be done by using the <code>--commit-path</code> argument. But now, functionality is extended much further and you can specify multiple paths, use glob patterns and even exclude files/directories by using the brand new <code>--include-path</code> and <code>--exclude-path</code> arguments.</p>
+<pre data-lang="sh" style="background-color:#191919;color:#ffffff;" class="language-sh "><code class="language-sh" data-lang="sh"><span style="background-color:#171717;color:#616161;"># include commits related to any TOML file and also application directory
+</span><span style="color:#cccccc;">$ git cliff</span><span style="font-style:italic;color:#8aa6c1;"> --include-path </span><span style="color:#ffd700;">&quot;**/*.toml&quot;</span><span style="font-style:italic;color:#8aa6c1;"> --include-path </span><span style="color:#ffd700;">&quot;apps/*&quot;
+</span><span style="color:#cccccc;">
+</span><span style="background-color:#171717;color:#616161;"># exclude commits that are related to miscellaneous files
+</span><span style="color:#cccccc;">$ git cliff</span><span style="font-style:italic;color:#8aa6c1;"> --exclude-path </span><span style="color:#ffd700;">&quot;other/*&quot;
+</span></code></pre>
+<p>With this change, <code>--commit-path</code> argument is <s>removed</s> replaced with <code>--include-path</code> which supports glob patterns.</p>
+<p>Tracking issue: <a href="https://github.com/orhun/git-cliff/issues/34">#34</a></p>
+<h3 id="current"><code>--current</code></h3>
+<p><code>--current: Processes the commits that belong to the current tag</code></p>
+<p>Let's suppose this situation:</p>
+<ol>
+<li>First, <code>v0.10.0</code> is released.</li>
+<li>After that, <code>v0.11.0</code> is released.</li>
+<li>After that, a bug was found and <code>v0.10.1</code> is released.</li>
+</ol>
+<p>The problem <s>is</s> was, when you check out to a tag and try to generate a changelog for the <em>latest</em> tag, it always points out to the most recent tag (which is <code>v0.10.1</code> in our example). So how do you generate changelog for the currently checked out tag? Well, simple:</p>
+<pre data-lang="sh" style="background-color:#191919;color:#ffffff;" class="language-sh "><code class="language-sh" data-lang="sh"><span style="color:#cccccc;">$ git checkout v0.11.0
+</span><span style="color:#cccccc;">
+</span><span style="background-color:#171717;color:#616161;"># changelog is generated for v0.11.0
+</span><span style="color:#cccccc;">$ git cliff</span><span style="font-style:italic;color:#8aa6c1;"> --current
+</span><span style="color:#cccccc;">
+</span><span style="background-color:#171717;color:#616161;"># changelog is generated for v0.10.1
+</span><span style="color:#cccccc;">$ git cliff</span><span style="font-style:italic;color:#8aa6c1;"> --latest
+</span></code></pre>
+<p><code>--current</code> flag behaves the same as running the following git command:</p>
+<pre data-lang="sh" style="background-color:#191919;color:#ffffff;" class="language-sh "><code class="language-sh" data-lang="sh"><span style="color:#cccccc;">$ git describe</span><span style="font-style:italic;color:#8aa6c1;"> --tags </span><span style="color:#cccccc;">$(git rev-parse HEAD)
+</span></code></pre>
+<p>So it is expected to always use the current tag if it exists.</p>
+<p>Tracking issue: <a href="https://github.com/orhun/git-cliff/issues/37">#37</a></p>
+<h3 id="ignore-tags"><code>ignore_tags</code></h3>
+<p>A new configuration file entry makes an apperance in the <code>[git]</code> section!</p>
+<pre data-lang="toml" style="background-color:#191919;color:#ffffff;" class="language-toml "><code class="language-toml" data-lang="toml"><span style="color:#cccccc;">[git]
+</span><span style="color:#80d500;">ignore_tags </span><span style="color:#cccccc;">= </span><span style="color:#ffd700;">&quot;v.*-beta.*&quot;
+</span></code></pre>
+<p>The simplest explanation would be: while <a href="https://github.com/orhun/git-cliff#skip_tags">skip_tags</a> drop commits from the changelog, <code>ignore_tags</code> include ignored commits into the next tag.</p>
+<p>So for example if you have the following git history:</p>
+<pre style="background-color:#191919;color:#ffffff;"><code><span>* 2d77bc3 (HEAD -&gt; master, tag: v0.2.0) feat: add feature 3
+</span><span>* 072eba9 (tag: v0.2.0-beta.1) feat: add feature 2
+</span><span>* 656564c (tag: v0.1.0) feat: fix feature 1
+</span><span>* 9d98e6b feat: add feature 1
+</span><span>* 6807c82 (tag: v0.1.0-beta.1) feat: add skip feature
+</span><span>* 93d62ef Initial commit
+</span></code></pre>
+<p>Setting <code>ignore_tags = &quot;v.*-beta.*&quot;</code> in the configuration will result in a changelog like this:</p>
+<pre style="background-color:#191919;color:#ffffff;"><code><span># Changelog
+</span><span>## [0.2.0] - 2021-01-23
+</span><span>### Features
+</span><span>- Add feature 2
+</span><span>- Add feature 3
+</span><span>
+</span><span>## [0.1.0] - 2021-01-23
+</span><span>### Features
+</span><span>- Add feature 1
+</span><span>- Fix feature 1
+</span></code></pre>
+<p>Thanks to <a href="https://github.com/kenji-miyake">@kenji-miyake</a> for reporting/implementing this!</p>
+<p>Tracking issue: <a href="https://github.com/orhun/git-cliff/issues/36">#36</a></p>
+<h3 id="sorting-configuration">Sorting configuration</h3>
+<p>Following values can be specified in the configuration file now (in <code>[git]</code> section):</p>
+<ul>
+<li><a href="https://github.com/orhun/git-cliff#topo_order">topo_order</a></li>
+<li><a href="https://github.com/orhun/git-cliff#sort_commits">sort_commits</a></li>
+</ul>
+<p>For example:</p>
+<pre data-lang="toml" style="background-color:#191919;color:#ffffff;" class="language-toml "><code class="language-toml" data-lang="toml"><span style="color:#cccccc;">[git]
+</span><span style="color:#80d500;">topo_order </span><span style="color:#cccccc;">= </span><span style="color:#80d500;">false
+</span><span style="color:#80d500;">sort_commits </span><span style="color:#cccccc;">= </span><span style="color:#ffd700;">&quot;newest&quot;
+</span></code></pre>
+<p>Tracking issue: <a href="https://github.com/orhun/git-cliff/issues/31">#31</a></p>
+<h3 id="filter-unconventional"><code>filter_unconventional</code></h3>
+<p>With this new configuration file entry, it is now possible to have both conventional and unconventional commits in the changelog.</p>
+<pre data-lang="toml" style="background-color:#191919;color:#ffffff;" class="language-toml "><code class="language-toml" data-lang="toml"><span style="color:#cccccc;">[git]
+</span><span style="background-color:#171717;color:#616161;"># parse conventional commits</span><span style="color:#cccccc;">
+</span><span style="color:#80d500;">conventional_commits </span><span style="color:#cccccc;">= </span><span style="color:#80d500;">true
+</span><span style="color:#cccccc;">
+</span><span style="background-color:#171717;color:#616161;"># do not skip unconventional commits</span><span style="color:#cccccc;">
+</span><span style="color:#80d500;">filter_unconventional </span><span style="color:#cccccc;">= </span><span style="color:#80d500;">false
+</span><span style="color:#cccccc;">
+</span><span style="background-color:#171717;color:#616161;"># instead, override the group and scope of unconventional commits as &quot;Other&quot;.</span><span style="color:#cccccc;">
+</span><span style="color:#80d500;">commit_parsers </span><span style="color:#cccccc;">= [
+</span><span style="color:#cccccc;">  { </span><span style="color:#80d500;">message </span><span style="color:#cccccc;">= </span><span style="color:#ffd700;">&quot;.*&quot;</span><span style="color:#cccccc;">, </span><span style="color:#80d500;">group </span><span style="color:#cccccc;">= </span><span style="color:#ffd700;">&quot;Other&quot;</span><span style="color:#cccccc;">, </span><span style="color:#80d500;">default_scope </span><span style="color:#cccccc;">= </span><span style="color:#ffd700;">&quot;other&quot;</span><span style="color:#cccccc;">},
+</span><span style="color:#cccccc;">]
+</span></code></pre>
+<p>Other use cases of <a href="https://github.com/orhun/git-cliff#filter_unconventional">filter_unconventional</a> are the following:</p>
+<pre data-lang="toml" style="background-color:#191919;color:#ffffff;" class="language-toml "><code class="language-toml" data-lang="toml"><span style="background-color:#171717;color:#616161;"># allow only conventional commits (default)</span><span style="color:#cccccc;">
+</span><span style="color:#cccccc;">[git]
+</span><span style="color:#80d500;">conventional_commits </span><span style="color:#cccccc;">= </span><span style="color:#80d500;">true
+</span><span style="color:#80d500;">filter_unconventional </span><span style="color:#cccccc;">= </span><span style="color:#80d500;">true
+</span><span style="color:#cccccc;">
+</span><span style="background-color:#171717;color:#616161;"># allow any type of commit in the changelog without parsing</span><span style="color:#cccccc;">
+</span><span style="color:#cccccc;">[git]
+</span><span style="color:#80d500;">conventional_commits </span><span style="color:#cccccc;">= </span><span style="color:#80d500;">false
+</span><span style="color:#80d500;">filter_unconventional </span><span style="color:#cccccc;">= </span><span style="color:#80d500;">false
+</span></code></pre>
+<p>There is also a new field called <code>conventional</code> added to the <a href="https://github.com/orhun/git-cliff#context">template context</a>. It can be used like this in the templates:</p>
+<p>{% raw %}</p>
+<pre style="background-color:#191919;color:#ffffff;"><code><span>{% if commit.conventional %} ✅ {% else %} ❌ {% endif %}
+</span></code></pre>
+<p>{% endraw %}</p>
+<h3 id="with-commit"><code>--with-commit</code></h3>
+<p><code>--with-commit &lt;MSG&gt;... : Sets custom commit messages to include in the changelog</code></p>
+<p>In some cases, you might want to include commit messages in the changelog that yet don't exist. One example would be having &quot;the commit message that updates the changelog&quot; in the changelog. (🤔)</p>
+<pre data-lang="sh" style="background-color:#191919;color:#ffffff;" class="language-sh "><code class="language-sh" data-lang="sh"><span style="color:#cccccc;">git cliff</span><span style="font-style:italic;color:#8aa6c1;"> -o</span><span style="color:#cccccc;"> CHANGELOG.md
+</span><span style="color:#cccccc;">git add CHANGELOG.md
+</span><span style="color:#cccccc;">git commit</span><span style="font-style:italic;color:#8aa6c1;"> -m </span><span style="color:#ffd700;">&quot;chore(release): update CHANGELOG.md for 1.0.0&quot;
+</span></code></pre>
+<p>In the example above, CHANGELOG.md will not have the latest commit message since the commit is created afterward. So if you want to include custom commit messages like that in the changelog, you can use the <code>--with-commit</code> argument as follows:</p>
+<pre data-lang="sh" style="background-color:#191919;color:#ffffff;" class="language-sh "><code class="language-sh" data-lang="sh"><span style="background-color:#171717;color:#616161;"># define the commit message
+</span><span style="color:#cccccc;">commit_msg</span><span>=</span><span style="color:#ffd700;">&quot;chore(release): update CHANGELOG.md for 1.0.0&quot;
+</span><span style="color:#cccccc;">
+</span><span style="background-color:#171717;color:#616161;"># generate changelog and pretend a commit exists as &quot;$commit_msg&quot;
+</span><span style="color:#cccccc;">git cliff</span><span style="font-style:italic;color:#8aa6c1;"> --with-commit </span><span style="color:#ffd700;">&quot;$commit_msg&quot;</span><span style="font-style:italic;color:#8aa6c1;"> -o</span><span style="color:#cccccc;"> CHANGELOG.md
+</span><span style="color:#cccccc;">
+</span><span style="background-color:#171717;color:#616161;"># create the actual commit
+</span><span style="color:#cccccc;">git add CHANGELOG.md
+</span><span style="color:#cccccc;">git commit</span><span style="font-style:italic;color:#8aa6c1;"> -m </span><span style="color:#ffd700;">&quot;$commit_msg&quot;
+</span></code></pre>
+<h3 id="better-error-messages">Better error messages</h3>
+<p><code>git-cliff</code> now outputs more explanatory error messages about templates, instead of just saying &quot;Failed to parse template&quot;:</p>
+<p>{% raw %}</p>
+<pre data-lang="sh" style="background-color:#191919;color:#ffffff;" class="language-sh "><code class="language-sh" data-lang="sh"><span style="color:#cccccc;">$ git cliff
+</span><span style="color:#cccccc;">
+</span><span style="color:#cccccc;"> ERROR git_cliff </span><span>&gt;</span><span style="color:#cccccc;"> Template parse error:
+</span><span style="color:#cccccc;"> --</span><span>&gt; </span><span style="color:#eddd5a;">3</span><span style="color:#cccccc;">:12
+</span><span style="color:#cccccc;">  </span><span>|
+</span><span style="color:#cccccc;">3 </span><span>| </span><span style="color:#cccccc;">{% endif %}{% forx group, commits in commits </span><span>| </span><span style="color:#cccccc;">group_by(attribute=</span><span style="color:#ffd700;">&quot;group&quot;</span><span style="color:#cccccc;">) %}␊
+</span><span style="color:#cccccc;">  </span><span>|            </span><span style="color:#cccccc;">^---
+</span><span style="color:#cccccc;">  </span><span>|
+</span><span style="color:#cccccc;">  </span><span>= </span><span style="color:#cccccc;">expected end of input or some content
+</span></code></pre>
+<p>{% endraw %}</p>
+<h2 id="looking-forward">Looking forward</h2>
+<p>For the future versions of <code>git-cliff</code>,</p>
+<ul>
+<li>I'm planning to improve performance by parallelizing the <em>computations</em> using <a href="https://github.com/rayon-rs/rayon">rayon</a>. There is not a tracking issue yet, but feel free to create one and share your thoughts!</li>
+<li>Benchmarking would be cool to reveal the performance as well as performance-related issues.</li>
+<li><a href="https://github.com/orhun/git-cliff/issues/35">Why not add a manpage?</a></li>
+</ul>
+<h3 id="contributions">Contributions</h3>
+<p>Any contribution is highly appreciated! There are <a href="https://github.com/orhun/git-cliff/blob/main/CONTRIBUTING.md">contribution guidelines</a> for getting started. Feel free to submit issues and throw ideas! 🧠</p>
+<h3 id="support">Support</h3>
+<p>If you liked <code>git-cliff</code> and/or my other projects <a href="https://github.com/orhun/">on GitHub</a>, consider supporting me on <a href="https://www.patreon.com/orhunp">Patreon</a> ☕ (I appreciate any kind of donation since it helps a lot due to the economical issues in my country.)</p>
+<p>Have a wonderful day! ⛰️</p>
+
+    </div>
+
+    
+        <footer>
+            <hr>
+            <p>
+                
+                    Published by Orhun Parmaksız
+                
+                
+                    
+                    in <a href="https://blog.orhun.dev/categories/projects/">Projects</a>
+                
+                
+            </p>
+            
+            
+        </footer>
+    
+</article>
+
+
+    </body>
+
+</html>

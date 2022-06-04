@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+    <channel>
+      <title>Orhun&#x27;s Blog - Guides</title>
+        <link>https://blog.orhun.dev</link>
+        <description>FOSS • Linux • Programming</description>
+        <generator>Zola</generator>
+        <language>en</language>
+        <atom:link href="https://blog.orhun.dev/categories/guides/rss.xml" rel="self" type="application/rss+xml"/>
+        <lastBuildDate>Fri, 03 Jun 2022 00:00:00 +0000</lastBuildDate>
+        <item>
+            <title>Move away from streaming platforms &amp; take your music offline</title>
+            <pubDate>Fri, 03 Jun 2022 00:00:00 +0000</pubDate>
+            <link>https://blog.orhun.dev/take-your-music-offline/</link>
+            <guid>https://blog.orhun.dev/take-your-music-offline/</guid>
+            <description>&lt;p&gt;I don&#x27;t use &lt;a href=&quot;https:&#x2F;&#x2F;en.wikipedia.org&#x2F;wiki&#x2F;Spotify&quot;&gt;Spotify&lt;&#x2F;a&gt; or any other streaming platform for listening to music. Some call it old habits, some call it needless effort, but I&#x27;m very used to downloading &lt;a href=&quot;https:&#x2F;&#x2F;en.wikipedia.org&#x2F;wiki&#x2F;MP3&quot;&gt;MP3&lt;&#x2F;a&gt; files over the internet and putting them in a folder on my phone then using the whatever default media player I have installed. However, for a couple of years, I have been following a better and automated approach for taking my music offline and feeling a bit less like I&#x27;m in a &lt;a href=&quot;https:&#x2F;&#x2F;en.wikipedia.org&#x2F;wiki&#x2F;Consumerism&quot;&gt;consumerism&lt;&#x2F;a&gt; bubble.&lt;&#x2F;p&gt;
+</description>
+        </item>
+        <item>
+            <title>Spin Up Your Own No-Bullshit File Hosting Service</title>
+            <pubDate>Sun, 14 Feb 2021 00:00:00 +0000</pubDate>
+            <link>https://blog.orhun.dev/no-bullshit-file-hosting/</link>
+            <guid>https://blog.orhun.dev/no-bullshit-file-hosting/</guid>
+            <description>&lt;p&gt;A guide for spinning up your own instance of 0x0, a no-bullshit file hosting and URL shortening service.&lt;&#x2F;p&gt;
+</description>
+        </item>
+    </channel>
+</rss>
