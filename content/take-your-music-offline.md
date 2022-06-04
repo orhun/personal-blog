@@ -190,7 +190,7 @@ Date:   Sun May 8 00:32:26 2022 +0300
 
 #### Syncing the files
 
-I'm using [Syncopoli](https://gitlab.com/fengshaun/syncopoli) to [rsync(1)](https://en.wikipedia.org/wiki/Rsync) files over to my phone. It is a really simple yet effective application. Some parts are still WIP but you can head to the [repository](https://en.wikipedia.org/wiki/Rsync) and contribute if you're interested.
+I'm using [Syncopoli](https://gitlab.com/fengshaun/syncopoli) to [rsync(1)](https://en.wikipedia.org/wiki/Rsync) files over to my phone. It is a really simple yet effective application. Some parts are still WIP but you can head to the [repository](https://gitlab.com/fengshaun/syncopoli) and contribute if you're interested.
 
 Main screen:
 
