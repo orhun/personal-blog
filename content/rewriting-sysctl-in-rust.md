@@ -127,6 +127,6 @@ The colors are also [customizable](https://github.com/orhun/systeroid#changing-t
 
 My primary goal for the future of the project is simply adding more ways to conveniently manage the kernel parameters. I also plan to work on the [existing issues](https://github.com/orhun/systeroid/issues). I hope systeroid will help you out in ways that will improve your workflow and the security of your kernel :)
 
-If you liked **systeroid** and/or my other projects on my GitHub, please consider [becoming a patron](https://www.patreon.com/join/orhunp) to support me! 🐻
+If you liked **systeroid** and/or my other projects on my GitHub, please consider supporting me on [GitHub Sponsors](https://github.com/sponsors/orhun) or [Patreon](https://www.patreon.com/orhunp)! 🐻
 
 _Görüşmek üzere!_

@@ -130,7 +130,7 @@ My goal for the next releases is to implement new features that will make key ma
 - [Follow me on Twitter](https://twitter.com/orhunp_) (**@orhunp_**)
 - [Follow gpg-tui on Twitter](https://twitter.com/gpg_tui) (**@gpg_tui**, for latest updates) 
 
-Also if you liked **gpg-tui** and/or my other projects, consider [becoming a patron](https://www.patreon.com/join/orhunp) at [Patreon](https://www.patreon.com/orhunp).
+Also if you liked **gpg-tui** and/or my other projects, consider consider supporting me on [GitHub Sponsors](https://github.com/sponsors/orhun) or [Patreon](https://www.patreon.com/orhunp).
 
 (I recently got my first ever patron so I'd like to thank Ethem for their nice surprise and support :D)
 

@@ -305,6 +305,6 @@ After going through all these steps and automating the download/sync process, th
 
 And there you have it, an alternative approach to how you can enjoy listening to music offline while actually owning _the data_.
 
-I have a [Patreon](https://www.patreon.com/orhunp) :3
+Consider supporting me on [GitHub Sponsors](https://github.com/sponsors/orhun) or [Patreon](https://www.patreon.com/orhunp) :3
 
 Take care!

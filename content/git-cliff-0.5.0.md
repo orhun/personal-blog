@@ -296,6 +296,6 @@ Any contribution is highly appreciated! There are [contribution guidelines](http
 
 ### Support
 
-If you liked `git-cliff` and/or my other projects [on GitHub](https://github.com/orhun/), consider supporting me on [Patreon](https://www.patreon.com/orhunp) ☕ (I appreciate any kind of donation since it helps a lot due to the economical issues in my country.)
+If you liked `git-cliff` and/or my other projects [on GitHub](https://github.com/orhun/), consider supporting me on [GitHub Sponsors](https://github.com/sponsors/orhun) or [Patreon](https://www.patreon.com/orhunp) ☕
 
 Have a wonderful day! ⛰️
