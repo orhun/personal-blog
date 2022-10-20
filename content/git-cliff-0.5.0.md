@@ -138,7 +138,7 @@ Tracking issue: [#37](https://github.com/orhun/git-cliff/issues/37)
 
 ### `ignore_tags`
 
-A new configuration file entry makes an apperance in the `[git]` section!
+A new configuration file entry makes an appearance in the `[git]` section!
 
 ```toml
 [git]
