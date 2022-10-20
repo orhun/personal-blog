@@ -24,3 +24,11 @@ jobs:
           args: --exclude "patreon|request_uri" -v content/*.md
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Check spelling mistakes
+        uses: codespell-project/actions-codespell@master
+        with:
+          check_filenames: true
+          check_hidden: true
+          path: content
+          ignore_words_file: .codespellignore
