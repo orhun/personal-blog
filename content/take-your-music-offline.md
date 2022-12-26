@@ -100,6 +100,10 @@ $ youtube-dl \
     --ignore-errors \
     --extract-audio \
     --audio-format mp3 \
+    --audio-quality 0 \
+    --add-metadata \
+    --metadata-from-title="%(artist)s - %(title)s" \
+    --embed-thumbnail \
     --download-archive ".archive" \
     --output '%(playlist)s/%(title)s.%(ext)s' \
     "https://www.youtube.com/channel/<channel_id>/playlists"
