@@ -207,6 +207,8 @@ The difference between `/dev/random` and `/dev/urandom` is that `/dev/random` on
 
 In our case, we don't want to wait for the entropy pool until additional environmental noise is gathered so we can use `/dev/urandom`.
 
+(Edit after [Foxboron's comment](https://lobste.rs/s/9lfkmv/zero_dependency_random_number#c_wrwsw0): Apparently since the March of 2022, there is no difference between `/dev/random` and `/dev/urandom`. See [this article](https://www.theregister.com/2022/03/21/new_linux_kernel_has_improved/).)
+
 An example usage of `/dev/urandom` which generates a random string is the following:
 
 ```sh
