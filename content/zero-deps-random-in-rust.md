@@ -92,7 +92,7 @@ fn main() {
 }
 ```
 
-However, we're still far from our objective, which is generating random numbers without dependencies. Even `rand` with default features has several reverse dependencies:
+However, we're still far from our objective, which is generating random numbers without dependencies. Even `rand` with default features has several transitive dependencies:
 
 ```sh
 $ cargo tree
@@ -109,7 +109,7 @@ testapp v0.1.0
     └── rand_core v0.6.4 (*)
 ```
 
-Maybe we can look into reducing the reverse dependency count somehow before trying to achieve our 0-dependency goal.
+Maybe we can look into reducing the transitive dependency count somehow before trying to achieve our 0-dependency goal.
 
 I'm not sure how usable `rand` will be in this case, but we can simply remove the default features:
 
