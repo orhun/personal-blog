@@ -207,7 +207,7 @@ The difference between `/dev/random` and `/dev/urandom` is that `/dev/random` on
 
 In our case, we don't want to wait for the entropy pool until additional environmental noise is gathered so we can use `/dev/urandom`.
 
-(Edit after [Foxboron's comment](https://lobste.rs/s/9lfkmv/zero_dependency_random_number#c_wrwsw0): Apparently since the March of 2022, there is no difference between `/dev/random` and `/dev/urandom`. See [this article](https://www.theregister.com/2022/03/21/new_linux_kernel_has_improved/).)
+(Edit after [Foxboron's comment](https://lobste.rs/s/9lfkmv/zero_dependency_random_number#c_wrwsw0): Apparently since the March of 2022 / Kernel 5.6, there is no difference between `/dev/random` and `/dev/urandom`. See [this article](https://www.theregister.com/2022/03/21/new_linux_kernel_has_improved/).)
 
 An example usage of `/dev/urandom` which generates a random string is the following:
 
@@ -338,6 +338,45 @@ This has the same disadvantages as `getrandom`, it requires the C library for li
 
 ---
 
+#### `getauxval(3)`
+
+```c
+#include <sys/auxv.h>
+
+unsigned long getauxval(unsigned long type);
+```
+
+> The [getauxval()](https://man7.org/linux/man-pages/man3/getauxval.3.html) function retrieves values from the auxiliary vector, a mechanism that the kernel's ELF binary loader uses to pass certain information to user space when a program is executed.
+>
+> Each entry in the auxiliary vector consists of a pair of values: a type that identifies what this entry represents, and a value for that type. Given the argument `type`, `getauxval()` returns the corresponding value.
+
+```rs
+// https://man7.org/linux/man-pages/man3/getauxval.3.html
+#[cfg(not(target_os = "windows"))]
+#[link(name = "c")]
+extern "C" {
+    fn getauxval(r#type: u64) -> u64;
+}
+
+fn main() {
+    let rnd = unsafe { *(getauxval(25) as *const [u8; 1]) };
+
+    // Prints 206, 120, 76, etc.
+    println!("Random number: {:?}", rnd[0]);
+}
+```
+
+The `type` argument of `getauxval()` ("25" in this case) is defined in `libc` as follows:
+
+```rs
+// The address of sixteen bytes containing a random value.
+pub const AT_RANDOM: ::c_ulong = 25;
+```
+
+This solution was originally suggested by [mina86ng](https://www.reddit.com/r/rust/comments/102ar8c/comment/j2s7h8l/?utm_source=share&utm_medium=web2x&context=3) on Reddit.
+
+---
+
 #### Raw pointers
 
 Let's go for our last attempt.
@@ -418,6 +457,90 @@ fn main() {
 ```
 
 In this example, obtaining an address like this is completely safe. But we will need to use `unsafe` Rust if we want to do anything with it.
+
+However, thanks to [spacejam's comment](https://lobste.rs/s/9lfkmv/zero_dependency_random_number#c_kwmq2d), we can see that it is not a good entropy source.
+
+> [ASLR](https://en.wikipedia.org/wiki/Address_space_layout_randomization) (address space layout randomization) implementations tend to have weaknesses that manifest in ways that might not be obvious just looking at the scrambled output.
+
+```rs
+fn main() {
+    // Prints:
+    // 0x000055a7a8b55410
+    // 0x000055a4d561b410
+    // 0x000055c683ec3410
+    // 0x0000560f7b369410
+    // etc.
+    dbg![main as *const u8];
+}
+```
+
+More succinctly:
+
+```rs
+fn main() {
+    // Prints:
+    //
+    // 1088
+    // 1088
+    // 1088
+    // etc.
+    dbg![main as *const u8 as usize % 4096];
+}
+```
+
+> While the stack in the previous example gets a different distribution due to its reliance on a stack frame’s placement in the address space, there are still sharp edges about every system’s ASLR implementation that it’s kind of frustrating that only exploit writers seem to pay any attention to, despite their significant impacts on performance.
+
+Another comment about how bad this approach would be is the following:
+
+> The "randomness" comes from ASLR, which is _extremely_ limited on 32b systems (8~16 bits of entropy). 64b systems have more room, but it's still absolutely awful as an rng, IIRC on x86_64 Linux it defaults to 28 bits (you can check `/proc/sys/vm/mmap_rnd_bits` for the value on your system, last I checked it could be set from 28 to 32 inclusive).
+>
+> If the allocator uses brk instead of mmap, it's worse, you get 13 bits of entropy out of the brk ASLR. Or less if you use huge pages.
+>
+> - [masklinn](https://www.reddit.com/user/masklinn/) on Reddit
+
+---
+
+#### `std::collections::hash_map::RandomState`
+
+This solution was suggested by several people after I shared the blog post so thanks!
+
+Simply, we can use the [RandomState](https://doc.rust-lang.org/std/collections/hash_map/struct.RandomState.html) of the standard library's HashMap implementation and generate a random number from the hasher:
+
+```rs
+use std::collections::hash_map::RandomState;
+use std::hash::{BuildHasher, Hasher};
+
+fn main() {
+    let hasher = RandomState::new().build_hasher();
+
+    // Prints 938021294471563529, 17633394154785464152, etc.
+    println!("Random number: {}", hasher.finish());
+}
+```
+
+It probably makes more sense to use these random values as seed rather than random number. For example, we can have the following function for generating a random seed and combine it with a suggestion by [matklad](https://github.com/matklad/config/blob/b8ea0aad0f86d4575651a390a3c7aefb63229774/templates/snippets/src/lib.rs#L28L42):
+
+```rs
+use std::collections::hash_map::RandomState;
+use std::hash::{BuildHasher, Hasher};
+
+pub fn random_seed() -> u64 {
+    RandomState::new().build_hasher().finish()
+}
+
+// Pseudorandom number generator from the "Xorshift RNGs" paper by George Marsaglia.
+//
+// https://github.com/rust-lang/rust/blob/1.55.0/library/core/src/slice/sort.rs#L559-L573
+pub fn random_numbers() -> impl Iterator<Item = u32> {
+    let mut random = 92u32;
+    std::iter::repeat_with(move || {
+        random ^= random << 13;
+        random ^= random >> 17;
+        random ^= random << 5;
+        random
+    })
+}
+```
 
 ---
 
