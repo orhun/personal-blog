@@ -6,7 +6,7 @@ date = 2023-01-24
 categories = ["Guides"]
 +++
 
-Recently I packaged my project [git-cliff](https://github.com/orhun/git-cliff) (changelog generator written in [Rust](https://www.rust-lang.org/)) for [NPM](<https://en.wikipedia.org/wiki/Npm_(software)>) with the help of my friend [@atlj](https://github.com/atlj). I thought this would be an interesting topic for a blog post since it has a certain technical depth about distributing binaries and frankly it still amazes me how the whole thing works so smoothly. So let's create a simple Rust project, package it for NPM and fully automate the release process via [GitHub Actions](https://docs.github.com/en/actions).
+Recently I packaged my project [git-cliff](https://github.com/orhun/git-cliff) (changelog generator written in [Rust](https://www.rust-lang.org/)) for [NPM](https://www.npmjs.com/) with the help of my friend [@atlj](https://github.com/atlj). I thought this would be an interesting topic for a blog post since it has a certain technical depth about distributing binaries and frankly it still amazes me how the whole thing works so smoothly. So let's create a simple Rust project, package it for NPM and fully automate the release process via [GitHub Actions](https://docs.github.com/en/actions).
 
 <!-- more -->
 
