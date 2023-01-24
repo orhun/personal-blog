@@ -509,7 +509,7 @@ jobs:
           cp "../target/${{ matrix.build.TARGET }}/release/${bin}" "${node_pkg}/bin"
           # publish the package
           cd "${node_pkg}"
-          npm publish --access public --dry-run
+          npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
@@ -528,13 +528,12 @@ jobs:
           registry-url: "https://registry.npmjs.org"
 
       - name: Publish the package
-        continue-on-error: true
         shell: bash
         run: |
           cd npm/app
           yarn install # requires optional dependencies to be present in the registry
           yarn build
-          npm publish --access public --dry-run
+          npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 ```
