@@ -331,6 +331,12 @@ Next, we can build a binary for each build target as follows:
 And then, we finally generate the NPM package and publish it:
 
 ```sh
+- name: Install node
+  uses: actions/setup-node@v3
+  with:
+    node-version: "16"
+    registry-url: "https://registry.npmjs.org"
+
 - name: Publish to NPM
   shell: bash
   run: |
@@ -475,6 +481,12 @@ jobs:
           command: build
           args: --release --locked --target ${{ matrix.build.TARGET }}
           use-cross: ${{ matrix.build.OS == 'ubuntu-20.04' }} # use `cross` for Linux builds
+
+      - name: Install node
+        uses: actions/setup-node@v3
+        with:
+          node-version: "16"
+          registry-url: "https://registry.npmjs.org"
 
       - name: Publish to NPM
         shell: bash
