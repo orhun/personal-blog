@@ -3,7 +3,7 @@ title = "How hard upgrading a Rust JWT library could be?"
 date = 2022-04-22
 
 [taxonomies]
-categories = ["Activities"]
+categories = ["Guides"]
 +++
 
 Recently one of my clients requested me to maintain their Rust project. It is a web server that is built with [Rocket](https://rocket.rs/) + [Diesel](http://diesel.rs/) and running stable for a couple of years now. Like any other Rust developer would do, the first thing that I checked was the outdated dependencies via `cargo-outdated`. The result was close to what I expected: most of the dependencies were out-of-date. However, among all those crates, [rust-jwt](https://github.com/mikkyang/rust-jwt) caught my eye. It was 12 minor versions behind!
