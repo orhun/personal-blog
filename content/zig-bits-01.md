@@ -319,14 +319,22 @@ pub fn main() !void {
 }
 ```
 
-This will also work since we're not returning the address of the array:
+This will <s>also work since we're not returning the address of the array:</s> not work too! (Thanks for the correction everyone!)
 
-```sh
-$ zig build run
+It's the same dangling pointer problem as in the first example. Both `&message` and `message[0..]` in Zig will return the same slice.
 
-debug: zigbits
-debug: zigbits
-```
+[@zenith391](https://www.reddit.com/user/zenith391/) explained really well why this example might have worked during my tests but it still an undefined behavior:
+
+In the first example, the problem was that it was allocated on the stack and then freed. Now _suppose_ calling `std.log.debug` takes 8 bytes of stack space. But then calling `std.log.debug` causes more stack to be allocated, so it happily reuses and overwrites the bytes used for "zigbits".
+
+The reason why it doesn't do that when the return type is `![]u8` is because an error union type like `![]u8` takes more stack bytes than `[]u8` which means our "zigbits" bytes are allocated farther in the stack.
+The result is that when `std.log.debug` consumes its (hypothetical) 8 bytes of stack, it doesn't take enough to overwrite "zigbits".
+
+You can check this behavior with [https://godbolt.org/z/cPWjajYxb](https://godbolt.org/z/cPWjajYxb) which shows that "zigbits" is placed _40_ bytes into the stack when using `![]u8` but only _16_ bytes into the stack when using `[]u8`.
+
+Of course if you allocate more stack bytes (by making variables or calling more functions) it will eventually overwrite "zigbits". This also means this bonus snippet suffers from the same problem.
+
+TLDR: Because `![]u8` is bigger, you have to use more of the stack in order to overwrite "zigbits"
 
 ### Conclusion
 
