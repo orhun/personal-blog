@@ -323,7 +323,7 @@ This will <s>also work since we're not returning the address of the array:</s> n
 
 It's the same dangling pointer problem as in the first example. Both `&message` and `message[0..]` in Zig will return the same slice.
 
-[@zenith391](https://www.reddit.com/user/zenith391/) explained really well why this example might have worked during my tests but it still an undefined behavior:
+[@zenith391](https://www.reddit.com/user/zenith391/) explained really well why this example might have worked during my tests but it's still an undefined behavior:
 
 In the first example, the problem was that it was allocated on the stack and then freed. Now _suppose_ calling `std.log.debug` takes 8 bytes of stack space. But then calling `std.log.debug` causes more stack to be allocated, so it happily reuses and overwrites the bytes used for "zigbits".
 
