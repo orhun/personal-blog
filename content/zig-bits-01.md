@@ -6,7 +6,7 @@ date = 2023-02-17
 categories = ["Guides"]
 +++
 
-I decided to start a new blog series called "Zig Bits" where I share interesting bits of information about the [Zig programming language](https://ziglang.org/). It is written especially for beginners because I'm also a beginner.
+I decided to start a new blog series called "Zig Bits" where I share interesting bits of information about the [Zig programming language](https://ziglang.org/). This series will be especially for beginners because I'm also a beginner.
 
 <!-- more -->
 
