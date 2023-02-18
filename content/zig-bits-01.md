@@ -344,4 +344,6 @@ I'm fairly new to Zig and I really enjoy learning these concepts. Let me know vi
 
 Any feedback is welcome!
 
+P.S. [Here](https://bryce.fisher-fleig.org/strategies-for-returning-references-in-rust/) you can find the Rust version of this post.
+
 _¡cuidarse!_
