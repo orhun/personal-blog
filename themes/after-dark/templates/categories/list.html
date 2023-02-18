@@ -9,9 +9,9 @@
 
     {% if terms %}
         <ul>
-            {% for term in terms %}
+            {% for term in terms | sort(attribute="page_count") | reverse %}
                 <li>
-                    <a href="{{ term.permalink | safe }}">{{ term.name }}</a>({{ term.pages | length }})
+                    <a href="{{ term.permalink | safe }}">{{ term.name }}</a>({{ term.page_count }})
                 </li>
             {% endfor %}
         </ul>
