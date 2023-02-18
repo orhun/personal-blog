@@ -1,6 +1,6 @@
 +++
 title = "My motivation towards working on open source"
-date = 2021-07-02
+date = 2022-07-02
 
 [taxonomies]
 categories = ["Thoughts"]

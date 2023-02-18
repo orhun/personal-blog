@@ -1,6 +1,6 @@
 +++
 title = "I finally found out why I'm so depressed"
-date = 2021-07-06
+date = 2022-07-06
 
 [taxonomies]
 categories = ["Thoughts"]
