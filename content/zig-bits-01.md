@@ -144,7 +144,7 @@ We can work around this in a couple of ways:
 
 - Passing the slice in as a parameter to the function
 - Making the array global
-- Allocating the slice (returning an allocated _copy_ of the slice)
+- Allocating the slice (returning an allocated _copy_ of the slice) [most common]
 
 Let's see how it works with each solution.
 
@@ -279,6 +279,40 @@ $ zig build run
 
 debug: zigbits
 debug: zigbits
+```
+
+More common and idiomatic way of handling such case would be passing a [`std.mem.Allocator`](https://ziglang.org/documentation/master/std/#A;std:mem.Allocator) to the function that allocates memory. This way, we can allow the caller to decide which allocator to use.
+
+```zig
+// Zig version: 0.10.1
+
+// Import the standard library.
+const std = @import("std");
+
+/// Returns a slice.
+fn zigBits(allocator: std.mem.Allocator) ![]u8 {
+    // Create an array literal.
+    var message = [_]u8{ 'z', 'i', 'g', 'b', 'i', 't', 's' };
+
+    // Print the array as string.
+    std.log.debug("{s}", .{message});
+
+    // Allocate the slice on the heap and return.
+    var message_copy = try allocator.dupe(u8, &message);
+    return message_copy;
+}
+
+/// Entrypoint of the program.
+pub fn main() !void {
+    // Use an allocator.
+    // https://ziglang.org/documentation/master/#Choosing-an-Allocator
+    const allocator = std.heap.page_allocator;
+    // Get the message.
+    const message = try zigBits(allocator);
+
+    // Print the message.
+    std.log.debug("{s}", .{message});
+}
 ```
 
 #### Bonus
