@@ -180,6 +180,7 @@ pub fn main() void {
 
     // Print the message.
     std.log.debug("{s}", .{message[0..len]});
+    std.log.debug("{s}", .{message});
 }
 ```
 
@@ -194,6 +195,7 @@ $ zig build run
 
 debug: zigbits
 debug: zigbits
+debug: zigbits�,�$
 ```
 
 Yay!
