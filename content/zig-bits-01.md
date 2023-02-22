@@ -150,6 +150,8 @@ Let's see how it works with each solution.
 
 #### Passing the slice as a parameter
 
+The number of bytes written is unknown to main, and thus without the len, the debug log at the end will print the entire buffer, and not just the actual message part.
+
 ```zig
 // Zig version: 0.10.1
 
@@ -157,7 +159,7 @@ Let's see how it works with each solution.
 const std = @import("std");
 
 /// Takes a slice as a parameter and fills it with a message.
-fn zigBits(slice: []u8) void {
+fn zigBits(slice: []u8) usize {
     // Create an array literal.
     var message = [_]u8{ 'z', 'i', 'g', 'b', 'i', 't', 's' };
 
@@ -171,13 +173,13 @@ fn zigBits(slice: []u8) void {
 /// Entrypoint of the program.
 pub fn main() void {
     // Define the message buffer.
-    var message: [7]u8 = undefined;
+    var message: [9]u8 = undefined;
 
-    // Get the message.
-    zigBits(&message);
+    // Get the message and save the length.
+    const len = zigBits(&message);
 
     // Print the message.
-    std.log.debug("{s}", .{message});
+    std.log.debug("{s}", .{message[0..len]});
 }
 ```
 
