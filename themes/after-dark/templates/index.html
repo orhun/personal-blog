@@ -6,10 +6,10 @@
       <meta http-equiv="X-UA-Compatible" content="IE=edge">
       <meta http-equiv="content-type" content="text/html; charset=utf-8">
       <meta property="og:type" content="website" />
-      <meta property="og:url" content="{{ config.base_url }}"/>
-      <meta property="og:title" content="{{ config.title }}" />
+      <meta property="og:url" content="{{ config.base_url | safe }}"/>
+      <meta property="og:title" content="{{ config.title | safe }}" />
       <meta property="og:description" content="{{ config.description }}"/>
-      <meta property="og:image" content="{{ config.base_url }}/crow.png" />
+      <meta property="og:image" content="{{ config.base_url | safe }}/crow.png" />
       {% if page.description %}
       <meta name="description" content="{{ page.description }}" />
       {% elif config.description %}
