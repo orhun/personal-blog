@@ -382,6 +382,8 @@ I'm fairly new to Zig and I really enjoy learning these concepts. Let me know vi
 
 Any feedback is welcome!
 
+[Here](https://blog.orhun.dev/zig-bits-02/) is the next post of the Zig Bits series! ("Using defer to defeat memory leaks")
+
 P.S. [Here](https://bryce.fisher-fleig.org/strategies-for-returning-references-in-rust/) you can find the Rust version of this post.
 
 _¡cuidarse!_
