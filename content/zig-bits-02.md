@@ -445,7 +445,146 @@ All 1 tests passed.
 
 Yay! No leaks 💯
 
-#### Bonus
+For making it more clear, we can take a look how `defer` works under scopes:
+
+```zig
+// Zig version: 0.10.1
+
+// Import the standard library.
+const std = @import("std");
+
+/// Concatenates the given paths and returns a path under '/home' directory.
+fn concatPath(allocator: std.mem.Allocator, p1: []const u8, p2: []const u8) ![]const u8 {
+    // Define the path separator (which is '/' for POSIX).
+    const separator = std.fs.path.sep_str;
+
+    // Concatenate the paths and return.
+    const path = try std.fs.path.join(allocator, &.{ separator, "home", p1, p2 });
+    return path;
+}
+
+/// Entrypoint of the program.
+pub fn main() !void {
+    // Choose an allocator based on our needs.
+    const allocator = std.heap.page_allocator;
+    {
+
+        // Concatenate.
+        const path = try concatPath(allocator, "zig", "bits");
+        defer allocator.free(path); // free the memory at the end of the scope
+
+        // Print the final path.
+        std.log.debug("{s}", .{path});
+    }
+
+    {
+        // Concatenate.
+        const path = try concatPath(allocator, "zig", "bits2");
+        defer allocator.free(path); // free the memory at the end of the scope
+
+        // Print the final path.
+        std.log.debug("{s}", .{path});
+    }
+}
+
+// Test path concatenation.
+test "path concat" {
+    // Use the testing allocator for memory leak detection.
+    const allocator = std.testing.allocator;
+
+    // Run the function.
+    const path = try concatPath(allocator, "zig", "bits");
+    defer allocator.free(path); // free the memory at the end of the scope
+
+    // Assert the result.
+    try std.testing.expectEqualStrings("/home/zig/bits", path);
+}
+```
+
+#### Bonus I
+
+It was also pointed on Discord by `rimuspp#1713` that there is another way of dealing with leaks: using the general purpose allocator!
+
+```zig
+// Zig version: 0.10.1
+
+// Import the standard library.
+const std = @import("std");
+
+/// Concatenates the given paths and returns a path under '/home' directory.
+fn concatPath(allocator: std.mem.Allocator, p1: []const u8, p2: []const u8) ![]const u8 {
+    // Define the path separator (which is '/' for POSIX).
+    const separator = std.fs.path.sep_str;
+
+    // Concatenate the paths and return.
+    const path = try std.fs.path.join(allocator, &.{ separator, "home", p1, p2 });
+    return path;
+}
+
+/// Entrypoint of the program.
+pub fn main() !void {
+    // Choose an allocator based on our needs.
+    var gpa = std.heap.GeneralPurposeAllocator(.{}){};
+    defer _ = gpa.deinit();
+    const allocator = gpa.allocator();
+    {
+
+        // Concatenate.
+        const path = try concatPath(allocator, "zig", "bits");
+        defer allocator.free(path); // free the memory at the end of the scope
+
+        // Print the final path.
+        std.log.debug("{s}", .{path});
+    }
+
+    {
+        // Concatenate.
+        const path = try concatPath(allocator, "zig", "bits2");
+
+        // Print the final path.
+        std.log.debug("{s}", .{path});
+    }
+}
+
+// Test path concatenation.
+test "path concat" {
+    // Use the testing allocator for memory leak detection.
+    const allocator = std.testing.allocator;
+
+    // Run the function.
+    const path = try concatPath(allocator, "zig", "bits");
+    defer allocator.free(path); // free the memory at the end of the scope
+
+    // Assert the result.
+    try std.testing.expectEqualStrings("/home/zig/bits", path);
+}
+```
+
+This will leak and report on the main program itself:
+
+```sh
+$ zig build run
+
+debug: /home/zig/bits
+debug: /home/zig/bits2
+error(gpa): memory address 0x7f88d8788000 leaked:
+/usr/lib/zig/std/fs/path.zig:79:36: 0x2129f9 in joinSepMaybeZ__anon_3899 (tmp.bwNSfwKPEH)
+    const buf = try allocator.alloc(u8, total_len);
+                                   ^
+/usr/lib/zig/std/fs/path.zig:111:25: 0x21201b in join (tmp.bwNSfwKPEH)
+    return joinSepMaybeZ(allocator, sep, isSep, paths, false);
+                        ^
+/tmp/tmp.bwNSfwKPEH/src/main.zig:12:38: 0x2136e3 in concatPath (tmp.bwNSfwKPEH)
+    const path = try std.fs.path.join(allocator, &.{ separator, "home", p1, p2 });
+                                     ^
+/tmp/tmp.bwNSfwKPEH/src/main.zig:34:36: 0x2138d7 in main (tmp.bwNSfwKPEH)
+        const path = try concatPath(allocator, "zig", "bits2");
+                                   ^
+```
+
+This approach is also what powers `std.testing.allocator`.
+
+#### Bonus II
 
 Another use case for `defer` is file operations such as creating/opening a file:
 
