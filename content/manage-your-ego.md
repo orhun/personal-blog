@@ -37,6 +37,7 @@ Here are some people along with their _projects_ from the tech industry:
 - [Lennart Poettering](https://en.wikipedia.org/wiki/Lennart_Poettering): PulseAudio, Avahi, systemd
 - [Fabrice Bellard](https://en.wikipedia.org/wiki/Fabrice_Bellard): FFmpeg, QEMU, Tiny C Compiler
 - [Andrew Tridgell](https://en.m.wikipedia.org/wiki/Andrew_Tridgell): Samba, rsync, ccache
+- [Mitchell Hashimoto](https://en.wikipedia.org/wiki/HashiCorp): Vagrant, Packer, Terraform, Consul
 - (let me know who else!)
 
 Also please note that some people might be known for a single project, but I'm sure they have worked on different projects to pave the way for that project :>
