@@ -499,7 +499,7 @@ It is time for the main event.
 
 <center>
 
-[**Click here to watch the demo!**](https://youtube.com)
+[**Click here to watch the demo!**](https://www.youtube.com/watch?v=SLiEuvDmo8M)
 
 </center>
 
