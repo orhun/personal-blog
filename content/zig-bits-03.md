@@ -106,15 +106,11 @@ test_step.dependOn(&exe_tests.step);
 When I run this code with `zig build test`, it will only run the tests in `main.zig`. What I wanted is to run the tests in _every_ file in my project so I did the most obvious thing that comes to mind:
 
 ```zig
-var gpa = std.heap.GeneralPurposeAllocator(.{}){};
-const allocator = gpa.allocator();
-
 const test_step = b.step("test", "Run tests");
 
 // loop through the modules and add them for testing
 for ([_][]const u8{ "main", "wav", "file", "gen" }) |module| {
-    const test_module = try std.fmt.allocPrint(allocator, "src/{s}.zig", .{module});
-    defer allocator.free(test_module);
+    const test_module = b.fmt("src/{s}.zig", .{module});
     var exe_tests = b.addTest(test_module);
     test_step.dependOn(&exe_tests.step);
 }
