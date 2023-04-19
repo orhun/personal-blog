@@ -690,4 +690,6 @@ In that case, `defer` statement is handy for ensuring that the cleanup will happ
 
 Hope you enjoyed the read, any feedback is welcome! Let me know what you think and what might be the topic for the next Zig Bits 🦎
 
+[Here](https://blog.orhun.dev/zig-bits-03/) is the next post of the Zig Bits series! ("Mastering project management in Zig")
+
 _görüşmək üzrə!_
