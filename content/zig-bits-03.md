@@ -222,7 +222,7 @@ jobs:
       - name: Install Zig
         uses: goto-bus-stop/setup-zig@v2
         with:
-          version: 0.10.0
+          version: 0.10.1
 
       - name: Install kcov
         run: |
@@ -330,7 +330,7 @@ jobs:
       - name: Install Zig
         uses: goto-bus-stop/setup-zig@v2
         with:
-          version: 0.10.0
+          version: 0.10.1
 
       - name: Generate documentation
         run: zig build -Ddocs=true
@@ -395,7 +395,7 @@ jobs:
       - name: Install Zig
         uses: goto-bus-stop/setup-zig@v2
         with:
-          version: 0.10.0
+          version: 0.10.1
 
       - name: Build
         run: zig build ${{ matrix.OPTIMIZE }}
@@ -469,7 +469,7 @@ jobs:
       - name: Install Zig
         uses: goto-bus-stop/setup-zig@v2
         with:
-          version: 0.10.0
+          version: 0.10.1
 
       - name: Build
         run: zig build -Drelease-safe -Dtarget=${{ matrix.TARGET }}
