@@ -27,9 +27,7 @@ generate_feed = true
 feed_filename = "rss.xml"
 
 # The taxonomies to be rendered for the site and their configuration of the default languages
-taxonomies = [
-    { name = "categories", feed = true },
-]
+taxonomies = [{ name = "categories", feed = true }]
 
 [markdown]
 # Whether to do syntax highlighting
@@ -49,6 +47,7 @@ after_dark_menu = [
     { name = "Home", url = "$BASE_URL" },
     { name = "Categories", url = "$BASE_URL/categories" },
     { name = "Source", url = "https://github.com/orhun/personal-blog" },
+    { name = "Donate", url = "https://donate.orhun.dev" },
     { name = "RSS", url = "$BASE_URL/rss.xml" },
     { name = "About", url = "https://orhun.dev" },
 ]
