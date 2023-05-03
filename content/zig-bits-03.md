@@ -31,11 +31,11 @@ So I will be sharing my experience of project management in Zig to document what
 
 I will cover the following topics:
 
-- Adding libraries
-- Running tests
-- Code coverage
-- Documentation generation
-- CI/CD
+- [Adding libraries](#adding-libraries-zap)
+- [Running tests](#running-tests-zap)
+- [Code coverage](#code-coverage-zap)
+- [Documentation generation](#documentation-generation-zap)
+- [CI/CD](#ci-cd-zap)
 
 So let's jump right into it.
 
