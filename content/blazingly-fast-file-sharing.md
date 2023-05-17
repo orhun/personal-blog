@@ -78,6 +78,8 @@ The easiest way to interact with a `rustypaste` server is using `curl` but you c
 
 ⭐ **CLI tool**: [https://github.com/orhun/rustypaste-cli](https://github.com/orhun/rustypaste-cli)
 
+![rpaste](/rpaste.gif)
+
 ```sh
 Usage:
     rpaste [options] <file(s)>
