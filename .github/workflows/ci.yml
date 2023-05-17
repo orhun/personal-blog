@@ -8,7 +8,7 @@ on:
     branches:
       - main
   schedule:
-    - cron: '0 0 * * 0'
+    - cron: "0 0 * * 0"
 
 jobs:
   link-checker:
@@ -20,7 +20,7 @@ jobs:
       - name: Check the links
         uses: lycheeverse/lychee-action@v1
         with:
-          args: --exclude "patreon|request_uri" -v content/*.md
+          args: --exclude "patreon|request_uri|0x0|xinu" -v content/*.md
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
