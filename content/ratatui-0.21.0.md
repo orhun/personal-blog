@@ -26,6 +26,8 @@ Before everything, big thanks to [Florian Dehau](https://github.com/fdehau) for 
 
 Now, let's see what's new in `ratatui`!
 
+**Full changelog**: [https://github.com/tui-rs-revival/ratatui/releases/tag/v0.21.0](https://github.com/tui-rs-revival/ratatui/releases/tag/v0.21.0)
+
 ---
 
 ### New backend: `termwiz`
