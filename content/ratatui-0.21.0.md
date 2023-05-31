@@ -305,9 +305,9 @@ See [https://github.com/tui-rs-revival/ratatui/pull/178](https://github.com/tui-
 
 Here is the list of applications that has been added:
 
-- [oxycards](https://github.com/BrookJeynes/oxycards)
-- [twitch-tui](https://github.com/Xithrius/twitch-tui)
-- [tenere](https://github.com/pythops/tenere)
+- [oxycards](https://github.com/BrookJeynes/oxycards): quiz card application built within the terminal.
+- [twitch-tui](https://github.com/Xithrius/twitch-tui): twitch chat in the terminal.
+- [tenere](https://github.com/pythops/tenere): TUI interface for LLMs.
 
 Also, we moved `APPS.md` file to the [Wiki](https://github.com/tui-rs-revival/ratatui/wiki/Apps-using-Ratatui) so check it out for more applications built with `ratatui`!
 
