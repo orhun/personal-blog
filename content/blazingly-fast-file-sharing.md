@@ -352,12 +352,19 @@ name: Deploy on Shuttle
 
 on:
   push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
     tags:
       - "v*.*.*"
+  # allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
 
 jobs:
-  deploy:
-    name: Deploy
+  build:
+    name: Build / Deploy
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout the repository
@@ -380,11 +387,15 @@ jobs:
         shell: bash
         run: sed -i 's|default = \[\]|default = \["shuttle"\]|g' Cargo.toml
 
-      - name: Login
-        run: cargo shuttle login --api-key ${{ secrets.SHUTTLE_TOKEN }}
+      - name: Build
+        run: cargo build --locked --verbose
 
       - name: Deploy
-        run: cargo shuttle deploy --allow-dirty --no-test
+        if: ${{ startsWith(github.event.ref, 'refs/tags/v') || github.event_name == 'workflow_dispatch' }}
+        run: |
+          cargo shuttle login --api-key ${{ secrets.SHUTTLE_TOKEN }}
+          cargo shuttle project restart
+          cargo shuttle deploy --allow-dirty --no-test
 ```
 
 One thing to note, I thought it would be nicer to install `cargo-shuttle` via [`cargo-binstall`](https://github.com/cargo-bins/cargo-binstall) since it is faster to download pre-built binaries.
