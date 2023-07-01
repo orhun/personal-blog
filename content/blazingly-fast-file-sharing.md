@@ -354,11 +354,11 @@ on:
   push:
     branches:
       - master
+    tags:
+      - "v*.*.*"
   pull_request:
     branches:
       - master
-    tags:
-      - "v*.*.*"
   # allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
