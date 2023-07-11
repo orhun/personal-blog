@@ -547,4 +547,6 @@ I believe I covered a couple of important techniques and best practices for effi
 
 I hope you enjoy the stuff you generate with **linuxwave**! Feel free to share them [here](https://github.com/orhun/linuxwave/discussions/1).
 
+[Here](https://blog.orhun.dev/zig-bits-04/) is the next post of the Zig Bits series! ("Building an HTTP client/server from scratch")
+
 _sayonara!_
