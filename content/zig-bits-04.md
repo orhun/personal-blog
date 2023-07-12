@@ -191,9 +191,9 @@ var request = try client.request(.POST, uri, headers, .{});
 defer request.deinit();
 
 // Set the encoding for the POST request.
-req.transfer_encoding = .chunked;
+request.transfer_encoding = .chunked;
 
-try req.start();
+try request.start();
 ```
 
 **Q**: Oooh, that makes sense.
