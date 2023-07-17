@@ -518,6 +518,7 @@ Lastly, shout out to these awesome people for their first contributions to the p
 - [@karthago1](https://github.com/karthago1)
 - [@BoolPurist](https://github.com/BoolPurist)
 - [@Nogesma](https://github.com/Nogesma)
+- [@lthoerner](https://github.com/lthoerner)
 
 Cheers!
 
