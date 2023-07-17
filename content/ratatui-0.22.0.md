@@ -279,7 +279,6 @@ Aside from the main types that are used in the library, this `prelude` also re-e
 
 ```rs
 use ratatui::{prelude::*, widgets::*};
-use ratatui::widgets::{Block, Borders};
 
 #[derive(Debug, Default, PartialEq, Eq)]
 struct Line;
