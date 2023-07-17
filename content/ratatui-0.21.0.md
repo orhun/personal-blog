@@ -10,6 +10,12 @@ categories = ["Projects"]
 
 <!-- more -->
 
+<center>
+
+![ratatui](/ratatui-logo.png)
+
+</center>
+
 ### Retrospective
 
 To catch you up to speed:
