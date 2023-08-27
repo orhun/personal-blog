@@ -99,7 +99,7 @@ In this context, there is also an experimental image rendering crate: [_ratatu-i
 
 ### Table/List: Highlight spacing
 
-We added a new property called `HightlightSpacing` to the `Table` and `List` widgets and it can be optionally set via calling `hightlight_spacing` function.
+We added a new property called `HighlightSpacing` to the `Table` and `List` widgets and it can be optionally set via calling `highlight_spacing` function.
 
 Before this option was available, selecting a row in the table when no row was selected previously made the tables layout change (the same applies to unselecting) by adding the width of the "highlight symbol" in the front of the first column. The idea is that we want this behaviour to be configurable with this newly added option.
 
@@ -144,8 +144,9 @@ The track symbol in the `Scrollbar` is now optional, simplifying composition wit
 
 One breaking change is that `track_symbol` needs to be set in the following way now:
 
-```rs
-let scrollbar = Scrollbar::default().track_symbol(Some("-"));
+```diff
+-let scrollbar = Scrollbar::default().track_symbol("-");
++let scrollbar = Scrollbar::default().track_symbol(Some("-"));
 ```
 
 It also makes it possible to render a custom track that is composed out of multiple differing track symbols.
