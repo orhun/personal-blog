@@ -6,7 +6,7 @@ date = 2023-07-17
 categories = ["Ratatui"]
 +++
 
-"[**Ratatui**](https://github.com/tui-rs-revival/ratatui)" is a Rust library for building rich terminal user interfaces. In this post, I'm sharing what's new in the latest version and also a fun way to easily create terminal user interfaces in a jiffy.
+"[**Ratatui**](https://github.com/ratatui-org/ratatui)" is a Rust library for building rich terminal user interfaces. In this post, I'm sharing what's new in the latest version and also a fun way to easily create terminal user interfaces in a jiffy.
 
 <!-- more -->
 
@@ -20,7 +20,7 @@ See my [previous blog post](https://blog.orhun.dev/ratatui-0-21-0/) about `ratat
 
 Today marks the new release of `ratatui` and we are very excited to share the new things we have been working on in the last month. But before anything, a couple of news about the project:
 
-- We had a meeting on 2023-07-16, you can read the meeting notes [here](https://github.com/tui-rs-revival/ratatui/discussions/316).
+- We had a meeting on 2023-07-16, you can read the meeting notes [here](https://github.com/ratatui-org/ratatui/discussions/316).
 - We will have scheduled meetings soon for discussing the status of the project more often. (Still deciding the time & day for that).
 - Join the [Discord server](https://discord.gg/pMCEU9hNEj) for keeping up-to-date with `ratatui` news and contributing to the project!
 
@@ -263,7 +263,7 @@ And here we have it:
 
 Now that we have seen what we can do using `ratatui`, it is time to get into the details of the latest release!
 
-**Full changelog**: [https://github.com/tui-rs-revival/ratatui/releases/tag/v0.22.0](https://github.com/tui-rs-revival/ratatui/releases/tag/v0.22.0)
+**Full changelog**: [https://github.com/ratatui-org/ratatui/releases/tag/v0.22.0](https://github.com/ratatui-org/ratatui/releases/tag/v0.22.0)
 
 ---
 
@@ -373,7 +373,7 @@ This makes it possible to render fancy stuff like this:
 
 ![ratatui barchart](/ratatui-barchart.jpg)
 
-See the [barchart example](https://github.com/tui-rs-revival/ratatui/blob/main/examples/barchart.rs) for more information and implementation details.
+See the [barchart example](https://github.com/ratatui-org/ratatui/blob/main/examples/barchart.rs) for more information and implementation details.
 
 ---
 
@@ -500,9 +500,9 @@ Following tools are now integrated into the repository:
 
 ## Endnote
 
-Feel free to join the [Discord server](https://discord.gg/pMCEU9hNEj) for chatting/getting help about `ratatui`. If you are interested in contributing, check out our [contribution guidelines](https://github.com/tui-rs-revival/ratatui/blob/main/CONTRIBUTING.md) and [open issues](https://github.com/tui-rs-revival/ratatui/issues) for getting started!
+Feel free to join the [Discord server](https://discord.gg/pMCEU9hNEj) for chatting/getting help about `ratatui`. If you are interested in contributing, check out our [contribution guidelines](https://github.com/ratatui-org/ratatui/blob/main/CONTRIBUTING.md) and [open issues](https://github.com/ratatui-org/ratatui/issues) for getting started!
 
-Also, check out [these cool apps](https://github.com/tui-rs-revival/ratatui/wiki/Apps-using-Ratatui) using `ratatui`!
+Also, check out [these cool apps](https://github.com/ratatui-org/ratatui/wiki/Apps-using-Ratatui) using `ratatui`!
 
 Lastly, shout out to these awesome people for their first contributions to the project:
 
