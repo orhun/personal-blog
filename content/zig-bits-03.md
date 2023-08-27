@@ -3,7 +3,7 @@ title = "Zig Bits 0x3: Mastering project management in Zig"
 date = 2023-04-19
 
 [taxonomies]
-categories = ["Guides"]
+categories = ["Zig Bits"]
 +++
 
 In this post, I'm sharing tips & tricks about managing/maintaining an open-source Zig project and mentioning the commonly used practices. I'm also giving a brief introduction to my first-ever Zig project "[**linuxwave**](https://github.com/orhun/linuxwave)" which led to the writing of this series.

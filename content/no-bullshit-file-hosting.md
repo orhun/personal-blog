@@ -3,7 +3,7 @@ title = "Spin Up Your Own No-Bullshit File Hosting Service"
 date = 2021-02-14
 
 [taxonomies]
-categories = ["Guides"]
+categories = ["Projects"]
 +++
 
 A guide for spinning up your own instance of 0x0, a no-bullshit file hosting and URL shortening service.
@@ -27,7 +27,7 @@ A guide for spinning up your own instance of 0x0, a no-bullshit file hosting and
 - A server and preferably a domain. (I'll be using Ubuntu 20.04.1 from [AWS Free Tier](https://aws.amazon.com/free/) and a [free domain](https://www.freenom.com/en/freeandpaiddomains.html))
 - Linux dependencies: [Nginx](https://ubuntu.com/tutorials/install-and-configure-nginx), [Certbot](https://certbot.eff.org/docs/install.html), [Python3](https://www.digitalocean.com/community/tutorials/how-to-install-python-3-and-set-up-a-programming-environment-on-an-ubuntu-20-04-server)
 - Python dependencies: [uWSGI](https://uwsgi-docs.readthedocs.io/en/latest/Install.html), [python-pip](https://pip.pypa.io/en/stable/installation/)
-    - pip install -r [requirements.txt](https://git.0x0.st/mia/0x0/src/branch/master/requirements.txt)
+  - pip install -r [requirements.txt](https://git.0x0.st/mia/0x0/src/branch/master/requirements.txt)
 
 ## Configuring 0x0
 
@@ -50,13 +50,13 @@ python3 fhost.py db upgrade
 
 ## Testing 0x0 with uWSGI
 
-After you [install](https://uwsgi-docs.readthedocs.io/en/latest/Install.html) uWSGI, you can simply test if 0x0 runs with the following command[*](https://git.0x0.st/mia/0x0/issues/8):
+After you [install](https://uwsgi-docs.readthedocs.io/en/latest/Install.html) uWSGI, you can simply test if 0x0 runs with the following command[\*](https://git.0x0.st/mia/0x0/issues/8):
 
 ```sh
 uwsgi --socket 0.0.0.0:8080 --protocol=http --wsgi-file fhost.py --callable app
 ```
 
-**Note:** If `--wsgi-file` option is not recognized, make sure you have python plugin for uWSGI installed and loaded. [*](https://stackoverflow.com/questions/31330905/uwsgi-options-wsgi-file-and-module-not-recognized)
+**Note:** If `--wsgi-file` option is not recognized, make sure you have python plugin for uWSGI installed and loaded. [\*](https://stackoverflow.com/questions/31330905/uwsgi-options-wsgi-file-and-module-not-recognized)
 
 You should be seeing the homepage of 0x0 at `http://your_server_ip:8080`. If not, debug time...
 
@@ -164,8 +164,8 @@ sudo systemctl restart nginx
 
 If everything went well, you should be seeing your site up at `http://your_domain`. If not, check the following:
 
-* `sudo less /var/log/nginx/{error,access}.log`
-* `sudo journalctl -u {nginx,0x0}`
+- `sudo less /var/log/nginx/{error,access}.log`
+- `sudo journalctl -u {nginx,0x0}`
 
 ## Getting an SSL certificate
 
@@ -182,7 +182,7 @@ Then use `nginx` plugin to create a new certificate:
 sudo certbot --nginx -d your_domain -d www.your_domain
 ```
 
-It's going to ask for some information and eventually reconfigure Nginx to use the newly created SSL certificate. 
+It's going to ask for some information and eventually reconfigure Nginx to use the newly created SSL certificate.
 
 Add `uwsgi_param UWSGI_SCHEME https;` to your server block config (for enforcing HTTPS) and your new server block might look like this at the end:
 
@@ -229,9 +229,9 @@ And voila! Your very own 0x0 instance is live at `https://your_domain`.
 
 ## Using 0x0
 
-* For posting files: `curl -F'file=@yourfile.png' https://your_domain`
-* For posting remote URLs: `curl -F'url=http://example.com/image.jpg' https://your_domain`
-* For shortening URLs: `curl -F'shorten=http://example.com/some/long/url' https://your_domain`
+- For posting files: `curl -F'file=@yourfile.png' https://your_domain`
+- For posting remote URLs: `curl -F'url=http://example.com/image.jpg' https://your_domain`
+- For shortening URLs: `curl -F'shorten=http://example.com/some/long/url' https://your_domain`
 
 I recommend setting up aliases for these commands or using a wrapper script like [this](https://github.com/Calinou/0x0).
 

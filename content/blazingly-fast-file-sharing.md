@@ -3,7 +3,7 @@ title = "Taking Rust to the Cloud: Blazingly Fast File Sharing"
 date = 2023-05-17
 
 [taxonomies]
-categories = ["Guides", "Projects"]
+categories = ["Rust"]
 +++
 
 "[**rustypaste**](https://github.com/orhun/rustypaste)" is a self-hosted and minimal file upload/pastebin service written in Rust. In this post, I will be talking about its features and telling the story behind how I deployed it to [shuttle.rs](https://www.shuttle.rs) to make it publicly available for free use.

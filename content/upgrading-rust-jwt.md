@@ -3,7 +3,7 @@ title = "How hard upgrading a Rust JWT library could be?"
 date = 2022-04-22
 
 [taxonomies]
-categories = ["Guides"]
+categories = ["Rust"]
 +++
 
 Recently one of my clients requested me to maintain their Rust project. It is a web server that is built with [Rocket](https://rocket.rs/) + [Diesel](http://diesel.rs/) and running stable for a couple of years now. Like any other Rust developer would do, the first thing that I checked was the outdated dependencies via `cargo-outdated`. The result was close to what I expected: most of the dependencies were out-of-date. However, among all those crates, [rust-jwt](https://github.com/mikkyang/rust-jwt) caught my eye. It was 12 minor versions behind!
@@ -23,6 +23,7 @@ Well, it turns out, it was pretty hard after in my case.
 The version that the project used at the time was `0.4.0`. When I checked the changelog (release notes), there wasn't even an entry about it! Even worse, this version is not tagged on GitHub. The oldest version on GitHub was `0.5.0` and the release notes are the following:
 
 > ### Update (very outdated) dependencies
+>
 > The only user facing changes are much needed updates to the crypto dependencies, courtesy of #10.
 >
 > Types from the previous crate, `rust-crypto` are replaced with types from various crates from [https://github.com/RustCrypto](https://github.com/RustCrypto).
@@ -31,7 +32,7 @@ Although this is a good improvement for the library itself, it surely didn't loo
 
 - [RUSTSEC-2016-0005](https://rustsec.org/advisories/RUSTSEC-2016-0005.html): rust-crypto is unmaintained; switch to a modern alternative
 
-So the maintainer of rust-jwt made the most expected thing by moving away from `rust-crypto` and migrating the cryptography-related operations to be handled by the actively maintained [RustCrypto](https://github.com/RustCrypto) project. I was sure I will benefit from this change in the security and performance aspect. 
+So the maintainer of rust-jwt made the most expected thing by moving away from `rust-crypto` and migrating the cryptography-related operations to be handled by the actively maintained [RustCrypto](https://github.com/RustCrypto) project. I was sure I will benefit from this change in the security and performance aspect.
 
 One thing to note here, was that really a "minor" change in rust-jwt? Can I just bump the dependency and call it a day?
 
@@ -152,7 +153,7 @@ $ ./jwt-0.16.0.rs
 eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI0MjAifQ.wvPvTjXDF9tfOmB8ZjVh9Bosx5zw9M5SCpQ_NMI29OI
 ```
 
-Hmm, they print different tokens and the second one is visibly shorter for some reason. This is probably due to the API changes in the library. 
+Hmm, they print different tokens and the second one is visibly shorter for some reason. This is probably due to the API changes in the library.
 
 > So what? Just upgrade the dependencies, it works.
 
@@ -263,7 +264,7 @@ Nice! We have the correct header fields in the generated token. Also, why not up
 @@ -43,6 +43,17 @@ pub struct Header {
      pub content_type: Option<HeaderContentType>,
  }
- 
+
 +impl Default for Header {
 +    fn default() -> Header {
 +        Header {
@@ -315,7 +316,7 @@ pub struct RegisteredClaims {
 }
 ```
 
-Bingo! [skip_serializing_if](https://serde.rs/field-attrs.html#skip_serializing_if) attribute in combination with "Option::is_none" causes `None` fields to be removed from the generated token. So let's just remove that attribute. 
+Bingo! [skip_serializing_if](https://serde.rs/field-attrs.html#skip_serializing_if) attribute in combination with "Option::is_none" causes `None` fields to be removed from the generated token. So let's just remove that attribute.
 
 ```diff
  #[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize)]
@@ -323,27 +324,27 @@ Bingo! [skip_serializing_if](https://serde.rs/field-attrs.html#skip_serializing_
 -    #[serde(rename = "iss", skip_serializing_if = "Option::is_none")]
 +    #[serde(rename = "iss")]
      pub issuer: Option<String>,
- 
+
 -    #[serde(rename = "sub", skip_serializing_if = "Option::is_none")]
 +    #[serde(rename = "sub")]
      pub subject: Option<String>,
- 
+
 -    #[serde(rename = "aud", skip_serializing_if = "Option::is_none")]
 +    #[serde(rename = "aud")]
      pub audience: Option<String>,
- 
+
 -    #[serde(rename = "exp", skip_serializing_if = "Option::is_none")]
 +    #[serde(rename = "exp")]
      pub expiration: Option<SecondsSinceEpoch>,
- 
+
 -    #[serde(rename = "nbf", skip_serializing_if = "Option::is_none")]
 +    #[serde(rename = "nbf")]
      pub not_before: Option<SecondsSinceEpoch>,
- 
+
 -    #[serde(rename = "iat", skip_serializing_if = "Option::is_none")]
 +    #[serde(rename = "iat")]
      pub issued_at: Option<SecondsSinceEpoch>,
- 
+
 -    #[serde(rename = "jti", skip_serializing_if = "Option::is_none")]
 +    #[serde(rename = "jti")]
      pub json_web_token_id: Option<String>,
@@ -459,11 +460,11 @@ So only `kid` is missing from the header? Alright, easy:
  pub struct Header {
      #[serde(rename = "alg")]
      pub algorithm: AlgorithmType,
- 
+
 -    #[serde(rename = "kid", skip_serializing_if = "Option::is_none")]
 +    #[serde(rename = "kid")]
      pub key_id: Option<String>,
- 
+
      #[serde(rename = "typ", skip_serializing_if = "Option::is_none")]
 ```
 
@@ -489,15 +490,15 @@ Oooh, they need to be in the same order as well. Let's reorder the struct fields
 -    pub algorithm: AlgorithmType,
 +    #[serde(rename = "typ", skip_serializing_if = "Option::is_none")]
 +    pub type_: Option<HeaderType>,
- 
+
      #[serde(rename = "kid")]
      pub key_id: Option<String>,
- 
+
 -    #[serde(rename = "typ", skip_serializing_if = "Option::is_none")]
 -    pub type_: Option<HeaderType>,
 +    #[serde(rename = "alg")]
 +    pub algorithm: AlgorithmType,
- 
+
      #[serde(rename = "cty", skip_serializing_if = "Option::is_none")]
      pub content_type: Option<HeaderContentType>,
 ```
@@ -528,7 +529,7 @@ _sN8Ur-b-38g4X2yQsIuhs4Z1dWjPW-7SHSFgmYa4xM
 Well, it turns out they are actually the same token. According to the warning on jwt.io, the difference is due to the first token not being encoded correctly:
 
 > Warning: Looks like your JWT signature is not encoded correctly using base64url ([https://tools.ietf.org/html/rfc4648#section-5](https://tools.ietf.org/html/rfc4648#section-5)).
-> 
+>
 > Note that padding ("=") must be omitted as per [https://tools.ietf.org/html/rfc7515#section-2](https://tools.ietf.org/html/rfc7515#section-2)
 
 Just to be safe, I decided to replace the invalid characters in the signature before verifying:
@@ -599,7 +600,7 @@ fn main() {
 
 </details>
 
-I pushed the changes in the rust-jwt library to my fork in case anyone hits this incredibly specific issue: [**https://github.com/orhun/rust-jwt**](https://github.com/orhun/rust-jwt) 
+I pushed the changes in the rust-jwt library to my fork in case anyone hits this incredibly specific issue: [**https://github.com/orhun/rust-jwt**](https://github.com/orhun/rust-jwt)
 
 Thanks for coming down with me to this rabbit hole! 🐇
 

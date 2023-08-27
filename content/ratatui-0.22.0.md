@@ -3,7 +3,7 @@ title = "Generating terminal user interfaces with Ratatui + ChatGPT"
 date = 2023-07-17
 
 [taxonomies]
-categories = ["Projects"]
+categories = ["Ratatui"]
 +++
 
 "[**Ratatui**](https://github.com/tui-rs-revival/ratatui)" is a Rust library for building rich terminal user interfaces. In this post, I'm sharing what's new in the latest version and also a fun way to easily create terminal user interfaces in a jiffy.

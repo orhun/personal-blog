@@ -3,7 +3,7 @@ title = "Move away from streaming platforms & take your music offline"
 date = 2022-06-03
 
 [taxonomies]
-categories = ["Guides"]
+categories = ["Projects"]
 +++
 
 I don't use [Spotify](https://en.wikipedia.org/wiki/Spotify) or any other streaming platform for listening to music. Some call it old habits, some call it needless effort, but I'm very used to downloading [MP3](https://en.wikipedia.org/wiki/MP3) files over the internet and putting them in a folder on my phone then using the whatever default media player I have installed. However, for a couple of years, I have been following a better and automated approach for taking my music offline and feeling a bit less like I'm in a [consumerism](https://en.wikipedia.org/wiki/Consumerism) bubble.
@@ -48,7 +48,7 @@ While I'm working, I usually have [YouTube](https://en.wikipedia.org/wiki/YouTub
   - I have a 2.5" external hard disk drive with 1TB of storage connected to my Raspberry Pi
 - A YouTube account (for creating playlists)
 - [youtube-dl](https://youtube-dl.org/) ([GitHub](https://github.com/ytdl-org/youtube-dl)) (for downloading playlists)
-- [Syncopoli](https://f-droid.org/en/packages/org.amoradi.syncopoli/) ([GitLab](https://gitlab.com/fengshaun/syncopoli)) (for `rsync`'ing MP3 files to an [Android](https://en.wikipedia.org/wiki/Android_(operating_system)) phone)
+- [Syncopoli](https://f-droid.org/en/packages/org.amoradi.syncopoli/) ([GitLab](https://gitlab.com/fengshaun/syncopoli)) (for `rsync`'ing MP3 files to an [Android](<https://en.wikipedia.org/wiki/Android_(operating_system)>) phone)
 - [Music Player GO](https://f-droid.org/packages/com.iven.musicplayergo/) ([GitHub](https://github.com/enricocid/Music-Player-GO)) (for actually listening to music)
 
 ![Diagram](/offline-diagram.png)
@@ -224,7 +224,7 @@ Also, you can use [Logcat Reader](https://f-droid.org/en/packages/com.dp.logcata
 
 <img src="/syncopoli_logcat_reader.jpg" style="width: 60%" alt="Logcat Reader"/>
 
-For me, the biggest challenge was to use my private key for the SSH connection. To do that, you [need to](https://gitlab.com/fengshaun/syncopoli#ssh-key) convert your key to [dropbear](https://en.wikipedia.org/wiki/Dropbear_(software)) format:
+For me, the biggest challenge was to use my private key for the SSH connection. To do that, you [need to](https://gitlab.com/fengshaun/syncopoli#ssh-key) convert your key to [dropbear](<https://en.wikipedia.org/wiki/Dropbear_(software)>) format:
 
 ```sh
 $ dropbearconvert openssh dropbear <openssh_private_key> <dropbear_output_file>
@@ -270,9 +270,7 @@ JSON export:
   "profiles": [
     {
       "name": "Sync Music",
-      "sources": [
-        "../../backups/YouTube/"
-      ],
+      "sources": ["../../backups/YouTube/"],
       "destination": "/sdcard/Music/YouTube/",
       "rsync_options": "-zhPu --exclude \".git*\" --exclude \".archive\" --exclude \"*.sh\"",
       "direction": "INCOMING"

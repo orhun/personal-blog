@@ -3,7 +3,7 @@ title = "Zero-dependency random number generation in Rust"
 date = 2023-01-03
 
 [taxonomies]
-categories = ["Guides"]
+categories = ["Rust"]
 +++
 
 Let's investigate how to generate random numbers without external dependencies in Rust.

@@ -3,7 +3,7 @@ title = "Ratatui: Build rich terminal user interfaces using Rust"
 date = 2023-05-29
 
 [taxonomies]
-categories = ["Projects"]
+categories = ["Ratatui"]
 +++
 
 "[**Ratatui**](https://github.com/tui-rs-revival/ratatui)" came a long way since its transition from the original [`tui-rs`](https://github.com/fdehau/tui-rs) crate. In this post, let's take a look at what's new in the latest version.

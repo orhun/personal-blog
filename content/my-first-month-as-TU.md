@@ -3,7 +3,7 @@ title = "My First Month as an Arch Linux Trusted User"
 date = 2021-02-06
 
 [taxonomies]
-categories = ["Activities"]
+categories = ["Thoughts"]
 +++
 
 There's a start for everything. A new blog... New responsibilities... Maybe a new role in a Linux distribution that is for advanced users...
@@ -46,24 +46,24 @@ addpkg: taskwarrior-tui 0.9.8-1
 
 I adopted the following packages to help {co-,}maintain them:
 
-* [cargo-edit](https://www.archlinux.org/packages/community/x86_64/cargo-edit/)
-* [cargo-outdated](https://www.archlinux.org/packages/community/x86_64/cargo-outdated/)
-* [cargo-tarpaulin](https://www.archlinux.org/packages/community/x86_64/cargo-tarpaulin/)
-* [dog](https://www.archlinux.org/packages/community/x86_64/dog/)
-* [dumb](https://www.archlinux.org/packages/community/x86_64/dumb/)
-* [hexyl](https://www.archlinux.org/packages/community/x86_64/hexyl/)
-* [intellij-idea-community-edition](https://www.archlinux.org/packages/community/x86_64/intellij-idea-community-edition/)
-* [kmon](https://www.archlinux.org/packages/community/x86_64/kmon/)
-* [lsd](https://www.archlinux.org/packages/community/x86_64/lsd/)
-* [mari0](https://www.archlinux.org/packages/community/x86_64/mari0/)
-* [mdbook](https://www.archlinux.org/packages/community/x86_64/mdbook/)
-* [mdp](https://www.archlinux.org/packages/community/x86_64/mdp/)
-* [pycharm-community-edition](https://www.archlinux.org/packages/community/x86_64/pycharm-community-edition/)
-* [rust-racer](https://www.archlinux.org/packages/community/x86_64/rust-racer/)
-* [scrot](https://www.archlinux.org/packages/community/x86_64/scrot/)
-* [task](https://www.archlinux.org/packages/community/x86_64/task/)
-* [tokei](https://www.archlinux.org/packages/community/x86_64/tokei/)
-* [xdo](https://www.archlinux.org/packages/community/x86_64/xdo/)
+- [cargo-edit](https://www.archlinux.org/packages/community/x86_64/cargo-edit/)
+- [cargo-outdated](https://www.archlinux.org/packages/community/x86_64/cargo-outdated/)
+- [cargo-tarpaulin](https://www.archlinux.org/packages/community/x86_64/cargo-tarpaulin/)
+- [dog](https://www.archlinux.org/packages/community/x86_64/dog/)
+- [dumb](https://www.archlinux.org/packages/community/x86_64/dumb/)
+- [hexyl](https://www.archlinux.org/packages/community/x86_64/hexyl/)
+- [intellij-idea-community-edition](https://www.archlinux.org/packages/community/x86_64/intellij-idea-community-edition/)
+- [kmon](https://www.archlinux.org/packages/community/x86_64/kmon/)
+- [lsd](https://www.archlinux.org/packages/community/x86_64/lsd/)
+- [mari0](https://www.archlinux.org/packages/community/x86_64/mari0/)
+- [mdbook](https://www.archlinux.org/packages/community/x86_64/mdbook/)
+- [mdp](https://www.archlinux.org/packages/community/x86_64/mdp/)
+- [pycharm-community-edition](https://www.archlinux.org/packages/community/x86_64/pycharm-community-edition/)
+- [rust-racer](https://www.archlinux.org/packages/community/x86_64/rust-racer/)
+- [scrot](https://www.archlinux.org/packages/community/x86_64/scrot/)
+- [task](https://www.archlinux.org/packages/community/x86_64/task/)
+- [tokei](https://www.archlinux.org/packages/community/x86_64/tokei/)
+- [xdo](https://www.archlinux.org/packages/community/x86_64/xdo/)
 
 ## Mistakes
 

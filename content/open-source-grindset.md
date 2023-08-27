@@ -3,7 +3,7 @@ title = "Open Source Grindset Explained"
 date = 2022-12-25
 
 [taxonomies]
-categories = ["Guides"]
+categories = ["Thoughts"]
 +++
 
 Let's talk about how to develop an open sourcerer mindset.

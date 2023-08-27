@@ -3,7 +3,7 @@ title = "Zig Bits 0x4: Building an HTTP client/server from scratch"
 date = 2023-07-11
 
 [taxonomies]
-categories = ["Guides"]
+categories = ["Zig Bits"]
 +++
 
 Let's experiment with the [`std.http`](https://ziglang.org/documentation/master/std/#A;std:http) module of Zig `>=0.11` and create an HTTP server/client from scratch (along with some benchmarks)!

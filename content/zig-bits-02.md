@@ -3,7 +3,7 @@ title = "Zig Bits 0x2: Using defer to defeat memory leaks"
 date = 2023-03-21
 
 [taxonomies]
-categories = ["Guides"]
+categories = ["Zig Bits"]
 +++
 
 Let's talk about how to detect memory leaks in Zig and avoid them by using the `defer` statement.

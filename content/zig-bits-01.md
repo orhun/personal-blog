@@ -3,7 +3,7 @@ title = "Zig Bits 0x1: Returning slices from functions"
 date = 2023-02-17
 
 [taxonomies]
-categories = ["Guides"]
+categories = ["Zig Bits"]
 +++
 
 I decided to start a new blog series called "Zig Bits" where I share interesting bits of information about the [Zig programming language](https://ziglang.org/). This series will be especially for beginners because I'm also a beginner.

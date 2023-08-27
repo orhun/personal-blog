@@ -3,7 +3,7 @@ title = "Setting up a packaging environment for Alpine Linux (introducing alpkg)
 date = 2023-03-27
 
 [taxonomies]
-categories = ["Guides", "Projects"]
+categories = ["Projects"]
 +++
 
 Recently I have been interested in [Alpine Linux](https://www.alpinelinux.org) and thought it would be nice to maintain some Rust packages in their repositories. In this post, I will share my notes/adventures on setting up a packaging environment and a tool called "**alpkg**" for automating this process.
