@@ -6,7 +6,7 @@ date = 2023-05-29
 categories = ["Ratatui"]
 +++
 
-"[**Ratatui**](https://github.com/tui-rs-revival/ratatui)" came a long way since its transition from the original [`tui-rs`](https://github.com/fdehau/tui-rs) crate. In this post, let's take a look at what's new in the latest version.
+"[**Ratatui**](https://github.com/ratatui-org/ratatui)" came a long way since its transition from the original [`tui-rs`](https://github.com/fdehau/tui-rs) crate. In this post, let's take a look at what's new in the latest version.
 
 <!-- more -->
 
@@ -24,7 +24,7 @@ To catch you up to speed:
 - `02-02-2023`: I and a couple of people who are interested in the project created a Discord server to discuss the possibility of forking the project.
 - `08-02-2023`: The author got back to us and proposed a plan for transferring the ownership to the new maintainers. This was the last time we heard from him about the project :/
 - `14-02-2023`: We created a fork to continue development.
-- `19-03-2023`: The first version of `ratatui` is released. ([`0.20.0`](https://github.com/tui-rs-revival/ratatui/releases/tag/v0.20.0))
+- `19-03-2023`: The first version of `ratatui` is released. ([`0.20.0`](https://github.com/ratatui-org/ratatui/releases/tag/v0.20.0))
 
 Ever since then, a number of people joined us for development and crates started to switch to `ratatui`. And today, we are proud the announce the new version of the project!
 
@@ -32,7 +32,7 @@ Before everything, big thanks to [Florian Dehau](https://github.com/fdehau) for 
 
 Now, let's see what's new in `ratatui`!
 
-**Full changelog**: [https://github.com/tui-rs-revival/ratatui/releases/tag/v0.21.0](https://github.com/tui-rs-revival/ratatui/releases/tag/v0.21.0)
+**Full changelog**: [https://github.com/ratatui-org/ratatui/releases/tag/v0.21.0](https://github.com/ratatui-org/ratatui/releases/tag/v0.21.0)
 
 ---
 
@@ -153,7 +153,7 @@ This was a highly requested feature and the original implementation was done by 
 
 An inline viewport refers to a rectangular section of the terminal window that is set aside for displaying content.
 
-In the repository, there is an example that simulates downloading multiple files in parallel: [https://github.com/tui-rs-revival/ratatui/blob/main/examples/inline.rs](https://github.com/tui-rs-revival/ratatui/blob/main/examples/inline.rs)
+In the repository, there is an example that simulates downloading multiple files in parallel: [https://github.com/ratatui-org/ratatui/blob/main/examples/inline.rs](https://github.com/ratatui-org/ratatui/blob/main/examples/inline.rs)
 
 ---
 
@@ -294,7 +294,7 @@ Color::from_str("#FF0000")   // Color::Rgb(255, 0, 0)
 
 So, `Spans` is renamed as `Line` and a deprecation notice has been added.
 
-See [https://github.com/tui-rs-revival/ratatui/pull/178](https://github.com/tui-rs-revival/ratatui/pull/178) for more discussion.
+See [https://github.com/ratatui-org/ratatui/pull/178](https://github.com/ratatui-org/ratatui/pull/178) for more discussion.
 
 ---
 
@@ -315,13 +315,13 @@ Here is the list of applications that has been added:
 - [twitch-tui](https://github.com/Xithrius/twitch-tui): twitch chat in the terminal.
 - [tenere](https://github.com/pythops/tenere): TUI interface for LLMs.
 
-Also, we moved `APPS.md` file to the [Wiki](https://github.com/tui-rs-revival/ratatui/wiki/Apps-using-Ratatui) so check it out for more applications built with `ratatui`!
+Also, we moved `APPS.md` file to the [Wiki](https://github.com/ratatui-org/ratatui/wiki/Apps-using-Ratatui) so check it out for more applications built with `ratatui`!
 
 ---
 
 ### Migration from `tui-rs`
 
-We put together a migration guide at the Wiki: [Migrating from TUI](https://github.com/tui-rs-revival/ratatui/wiki/Migrating-from-TUI)
+We put together a migration guide at the Wiki: [Migrating from TUI](https://github.com/ratatui-org/ratatui/wiki/Migrating-from-TUI)
 
 Also, the minimum supported Rust version is `1.65.0`
 
@@ -329,9 +329,9 @@ Also, the minimum supported Rust version is `1.65.0`
 
 ## Contributing
 
-Any contribution is highly appreciated! There are [contribution guidelines](https://github.com/tui-rs-revival/ratatui/blob/main/CONTRIBUTING.md) for getting started.
+Any contribution is highly appreciated! There are [contribution guidelines](https://github.com/ratatui-org/ratatui/blob/main/CONTRIBUTING.md) for getting started.
 
-Feel free to [submit issues](https://github.com/tui-rs-revival/ratatui/issues/new/choose) and throw in ideas!
+Feel free to [submit issues](https://github.com/ratatui-org/ratatui/issues/new/choose) and throw in ideas!
 
 If you are having a problem with `ratatui` or want to contribute to the project or just want to chit-chat, feel free to [join our Discord server](https://discord.gg/pMCEU9hNEj)!
 
