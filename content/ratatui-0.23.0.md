@@ -234,7 +234,7 @@ We now _forbid_ [unsafe code](https://doc.rust-lang.org/book/ch19-01-unsafe-rust
 
 ### The book 📕
 
-We created a book for more in-depth `ratatui` documentation and usage examples, you can read it from here: [https://ratatui-org.github.io/ratatui-book/](https://ratatui-org.github.io/ratatui-book/)
+We are working on a book for more in-depth `ratatui` documentation and usage examples, you can read it from here: [https://ratatui-org.github.io/ratatui-book/](https://ratatui-org.github.io/ratatui-book/)
 
 Repository: [**https://github.com/ratatui-org/ratatui-book**](https://github.com/ratatui-org/ratatui-book)
 
