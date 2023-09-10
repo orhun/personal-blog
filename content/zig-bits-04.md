@@ -94,6 +94,7 @@ const std = @import("std");
 
 // Create an allocator.
 var gpa = std.heap.GeneralPurposeAllocator(.{}){};
+defer std.debug.assert(gpa.deinit() == .ok);
 const allocator = gpa.allocator();
 ```
 
@@ -234,6 +235,7 @@ const http = std.http;
 pub fn main() !void {
     // Create an allocator.
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
+    defer std.debug.assert(gpa.deinit() == .ok);
     const allocator = gpa.allocator();
 
     // Create an HTTP client.
@@ -498,6 +500,7 @@ Next, we need to choose an allocator to use (as we did the same with the HTTP cl
 ```zig
 // Create an allocator.
 var gpa = std.heap.GeneralPurposeAllocator(.{}){};
+defer std.debug.assert(gpa.deinit() == .ok);
 const allocator = gpa.allocator();
 ```
 
@@ -710,6 +713,7 @@ fn handleRequest(response: *http.Server.Response, allocator: std.mem.Allocator) 
 pub fn main() !void {
     // Create an allocator.
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
+    defer std.debug.assert(gpa.deinit() == .ok);
     const allocator = gpa.allocator();
 
     // Initialize the server.
