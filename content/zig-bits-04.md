@@ -804,7 +804,7 @@ rust-ureq ran
 
 Here is the [whisker plot](https://en.wikipedia.org/wiki/Box_plot):
 
-![benchmarks](/zig-http-benchmarks.jpg)
+![plot_whisker](https://raw.githubusercontent.com/orhun/zig-http-benchmarks/output/benchmarks.png)
 
 Thanks to [@dnaka91](https://github.com/dnaka91) & [@truemedian](https://github.com/truemedian) for helping to make the comparison [more fair](https://github.com/orhun/zig-http-benchmarks/issues/2)!
 
