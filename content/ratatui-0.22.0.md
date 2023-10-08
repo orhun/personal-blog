@@ -414,7 +414,7 @@ All widgets can be styled now (i.e. `set_style`)
 
 - `Barchart`
 - `Chart` (including `Axis` and `Dataset`)
-- `Guage` and `LineGuage`
+- `Gauge` and `LineGauge`
 - `List` and `ListItem`
 - `Sparkline`
 - `Table`, `Row`, and `Cell`
