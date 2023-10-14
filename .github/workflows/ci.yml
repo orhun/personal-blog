@@ -20,7 +20,8 @@ jobs:
       - name: Check the links
         uses: lycheeverse/lychee-action@v1
         with:
-          args: --exclude "patreon|request_uri|0x0|xinu" -v content/*.md
+          args: -v content/*.md
+          fail: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 

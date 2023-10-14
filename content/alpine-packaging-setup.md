@@ -55,7 +55,7 @@ Now, let's talk about how to set up a packaging environment for Alpine Linux.
 
 In my specific case, I would like to keep using my Arch Linux system and also package for Alpine Linux. There are a couple of options for doing that:
 
-- Run Alpine Linux on a [virtual machine](https://wiki.alpinelinux.org/wiki/Install_Alpine_on_VirtualBox)
+- Run Alpine Linux on a [virtual machine](https://wiki.alpinelinux.org/wiki/Installing_Alpine_in_a_virtual_machine)
 - Run Alpine Linux in a [chroot](https://en.wikipedia.org/wiki/Chroot)
 - Use a Docker/Podman container with persistent storage
 

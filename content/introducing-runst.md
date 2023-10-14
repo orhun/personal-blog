@@ -201,7 +201,7 @@ So we will end up with notifications like this:
 
   - (if there is no `body`)
 
-With this [Tera](https://tera.netlify.app/docs)-powered `template`, you can customize the notification text as you like.
+With this [Tera](https://keats.github.io/tera/)-powered `template`, you can customize the notification text as you like.
 
 ---
 

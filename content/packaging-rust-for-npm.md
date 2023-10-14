@@ -153,7 +153,7 @@ As you can see here, we are setting an optional dependency to each of our target
 
 > Huh, wait. Did you say "generating"?
 
-Yes, I think it's a good idea to generate NPM packages during the [continuous deployment](#automation) workflow instead of having 6 different folders and `package.json` files in our project. The only thing that changes between these packages is the `name`, `os`, and the `cpu` fields so we can simply create them from a template via [`envsubst(1)`](https://linux.die.net/man/1/envsubsthttps://linux.die.net/man/1/envsubst).
+Yes, I think it's a good idea to generate NPM packages during the [continuous deployment](#automation) workflow instead of having 6 different folders and `package.json` files in our project. The only thing that changes between these packages is the `name`, `os`, and the `cpu` fields so we can simply create them from a template via [`envsubst(1)`](https://linux.die.net/man/1/envsubst).
 
 Considering this, we can come up with the following template:
 

@@ -192,7 +192,7 @@ debug: /home/zig/bits
 
 **Q**: A-ha! I knew that you were trolling me. Where is the memory leak?
 
-Don't jump to the conclusion that quickly. [Apparently](https://dev.to/stein/some-notes-on-using-valgrind-with-zig-35c1), we need to switch to the [C allocator](https://ziglang.org/documentation/master/std/#A;std:heap.c_allocator) so that Valgrind can trace memory allocations correctly via preloading:
+Don't jump to the conclusion that quickly. [Apparently](https://cryptocode.github.io/blog/docs/valgrind-zig/), we need to switch to the [C allocator](https://ziglang.org/documentation/master/std/#A;std:heap.c_allocator) so that Valgrind can trace memory allocations correctly via preloading:
 
 ```diff
 - const allocator = std.heap.page_allocator;
