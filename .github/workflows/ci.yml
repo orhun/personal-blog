@@ -20,7 +20,7 @@ jobs:
       - name: Check the links
         uses: lycheeverse/lychee-action@v1
         with:
-          args: -r 5 -T 1 -v content/*.md
+          args: -r 10 -T 1 -v content/*.md
           fail: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
