@@ -16,9 +16,9 @@ Here is how you can publish a Rust project with a single click of a button and a
 
 </center>
 
-Imagine a developer named _nuhro_, he wrote his first ever Rust program and it is happily running on his machine. He also sent a binary/exe to a couple of trusting friends and they all loved the program after blindly executing it. Good vibes!
+Imagine a developer named _nuhro_. He wrote his first ever Rust program and it is happily running on his machine. He also sent a binary/exe to a couple of trusting friends and they all loved the program after blindly executing it. Good vibes!
 
-Then one day, he decided to share this small program with the world (AKA Reddit). For that, he realized he needed to _release_ the program. Otherwise how the residents of the internet (which might be using different OSes/platforms) going to install/run the program, right?
+Then one day, he decided to share this small program with the world (AKA Reddit). For that, he realized he needed to _release_ the program. Otherwise how are the residents of the internet (which might be using different OSes/platforms) going to install/run the program, right?
 
 > _No worries, there must be an easy way of releasing Rust crates and automating this stuff._
 
@@ -82,7 +82,7 @@ Now, let's get to work!
 
 ### **git-cliff**
 
-[`git-cliff`](https://github.com/orhun/git-cliff) is one of my big projects and it is widely used in the Rust ecosystem for automating the changelog generation. It is highly likely that if you follow me then it is because of/thanks to `git-cliff`!
+[`git-cliff`](https://github.com/orhun/git-cliff) is one of my big projects and it is widely used in the Rust ecosystem for automating the changelog generation.
 
 > [**git-cliff**](https://github.com/orhun/git-cliff) is a command-line tool (written in [Rust](https://www.rust-lang.org/)) that provides a highly customizable way to generate changelogs from git history. It supports using [custom regular expressions](/docs/configuration#commit_parsers) to alter changelogs which are mostly based on [conventional commits](/docs/configuration#conventional_commits). With a single [configuration file](/docs/configuration), a big variety of formats can be applied for a changelog, thanks to the Jinja2/Django-inspired [template engine](/docs/category/templating). More information and examples can be found in the [GitHub repository](https://github.com/orhun/git-cliff).
 
@@ -103,7 +103,7 @@ All notable changes to this project will be documented in this file.
 For this configuration, first we should install `git-cliff`:
 
 ```sh
-cargo install git-cliff
+cargo install git-cliff --locked
 ```
 
 Then we can initialize it as follows:
@@ -174,8 +174,8 @@ semver_check = false
 
 The important options here are:
 
-- `changelog_config`: should point out to the `git-cliff` configuration which we created in the previous section.
-- `dependencies_update`: setting this to `true` means that you want to run `cargo update` before the each release. Enabling this for updating the transitive dependencies wouldn't hurt since we will already be updating the main dependencies with Dependabot in the future steps.
+- `changelog_config`: should point out to the `git-cliff` configuration we created in the previous section.
+- `dependencies_update`: setting this to `true` means that you want to run `cargo update` before each release. Enabling this for updating the transitive dependencies wouldn't hurt since we will already be updating the main dependencies with Dependabot in the future steps.
 - `git_tag_enable`: set this to `true` to create a tag for the new releases.
 - `git_release_enable`: make sure to set this to `false` since we don't want `release-plz` to create a GitHub release for us since that part will be handled by `cargo-dist`.
 
@@ -193,11 +193,11 @@ As for the next step, we should create the _actual_ release automation that is r
 
 </center>
 
-After the release PR is merged, `release-plz` detects that there is a version change in `Cargo.toml` and runs `cargo publish` to release the new version on crates.io
+After you merge the release PR, `release-plz` detects that there is a version change in `Cargo.toml` and runs `cargo publish` to release the new version on [https://crates.io/](crates.io).
 
 **Q**: Ah, so we probably need to set up secrets for the publish token etc., right?
 
-There is actually a bit more that we need to set up. You can check out [`release-plz` documentation](https://release-plz.ieni.dev/docs/github) about more detailed information but here is a quick summary:
+Yes! And a few permissions, too. You can check out [`release-plz` documentation](https://release-plz.ieni.dev/docs/github) about more detailed information but here is a quick summary:
 
 1\. Change "Workflow permissions" to allow GitHub Actions to create and approve pull requests in Repository > Settings > Actions > General.
 
@@ -277,7 +277,7 @@ Now we are simply ready to work on our project as usual and `release-plz` will c
 
 **Q**: What if I want to run/test `release-plz` locally though?
 
-**A**: You can if you want! The release PR is just the output of `release-plz update` command so you can run it locally and see what is changed in terms of changelog etc. Also, if you want to create a PR from the command-line you can simply run `release-plz release`!
+**A**: You can if you want! The release PR is just the output of `release-plz update` command so you can run it locally and see what is changed in terms of changelog etc. Also, if you want to create a PR from the command-line you can simply run `release-plz release-pr`!
 
 ---
 
@@ -300,10 +300,10 @@ Similar to `release-plz`, `cargo-dist` is a tool that we are not going to use lo
 So let's start by installing `cargo-dist`:
 
 ```sh
-cargo install cargo-dist
+cargo install cargo-dist --locked
 ```
 
-You can also use `cargo-dist` to install `cargo-dist` (i.e. the binary installer) if you wish:
+You can also use `cargo-dist-installer` to install `cargo-dist` (i.e. the binary installer) if you wish:
 
 ```sh
 cargo_dist_version="0.3.1"
