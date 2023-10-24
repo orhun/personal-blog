@@ -1,6 +1,6 @@
 +++
-title = "Fully Automating Rust Project Releases"
-date = 2023-10-23
+title = "Fully Automated Releases for Rust Projects"
+date = 2023-10-24
 
 [taxonomies]
 categories = ["Rust"]
@@ -18,7 +18,7 @@ Here is how you can publish a Rust project with a single click of a button and a
 
 Imagine a developer named _nuhro_. He wrote his first ever Rust program and it is happily running on his machine. He also sent a binary/exe to a couple of trusting friends and they all loved the program after blindly executing it. Good vibes!
 
-Then one day, he decided to share this small program with the world (AKA Reddit). For that, he realized he needed to _release_ the program. Otherwise how are the residents of the internet (which might be using different OSes/platforms) going to install/run the program, right?
+Then one day, he decided to share this small program with the world (AKA Reddit). For that, he realized he needed to _release_ the program. Otherwise, how are the residents of the internet (who might be using different OSes/platforms) going to install/run the program, right?
 
 > _No worries, there must be an easy way of releasing Rust crates and automating this stuff._
 
@@ -44,11 +44,11 @@ We can list other tools here, but in a nutshell, all we want to do is:
 
 **Q**: I still think you can just copy/paste a GitHub Actions workflow file from another project and adopt it.
 
-**A**: It is still too much manual work + release process is still not fully automated - you need to create tags/update changelog etc. Besides, your name is "**Q**" but you are not really asking questions anymore and just rambling. Maybe it is time to introduce you as a new character in these blog posts?
+**A**: It is still too much manual work + release process is still not fully automated - you need to create tags/update changelog etc. Besides, your name is "**Q**" but you are not really asking questions anymore and just rambling. Maybe it is time to introduce you as a new character in these blog posts.
 
 **Q**: It do be like that sometimes.
 
-Anyways, it seems like we are going to end up all over the place if we were to over-plan the release process. I wish there was a more standardized way...
+Anyhoo, it seems like we are going to end up all over the place if we were to over-plan the release process. I wish there was a more standardized way...
 
 In fact, there is!
 
@@ -84,7 +84,7 @@ Now, let's get to work!
 
 [`git-cliff`](https://github.com/orhun/git-cliff) is one of my big projects and it is widely used in the Rust ecosystem for automating the changelog generation.
 
-> [**git-cliff**](https://github.com/orhun/git-cliff) is a command-line tool (written in [Rust](https://www.rust-lang.org/)) that provides a highly customizable way to generate changelogs from git history. It supports using [custom regular expressions](/docs/configuration#commit_parsers) to alter changelogs which are mostly based on [conventional commits](/docs/configuration#conventional_commits). With a single [configuration file](/docs/configuration), a big variety of formats can be applied for a changelog, thanks to the Jinja2/Django-inspired [template engine](/docs/category/templating). More information and examples can be found in the [GitHub repository](https://github.com/orhun/git-cliff).
+> [**git-cliff**](https://github.com/orhun/git-cliff) is a command-line tool (written in [Rust](https://www.rust-lang.org/)) that provides a highly customizable way to generate changelogs from git history. It supports using [custom regular expressions](/docs/configuration#commit_parsers) to alter changelogs which are mostly based on [conventional commits](/docs/configuration#conventional_commits). With a single [configuration file](/docs/configuration), a wide variety of formats can be applied for a changelog, thanks to the Jinja2/Django-inspired [template engine](/docs/category/templating). More information and examples can be found in the [GitHub repository](https://github.com/orhun/git-cliff).
 
 For our changelog format, we can simply go with the default configuration which outputs something like the following:
 
@@ -100,7 +100,7 @@ All notable changes to this project will be documented in this file.
 - Add link to emacs package support git-cliff (#307)
 ```
 
-For this configuration, first we should install `git-cliff`:
+For this configuration, first, we should install `git-cliff`:
 
 ```sh
 cargo install git-cliff --locked
@@ -175,7 +175,7 @@ semver_check = false
 The important options here are:
 
 - `changelog_config`: should point out to the `git-cliff` configuration we created in the previous section.
-- `dependencies_update`: setting this to `true` means that you want to run `cargo update` before each release. Enabling this for updating the transitive dependencies wouldn't hurt since we will already be updating the main dependencies with Dependabot in the future steps.
+- `dependencies_update`: setting this to `true` means that you want to run `cargo update` before each release. Enabling this for updating the transitive dependencies wouldn't hurt since we will already be updating the main dependencies with Dependabot in future steps.
 - `git_tag_enable`: set this to `true` to create a tag for the new releases.
 - `git_release_enable`: make sure to set this to `false` since we don't want `release-plz` to create a GitHub release for us since that part will be handled by `cargo-dist`.
 
@@ -183,7 +183,7 @@ As for the next step, we should create the _actual_ release automation that is r
 
 **Q**: A release PR?
 
-**A**: Release PR is a pull request that represents the next release and contains the necessary changes such as version bumps and changelog update.
+**A**: Release PR is a pull request that represents the next release and contains the necessary changes such as version bumps and changelog updates.
 
 <center>
 
@@ -195,9 +195,9 @@ As for the next step, we should create the _actual_ release automation that is r
 
 After you merge the release PR, `release-plz` detects that there is a version change in `Cargo.toml` and runs `cargo publish` to release the new version on [crates.io](https://crates.io).
 
-**Q**: Ah, so we probably need to set up secrets for the publish token etc., right?
+**Q**: Ah, so we probably need to set up secrets for the publish token, etc., right?
 
-Yes! And a few permissions, too. You can check out [`release-plz` documentation](https://release-plz.ieni.dev/docs/github) about more detailed information but here is a quick summary:
+Yes! And a few permissions, too. You can check out [`release-plz` documentation](https://release-plz.ieni.dev/docs/github) for more detailed information but here is a quick summary:
 
 1\. Change "Workflow permissions" to allow GitHub Actions to create and approve pull requests in Repository > Settings > Actions > General.
 
@@ -271,21 +271,21 @@ To break it down:
 
 **Q**: So, what's wrong with that?
 
-**A**: Well, workflows that are triggered by `on: push: tags` _won't run_ if the tag is created by GitHub Actions. So we are using a personal access token which is a way of saying "dear GitHub Actions, I am running `release-plz` and it is ME who is creating a tag so please run the further workflows". You can read more about it [here](https://release-plz.ieni.dev/docs/github/trigger).
+**A**: Well, workflows that are triggered by `on: push: tags` _won't run_ if the tag is created by GitHub Actions. So we are using a personal access token which is a way of saying "Dear GitHub Actions, I am running `release-plz` and it is ME who is creating a tag so please run the further workflows". You can read more about it [here](https://release-plz.ieni.dev/docs/github/trigger).
 
 Now we are simply ready to work on our project as usual and `release-plz` will create a release PR for our changes and we can merge it to create a new release when we are ready!
 
 **Q**: What if I want to run/test `release-plz` locally though?
 
-**A**: You can if you want! The release PR is just the output of `release-plz update` command so you can run it locally and see what is changed in terms of changelog etc. Also, if you want to create a PR from the command-line you can simply run `release-plz release-pr`!
+**A**: You can if you want! The release PR is just the output of `release-plz update` command so you can run it locally and see what has changed in terms of changelog etc. Also, if you want to create a PR from the command-line you can simply run `release-plz release-pr`!
 
 ---
 
 ### **cargo-dist**
 
-> [cargo-dist](https://opensource.axo.dev/cargo-dist/) makes distributing binaries easier by breaking it down to multiple steps such as plan, build, publish and announce.
+> [cargo-dist](https://opensource.axo.dev/cargo-dist/) makes distributing binaries easier by breaking the process down into multiple steps such as plan, build, publish and announce.
 
-It is simply a tool for creating this beautiful release page with along with binary artifacts and installers:
+It is simply a tool for creating this beautiful release page along with binary artifacts and installers:
 
 <center>
 
@@ -360,7 +360,7 @@ targets = [
 pr-run-mode = "upload"
 ```
 
-You can configure update this configuration to easily configure `cargo-dist` and tweak your release settings.
+You can update this configuration to easily configure `cargo-dist` and tweak your release settings.
 
 **Q**: What about new releases/breaking changes of `cargo-dist`? Do I need to remove the configuration and start over?
 
@@ -368,7 +368,7 @@ You can configure update this configuration to easily configure `cargo-dist` and
 
 **Q**: Cool! Does `cargo-dist` check if the workflow file is up-to-date? What if I want to make changes to the generated GitHub Actions workflow (such as installing Linux dependencies)?
 
-**A**: Simply set the following values in the configuration to avoid "out of date" warning:
+**A**: Simply set the following values in the configuration to avoid an "out of date" warning:
 
 ```toml
 [workspace.metadata.dist]
@@ -420,9 +420,9 @@ Now we are ready to build artifacts and release them on GitHub! There are a coup
 
 ### **Dependabot**
 
-[`Dependabot`](https://github.com/dependabot) is a tool built into GitHub for automatically updating project's dependencies via creating pull requests.
+[`Dependabot`](https://github.com/dependabot) is a tool built into GitHub for automatically updating a project's dependencies via creating pull requests.
 
-We can simply configure it via creating `.github/dependabot.yml`:
+We can simply configure it by creating `.github/dependabot.yml`:
 
 ```yml
 version: 2
@@ -531,7 +531,7 @@ All the code/configuration is available here: [**https://github.com/orhun/automa
 
 </center>
 
-After merge, `release-plz` picks up the new version from `Cargo.toml` and pushes the new version to `crates.io`:
+After the merge, `release-plz` picks up the new version from `Cargo.toml` and pushes the new version to `crates.io`:
 
 <center>
 
@@ -559,16 +559,35 @@ After merge, `release-plz` picks up the new version from `Cargo.toml` and pushes
 
 As you can see `cargo-dist` also parses the changelog (which is generated by `git-cliff`) and adds it to the release.
 
+Let's try out the installer for the heck of it:
+
+```sh
+$ curl --proto '=https' --tlsv1.2 -LsSf https://github.com/orhun/automated-rust-releases/releases/download/v0.1.1/automated-rust-releases-installer.sh | sh
+
+downloading automated-rust-releases 0.1.1 x86_64-unknown-linux-gnu
+installing to /home/orhun/.cargo/bin
+  automated-rust-releases
+everything's installed!
+```
+
+And when we run it:
+
+```sh
+$ automated-rust-releases
+
+Hello, world!
+```
+
 Beautiful!
 
 ---
 
 ## Conclusion 🤔
 
-I used this release automation for my latest project [**daktilo**](https://github.com/orhun/daktilo) (a CLI program to turn your keyboard into a typewriter) and I'm pretty satisfied with it so far. The only thing is I'm waiting for is the following improvements:
+I used this release automation for my latest project [**daktilo**](https://github.com/orhun/daktilo) (a CLI program to turn your keyboard into a typewriter) and I'm pretty satisfied with it so far. The only thing I'm waiting for is the following improvements:
 
 - `git-cliff`: better GitHub integration (i.e. adding contributor names to the changelogs [\*](https://github.com/orhun/git-cliff/issues/119))
-- `release-plz`: setting the version in the release PR with a command
+- `release-plz`: setting the version in the release PR with a command [\*](https://github.com/MarcoIeni/release-plz/issues/704)
 - `cargo-dist`: cross compilation [\*](https://github.com/axodotdev/cargo-dist/issues/74)
 
 Let me know if you have suggestions and ideas!
