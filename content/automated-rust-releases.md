@@ -311,7 +311,7 @@ cargo_dist_version="0.3.1"
 curl --proto '=https' --tlsv1.2 -LsSf https://github.com/axodotdev/cargo-dist/releases/download/v{version}/cargo-dist-installer.sh | sh
 ```
 
-We will also be able to install our application as shown above after `cargo dist` does its magic.
+We will also have an installer as shown above after `cargo dist` does its magic.
 
 **Q**: Magic?
 
