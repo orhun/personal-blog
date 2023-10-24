@@ -193,7 +193,7 @@ As for the next step, we should create the _actual_ release automation that is r
 
 </center>
 
-After you merge the release PR, `release-plz` detects that there is a version change in `Cargo.toml` and runs `cargo publish` to release the new version on [https://crates.io/](crates.io).
+After you merge the release PR, `release-plz` detects that there is a version change in `Cargo.toml` and runs `cargo publish` to release the new version on [crates.io](https://crates.io).
 
 **Q**: Ah, so we probably need to set up secrets for the publish token etc., right?
 
