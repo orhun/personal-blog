@@ -233,10 +233,6 @@ on:
     branches:
       - main
 
-permissions:
-  pull-requests: write
-  contents: write
-
 jobs:
   release-plz:
     name: Release-plz
@@ -260,7 +256,6 @@ jobs:
 
 To break it down:
 
-- We are giving the workflow `write` permissions for creating pull requests.
 - We are cloning the entire git history with `fetch-depth: 0`, which is necessary to determine the next version and build the changelog.
 - We are installing Rust stable ('cause why not?!)
 - As the last step, we are running `release-plz`, heck yea!
@@ -271,7 +266,7 @@ To break it down:
 
 **Q**: So, what's wrong with that?
 
-**A**: Well, workflows that are triggered by `on: push: tags` _won't run_ if the tag is created by GitHub Actions. So we are using a personal access token which is a way of saying "Dear GitHub Actions, I am running `release-plz` and it is ME who is creating a tag so please run the further workflows". You can read more about it [here](https://release-plz.ieni.dev/docs/github/trigger).
+**A**: Well, workflows that are triggered by `on: push: tags` _won't run_ if the tag is created by GitHub Actions. So we are using a personal access token which is a way of saying "Dear GitHub Actions, I am running `release-plz` and it is ME who is creating a tag so please run the further workflows". Also, this way we don't need to specify workflow permissions via `permissions:` key. You can read more about it [here](https://release-plz.ieni.dev/docs/github/trigger).
 
 Now we are simply ready to work on our project as usual and `release-plz` will create a release PR for our changes and we can merge it to create a new release when we are ready!
 
