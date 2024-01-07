@@ -593,4 +593,4 @@ _houdoe!_
 
 ---
 
-💖 Want to sponsor my blog posts and add your company's badge here? Check out my latest [GitHub sponsorship tiers](https://github.com/sponsors/orhun)!
+💖 Liked this article? Want to sponsor my blog posts and have early access? Want to add your company's badge / your logo here? Check out my [GitHub sponsorship tiers](https://github.com/sponsors/orhun)!
