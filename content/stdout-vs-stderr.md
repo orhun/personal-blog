@@ -10,6 +10,12 @@ I recently realized stdout is much faster than stderr for Rust. Here are my find
 
 <!-- more -->
 
+<center>
+
+![rabbit](rabbit.png)
+
+</center>
+
 I have been using the terminal (i.e. command-line) for most of my day-to-day things for a while now. I was always fascinated by the fact that how quick and convenient the command-line might be and that's why I'm a proponent of using CLI (command-line) or TUI (terminal user interface) applications over GUI (graphical user interface) applications, when it is possible. On top of my already existing preference, I started to wholeheartedly believe that the <g>terminal is the future</g> after seeing the recent developments in the terminal user experience with tools like [Zellij](https://zellij.dev/) and GPU-powered terminal emulators such as [Alacritty](https://alacritty.org/)/[Wezterm](https://wezfurlong.org/wezterm/)/[Rio](https://raphamorim.io/rio/). When this huge potential is combined with a robust systems programming language such as [Rust](https://www.rust-lang.org/), the result is often times a very smooth terminal and development experience which I think every developer appreciates when it comes to effectiveness, speed and safety.
 
 That is most likely why I was drawn into building terminal user interface applications with Rust in the first place. When I built my first ever Rust/TUI project, [kmon](https://github.com/orhun/kmon), I was surprised by how the limits of a simple thing such as a terminal can be pushed to build applications which gets you addicted to using terminals even more. Couple of years later, I'm one of the maintainers of [Ratatui](https://ratatui.rs/) which is a Rust library for cooking up TUIs and I'm blessed to be one of the core team members which revived the unmaintained [tui-rs](https://github.com/fdehau/tui-rs) library as Ratatui last year.
