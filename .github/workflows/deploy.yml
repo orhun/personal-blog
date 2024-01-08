@@ -27,13 +27,12 @@ jobs:
           BUILD_DIR: .
           BUILD_ONLY: true
           BUILD_FLAGS: --drafts
-          OUT_DIR: ./build
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Deploy preview
         uses: rossjrw/pr-preview-action@v1
         with:
-          source-dir: ./build/
+          source-dir: ./public/
 
   build_and_deploy:
     runs-on: ubuntu-latest
