@@ -5,6 +5,13 @@ on:
     branches:
       - main
   pull_request:
+    types:
+      - opened
+      - reopened
+      - synchronize
+      - closed
+
+concurrency: preview-${{ github.ref }}
 
 jobs:
   build:
@@ -14,12 +21,19 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
       - name: Build only
+        if: github.event.action != 'closed'
         uses: shalzz/zola-deploy-action@v0.18.0
         env:
           BUILD_DIR: .
           BUILD_ONLY: true
           BUILD_FLAGS: --drafts
+          OUT_DIR: build
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Deploy preview
+        uses: rossjrw/pr-preview-action@v1
+        with:
+          source-dir: ./build/
 
   build_and_deploy:
     runs-on: ubuntu-latest
