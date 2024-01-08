@@ -27,7 +27,7 @@ jobs:
           BUILD_DIR: .
           BUILD_ONLY: true
           BUILD_FLAGS: --drafts
-          OUT_DIR: build
+          OUT_DIR: ./build
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Deploy preview
