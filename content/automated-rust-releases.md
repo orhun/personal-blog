@@ -266,7 +266,7 @@ To break it down:
 
 **Q**: So, what's wrong with that?
 
-**A**: Well, workflows that are triggered by `on: push: tags` _won't run_ if the tag is created by GitHub Actions. So we are using a personal access token which is a way of saying "Dear GitHub Actions, I am running `release-plz` and it is ME who is creating a tag so please run the further workflows". Also, this way we don't need to specify workflow permissions via `permissions:` key. You can read more about it [here](https://release-plz.ieni.dev/docs/github/trigger).
+**A**: Well, workflows that are triggered by `on: push: tags` _won't run_ if the tag is created by GitHub Actions. So we are using a personal access token which is a way of saying "Dear GitHub Actions, I am running `release-plz` and it is ME who is creating a tag so please run the further workflows". Also, this way we don't need to specify workflow permissions via `permissions:` key. You can read more about it [here](https://release-plz.ieni.dev/docs/github/token).
 
 Now we are simply ready to work on our project as usual and `release-plz` will create a release PR for our changes and we can merge it to create a new release when we are ready!
 
