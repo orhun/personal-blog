@@ -12,7 +12,7 @@ I recently realized stdout is much faster than stderr for Rust. Here are my find
 
 <center>
 
-![rabbit](rabbit.png)
+![rabbit](/stdout-vs-stderr/rabbit.png)
 
 </center>
 
@@ -645,7 +645,7 @@ fn main() -> Result<()> {
 
 Press _space_ to switch between stdout and stderr:
 
-![stdout vs stderr](stdout-vs-stderr.gif)
+![stdout vs stderr](/stdout-vs-stderr/stdout-vs-stderr.gif)
 
 Did you notice the FPS drop? stdout is <g>~2x faster</g> than stderr on a 550x360 terminal!
 
@@ -922,30 +922,30 @@ $ samply record target/profiling/stdout-vs-stderr-profiler
 
 Once the TUI exits after 5 seconds, `samply` will greet us with profiler.firefox.com:
 
-![samply stdout main](samply-stdout-mainpage.png)
+![samply stdout main](/stdout-vs-stderr/samply-stdout-mainpage.png)
 
 After we do the same for stderr via STREAM="stderr", we can start comparing what went differently for the I/O streams.
 
-![samply stderr main](samply-stderr-mainpage.png)
+![samply stderr main](/stdout-vs-stderr/samply-stderr-mainpage.png)
 
 These profiles are also available for online browsing if you want to experiment yourself:
 
-- [stdout profiling](https://share.firefox.dev/3NRB24I) ([download as a file](samply-stdout-profile.json))
-- [stderr profiling](https://share.firefox.dev/3tHBSKt) ([download as a file](samply-stderr-profile.json))
+- [stdout profiling](https://share.firefox.dev/3NRB24I) ([download as a file](/stdout-vs-stderr/samply-stdout-profile.json))
+- [stderr profiling](https://share.firefox.dev/3tHBSKt) ([download as a file](/stdout-vs-stderr/samply-stderr-profile.json))
 
 Right off the bat, you can see the difference on the CPU view (first one being stdout):
 
-![samply stdout cpu](samply-stdout-cpu-view.png)
+![samply stdout cpu](/stdout-vs-stderr/samply-stdout-cpu-view.png)
 
-![samply stderr cpu](samply-stderr-cpu-view.png)
+![samply stderr cpu](/stdout-vs-stderr/samply-stderr-cpu-view.png)
 
 stdout has 708 samples compared to stderr which has 3,315 which means stdout made <g>4x less calls</g> than stderr in the course of 5 seconds! We are definitely on to something.
 
 Next, we can figure out the characteristics of the each call. It is safe to assume that there will be some _write calls_ to the terminal for each render. We can zoom in on the CPU view to see the each render more clearly:
 
-![samply stdout renders](samply-stdout-renders.png)
+![samply stdout renders](/stdout-vs-stderr/samply-stdout-renders.png)
 
-![samply stderr renders](samply-stderr-renders.png)
+![samply stderr renders](/stdout-vs-stderr/samply-stderr-renders.png)
 
 As you can see, stdout rendered <g>more frames</g> in the same timespan as stderr. Also, there are more lighter yellow spikes happening for stderr (on every render) compared to stdout (occasionally).
 
@@ -953,7 +953,7 @@ We will figure out what those spikes are shortly.
 
 We can zoom in even more and take a look at the calls that have happened for each render:
 
-![samply stdout write](samply-stdout-write-all.png)
+![samply stdout write](/stdout-vs-stderr/samply-stdout-write-all.png)
 
 <center>
 
@@ -1008,7 +1008,7 @@ start [stdout-vs-stderr]
 
 </details>
 
-![samply stderr write](samply-stderr-write-all.png)
+![samply stderr write](/stdout-vs-stderr/samply-stderr-write-all.png)
 
 <center>
 
@@ -1071,13 +1071,13 @@ It means that:
 
 We can see this more clearly from the stack chart (first one being stdout):
 
-![samply stdout stack chart](samply-stdout-stack-chart.png)
+![samply stdout stack chart](/stdout-vs-stderr/samply-stdout-stack-chart.png)
 
-![samply stderr stack chart](samply-stderr-stack-chart.png)
+![samply stderr stack chart](/stdout-vs-stderr/samply-stderr-stack-chart.png)
 
 Lastly, we can check the code of this call but it is not really helpful since it is abstracted:
 
-![samply stderr code view](samply-stderr-code-view.png)
+![samply stderr code view](/stdout-vs-stderr/samply-stderr-code-view.png)
 
 <q>So, what is the take away from all of this?</q>
 
@@ -1126,7 +1126,7 @@ That's why the compiler is not complaining when we change the argument from [`St
 
 Actually, no. Take a look at this diagram:
 
-![write impl diagram](ratatui-write-impl-diagram.png)
+![write impl diagram](/stdout-vs-stderr/ratatui-write-impl-diagram.png)
 
 As you go deeper, the capabilities of the passed type are constrained by the implementation. In other words, if you accept a parameter that is `Write`, you have only a set of functionality you can work with (`write`, `write_all`, etc.) In this case, `crossterm` does not have any chance to tell stdout from stderr to act different upon it, because it only knows about "a type" that is write.
 
@@ -1300,7 +1300,7 @@ To make it more clear:
 
 <center>
 
-<img alt="BufWriter vs LineWriter" src="bufwriter-vs-linewriter.png" style="width: 80%"/>
+<img alt="BufWriter vs LineWriter" src="/stdout-vs-stderr/bufwriter-vs-linewriter.png" style="width: 80%"/>
 
 </center>
 
@@ -1461,7 +1461,7 @@ We can try by doing this change:
 +let mut terminal = Terminal::new(CrosstermBackend::new(BufWriter::new(stdout())))?;
 ```
 
-![block buffered stdout](block-buffered-stdout.gif)
+![block buffered stdout](/stdout-vs-stderr/block-buffered-stdout.gif)
 
 Hmm, there isn't a noticeable increase in performance. What if we try something more substantial like using a <g>block buffered stderr</g>. The default stderr is not buffered, remember?
 
@@ -1477,7 +1477,7 @@ let mut terminal = Terminal::new(CrosstermBackend::new(stdout()))?;
 let mut terminal = Terminal::new(CrosstermBackend::new(LineWriter::new(stderr())))?;
 ```
 
-![line buffered stderr](line-buffered-stderr.gif)
+![line buffered stderr](/stdout-vs-stderr/line-buffered-stderr.gif)
 
 <q>Damn, did we just _turn_ stderr into stdout by making it line buffered?</q>
 
@@ -1897,7 +1897,7 @@ let mut terminal = Terminal::new(CrosstermBackend::new(BufWriter::new(raw_stdout
 
 Yes, let's find that out:
 
-![raw stdout](raw-stdout.gif)
+![raw stdout](/stdout-vs-stderr/raw-stdout.gif)
 
 And that concludes it, raw stdout has the _same_ performance as raw stderr.
 
@@ -1913,17 +1913,17 @@ One other thing we can do to achieve a better FPS is that reducing the `write` c
 
 In the screencast below, I modified the `crossterm` backend of `ratatui` to highlight the cells that are not being changed between renders. You can clearly see from the number of red cells that we are not able skip a lot of `write` calls since mostly everything is changing on the terminal:
 
-![stdout highlighted](stdout-highlighted.gif)
+![stdout highlighted](/stdout-vs-stderr/stdout-highlighted.gif)
 
 However this is not the case for most of the TUI applications and this optimization actually saves us from re-rendering the majority of the screen.
 
 Another interesting thing to look at is the buffer size. We can observe the following with a smaller buffer size (100 bytes) and delay between renders:
 
-![stdout small buffer](stdout-small-buffer.gif)
+![stdout small buffer](/stdout-vs-stderr/stdout-small-buffer.gif)
 
 Whereas a bigger buffer renders bigger chunks:
 
-![stdout big buffer](stdout-big-buffer.gif)
+![stdout big buffer](/stdout-vs-stderr/stdout-big-buffer.gif)
 
 We won't see a big difference if we remove the sleep except if we use very small/big buffer then the FPS drops vastly. We can probably experiment with the buffer size to draw a single line for each render but I wasn't able to get a better FPS in my attempts.
 
@@ -1939,7 +1939,7 @@ While writing this, I wasn't able to achieve a "faster stdout" so feel free to l
 
 Here is the `ratatui` + `crossterm` rendering comparison for stdout and stderr using unbuffered / line-buffered / block-buffered writes:
 
-![stdout vs stderr detailed](stdout-vs-stderr-detailed.gif)
+![stdout vs stderr detailed](/stdout-vs-stderr/stdout-vs-stderr-detailed.gif)
 
 <center>
 <span class="glowy-code">
