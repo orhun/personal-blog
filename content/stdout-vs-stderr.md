@@ -10,11 +10,11 @@ I recently realized stdout is much faster than stderr for Rust. Here are my find
 
 <!-- more -->
 
-I have been using the terminal (i.e. command-line) for most of my day-to-day things for a while now. I was always fascinated by the fact that how quick and convenient the command-line might be and that's why I'm a proponent of using CLI (command-line) or TUI (terminal user interface) applicating over GUI (graphical user interface) applications, when it is possible. On top of my already existing preference, I started to wholeheartedly believe that the <g>terminal is the future</g> after seeing the recent developments in the terminal user experience with tools like [Zellij](https://zellij.dev/) and GPU-powered terminal emulators such as [Alacritty](https://alacritty.org/)/[Wezterm](https://wezfurlong.org/wezterm/)/[Rio](https://raphamorim.io/rio/). When this huge potential is combined with a robust systems programming language such as [Rust](https://www.rust-lang.org/), the result is often times a very smooth terminal and development experience which I think every developer appreciates when it comes to effectiveness, speed and safety.
+I have been using the terminal (i.e. command-line) for most of my day-to-day things for a while now. I was always fascinated by the fact that how quick and convenient the command-line might be and that's why I'm a proponent of using CLI (command-line) or TUI (terminal user interface) applications over GUI (graphical user interface) applications, when it is possible. On top of my already existing preference, I started to wholeheartedly believe that the <g>terminal is the future</g> after seeing the recent developments in the terminal user experience with tools like [Zellij](https://zellij.dev/) and GPU-powered terminal emulators such as [Alacritty](https://alacritty.org/)/[Wezterm](https://wezfurlong.org/wezterm/)/[Rio](https://raphamorim.io/rio/). When this huge potential is combined with a robust systems programming language such as [Rust](https://www.rust-lang.org/), the result is often times a very smooth terminal and development experience which I think every developer appreciates when it comes to effectiveness, speed and safety.
 
 That is most likely why I was drawn into building terminal user interface applications with Rust in the first place. When I built my first ever Rust/TUI project, [kmon](https://github.com/orhun/kmon), I was surprised by how the limits of a simple thing such as a terminal can be pushed to build applications which gets you addicted to using terminals even more. Couple of years later, I'm one of the maintainers of [Ratatui](https://ratatui.rs/) which is a Rust library for cooking up TUIs and I'm blessed to be one of the core team members which revived the unmaintained [tui-rs](https://github.com/fdehau/tui-rs) library as Ratatui last year.
 
-When you take all of this into account, as a daily terminal user and a command-line _develover_, I'm tackling new terminal related issues every day. Sometimes I come across really interesting questions and problems. As you might expect, this blog post is the fruit of one of those questions.
+When you take all of this into account, as a daily terminal user and a command-line developer, I'm tackling new terminal related issues every day. Sometimes I come across really interesting questions and problems. As you might expect, this blog post is the fruit of one of those questions.
 
 > <glitched>Why stdout is faster than stderr?</glitched>
 
@@ -156,7 +156,7 @@ Now that we have a general understading of I/O streams, we can jump to the real 
 
 [Terminal user interfaces](https://en.wikipedia.org/wiki/Text-based_user_interface) leverages the terminal by drawing widgets/components such as text inputs, spinners and styled text on it, similar to the traditional graphical user interfaces. The terminal is able to _render_ such elements thanks to the custom handling of [ANSI escape codes](https://en.wikipedia.org/wiki/ANSI_escape_code). These ANSI _sequences_ are used to control the cursor location, color and styling of the terminal.
 
-So in order the create a terminal user interface, we need a _low-level library_ for controlling both the terminal and I/O streams and also rendering the UI components. Usually, this two step process is split between different libraries for ease-of-use and the sake of single responsibility prenciple.
+So in order the create a terminal user interface, we need a _low-level library_ for controlling both the terminal and I/O streams and also rendering the UI components. Usually, this two step process is split between different libraries for ease-of-use and the sake of single responsibility principle.
 
 For example, while [ncurses](https://en.wikipedia.org/wiki/Ncurses) (one of the oldest TUI libraries written in C) is taking care of the low-level interface to the terminal, [CDK](https://invisible-island.net/cdk/) (curses development kit) provides a sets of widgets to build GUI-like applications in the terminal.
 
@@ -165,7 +165,7 @@ Similarly in the Rust ecosystem, the following libraries are the most preferred 
 - [crossterm](https://github.com/crossterm-rs/crossterm): pure-Rust cross-platform terminal manipulation library.
 - [ratatui](https://github.com/ratatui-org/ratatui): lightweight library that provides a set of widgets and utilities - supports different backends including `crossterm`.
 
-So let's build a very simple TUI with using these libraries:
+So let's build a very simple TUI using these libraries:
 
 <details>
 <summary><span class="glowy-code"><a href="https://github.com/orhun/rust-stdout-vs-stderr/blob/main/src/simple-tui.rs">simple-tui.rs</a></span> (<b>click here to expand</b>)</summary>
@@ -234,7 +234,7 @@ fn main() -> io::Result<()> {
 
 </details>
 
-You can run this with using [rust-script](https://github.com/fornwall/rust-script) as follows:
+You can run this using [rust-script](https://github.com/fornwall/rust-script) as follows:
 
 ```bash
 $ cargo install rust-script
@@ -1555,7 +1555,7 @@ std::io::stdio::stdout_raw();
          private module
 ```
 
-There is actually a tracking issue from 2019 about exposing raw stdout/stderr/stderr: [#58326](https://github.com/rust-lang/rust/issues/58326)
+There is actually a tracking issue from 2019 about exposing raw stdout/stderr/stdin: [#58326](https://github.com/rust-lang/rust/issues/58326)
 
 > Currently there is not easy/obvious way to get an unbuffered Stdout/err/in. The types do exist in stdio, however they are not public for reasons not noted.
 > For example these types would be useful for CLI applications that write a lot of data at once without it getting unnecessarily flushed.
@@ -1564,7 +1564,7 @@ And sadly, there isn't still an easy/obvious way to get an unbuffered I/O stream
 
 <glitched>But!</glitched>
 
-This issue gives us some hints about possible workarounds. One thing that is reiterated couple of times in the issue is that we can use [`from_raw_fd`](https://doc.rust-lang.org/std/os/fd/trait.FromRawFd.html) on Linux as a workaround.
+This issue gives us some hints about possible workarounds. One thing that is reiterated a couple of times in the issue is that we can use [`from_raw_fd`](https://doc.rust-lang.org/std/os/fd/trait.FromRawFd.html) on Linux as a workaround.
 
 <q>Let me guess, `from_raw_fd` takes a file descriptor and we are simply going to use the file descriptor of stdout (which is "1") to create an unbuffered stream.</q>
 
@@ -1767,7 +1767,7 @@ Error: Os { code: 9, kind: Uncategorized, message: "Bad file descriptor" }
 
 In our case, we want the open file to _live through_ the entire program. Let's also assume that this is a TUI program and we have separate functions where passing the `raw_stdout` value around isn't possible.
 
-Well, there is still one quick dirty workaround: lazily initialize stdout and make it globally available via [`lazy_static`](https://docs.rs/lazy_static/latest/lazy_static/):
+Well, there is still one quick dirty workaround: lazily initialize stdout and make it globally available via [`lazy_static`](https://docs.rs/lazy_static/latest/lazy_static/) (or another crate such as [`once_cell`](https://docs.rs/once_cell/latest/once_cell/)):
 
 ```rust
 use std::fs::File;
@@ -1950,7 +1950,9 @@ If you want to reproduce the same results, I used the following environment in m
 - Backend: [crossterm](https://github.com/crossterm-rs/crossterm)
 - TUI/rendering: [ratatui](https://github.com/ratatui-org/ratatui)
 - Terminal: [alacritty](https://github.com/alacritty/alacritty)
-- System: 8 core CPU + 24gb RAM
+- CPU: AMD Ryzen 7 4700U with Radeon Graphics (8) @ 2.000GHz
+- GPU: AMD ATI Radeon RX Vega 6
+- RAM: 24GB
 
 I'm curious about how the results might change in different systems/terminals so feel free to share your findings below!
 
