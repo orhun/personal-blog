@@ -60,12 +60,12 @@ Here is an oversimplified example to demonstrate these streams:
 $ read -r foo
 test
 
-# print the value of var to stdout
-$ echo "value of foo is '$var'"
+# print the value of foo to stdout
+$ echo "value of foo is '$foo'"
 value of foo is 'test'
 
 # "echoo" command does not exist so an error message will be printed to stderr
-$ echoo "$var"
+$ echoo "$foo"
 bash: echoo: command not found
 ```
 
