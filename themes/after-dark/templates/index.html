@@ -12,12 +12,13 @@
       {% elif config.title %}
       <meta property="og:title" content="{{ config.title | safe }}" />
       {% endif %}
-      <meta property="og:description" content="{{ config.description }}"/>
       <meta property="og:image" content="{{ config.base_url | safe }}/crow.png" />
       {% if page.description %}
       <meta name="description" content="{{ page.description }}" />
+      <meta property="og:description" content="{{ page.description }}"/>
       {% elif config.description %}
       <meta name="description" content="{{ config.description }}" />
+      <meta property="og:description" content="{{ config.description }}"/>
       {% endif %}
 
       <!-- Enable responsiveness on mobile devices-->
