@@ -7,7 +7,11 @@
       <meta http-equiv="content-type" content="text/html; charset=utf-8">
       <meta property="og:type" content="website" />
       <meta property="og:url" content="{{ config.base_url | safe }}"/>
+      {% if page.title %}
+      <meta property="og:title" content="{{ page.title | safe }} - {{ config.title }}" />
+      {% elif config.title %}
       <meta property="og:title" content="{{ config.title | safe }}" />
+      {% endif %}
       <meta property="og:description" content="{{ config.description }}"/>
       <meta property="og:image" content="{{ config.base_url | safe }}/crow.png" />
       {% if page.description %}
@@ -26,7 +30,11 @@
 
       <script async src="https://umami.orhun.dev/script.js" data-website-id="56ca5ca7-ba9f-416e-8bee-a132c155d56b"></script>
 
+      {% if page.title %}
+      <title>{% block title %}{{ page.title }}{% endblock title %} - {{ config.title }}</title>
+      {% elif config.title %}
       <title>{% block title %}{{ config.title }}{% endblock title %}</title>
+      {% endif %}
 
       {% if config.generate_feed %}
         <link rel="alternate" type={% if config.feed_filename == "atom.xml" %}"application/atom+xml"{% else %}"application/rss+xml"{% endif %} title="RSS" href="{{ get_url(path=config.feed_filename) | safe }}">
