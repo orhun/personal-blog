@@ -1081,9 +1081,9 @@ Lastly, we can check the code of this call but it is not really helpful since it
 
 <q>So, what is the take away from all of this?</q>
 
-The conclusion is that stdout making less write calls thus able to render more frames in the same amount of time. In other words, stderr is immediately calling the write function for each frame whereas stdout is making less calls but able to render the same content. It is probably storing the data for a while temporarily (accumulating it) and then writing it as a whole as a block.
+The conclusion is that stdout making less write calls thus able to render more frames in the same amount of time. In other words, stderr blocks until the write function for each frame is rendered to the terminal whereas stdout returns faster.
 
-There must be some <g>buffering</g> happening.
+There must be some <g>buffering</g> happening for stdout.
 
 ---
 
@@ -1479,7 +1479,7 @@ let mut terminal = Terminal::new(CrosstermBackend::new(LineWriter::new(stderr())
 
 ![line buffered stderr](line-buffered-stderr.gif)
 
-<q>Damn, did we just _turn_ stderr into stdout by making it line buffered?</q>
+<q>Damn, did we just make the performance of stderr identical to stdout just by making it line buffered?</q>
 
 Oh yeah, looks like it!
 
