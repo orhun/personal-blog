@@ -26,14 +26,13 @@ jobs:
         env:
           BUILD_DIR: .
           BUILD_ONLY: true
-          BUILD_FLAGS: --drafts
-          OUT_DIR: build
+          BUILD_FLAGS: --drafts --base-url https://blog.orhun.dev/pr-preview/pr-${{ github.event.number }}/
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Deploy preview
         uses: rossjrw/pr-preview-action@v1
         with:
-          source-dir: ./build/
+          source-dir: ./public/
 
   build_and_deploy:
     runs-on: ubuntu-latest
