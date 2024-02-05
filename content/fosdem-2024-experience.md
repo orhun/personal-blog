@@ -67,7 +67,7 @@ The recording of the talk will be available soon!
 
 </center>
 
-I gave away Ratatui stickers to a lot of people and afterward I spotted them on some laptops.
+I gave away Ratatui stickers to a bunch people and afterwards I spotted them on some laptops.
 
 My good friend [Daniel Pecos Martínez](https://github.com/dpecos) was also wearing this LED thingy during the conference and I think it was pretty _cool_!
 
@@ -84,7 +84,7 @@ My good friend [Daniel Pecos Martínez](https://github.com/dpecos) was also wear
 
 I would like to thank to fellow Ratatui maintainers (shoutout to [Dheepak Krishnamurthy](https://github.com/kdheepak)!) and my friends such as [Marco Ieni](https://github.com/MarcoIeni) who gave me feedback to improve my talk during my practices.
 
-Also, I want to personally thank the Rust devroom organizers ([Ewan Higgs](https://github.com/ehiggs), [Paul Horn](https://github.com/knutwalker), ...) for doing an excellent job. They really help with expanding the community for Rust projects like Ratatui and many others. Kudos!
+Also, I want to personally thank the Rust devroom organizers ([Ewan Higgs](https://github.com/ehiggs), [Paul Horn](https://github.com/knutwalker), ...) for doing an excellent job. They really help with growing the community for Rust projects like Ratatui and many others. Kudos!
 
 ## **Talks** 🎙️
 
@@ -99,23 +99,26 @@ I listened to a number of talks in Rust and GCC devroom, notably:
 
 <img src="dreamcast-talk.jpg" width="70%"/>
 
+This talk was especially interesting because apparently you can run Rust on Dreamcast 🤯
+
 </center>
 
 ## **Food** 🍲
 
-The most important aspect of the conferences: Food!
+The most important aspect: food!
 
 - I attended the speaker dinner with the Rust devroom speakers & organizers and we discussed all kinds of things including floating islands.
 - I had lunch with fellow Arch Linux maintainers and did some pentesting in the restaurant.
 
-I also enjoyed drinking lots of [Club Mate](https://en.wikipedia.org/wiki/Club-Mate) which became my favorite drink at this point.
+I also enjoyed drinking lots of [Club Mate](https://en.wikipedia.org/wiki/Club-Mate) which became my favorite drink at this point. 🍺
 
 ## **Looking Forward** ✨
 
-I learned a shit ton in FOSDEM 2024 and I'm really looking forward to FOSDEM 2025. It was definitely one of my most unique conference experiences ever.  
-Thanks to everyone who participated in it.
+I learned a lot of new things at FOSDEM 2024 and I'm really looking forward to FOSDEM 2025. It was definitely one of my most unique conference experiences ever.
 
 <center>
+
+Thanks to everyone who participated in it!
 
 <img src="brussels.jpg" width="70%"/>
 
