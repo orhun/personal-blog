@@ -43,6 +43,8 @@ And I experienced all of these at first hand and... it was awesome!
 
 ## **My Talk** 🐭
 
+Watch my talk here: [**https://www.youtube.com/watch?v=NU0q6NOLJ20**](https://www.youtube.com/watch?v=NU0q6NOLJ20)
+
 I gave a talk about [**Ratatui**](https://ratatui.rs) - a Rust library that is all about cooking up terminal user interfaces.
 
 <center>
@@ -62,8 +64,7 @@ At the end of the day, I had many positive feedback about my talk and it was an 
 
 <img src="ratatui-talk2.jpg" width="90%"/>
 
-Thanks to [@mo8it@fosstodon.org](https://fosstodon.org/@mo8it/111868064467831193) for the picture!  
-The recording of the talk will be available soon!
+Thanks to [@mo8it@fosstodon.org](https://fosstodon.org/@mo8it/111868064467831193) for the picture!
 
 </center>
 
