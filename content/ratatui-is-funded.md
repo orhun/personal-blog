@@ -79,7 +79,7 @@ Here are some relevant links if you are interested in reading more about this:
   - You can see <g>Ratatui</g> in there along with other projects!
 - [Podcast talk](https://www.youtube.com/watch?v=Z8NR2IQhBso)
 
-At the end of the day, it seemed like we had a funding of 20k+.
+At the end of the day, it seemed like we had a funding of $20k+.
 
 <img src="/radicle-dependencies.png" width="75%"/>
 
