@@ -132,7 +132,7 @@ Now that we are an open source project and the money is involved, we need to dra
 
 In the simplest terms, the primary and the most traditional reason that companies make money is to stay afloat and expand their _business_.
 
-In our case, these are already semi-covered thanks to open source. We don't need to worry about the project dying, because if that happens tomorrow someone else can fork the project and start Ratatui v2 (which is exactly what we have done).
+In our case, these are already semi-covered thanks to open source. We don't usually worry about the project dying, because if that happens tomorrow someone else might fork the project and start Ratatui v2 (which is exactly what we did).
 
 However, there might be still financial costs of maintaining an open source project. These include things such as a custom domain, additional services/servers, promotional elements (e.g. merch) and so on.
 
