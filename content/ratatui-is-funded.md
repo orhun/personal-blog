@@ -188,7 +188,7 @@ To understand the way that we are aiming to manage our funds, we can take a look
 
 We are closer to being a non-profit in that sense.
 
-That is why we don't/can't split the funds among maintainers / project members. That's just not possible and that option is off the table.
+That is why we don't/can't split the funds among maintainers / project members.
 
 ### **Beyond money**
 
