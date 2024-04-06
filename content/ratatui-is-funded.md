@@ -98,14 +98,17 @@ When it comes to funding open source, I see a couple of viable options:
 
 Our situation did not fully apply to any of these, so we have to come up with something.
 
-To receive the funds from Drips Network, first you need to claim the project. This works by committing a file to the `main` branch of your project that contains some ethereum address. I saw that [Sebastian Thiel (@byron)](https://github.com/Byron) (maintainer of [Gitoxide](https://github.com/Byron/gitoxide)) claimed funds so I reached out to him about his experience. He gave us some information about his setup, most notably he mentioned that he stores the Ethereum wallet inside an offline Ledger for security. That made us even more confused. Because unlike him, we were a team of 5+ people and we couldn't just use a single wallet for managing everything. Plus... taxes?
-It is expected that no one wants to be responsible of some money laying in their bank accounts.
+I saw that [Sebastian Thiel (@byron)](https://github.com/Byron) (maintainer of [Gitoxide](https://github.com/Byron/gitoxide)) already claimed funds on Drips so I reached out to him about his experience. He gave us very detailed information about his crypto setup, but unlike him, his solution didn't fully fit our needs as a team of 5+ people, because it would be challenging for a single person to manage the funds.
+
+And... taxes? Nobody wants to be responsible for random money sitting in their bank accounts.
 
 <q>As some Turkish saying goes: "If you have the money then you have the problem."</q>
 
 On the hindsight, this made us re-consider the possibility of applying for GitHub Sponsors. After some discussion, we also decided to set up Open Collective alongside of GitHub Sponsors and use Open Collective to manage our funds. We [registered](https://docs.oscollective.org/campagins-programs-and-partnerships/github-sponsors) [our collective](https://opencollective.com/ratatui) to GitHub Sponsors which enabled us to manage everything at one place. Pretty neat feature!
 
-We looked into the possibility of doing the same with Drips Network and eventually decided that _if Open Collective is able to create a crypto wallet for us_, that will presumably be the easiest way to send funds from Drips Network to Open Collective.
+We looked into the possibility of doing the same with Drips Network and eventually decided that _if Open Collective is able to create a crypto wallet for us_, that will presumably be the easiest way to send funds from Drips Network to Open Collective. They would handle taxes and other legal matters for us, and it would be just perfect.
+
+For the curious, [Open Source Collective](https://www.oscollective.org) (our fiscal host) takes a 10% cut for operating costs.
 
 ### **Managing Funds**
 
