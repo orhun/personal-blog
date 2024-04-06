@@ -145,9 +145,11 @@ That is the same in our case as well. We still have a lot to do.
 
 That's the beauty of open source, people are _already_ doing work. Not because they want to get rich off of the project, but because they want to learn new things and have some fun on the side.
 
-Paying people for their open source work will also push the incentive that everyone might get paid through this work. Which means when there is no money left, there is also no project left to work on.
+Paying people for their open source work will also push the incentive that everyone might get paid through this work. Which means when there is no money left, there might not be a project left to work on.
 
 However, don't get this wrong, this isn't a sneaky approach to make people work for free. We will still support people / other projects that we depend on. Finding the balance is the key.
+
+It is good to remember that this policy works for us and is not a one-size-fits-all solution. ⚠️
 
 ### **Crucial tasks**
 
@@ -160,6 +162,8 @@ We are happy to support people who are working on core/crucial/technical tasks t
 This does not give the promise that we will throw money at you if you do one of these.
 
 But we absolutely don't say the otherwise 🐭
+
+This is similar to [Neovim's approach](https://neovim.io/sponsors) where funded contributors are expected to provide full-time, high-quality contributions on GitHub regularly.
 
 ### **Supporting our dependencies**
 
