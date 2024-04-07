@@ -69,7 +69,7 @@ The problem and the proposed solution in the issue were even more interesting:
 
 <q>I especially like the last part!</q>
 
-Neither I nor anyone in the team had an idea about this so we quickly started researching what this meant for us. Luke from Radworks was also kind enough to hop on a call with us to explain the process and how the Drips Network works.
+Neither I, nor anyone in the team had any idea about this so we quickly started researching what this meant for us. Luke from Radworks was also kind enough to hop on a call with us to explain the process and how the Drips Network works.
 
 Here are some relevant links if you are interested in reading more about this:
 
@@ -132,7 +132,7 @@ In the simplest terms, the primary and the most traditional reason that companie
 
 In our case, these are already semi-covered thanks to open source. We don't usually worry about the project dying, because if that happens tomorrow someone else might fork the project and start Ratatui v2 (which is exactly what we did).
 
-However, there might be still financial costs of maintaining an open source project. These include things such as a custom domain, additional services/servers, promotional elements (e.g. merch) and so on.
+However, there might be still financial costs of maintaining an open source project. These include things such as a custom domain, additional services/servers, promotional elements and so on.
 
 Thus we will be using these funds to cover these maintenance/promotional costs.
 
