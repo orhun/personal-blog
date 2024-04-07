@@ -196,7 +196,7 @@ That is why we don't/can't split the funds among maintainers / project members.
 
 Money is not everything.
 
-The contributors likely stand to gain more [second-order effects](https://fs.blog/second-order-thinking) such as:
+The contributors likely stand to gain more from [second-order effects](https://fs.blog/second-order-thinking) such as:
 
 - The experience you gain from working on the project
   - as a Rust programmer, team member, large project maintainer, etc.
