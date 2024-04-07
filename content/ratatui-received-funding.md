@@ -1,14 +1,12 @@
 +++
-title = "Ratatui Is Funded: What's next?"
+title = "Ratatui Received Funding: What's Next?"
 date = 2024-04-08
 
 [taxonomies]
 categories = ["Ratatui", "Thoughts"]
 +++
 
-Imagine your open source project got funding and you don't know what to do.
-
-Let's talk about that.
+Let's delve into the realm of open source funding along with Ratatui's journey.
 
 <!-- more -->
 
