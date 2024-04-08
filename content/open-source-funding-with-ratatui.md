@@ -102,7 +102,7 @@ And... taxes? Nobody wants to be responsible for random money sitting in their b
 
 <q>As some Turkish saying goes: "If you have the money then you have the problem."</q>
 
-On the hindsight, this made us re-consider the possibility of applying for GitHub Sponsors. After some discussion, we also decided to set up Open Collective alongside of GitHub Sponsors and use Open Collective to manage our funds. We [registered](https://docs.oscollective.org/campagins-programs-and-partnerships/github-sponsors) [our collective](https://opencollective.com/ratatui) to GitHub Sponsors which enabled us to manage everything at one place. Pretty neat feature!
+In hindsight, this made us re-consider the possibility of applying for GitHub Sponsors. After some discussion, we also decided to set up Open Collective alongside of GitHub Sponsors and use Open Collective to manage our funds. We [registered](https://docs.oscollective.org/campagins-programs-and-partnerships/github-sponsors) [our collective](https://opencollective.com/ratatui) to GitHub Sponsors which enabled us to manage everything at one place. Pretty neat feature!
 
 We looked into the possibility of doing the same with Drips Network and eventually decided that _if Open Collective is able to create a crypto wallet for us_, that will presumably be the easiest way to send funds from Drips Network to Open Collective. They would handle taxes and other legal matters for us, and it would be just perfect.
 
