@@ -110,7 +110,7 @@ For the curious, [Open Source Collective](https://www.oscollective.org) (our fis
 
 ### **Managing Funds**
 
-Shout out to [Benjamin Nickolls (@benjam)](https://github.com/BenJam) from Open Collective, he greatly helped us to figure out the crypto-related details of things and set up a multi-signature [wallet](https://github.com/ratatui-org/ratatui/pull/994) that is managed by us (2 maintainers) and Open Collective. That's how we managed to get everything _dripping_ 💧
+Shout out to [Benjamin Nickolls (@benjam)](https://github.com/BenJam) from Open Collective, he greatly helped us to figure out the crypto-related details of things and set up a multi-signature [wallet](https://github.com/ratatui-org/ratatui/pull/994). After this, we managed to get everything _dripping_ 💧
 
 All of these were in the works for the past couple of months. We now have the following setup and everything works like a charm!
 
