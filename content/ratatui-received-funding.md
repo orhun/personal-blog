@@ -226,6 +226,7 @@ To follow the updates:
 
 💖 Huge thanks to:
 
+- [Radworks](https://radworks.org) for their funding donation.
 - Ratatui maintainers
   - [Dheepak Krishnamurthy (@kdheepak)](https://github.com/kdheepak)
   - [Josh McKinney (@joshka)](https://github.com/joshka)
