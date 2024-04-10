@@ -213,11 +213,12 @@ We will be managing the donations/sponsorships we receive through [our Open Coll
 
 We will be also reaching out to the creator of tui-rs ([Florian Dehau (@fdehau)](https://github.com/fdehau)) about offering a one-off donation for his past work on this awesome library. I will update this post with any developments.
 
+> Edit: Florian said he's grateful to see the community taking over the project and doesn't want the donation. He's happy for it to fund the current maintainers' work, as seeing his project thrive without his involvement is a reward in itself.
+
 To follow the updates:
 
 - [@ratatui_rs](https://twitter.com/ratatui_rs) on Twitter
 - [@ratatui_rs](https://fosstodon.org/@ratatui_rs) on Mastodon
-
 - [@orhun](https://github.com/orhun) on GitHub
 - [@orhunp\_](https://twitter.com/orhunp_) on Twitter
 - [@orhun](https://fosstodon.org/@orhun) on Mastodon
