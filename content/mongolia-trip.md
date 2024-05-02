@@ -38,7 +38,7 @@ Okay, but what/where the hell are they and what's their importance? When I asked
 
 <q>That's cool, but still, _why?_</q>
 
-So I decided to go on a real world quest to answer that question. And who is a better company than my dad to discover/explore this together?
+So I decided to go on a real life quest to answer that question. And who is a better company than my dad to discover/explore this together?
 
 I'm typing these words on a plane that is about to land in [Ulaanbaatar](https://en.wikipedia.org/wiki/Ulaanbaatar), the capital of Mongolia. 🇲🇳
 
