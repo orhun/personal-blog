@@ -324,7 +324,7 @@ Our driver (төгөлдөр/töglödör - his name means piano!) was pretty coo
 
 </center>
 
-<small>⠀⠀And no, that's not a svastika. It has another ⠀⠀religious meaning in Mongolia apparently!</small>
+<small>⠀⠀And no, that's not a Swastika. It has another ⠀⠀religious meaning in Mongolia apparently!</small>
 
 Remember what I said about Karaoke here? Here are some places that I saw before we left the city center:
 
