@@ -102,7 +102,7 @@ We arrived in Ulaanbaatar at roughly 3 AM. There wasn't much to see in the city 
 
 |            |                                                            |
 | ---------- | ---------------------------------------------------------- |
-| Population | 3.3 million (+ 90 million animals (wow?))                  |
+| Population | 3.5 million (+ 72 million animals (wow?))                  |
 | Size       | 6 million sq km                                            |
 | Landscapes | Steppes, deserts, mountains                                |
 | Economy    | Agriculture, mining, herding                               |
@@ -161,7 +161,7 @@ The importance of this is it's the first inscription stone that mentions the wor
 >
 > They are the _oldest written attestations_ of the Turkic language family, predating the Orkhon inscriptions by several years.
 >
-> They are often confused with, or considered as a part of, the Orkhon inscriptions, although the Orkhon inscriptions are actually located about 360 kilometres (220 mi) to the west.
+> They are often confused with, or considered as a part of, the Orkhon inscriptions, although the Orkhon inscriptions are actually located about 462 kilometres (287 mi) to the west.
 
 On the way, we stopped for the [Friday Prayer](https://en.wikipedia.org/wiki/Friday_prayer) and visited the Konya Kültür Merkezi. It was a magnificent cultural experience to speak Turkish with the Kazakh muslims.
 
@@ -213,7 +213,7 @@ The historical value of these writings were unimaginably priceless.
 
 <img src="https://static.orhun.dev/mn/1/tonyukuk3.jpg" width="100%"/>
 
-We also visited the security guard's tent next to the building, which was a nice place:
+We also visited the security guard's traditional Mongol tent (also called "ger") next to the building, which was a nice place:
 
 <img src="https://static.orhun.dev/mn/1/tent.jpg" width="70%"/>
 
@@ -248,7 +248,9 @@ Yes, it is a gigantic shiny mighty [<g>Genghis Khan</g>](https://en.wikipedia.or
 
 </center>
 
-In fact, it is a museum, you can go inside and explore a bit about the history of Mongolia and Genghis Khan. One of the interesting things was this huge boot:
+In fact, it is a museum, you can go inside and explore a bit about the history of Mongolia and Genghis Khan.
+
+One of the interesting things was this huge boot (made from Tibetan lamb skin, called "yak"):
 
 <center>
 
