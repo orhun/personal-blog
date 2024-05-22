@@ -282,13 +282,13 @@ matrix:
       }
     - {
         NAME: darwin-x64,
-        OS: macos-11,
+        OS: macos-14,
         TOOLCHAIN: stable,
         TARGET: x86_64-apple-darwin,
       }
     - {
         NAME: darwin-arm64,
-        OS: macos-11,
+        OS: macos-14,
         TOOLCHAIN: stable,
         TARGET: aarch64-apple-darwin,
       }
@@ -450,13 +450,13 @@ jobs:
             }
           - {
               NAME: darwin-x64,
-              OS: macos-11,
+              OS: macos-14,
               TOOLCHAIN: stable,
               TARGET: x86_64-apple-darwin,
             }
           - {
               NAME: darwin-arm64,
-              OS: macos-11,
+              OS: macos-14,
               TOOLCHAIN: stable,
               TARGET: aarch64-apple-darwin,
             }
