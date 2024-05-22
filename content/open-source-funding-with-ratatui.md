@@ -220,8 +220,8 @@ To follow the updates:
 - [@ratatui_rs](https://twitter.com/ratatui_rs) on Twitter
 - [@ratatui_rs](https://fosstodon.org/@ratatui_rs) on Mastodon
 - [@orhun](https://github.com/orhun) on GitHub
-- [@orhunp\_](https://twitter.com/orhunp_) on Twitter
 - [@orhun](https://fosstodon.org/@orhun) on Mastodon
+- [@orhundev](https://twitter.com/orhundev) on Twitter
 
 ### **Acknowledgements**
 

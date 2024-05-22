@@ -132,6 +132,6 @@ More information can be found at the [project page](https://github.com/orhun/kmo
 * Follow [@kmonitor_](https://twitter.com/kmonitor_) on Twitter
 * Follow the [author](https://orhun.dev):
     * [@orhun](https://github.com/orhun) on GitHub
-    * [@orhunp_](https://twitter.com/orhunp_) on Twitter
+    * [@orhundev](https://twitter.com/orhundev) on Twitter
 
 Stay safe.

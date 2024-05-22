@@ -127,7 +127,7 @@ My goal for the next releases is to implement new features that will make key ma
 
 - [Homepage of gpg-tui](https://github.com/orhun/gpg-tui) (GitHub)
 - [My GitHub profile](https://github.com/orhun) (**@orhun**, check out my other projects!)
-- [Follow me on Twitter](https://twitter.com/orhunp_) (**@orhunp_**)
+- [Follow me on Twitter](https://twitter.com/orhundev) (**@orhundev**)
 - [Follow gpg-tui on Twitter](https://twitter.com/gpg_tui) (**@gpg_tui**, for latest updates) 
 
 Also if you liked **gpg-tui** and/or my other projects, consider consider supporting me on [GitHub Sponsors](https://github.com/sponsors/orhun) or [Patreon](https://www.patreon.com/orhunp).
