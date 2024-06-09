@@ -152,7 +152,7 @@ bar #input
 bar
 ```
 
-Now that we have a general understading of I/O streams, we can jump to the real world examples and make progress towards answering our question.
+Now that we have a general understanding of I/O streams, we can jump to the real world examples and make progress towards answering our question.
 
 ---
 
