@@ -21,10 +21,10 @@ minify_html = false
 build_search_index = false
 
 # When set to "true", a feed is automatically generated.
-generate_feed = true
+generate_feeds = true
 
 # The filename to use for the feed. Used as the template filename, too.
-feed_filename = "rss.xml"
+feed_filenames = ["rss.xml"]
 
 # The taxonomies to be rendered for the site and their configuration of the default languages
 taxonomies = [{ name = "categories", feed = true }]
@@ -44,12 +44,12 @@ render_emoji = false
 [extra]
 author = "Orhun Parmaksız"
 after_dark_menu = [
-    { name = "Home", url = "$BASE_URL" },
-    { name = "Categories", url = "$BASE_URL/categories" },
-    { name = "Source", url = "https://github.com/orhun/personal-blog" },
-    { name = "GitHub", url = "https://github.com/orhun" },
-    { name = "Donate", url = "https://donate.orhun.dev" },
-    { name = "RSS", url = "$BASE_URL/rss.xml" },
-    { name = "About", url = "https://orhun.dev" },
+  { name = "Home", url = "$BASE_URL" },
+  { name = "Categories", url = "$BASE_URL/categories" },
+  { name = "Source", url = "https://github.com/orhun/personal-blog" },
+  { name = "GitHub", url = "https://github.com/orhun" },
+  { name = "Donate", url = "https://donate.orhun.dev" },
+  { name = "RSS", url = "$BASE_URL/rss.xml" },
+  { name = "About", url = "https://orhun.dev" },
 ]
 after_dark_title = "Orhun's Blog | FOSS • Linux • Programming"
