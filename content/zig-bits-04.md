@@ -16,6 +16,8 @@ Let's experiment with the [`std.http`](https://ziglang.org/documentation/master/
 
 </center>
 
+**Note**: The standard library has changed since the writing of this article. Updated source code for the HTTP server portion can be found at the end of this article.
+
 While learning a new programming language, one of the things that is always on my mind is if it is possible/easy to write an HTTP server/client with it. It might be due to the nature of my industrial orientation as a backend/systems engineer, or it is because the networking-related implementations were always a bit scary to me. In time, I think I overcame this fear quite a bit, thanks to the well-documented and beginner-friendly HTTP server/client libraries in [Rust](https://www.rust-lang.org). To give some names and a kind shout-out to the maintainers: [reqwest](https://crates.io/crates/reqwest), [ureq](https://crates.io/crates/ureq) and [hyper](https://crates.io/crates/hyper) are very pleasant to work with in that regard. They just do the job, and I appreciate it when things work out of the box without too much trouble.
 
 But now, we are in the [Ziguana](https://github.com/ziglang/logo#zero-the-ziguana) territory. Ever since I started writing Zig for creating small programs and writing this series, I have been wondering how _high-level_ I can get with such a low-level systems language. Today, I'm hoping to answer that question.
@@ -819,3 +821,52 @@ On the other hand, let me know if you have any interesting ideas for the benchma
 Hope you enjoyed the read, feel free to submit a comment below! Let me know what you think and what might be the topic for the next Zig Bits! ⚡
 
 _viszontlátásra!_
+
+## Update ⚡
+
+On Feb 23, 2024, commit [`6395ba8`](https://github.com/ziglang/zig/commit/6395ba852a88f0e0b2a2f0659f1daf9d08e90157) (fittingly named "std.http.Server: rework the API entirely") reworked the `std.http.Server` API entirely. Here is a new (basic) implementation that takes into account the new design:
+
+```zig
+// Zig version 0.14.0
+const std = @import("std");
+const net = std.net;
+const http = std.http;
+
+pub fn main() !void {
+    const addr = net.Address.parseIp4("127.0.0.1", 9090) catch | err | {
+        std.debug.print("An error occurred while resolving the IP address: {}\n", .{err});
+        return; 
+    };
+
+    var server = try addr.listen(.{});
+
+    start_server(&server);
+}
+
+fn start_server(server: *net.Server) void {
+    while(true){
+        var connection = server.accept() catch |err| {
+            std.debug.print("Connection to client interrupted: {}\n", .{err});
+            continue;
+        };
+        defer connection.stream.close();
+
+        var read_buffer : [1024]u8 = undefined;
+        var http_server = http.Server.init(connection, &read_buffer);
+
+        var request = http_server.receiveHead() catch |err| {
+            std.debug.print("Could not read head: {}\n", .{err});
+            continue;
+        };
+        handle_request(&request) catch |err| {
+            std.debug.print("Could not handle request: {}", .{err});
+            continue;
+        };
+    }
+}
+
+fn handle_request(request: *http.Server.Request) !void {
+    std.debug.print("Handling request for {s}\n", .{ request.head.target });
+    try request.respond("Hello http!\n", .{});
+}
+```
