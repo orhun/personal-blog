@@ -8,6 +8,8 @@ categories = ["Zig Bits"]
 
 Let's experiment with the [`std.http`](https://ziglang.org/documentation/master/std/#A;std:http) module of Zig `>=0.11` and create an HTTP server/client from scratch (along with some benchmarks)!
 
+**Note**: The standard library has changed since the writing of this article. Updated source code for the http server portion can be found at the end of this article.
+
 <!-- more -->
 
 <center>
@@ -819,3 +821,52 @@ On the other hand, let me know if you have any interesting ideas for the benchma
 Hope you enjoyed the read, feel free to submit a comment below! Let me know what you think and what might be the topic for the next Zig Bits! ⚡
 
 _viszontlátásra!_
+
+## Update ⚡
+
+On Feb 23, 2024, commit [`6395ba8`](https://github.com/ziglang/zig/commit/6395ba852a88f0e0b2a2f0659f1daf9d08e90157) (fittingly named "std.http.Server: rework the API entirely") reworked the `std.http.Server` API entirely. Here is a new (basic) implementation that takes into account the new design:
+
+```zig
+// Zig version 0.14.0
+const std = @import("std");
+const net = std.net;
+const http = std.http;
+
+pub fn main() !void {
+    const addr = net.Address.parseIp4("127.0.0.1", 9090) catch | err | {
+        std.debug.print("An error occurred while resolving the IP address: {}\n", .{err});
+        return; 
+    };
+
+    var server = try addr.listen(.{});
+
+    start_server(&server);
+}
+
+fn start_server(server: *net.Server) void {
+    while(true){
+        var connection = server.accept() catch |err| {
+            std.debug.print("Connection to client interrupted: {}\n", .{err});
+            continue;
+        };
+        defer connection.stream.close();
+
+        var read_buffer : [1024]u8 = undefined;
+        var http_server = http.Server.init(connection, &read_buffer);
+
+        var request = http_server.receiveHead() catch |err| {
+            std.debug.print("Could not read head: {}\n", .{err});
+            continue;
+        };
+        handle_request(&request) catch |err| {
+            std.debug.print("Could not handle request: {}", .{err});
+            continue;
+        };
+    }
+}
+
+fn handle_request(request: *http.Server.Request) !void {
+    std.debug.print("Handling request for {s}\n", .{ request.head.target });
+    try request.respond("Hello http!\n", .{});
+}
+```
