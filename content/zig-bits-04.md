@@ -18,6 +18,8 @@ Let's experiment with the [`std.http`](https://ziglang.org/documentation/master/
 
 </center>
 
+**Note**: The standard library has changed since the writing of this article. Updated source code for the HTTP server portion can be found at the end of this article.
+
 While learning a new programming language, one of the things that is always on my mind is if it is possible/easy to write an HTTP server/client with it. It might be due to the nature of my industrial orientation as a backend/systems engineer, or it is because the networking-related implementations were always a bit scary to me. In time, I think I overcame this fear quite a bit, thanks to the well-documented and beginner-friendly HTTP server/client libraries in [Rust](https://www.rust-lang.org). To give some names and a kind shout-out to the maintainers: [reqwest](https://crates.io/crates/reqwest), [ureq](https://crates.io/crates/ureq) and [hyper](https://crates.io/crates/hyper) are very pleasant to work with in that regard. They just do the job, and I appreciate it when things work out of the box without too much trouble.
 
 But now, we are in the [Ziguana](https://github.com/ziglang/logo#zero-the-ziguana) territory. Ever since I started writing Zig for creating small programs and writing this series, I have been wondering how _high-level_ I can get with such a low-level systems language. Today, I'm hoping to answer that question.
