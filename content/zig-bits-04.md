@@ -8,8 +8,6 @@ categories = ["Zig Bits"]
 
 Let's experiment with the [`std.http`](https://ziglang.org/documentation/master/std/#A;std:http) module of Zig `>=0.11` and create an HTTP server/client from scratch (along with some benchmarks)!
 
-**Note**: The standard library has changed since the writing of this article. Updated source code for the http server portion can be found at the end of this article.
-
 <!-- more -->
 
 <center>
