@@ -6,7 +6,7 @@ date = 2024-09-06
 categories = ["Thoughts"]
 +++
 
-Some thoughts on why I started livestreaming my open source development sessions and future plans.
+Some thoughts on why I started livestreaming my open-source development sessions and my future plans.
 
 <!-- more -->
 
@@ -21,6 +21,8 @@ Some thoughts on why I started livestreaming my open source development sessions
 ---
 
 🦀 **TL;DR**: Follow me on <g>[https://www.youtube.com/@orhundev](https://www.youtube.com/@orhundev)</g>, where I regularly live-code in Rust, dive into open source, packaging stuff, share tips, and overall have some good ol' techy time.
+
+▶️ See my past live streams [here](https://www.youtube.com/@orhundev/streams).
 
 ---
 
@@ -116,6 +118,7 @@ Livestreaming is essentially a gateway to producing more video content, and I ha
 ⬇️ **Links:**
 
 - 🔗 [YouTube Channel](https://www.youtube.com/@orhundev)
+- 🔗 [Past Live Streams](https://www.youtube.com/@orhundev/streams)
 - 🔗 [GitHub](https://github.com/orhun)
 - 🔗 [Follow me on Twitter](https://twitter.com/orhundev) (to stay updated on announcements)
 - 🔗 [Follow me on Mastodon](https://fosstodon.org/@orhun) (to stay updated on announcements)
