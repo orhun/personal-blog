@@ -40,7 +40,7 @@ Then I started thinking, I actually _enjoy_ working on open source projects and 
 
 No, the grind _MUST_ continue. I needed to somehow make programming fun for myself again. And then it hit me, "for myself"? Maybe I was too self-centric. I was sure that I shouldn't be the only one who feels this way from time to time. There must be a way to collectively enjoy programming and open source again while giving back to the community while sharing insights in an interactive way. And that's when I decided to start livestreaming.
 
-Taking the first step was a bit intimidating. Afterall, there are a lot of questions, like "how should I talk to the camera?", "what if no one watches?", "what if my router catches on fire and I lose connection?" and so on.
+Taking the first step was a bit intimidating. After all, there are a lot of questions, like "how should I talk to the camera?", "what if no one watches?", "what if my router catches on fire and I lose connection?" and so on.
 
 But then on a Sunday evening, I pretty much said 🇫 it and went live. And got hooked!
 
