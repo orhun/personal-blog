@@ -32,7 +32,7 @@ This might be one of the unavoidable side quests if you are trying to tenaciousl
 
 Today, things have changed a bit, due to the fact that I eventually realized that writing code in a dark room is not enough if you want to make a name for yourself. You should also make sure that people know you and your work. This is where that you need to switch to an influencer-like mindset and do things like be active in communities, write blog posts, give talks, and so on.
 
-And as you might have guessed, I recently I added <g>livestreaming</g> to this list.
+And as you might have guessed, I recently added <g>livestreaming</g> to this list.
 
 ---
 
