@@ -24,6 +24,8 @@ Some thoughts on why I started livestreaming my open-source development sessions
 
 ▶️ See my past live streams [here](https://www.youtube.com/@orhundev/streams).
 
+<img src="/livestreams.png"/>
+
 ---
 
 This might be one of the unavoidable side quests if you are trying to tenaciously make a living from working on (and only on) open source. More than I year ago I wrote [a blog post](https://blog.orhun.dev/open-source-grindset/) detailing my motivation for the things I have been doing and having a "grindset".
