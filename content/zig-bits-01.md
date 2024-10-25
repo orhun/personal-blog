@@ -168,6 +168,9 @@ fn zigBits(slice: []u8) usize {
 
     // Update the slice.
     std.mem.copy(u8, slice, &message);
+
+    // len used in main to print the actual message part, not the entire buffer
+    return message.len;
 }
 
 /// Entrypoint of the program.
