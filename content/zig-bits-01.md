@@ -168,6 +168,9 @@ fn zigBits(slice: []u8) usize {
 
     // Update the slice.
     std.mem.copy(u8, slice, &message);
+
+    // len used in main to print the actual message part, not the entire buffer
+    return message.len;
 }
 
 /// Entrypoint of the program.
@@ -184,7 +187,7 @@ pub fn main() void {
 }
 ```
 
-As you can see, we have updated the return value of the function to `void` and make it accept a slice parameter. Instead of `return`, we update the slice with [`std.mem.cpy`](https://ziglang.org/documentation/master/std/#A;std:mem.copy) method in the function.
+As you can see, we have updated the return value of the function to `void` and make it accept a slice parameter. Instead of `return`, we update the slice with [`std.mem.cpy`](https://ziglang.org/documentation/master/std/#A;std:mem.copy) method in the function and return length of the message. This length will be used in `main` to print the actual message part, not the entire buffer which may contain some garbage.
 
 (This approach is similar to passing a mutable reference (`&mut`) to a function in Rust.)
 
