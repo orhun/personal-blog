@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <meta http-equiv="content-type" content="text/html; charset=utf-8">
+      <meta property="og:type" content="website" />
+      <meta property="og:url" content="https://blog.orhun.dev"/>
+      
+      <meta property="og:title" content="Introducing runst: Handle desktop notifications neatly on Linux! - Orhun&#x27;s Blog" />
+      
+      <meta property="og:image" content="https://blog.orhun.dev/crow.png" />
+      
+      <meta name="description" content="FOSS • Linux • Programming" />
+      <meta property="og:description" content="FOSS • Linux • Programming"/>
+      
+
+      <!-- Enable responsiveness on mobile devices-->
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+      <link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png">
+      <link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png">
+      <link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png">
+      <link rel="manifest" href="/favicon/site.webmanifest">
+
+      <script async src="https://umami.orhun.dev/script.js" data-website-id="56ca5ca7-ba9f-416e-8bee-a132c155d56b"></script>
+
+      <link rel="stylesheet" href="https://unpkg.com/applause-button/dist/applause-button.css" />
+      <script src="https://unpkg.com/applause-button/dist/applause-button.js"></script>
+
+      
+      <title>Introducing runst: Handle desktop notifications neatly on Linux! - Orhun&#x27;s Blog</title>
+      
+
+      
+        <link rel="alternate" type="application/rss+xml" title="RSS" href="https://blog.orhun.dev/rss.xml">
+      
+
+      
+          <link rel="stylesheet" href="https://blog.orhun.dev/site.css">
+      
+
+      
+      
+    </head>
+
+    <body class="hack dark main container">
+        
+    
+        
+                
+                    <header>
+                        <nav itemscope itemtype="http://schema.org/SiteNavigationElement">
+                        
+                            <a itemprop="url"
+                               class=""
+                               href="https://blog.orhun.dev">
+                                <span itemprop="name">Home</span></a>
+                        
+                            <a itemprop="url"
+                               class=""
+                               href="https://blog.orhun.dev/categories">
+                                <span itemprop="name">Categories</span></a>
+                        
+                            <a itemprop="url"
+                               class=""
+                               href="https://github.com/orhun/personal-blog">
+                                <span itemprop="name">Source</span></a>
+                        
+                            <a itemprop="url"
+                               class=""
+                               href="https://github.com/orhun">
+                                <span itemprop="name">GitHub</span></a>
+                        
+                            <a itemprop="url"
+                               class=""
+                               href="https://donate.orhun.dev">
+                                <span itemprop="name">Donate</span></a>
+                        
+                            <a itemprop="url"
+                               class=""
+                               href="https://blog.orhun.dev/rss.xml">
+                                <span itemprop="name">RSS</span></a>
+                        
+                            <a itemprop="url"
+                               class=""
+                               href="https://orhun.dev">
+                                <span itemprop="name">About</span></a>
+                        
+                        </nav>
+                    </header>
+                
+            
+    
+
+<article itemscope itemtype="http://schema.org/BlogPosting">
+    <header>
+        <h1 itemprop="headline">Introducing runst: Handle desktop notifications neatly on Linux!</h1>
+        <span class="muted">
+    <svg style="margin-bottom:-3px" class="i-clock" viewBox="0 0 32 32"
+         width="16" height="16" fill="none" stroke="currentcolor"
+         stroke-linecap="round" stroke-linejoin="round" stroke-width="6.25%">
+        <circle cx="16" cy="16" r="14"/>
+        <path d="M16 8 L16 16 20 20"/>
+    </svg>
+    <span>7 minute read</span>
+    <svg style="margin-bottom: -3px" class="i-edit" viewBox="0 0 32 32"
+         width="16" height="16" fill="none" stroke="currentcolor"
+         stroke-linecap="round" stroke-linejoin="round" stroke-width="6.25%">
+        <path d="M30 7 L25 2 5 22 3 29 10 27 Z M21 6 L26 11 Z M5 22 L10 27 Z"/>
+    </svg>
+
+    Published: 2023-03-05
+</span>
+    </header>
+    <div itemprop="articleBody">
+      <p><code>runst</code> is a dead simple notification daemon 🦡 In this post, I'm introducing the project and giving different usage examples that will improve your Linux desktop experience.</p>
+<span id="continue-reading"></span>
+<p><a href="https://github.com/orhun/runst"><b>https://github.com/orhun/runst</b></a></p>
+<h3 id="notifications">Notifications</h3>
+<img alt="https://xkcd.com/2555/" src="/xkcd2555.png"/>
+<p>It is undeniable that notifications became an inescapable part of our overly techy lives in the past decade. Most of the time, it is overlooked how a simple alert dialog can fire different synapses in the human brain and let us feel a certain way. It is truly magnificent that we commonly don't see the fact that "notifying" is a form of communication and it is deeply integrated into our lives at this point.</p>
+<p>So let's talk about Linux desktop and how we can handle notifications.</p>
+<p><em>What? I hear you say "What the hell was that intro?". Well, just stay tight. It was definitely not a trick to hook you to read this blog post.</em></p>
+<p>As in every interactive system, GNU/Linux also has different ways of handling notifications. First, let's try to understand what a notification is and what we need to actually work with it.</p>
+<blockquote>
+<p>Desktop notifications are small, passive popup dialogs that notify the user of particular events in an asynchronous manner.</p>
+</blockquote>
+<p>In other words, notifications are dialogs that are either shown on the screen for a certain amount of time and disappear or persist until user interaction. Cool!</p>
+<hr />
+<h3 id="d-bus">D-Bus</h3>
+<p>Now, how do we interact with notifications? We clearly need some kind of internal communication protocol between processes to handle messages from different applications. Today, most Linux desktops depend on D-Bus for that purpose.</p>
+<blockquote>
+<p><a href="https://www.freedesktop.org/wiki/Software/dbus/">D-Bus</a> is a message bus system, a simple way for applications to talk to one another. In addition to interprocess communication, D-Bus helps coordinate process lifecycle; it makes it simple and reliable to code a "single instance" application or daemon, and to launch applications and daemons on demand when their services are needed.</p>
+</blockquote>
+<p>D-Bus has <a href="https://specifications.freedesktop.org/notification-spec/notification-spec-latest.html">Desktop Notifications Specification</a> which defines the standard implementation details for notification-related applications. On the other hand, <a href="https://gitlab.gnome.org/GNOME/libnotify">libnotify</a> is widely used for sending desktop notifications to a "notification daemon". Every system needs a running notification daemon for handling notifications.</p>
+<p>If you are running D-Bus, you can create a desktop notification using the <a href="https://man.archlinux.org/man/notify-send.1.en"><code>notify-send(1)</code></a> command of <code>libnotify</code>:</p>
+<pre data-lang="sh" style="background-color:#191919;color:#ffffff;" class="language-sh "><code class="language-sh" data-lang="sh"><span style="color:#cccccc;">$ notify-send </span><span style="color:#ffd700;">&quot;runst&quot; &quot;A dead simple notification daemon 🦡&quot;</span><span style="font-style:italic;color:#8aa6c1;"> --expire-time</span><span style="color:#cccccc;"> 3000
+</span></code></pre>
+<p>And you can query the desktop notifications real-time with running <a href="https://man.archlinux.org/man/dbus-monitor.1"><code>dbus-monitor(1)</code></a>:</p>
+<pre data-lang="sh" style="background-color:#191919;color:#ffffff;" class="language-sh "><code class="language-sh" data-lang="sh"><span style="color:#cccccc;">$ dbus-monitor </span><span style="color:#ffd700;">&quot;interface=&#39;org.freedesktop.Notifications&#39;&quot;
+</span></code></pre>
+<p>This will result in:</p>
+<pre data-lang="sh" style="background-color:#191919;color:#ffffff;" class="language-sh "><code class="language-sh" data-lang="sh"><span style="color:#cccccc;">method call time=1677934706.650704 sender=:1.2392 -</span><span>&gt;</span><span style="color:#cccccc;"> destination=:1.1673 serial=8 path=/org/freedesktop/Notifications</span><span>; </span><span style="color:#cccccc;">interface</span><span>=</span><span style="color:#ffd700;">org.freedesktop.Notifications</span><span>; </span><span style="color:#cccccc;">member</span><span>=</span><span style="color:#ffd700;">Notify
+</span><span style="color:#cccccc;">   string </span><span style="color:#ffd700;">&quot;notify-send&quot;
+</span><span style="color:#cccccc;">   uint32 0
+</span><span style="color:#cccccc;">   string </span><span style="color:#ffd700;">&quot;&quot;
+</span><span style="color:#cccccc;">   string </span><span style="color:#ffd700;">&quot;runst&quot;
+</span><span style="color:#cccccc;">   string </span><span style="color:#ffd700;">&quot;A dead simple notification daemon 🦡&quot;
+</span><span style="color:#cccccc;">   array [
+</span><span style="color:#cccccc;">   ]
+</span><span style="color:#cccccc;">   array [
+</span><span style="color:#cccccc;">      dict entry(
+</span><span style="color:#cccccc;">         string </span><span style="color:#ffd700;">&quot;urgency&quot;
+</span><span style="color:#cccccc;">         variant             byte 1
+</span><span style="color:#cccccc;">      )
+</span><span style="color:#cccccc;">      dict entry(
+</span><span style="color:#cccccc;">         string </span><span style="color:#ffd700;">&quot;sender-pid&quot;
+</span><span style="color:#cccccc;">         variant             int64 442049
+</span><span style="color:#cccccc;">      )
+</span><span style="color:#cccccc;">   ]
+</span><span style="color:#cccccc;">   int32 3000
+</span></code></pre>
+<p>With these in mind, let's take a look at different notification daemon implementations.</p>
+<hr />
+<h3 id="notification-daemons">Notification Daemons</h3>
+<p><a href="https://en.wikipedia.org/wiki/Desktop_environment">Desktop environments</a> have a built-in feature for handling the notifications:</p>
+<blockquote>
+<p>Cinnamon, Deepin, Enlightenment, GNOME, GNOME Flashback and KDE Plasma use their own implementations to display notifications, and they cannot be replaced. Their notification servers are started automatically on login to receive notifications from applications via D-Bus.</p>
+</blockquote>
+<p>In that case, if we want to use a custom notification daemon, we need something <em>standalone</em>. This means they might require a manual setup to work with Xorg/Wayland. Here are a few projects:</p>
+<ul>
+<li><a href="https://github.com/Toqozz/wired-notify">wired</a> - Lightweight notification daemon with highly customizable layout blocks.</li>
+<li><a href="https://github.com/emersion/mako">mako</a> - Lightweight notification daemon for Wayland.</li>
+<li><a href="https://github.com/dunst-project/dunst">dunst</a> - Lightweight and customizable notification daemon.</li>
+</ul>
+<p>(Editor's note: wow, they are all lightweight!)</p>
+<p>Among those projects, by far the most popular notification daemon is <code>dunst</code>. Needless to say, I WAS a user of <code>dunst</code>. Also, the reason why I wrote <code>runst</code> is basically... <code>dunst</code>.</p>
+<p>So, what is <code>runst</code>?</p>
+<hr />
+<h3 id="runst-a-dead-simple-notification-daemon-badger"><code>runst</code> - <strong>a dead simple notification daemon</strong> 🦡</h3>
+<center>
+<img src="https://github.com/orhun/runst/raw/main/assets/runst-logo.png" style="width: 25%"/>
+<p><img src="https://github.com/orhun/runst/raw/main/assets/runst-demo.gif" alt="runst demo I" /></p>
+</center>
+<p><code>runst</code> is yet another notification daemon implementation in Rust. It aims to be as simple as possible while providing customizable features. The reason why I wrote <code>runst</code> is simply that:</p>
+<blockquote>
+<p>I have been a user of <a href="https://github.com/dunst-project/dunst">dunst</a> for a long time. However, they made some <a href="https://github.com/dunst-project/dunst/issues/940">uncool breaking changes</a> in <a href="https://github.com/dunst-project/dunst/releases/tag/v1.7.0">v1.7.0</a> and it completely broke my configuration. That day, I refused to update <code>dunst</code> (I was too lazy to re-configure) and decided to write my own notification server using Rust.</p>
+</blockquote>
+<center>
+<p>Hence the name. (<code>dunst + rust = runst</code>)</p>
+</center>
+<p><code>runst</code> is initially designed to show a simple notification window. On top of that, it combines customization-oriented and semi-innovative features. The way that I use <code>runst</code> is pretty simple, it's just an overlay on top of <a href="https://github.com/i3/i3status">i3status</a> bar:</p>
+<center>
+<p><img src="https://github.com/orhun/runst/raw/main/assets/runst-demo2.gif" alt="runst demo II" /></p>
+</center>
+<p>However, there are many cool things that you can do with <code>runst</code>.</p>
+<p>Let's go through its features with usage examples.</p>
+<p>(<code>runst</code> is configured with a single configuration file. You can check out the defaults <a href="https://github.com/orhun/runst/blob/main/config/runst.toml">here</a>.)</p>
+<hr />
+<h4 id="custom-window">Custom window</h4>
+<p>You can customize the notification popup text, color and dimensions. For example:</p>
+<pre data-lang="toml" style="background-color:#191919;color:#ffffff;" class="language-toml "><code class="language-toml" data-lang="toml"><span style="color:#cccccc;">[global]
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">geometry </span><span style="color:#cccccc;">= </span><span style="color:#ffd700;">&quot;312x184+1078+354&quot; </span><span style="background-color:#171717;color:#616161;"># `slop -k`</span><span style="color:#cccccc;">
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">font </span><span style="color:#cccccc;">= </span><span style="color:#ffd700;">&quot;Monospace 10&quot;
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">template </span><span style="color:#cccccc;">= </span><span style="color:#ffd700;">&quot;&quot;&quot;
+</span><span style="color:#ffd700;">    [{{app_name}}] &lt;b&gt;{{summary}}&lt;/b&gt;\
+</span><span style="color:#ffd700;">    {% if body %} {{body}}{% endif %} \
+</span><span style="color:#ffd700;">    {% if now(timestamp=true) - timestamp &gt; 60 %} \
+</span><span style="color:#ffd700;">        ({{ (now(timestamp=true) - timestamp) | humantime }} ago)\
+</span><span style="color:#ffd700;">    {% endif %}\
+</span><span style="color:#ffd700;">    {% if unread_count &gt; 1 %} ({{unread_count}}){% endif %}
+</span><span style="color:#ffd700;">    &quot;&quot;&quot;
+</span><span style="color:#cccccc;">
+</span><span style="color:#cccccc;">[urgency_normal]
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">background </span><span style="color:#cccccc;">= </span><span style="color:#ffd700;">&quot;#000000&quot;
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">foreground </span><span style="color:#cccccc;">= </span><span style="color:#ffd700;">&quot;#aaaaaa&quot;
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">text </span><span style="color:#cccccc;">= </span><span style="color:#ffd700;">&quot;normal&quot;
+</span></code></pre>
+<p>In the configuration above, we configured the notification window dimensions, colors (for the normal urgency), font, and the message template.</p>
+<p>Now let's take a closer look at the <code>template</code>:</p>
+<pre data-lang="jinja2" style="background-color:#191919;color:#ffffff;" class="language-jinja2 "><code class="language-jinja2" data-lang="jinja2"><span style="color:#cccccc;">[{{app_name}}] &lt;b&gt;{{summary}}&lt;/b&gt;\
+</span><span style="color:#cccccc;">{% </span><span style="color:#80d500;">if </span><span style="color:#cccccc;">body %} {{body}}{% </span><span style="color:#80d500;">endif </span><span style="color:#cccccc;">%} \
+</span><span style="color:#cccccc;">{% </span><span style="color:#80d500;">if </span><span style="color:#cccccc;">now(timestamp</span><span>=</span><span style="color:#80d500;">true</span><span style="color:#cccccc;">) </span><span>- </span><span style="color:#cccccc;">timestamp </span><span>&gt;</span><span style="color:#cccccc;"> 60 %} \
+</span><span style="color:#cccccc;">    ({{ (now(timestamp</span><span>=</span><span style="color:#80d500;">true</span><span style="color:#cccccc;">) </span><span>- </span><span style="color:#cccccc;">timestamp) | humantime }} ago)\
+</span><span style="color:#cccccc;">{% </span><span style="color:#80d500;">endif </span><span style="color:#cccccc;">%}\
+</span><span style="color:#cccccc;">{% </span><span style="color:#80d500;">if </span><span style="color:#cccccc;">unread_count </span><span>&gt;</span><span style="color:#cccccc;"> 1 %} ({{unread_count}}){% </span><span style="color:#80d500;">endif </span><span style="color:#cccccc;">%}
+</span></code></pre>
+<p><code>runst</code> uses the following context for the template variables:</p>
+<pre data-lang="json" style="background-color:#191919;color:#ffffff;" class="language-json "><code class="language-json" data-lang="json"><span style="color:#cccccc;">{
+</span><span style="color:#cccccc;">  </span><span style="color:#ffd700;">&quot;app_name&quot;</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">&quot;runst&quot;</span><span style="color:#cccccc;">,
+</span><span style="color:#cccccc;">  </span><span style="color:#ffd700;">&quot;summary&quot;</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">&quot;example&quot;</span><span style="color:#cccccc;">,
+</span><span style="color:#cccccc;">  </span><span style="color:#ffd700;">&quot;body&quot;</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">&quot;this is a notification 🦡&quot;</span><span style="color:#cccccc;">,
+</span><span style="color:#cccccc;">  </span><span style="color:#ffd700;">&quot;urgency&quot;</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">&quot;normal&quot;</span><span style="color:#cccccc;">,
+</span><span style="color:#cccccc;">  </span><span style="color:#ffd700;">&quot;unread_count&quot;</span><span style="color:#cccccc;">: </span><span style="color:#eddd5a;">1</span><span style="color:#cccccc;">,
+</span><span style="color:#cccccc;">  </span><span style="color:#ffd700;">&quot;timestamp&quot;</span><span style="color:#cccccc;">: </span><span style="color:#eddd5a;">1672426610
+</span><span style="color:#cccccc;">}
+</span></code></pre>
+<p>So we will end up with notifications like this:</p>
+<ul>
+<li>
+<p><span style="background-color:#191919;">[runst] <strong>example</strong> this is a notification 🦡</span></p>
+<ul>
+<li>(default)</li>
+</ul>
+</li>
+<li>
+<p><span style="background-color:#191919;">[runst] <strong>example</strong> this is a notification 🦡 (3m 2s ago)</span></p>
+<ul>
+<li>(while viewing an old notification)</li>
+</ul>
+</li>
+<li>
+<p><span style="background-color:#191919;">[runst] <strong>example</strong> this is a notification 🦡 (2)</span></p>
+<ul>
+<li>(when there are 2 more unread notifications)</li>
+</ul>
+</li>
+<li>
+<p><span style="background-color:#191919;">[runst] <strong>example</strong></span></p>
+<ul>
+<li>(if there is no <code>body</code>)</li>
+</ul>
+</li>
+</ul>
+<p>With this <a href="https://keats.github.io/tera/">Tera</a>-powered <code>template</code>, you can customize the notification text as you like.</p>
+<hr />
+<h4 id="custom-commands">Custom commands</h4>
+<p>You can run custom OS commands based on urgency levels and the notification contents.</p>
+<p>Imagine you want to perform a task when you receive a critical notification from a specific application:</p>
+<pre data-lang="toml" style="background-color:#191919;color:#ffffff;" class="language-toml "><code class="language-toml" data-lang="toml"><span style="color:#cccccc;">[urgency_critical]
+</span><span style="color:#80d500;">custom_commands </span><span style="color:#cccccc;">= [
+</span><span style="color:#cccccc;">  { </span><span style="color:#80d500;">filter </span><span style="color:#cccccc;">= </span><span style="color:#ffd700;">&#39;{ &quot;app_name&quot;:&quot;important-app&quot;,&quot;body&quot;:&quot;^delete.*&quot; }&#39;</span><span style="color:#cccccc;">, </span><span style="color:#80d500;">command </span><span style="color:#cccccc;">= </span><span style="color:#ffd700;">&#39;delete-everything.sh&#39; </span><span style="color:#cccccc;">},
+</span><span style="color:#cccccc;">]
+</span></code></pre>
+<p>Or maybe you simply want to play a custom notification sound:</p>
+<pre data-lang="toml" style="background-color:#191919;color:#ffffff;" class="language-toml "><code class="language-toml" data-lang="toml"><span style="color:#cccccc;">[urgency_normal]
+</span><span style="color:#80d500;">custom_commands </span><span style="color:#cccccc;">= [
+</span><span style="color:#cccccc;">  { </span><span style="color:#80d500;">command </span><span style="color:#cccccc;">= </span><span style="color:#ffd700;">&#39;aplay notification.wav&#39; </span><span style="color:#cccccc;">},
+</span><span style="color:#cccccc;">]
+</span></code></pre>
+<p>Or maybe you want a <a href="https://github.com/gotify">Gotify</a> notification on your different devices when someone says hi in any chatting application matched by the regex:</p>
+<pre data-lang="toml" style="background-color:#191919;color:#ffffff;" class="language-toml "><code class="language-toml" data-lang="toml"><span style="color:#cccccc;">[urgency_normal]
+</span><span style="color:#80d500;">custom_commands </span><span style="color:#cccccc;">= [
+</span><span style="color:#cccccc;">  { </span><span style="color:#80d500;">filter </span><span style="color:#cccccc;">= </span><span style="color:#ffd700;">&#39;{ &quot;app_name&quot;:&quot;telegram|discord|.*chat$&quot;,&quot;body&quot;:&quot;^hello.*&quot; }&#39;</span><span style="color:#cccccc;">, </span><span style="color:#80d500;">command </span><span style="color:#cccccc;">= </span><span style="color:#ffd700;">&#39;gotify push -t &quot;{{app_name}}&quot; &quot;someone said hi!&quot;&#39; </span><span style="color:#cccccc;">},
+</span><span style="color:#cccccc;">  { </span><span style="color:#80d500;">filter </span><span style="color:#cccccc;">= </span><span style="color:#ffd700;">&#39;{ &quot;app_name&quot;:&quot;matrix&quot;,&quot;body&quot;:&quot;^hey.*&quot; }&#39;</span><span style="color:#cccccc;">, </span><span style="color:#80d500;">command </span><span style="color:#cccccc;">= </span><span style="color:#ffd700;">&#39;gotify push -t &quot;{{app_name}}&quot; &quot;{{body}}&quot;&#39; </span><span style="color:#cccccc;">}
+</span><span style="color:#cccccc;">]
+</span></code></pre>
+<p>See more examples <a href="https://github.com/orhun/runst#custom_commands">here</a>.</p>
+<hr />
+<h4 id="auto-clear">Auto clear</h4>
+<p>Normally, if you want the notifications to disappear after e.g. 3 seconds, you can do this:</p>
+<pre data-lang="toml" style="background-color:#191919;color:#ffffff;" class="language-toml "><code class="language-toml" data-lang="toml"><span style="color:#cccccc;">[urgency_low]
+</span><span style="color:#80d500;">timeout </span><span style="color:#cccccc;">= </span><span style="color:#eddd5a;">3
+</span></code></pre>
+<p>If the timeout is not specified by the sender, the low urgency notifications will be closed after 3 seconds. You can set <code>timeout</code> to 0 for <em>unexpiring</em> notifications.</p>
+<p>On the other hand, if you want the notifications to disappear as you finish reading them, you can use the following option:</p>
+<pre data-lang="toml" style="background-color:#191919;color:#ffffff;" class="language-toml "><code class="language-toml" data-lang="toml"><span style="color:#cccccc;">[urgency_low]
+</span><span style="color:#80d500;">auto_clear </span><span style="color:#cccccc;">= </span><span style="color:#80d500;">true
+</span></code></pre>
+<p>If this option is set to <code>true</code>, the <em>estimated read time</em> of the notification contents is calculated and it is used as the timeout for closing the notification. So if it takes 5 seconds to read the notification, it will disappear after 5 seconds.</p>
+<hr />
+<h3 id="endnote">Endnote</h3>
+<p>There are other features that are not mentioned in this post so definitely check out the project's home page: <a href="https://github.com/orhun/runst">https://github.com/orhun/runst</a></p>
+<p>I'm using <code>runst</code> daily and adding new features as new ideas rush through my mind so feedback is very welcome! It is still a bit barebone :&gt;</p>
+<p>See you in the next project! 🦡</p>
+
+    </div>
+
+    
+        <footer>
+            <hr>
+            <p>
+                
+                    Published by Orhun Parmaksız
+                
+                
+                    
+                    in <a href="https://blog.orhun.dev/categories/projects/">Projects</a>
+                
+                
+            </p>
+            
+            
+            <div style="display: flex; justify-content: space-between; align-items: center">
+              <div>
+                <iframe
+                  src="https://github.com/sponsors/orhun/button"
+                  title="Sponsor @orhun"
+                  height="35"
+                  width="116"
+                  style="border: 0"
+                ></iframe>
+                <a href="https://www.buymeacoffee.com/orhun" target="_blank"
+                  ><img
+                    src="https://cdn.buymeacoffee.com/buttons/v2/default-white.png"
+                    alt="Buy Me A Coffee"
+                    style="height: 40px !important; width: 150px !important"
+                /></a>
+              </div>
+              <div>
+                <applause-button
+                  style="width: 50px; height: 50px"
+                  url="https://blog.orhun.dev&#x2F;introducing-runst&#x2F;"
+                  color="white"
+                  multiclap="true"
+                />
+              </div>
+              <div>
+                <div style="width: auto; height: 39px">
+                  <p style="margin: 0; color: #fff; font-style: italic">✨ Sponsored by:</p>
+                </div>
+                <a href="https://terminaltrove.com/" target="_blank"
+                  ><img
+                    src="/sponsors/terminal_trove.png"
+                    alt="Terminal Trove"
+                    style="height: 40px; width: auto"
+                /></a>
+                <a href="https://rawkode.academy/" target="_blank"
+                  ><img
+                    src="/sponsors/rawkode_academy.png"
+                    alt="Rawkode Academy"
+                    style="height: 40px; width: auto"
+                /></a>
+                <a href="https://malwation.com/" target="_blank"
+                  ><img
+                    src="/sponsors/malwation.svg"
+                    alt="Malwation"
+                    style="height: 40px; width: auto"
+                /></a>
+              </div>
+            </div>
+            <script src="https://utteranc.es/client.js"
+                    repo="orhun/personal-blog"
+                    issue-term="url"
+                    label="comments"
+                    theme="github-dark"
+                    crossorigin="anonymous"
+                    async>
+            </script>
+        </footer>
+    
+</article>
+
+
+    </body>
+
+</html>

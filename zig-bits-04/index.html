@@ -1,0 +1,914 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <meta http-equiv="content-type" content="text/html; charset=utf-8">
+      <meta property="og:type" content="website" />
+      <meta property="og:url" content="https://blog.orhun.dev"/>
+      
+      <meta property="og:title" content="Zig Bits 0x4: Building an HTTP client/server from scratch - Orhun&#x27;s Blog" />
+      
+      <meta property="og:image" content="https://blog.orhun.dev/crow.png" />
+      
+      <meta name="description" content="FOSS • Linux • Programming" />
+      <meta property="og:description" content="FOSS • Linux • Programming"/>
+      
+
+      <!-- Enable responsiveness on mobile devices-->
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+      <link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png">
+      <link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png">
+      <link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png">
+      <link rel="manifest" href="/favicon/site.webmanifest">
+
+      <script async src="https://umami.orhun.dev/script.js" data-website-id="56ca5ca7-ba9f-416e-8bee-a132c155d56b"></script>
+
+      <link rel="stylesheet" href="https://unpkg.com/applause-button/dist/applause-button.css" />
+      <script src="https://unpkg.com/applause-button/dist/applause-button.js"></script>
+
+      
+      <title>Zig Bits 0x4: Building an HTTP client&#x2F;server from scratch - Orhun&#x27;s Blog</title>
+      
+
+      
+        <link rel="alternate" type="application/rss+xml" title="RSS" href="https://blog.orhun.dev/rss.xml">
+      
+
+      
+          <link rel="stylesheet" href="https://blog.orhun.dev/site.css">
+      
+
+      
+      
+    </head>
+
+    <body class="hack dark main container">
+        
+    
+        
+                
+                    <header>
+                        <nav itemscope itemtype="http://schema.org/SiteNavigationElement">
+                        
+                            <a itemprop="url"
+                               class=""
+                               href="https://blog.orhun.dev">
+                                <span itemprop="name">Home</span></a>
+                        
+                            <a itemprop="url"
+                               class=""
+                               href="https://blog.orhun.dev/categories">
+                                <span itemprop="name">Categories</span></a>
+                        
+                            <a itemprop="url"
+                               class=""
+                               href="https://github.com/orhun/personal-blog">
+                                <span itemprop="name">Source</span></a>
+                        
+                            <a itemprop="url"
+                               class=""
+                               href="https://github.com/orhun">
+                                <span itemprop="name">GitHub</span></a>
+                        
+                            <a itemprop="url"
+                               class=""
+                               href="https://donate.orhun.dev">
+                                <span itemprop="name">Donate</span></a>
+                        
+                            <a itemprop="url"
+                               class=""
+                               href="https://blog.orhun.dev/rss.xml">
+                                <span itemprop="name">RSS</span></a>
+                        
+                            <a itemprop="url"
+                               class=""
+                               href="https://orhun.dev">
+                                <span itemprop="name">About</span></a>
+                        
+                        </nav>
+                    </header>
+                
+            
+    
+
+<article itemscope itemtype="http://schema.org/BlogPosting">
+    <header>
+        <h1 itemprop="headline">Zig Bits 0x4: Building an HTTP client&#x2F;server from scratch</h1>
+        <span class="muted">
+    <svg style="margin-bottom:-3px" class="i-clock" viewBox="0 0 32 32"
+         width="16" height="16" fill="none" stroke="currentcolor"
+         stroke-linecap="round" stroke-linejoin="round" stroke-width="6.25%">
+        <circle cx="16" cy="16" r="14"/>
+        <path d="M16 8 L16 16 20 20"/>
+    </svg>
+    <span>15 minute read</span>
+    <svg style="margin-bottom: -3px" class="i-edit" viewBox="0 0 32 32"
+         width="16" height="16" fill="none" stroke="currentcolor"
+         stroke-linecap="round" stroke-linejoin="round" stroke-width="6.25%">
+        <path d="M30 7 L25 2 5 22 3 29 10 27 Z M21 6 L26 11 Z M5 22 L10 27 Z"/>
+    </svg>
+
+    Published: 2023-07-11
+</span>
+    </header>
+    <div itemprop="articleBody">
+      <p>Let's experiment with the <a href="https://ziglang.org/documentation/master/std/#A;std:http"><code>std.http</code></a> module of Zig <code>&gt;=0.11</code> and create an HTTP server/client from scratch (along with some benchmarks)!</p>
+<span id="continue-reading"></span><center>
+<img src="/ziggy_fly.svg" style="width: 25%"/>
+</center>
+<p><strong>Note</strong>: The standard library has changed since the writing of this article. Updated source code for the HTTP server portion can be found at the end of this article.</p>
+<p>While learning a new programming language, one of the things that is always on my mind is if it is possible/easy to write an HTTP server/client with it. It might be due to the nature of my industrial orientation as a backend/systems engineer, or it is because the networking-related implementations were always a bit scary to me. In time, I think I overcame this fear quite a bit, thanks to the well-documented and beginner-friendly HTTP server/client libraries in <a href="https://www.rust-lang.org">Rust</a>. To give some names and a kind shout-out to the maintainers: <a href="https://crates.io/crates/reqwest">reqwest</a>, <a href="https://crates.io/crates/ureq">ureq</a> and <a href="https://crates.io/crates/hyper">hyper</a> are very pleasant to work with in that regard. They just do the job, and I appreciate it when things work out of the box without too much trouble.</p>
+<p>But now, we are in the <a href="https://github.com/ziglang/logo#zero-the-ziguana">Ziguana</a> territory. Ever since I started writing Zig for creating small programs and writing this series, I have been wondering how <em>high-level</em> I can get with such a low-level systems language. Today, I'm hoping to answer that question.</p>
+<p><strong>Q</strong>: So, what is the plan?</p>
+<p><strong>A</strong>: I heard that the Zig standard library will have some exciting HTTP features starting from <code>0.11.0</code>. As a first step, let's experiment with the new stuff™ and try to come up with something functional. Also, I'm curious about the performance/speed aspect of things. For that, I will be creating some benchmarks to see the comparison with other programming languages such as Rust.</p>
+<ul>
+<li><a href="https://blog.orhun.dev/zig-bits-04/#looking-into-std-http-zap">Looking into <code>std.http</code></a></li>
+<li><a href="https://blog.orhun.dev/zig-bits-04/#building-an-http-client-zap">Building an HTTP client</a>
+<ul>
+<li><a href="https://blog.orhun.dev/zig-bits-04/#bonus-git-yolo-zap">Bonus: <code>git-yolo</code></a></li>
+</ul>
+</li>
+<li><a href="https://blog.orhun.dev/zig-bits-04/#building-an-http-server-zap">Building an HTTP server</a></li>
+<li><a href="https://blog.orhun.dev/zig-bits-04/#benchmarks-zap">Benchmarks</a></li>
+</ul>
+<p><strong>Q</strong>: Aight, so we goin' full nerd mode?</p>
+<p><strong>A</strong>: I'm a teapot.</p>
+<h2 id="looking-into-std-http-zap">Looking into <a href="https://ziglang.org/documentation/master/std/#A;std:http"><code>std.http</code></a> ⚡</h2>
+<img src="/ziggy_fix.svg" style="width: 25%"/>
+<p>Zig finally got the built-in HTTP server/client support in the past months:</p>
+<ul>
+<li><a href="https://zig.news/nameless/coming-soon-to-a-zig-near-you-http-client-5b81">Coming Soon to a Zig Near You: HTTP Client</a> (technical overview)</li>
+<li><a href="https://github.com/ziglang/zig/issues/910">HTTP server in the standard library</a> (tracking issue)</li>
+<li><a href="https://news.ycombinator.com/item?id=35991684">Zig now has built-in HTTP server and client in std</a> (HN discussion)</li>
+</ul>
+<p>To summarize the features of this newly added <code>std.http</code> module:</p>
+<ul>
+<li>Only available in Zig <code>0.11.0-dev.2675-0eebc2588</code> and above.</li>
+<li>Supports <code>HTTP/1.1</code> (however, see <a href="https://richiejp.com/barely-http2-zig">A barely HTTP/2 server in Zig</a> for an interesting read!)</li>
+<li>Supports features such as <em>connection pooling</em>, <em>compressed content</em>, <em>proxying</em> and <em>TLS</em>.</li>
+</ul>
+<p>And I think the most exciting part is:</p>
+<blockquote>
+<p>With a fresh install of Zig, we can fetch the contents of a website or send a POST request with no extra hassle of finding an extra library to provide those features for us.</p>
+</blockquote>
+<p><strong>Q</strong>: It is cool and all, but is it easy to use? Show me the code already.</p>
+<p><strong>A</strong>: <a href="https://fosstodon.org/@orhun/110644278764337016">Slown</a>, let's take a look at the available types and methods in <code>std.http</code> first.</p>
+<p>At the time of writing this blog post, <code>std.http</code> has the following API:</p>
+<ul>
+<li><code>Client</code>: HTTP client implementation.</li>
+<li><code>Server</code>: HTTP server implementation.</li>
+<li><code>Connection</code>: Connection type (<code>keep_alive</code>, <code>close</code>)</li>
+<li><code>ContentEncoding</code>: Content encoding options (<code>compress</code>, <code>deflate</code>, <code>gzip</code> and <code>zstd</code>)</li>
+<li><code>Field</code>: Common type for <code>name</code> and <code>value</code></li>
+<li><code>Headers</code>: HTTP headers</li>
+<li><code>Method</code>: HTTP methods such as <code>GET</code> and <code>POST</code></li>
+<li><code>Status</code>: HTTP status codes (<code>not_found = 404</code>, <code>teapot = 418</code>, etc.)</li>
+<li><code>TransferEncoding</code>: Form of encoding used to transfer the body (<code>chunked</code>)</li>
+<li><code>Version</code>: Currently <code>HTTP/1.0</code> and <code>HTTP/1.1</code></li>
+</ul>
+<p>As you can already tell, it is a very straightforward HTTP implementation, and you might even figure out the usage just by looking at the available types (if you have magical powers or something). Compared to the current stable version of Zig (<code>0.10.1</code>), <code>std.http</code> is not that barebones and got some cool additions such as content/transfer encodings and headers, which is very cool!</p>
+<p><strong>Q</strong>: Enough fiddling around man, are you going to write the code now?</p>
+<p><strong>A</strong>: Uh, yeah. Let's do that before you throw a hissy fit.</p>
+<p><strong>Q</strong>: I would nev--</p>
+<h2 id="building-an-http-client-zap">Building an HTTP client ⚡</h2>
+<img src="/ziggy_cool.svg" style="width: 20%"/>
+<blockquote>
+<p>I will be assuming that you have Zig <code>0.11.0</code> installed!</p>
+</blockquote>
+<p>Before everything, we need to choose an allocator to use. This is one of the fun aspects of Zig where you get to choose exactly how the memory allocations are done. I highly recommend reading <a href="https://ziglearn.org/chapter-2/#allocators">about allocators</a> or <a href="https://blog.orhun.dev/zig-bits-02/">the previous episodes</a> of these series where I weigh on this topic.</p>
+<p>For the sake of simplicity, let's go with <a href="https://ziglang.org/documentation/master/std/#A;std:heap.GeneralPurposeAllocator"><code>std.heap.GeneralPurposeAllocator</code></a> which is a safe allocator which can prevent double-free, use-after-free, and can detect leaks.</p>
+<pre data-lang="zig" style="background-color:#191919;color:#ffffff;" class="language-zig "><code class="language-zig" data-lang="zig"><span style="color:#80d500;">const</span><span style="color:#cccccc;"> std </span><span>= </span><span style="color:#80d500;">@import</span><span style="color:#cccccc;">(</span><span style="color:#ffd700;">&quot;std&quot;</span><span style="color:#cccccc;">);
+</span><span style="color:#cccccc;">
+</span><span style="background-color:#171717;color:#616161;">// Create an allocator.
+</span><span style="color:#80d500;">var</span><span style="color:#cccccc;"> gpa </span><span>=</span><span style="color:#cccccc;"> std.heap.GeneralPurposeAllocator(.{}){};
+</span><span style="color:#80d500;">defer</span><span style="color:#cccccc;"> std.debug.assert(gpa.deinit() </span><span>==</span><span style="color:#80d500;"> .ok</span><span style="color:#cccccc;">);
+</span><span style="color:#80d500;">const</span><span style="color:#cccccc;"> allocator </span><span>=</span><span style="color:#cccccc;"> gpa.allocator();
+</span></code></pre>
+<p>As the next step, let's create our <code>Client</code> object. It is fairly straightforward:</p>
+<pre data-lang="zig" style="background-color:#191919;color:#ffffff;" class="language-zig "><code class="language-zig" data-lang="zig"><span style="color:#80d500;">const</span><span style="color:#cccccc;"> http </span><span>=</span><span style="color:#cccccc;"> std.http;
+</span><span style="color:#cccccc;">
+</span><span style="background-color:#171717;color:#616161;">// Create an HTTP client.
+</span><span style="color:#80d500;">var</span><span style="color:#cccccc;"> client </span><span>= </span><span style="color:#80d500;">http.Client</span><span style="color:#cccccc;">{ .allocator </span><span>=</span><span style="color:#cccccc;"> allocator };
+</span><span style="color:#80d500;">defer</span><span style="color:#cccccc;"> client.deinit();
+</span></code></pre>
+<p>As you can see, the only parameter that is needed to create a <code>Client</code> is the <code>allocator</code>. Optionally, you can provide a certificate bundle, connection pool, and proxy during construction.</p>
+<p>Another thing to note here is the <code>defer</code> keyword. It instructs that the <code>deinit</code> method will be called when the <code>client</code> goes out of scope which means all the associated resources with the client will be released. For more information, you can give it a read to the <a href="https://blog.orhun.dev/zig-bits-02/">part 0x2</a> of this series.</p>
+<p>Okay, now let's make a <code>GET</code> call to a website and get the result as text.</p>
+<p><strong>Q</strong>: Any brilliant ideas about which site to use?</p>
+<p><strong>A</strong>: You bet!</p>
+<blockquote>
+<p><a href="https://whatthecommit.com"><strong>https://whatthecommit.com</strong></a>: commit message generator</p>
+</blockquote>
+<p>I also use this website in a git alias as follows:</p>
+<pre data-lang="ini" style="background-color:#191919;color:#ffffff;" class="language-ini "><code class="language-ini" data-lang="ini"><span style="color:#80d500;">[alias]
+</span><span style="color:#cccccc;">  </span><span style="font-style:italic;color:#8aa6c1;">yolo </span><span>= !</span><span style="color:#cccccc;">git commit </span><span>-</span><span style="color:#cccccc;">m </span><span style="color:#ffd700;">\&quot;$(curl -s https://whatthecommit.com/index.txt)\&quot;
+</span></code></pre>
+<p>So when I need a dummy commit, I just go:</p>
+<pre data-lang="sh" style="background-color:#191919;color:#ffffff;" class="language-sh "><code class="language-sh" data-lang="sh"><span style="color:#cccccc;">$ git yolo
+</span><span style="color:#cccccc;">
+</span><span style="color:#cccccc;">[master b989274] This will definitely break in 2087 (TODO)
+</span></code></pre>
+<p>Such a fun command!</p>
+<p><strong>Q</strong>: <em>Ahem</em>, aren't you derailing from the topic?</p>
+<p><strong>A</strong>: Ah, yeah, sorry.</p>
+<p>To send a request, we will need a few things:</p>
+<ul>
+<li>a <code>std.http.Method</code></li>
+<li>a <code>std.Uri</code>
+<ul>
+<li>parsed from an URL.</li>
+</ul>
+</li>
+<li>a <code>std.http.Headers</code>
+<ul>
+<li>for holding the headers sent to the server.</li>
+<li>it will only allocate memory if we append anything to it.</li>
+</ul>
+</li>
+</ul>
+<p>And here is how we can put these parameters together:</p>
+<pre data-lang="zig" style="background-color:#191919;color:#ffffff;" class="language-zig "><code class="language-zig" data-lang="zig"><span style="background-color:#171717;color:#616161;">// Parse the URI.
+</span><span style="color:#80d500;">const</span><span style="color:#cccccc;"> uri </span><span>=</span><span style="color:#cccccc;"> std.Uri.parse(</span><span style="color:#ffd700;">&quot;https://whatthecommit.com&quot;</span><span style="color:#cccccc;">) </span><span style="color:#80d500;">catch unreachable</span><span style="color:#cccccc;">;
+</span><span style="color:#cccccc;">
+</span><span style="background-color:#171717;color:#616161;">// Create the headers that will be sent to the server.
+</span><span style="color:#80d500;">var</span><span style="color:#cccccc;"> headers </span><span>= </span><span style="color:#80d500;">std.http.Headers</span><span style="color:#cccccc;">{ .allocator </span><span>=</span><span style="color:#cccccc;"> allocator };
+</span><span style="color:#80d500;">defer</span><span style="color:#cccccc;"> headers.deinit();
+</span><span style="color:#cccccc;">
+</span><span style="background-color:#171717;color:#616161;">// Accept anything.
+</span><span style="color:#80d500;">try</span><span style="color:#cccccc;"> headers.append(</span><span style="color:#ffd700;">&quot;accept&quot;</span><span style="color:#cccccc;">, </span><span style="color:#ffd700;">&quot;*/*&quot;</span><span style="color:#cccccc;">);
+</span></code></pre>
+<p>Now, we are ready to create a <code>Request</code> object:</p>
+<pre data-lang="zig" style="background-color:#191919;color:#ffffff;" class="language-zig "><code class="language-zig" data-lang="zig"><span style="background-color:#171717;color:#616161;">// Create a request.
+</span><span style="color:#80d500;">var</span><span style="color:#cccccc;"> request </span><span>= </span><span style="color:#80d500;">try</span><span style="color:#cccccc;"> client.request(.GET, uri, headers, .{});
+</span><span style="color:#80d500;">defer</span><span style="color:#cccccc;"> request.deinit();
+</span></code></pre>
+<p>And that's it!</p>
+<p><strong>Q</strong>: That's it what? I don't see anything happening.</p>
+<p><strong>A</strong>: You're right. We only formed a connection to the server now. To actually <em>send</em> the request, we need to use the <code>start</code> function as follows:</p>
+<pre data-lang="zig" style="background-color:#191919;color:#ffffff;" class="language-zig "><code class="language-zig" data-lang="zig"><span style="background-color:#171717;color:#616161;">// Send the request and headers to the server.
+</span><span style="color:#80d500;">try</span><span style="color:#cccccc;"> request.start();
+</span></code></pre>
+<p><strong>Q</strong>: Oh god, I hate extra steps!</p>
+<p><strong>A</strong>: Think about it in a different way, this approach comes in handy when you need to manipulate the request before sending it. For example,</p>
+<pre data-lang="zig" style="background-color:#191919;color:#ffffff;" class="language-zig "><code class="language-zig" data-lang="zig"><span style="color:#80d500;">var</span><span style="color:#cccccc;"> request </span><span>= </span><span style="color:#80d500;">try</span><span style="color:#cccccc;"> client.request(.POST, uri, headers, .{});
+</span><span style="color:#80d500;">defer</span><span style="color:#cccccc;"> request.deinit();
+</span><span style="color:#cccccc;">
+</span><span style="background-color:#171717;color:#616161;">// Set the encoding for the POST request.
+</span><span style="color:#cccccc;">request.transfer_encoding </span><span>=</span><span style="color:#80d500;"> .chunked</span><span style="color:#cccccc;">;
+</span><span style="color:#cccccc;">
+</span><span style="color:#80d500;">try</span><span style="color:#cccccc;"> request.start();
+</span></code></pre>
+<p><strong>Q</strong>: Oooh, that makes sense.</p>
+<p><strong>A</strong>: Well, if you hate extra steps, we have one other step to go.</p>
+<p><strong>Q</strong>: Geez, what now!?</p>
+<p>After sending the request, we need to wait for server to send us a response:</p>
+<pre data-lang="zig" style="background-color:#191919;color:#ffffff;" class="language-zig "><code class="language-zig" data-lang="zig"><span style="background-color:#171717;color:#616161;">// Wait for response.
+</span><span style="color:#80d500;">try</span><span style="color:#cccccc;"> request.wait();
+</span></code></pre>
+<p>This <code>wait</code> call will handle the following tasks for us:</p>
+<ul>
+<li>Redirects</li>
+<li>Reading/storing headers</li>
+<li>Setting up decompression</li>
+</ul>
+<p>Lastly, to read the response from the server, we can use the <code>reader()</code> method of <code>Request</code> and get a <code>std.io.Reader</code>. The rest is simply reading from a stream in Zig:</p>
+<pre data-lang="zig" style="background-color:#191919;color:#ffffff;" class="language-zig "><code class="language-zig" data-lang="zig"><span style="background-color:#171717;color:#616161;">// Read the entire response body, but only allow it to allocate 8KB of memory.
+</span><span style="color:#80d500;">const</span><span style="color:#cccccc;"> body </span><span>=</span><span style="color:#cccccc;"> request.reader().readAllAlloc(allocator, </span><span style="color:#eddd5a;">8192</span><span style="color:#cccccc;">) </span><span style="color:#80d500;">catch unreachable</span><span style="color:#cccccc;">;
+</span><span style="color:#80d500;">defer</span><span style="color:#cccccc;"> allocator.free(body);
+</span></code></pre>
+<p>And here is how it is all put together with printing out the response:</p>
+<pre data-lang="zig" style="background-color:#191919;color:#ffffff;" class="language-zig "><code class="language-zig" data-lang="zig"><span style="background-color:#171717;color:#616161;">// Zig version: 0.11.0
+</span><span style="color:#cccccc;">
+</span><span style="color:#80d500;">const</span><span style="color:#cccccc;"> std </span><span>= </span><span style="color:#80d500;">@import</span><span style="color:#cccccc;">(</span><span style="color:#ffd700;">&quot;std&quot;</span><span style="color:#cccccc;">);
+</span><span style="color:#80d500;">const</span><span style="color:#cccccc;"> http </span><span>=</span><span style="color:#cccccc;"> std.http;
+</span><span style="color:#cccccc;">
+</span><span style="color:#80d500;">pub fn </span><span>main</span><span style="color:#cccccc;">() </span><span>!</span><span style="color:#80d500;">void </span><span style="color:#cccccc;">{
+</span><span style="color:#cccccc;">    </span><span style="background-color:#171717;color:#616161;">// Create an allocator.
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">var</span><span style="color:#cccccc;"> gpa </span><span>=</span><span style="color:#cccccc;"> std.heap.GeneralPurposeAllocator(.{}){};
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">defer</span><span style="color:#cccccc;"> std.debug.assert(gpa.deinit() </span><span>==</span><span style="color:#80d500;"> .ok</span><span style="color:#cccccc;">);
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">const</span><span style="color:#cccccc;"> allocator </span><span>=</span><span style="color:#cccccc;"> gpa.allocator();
+</span><span style="color:#cccccc;">
+</span><span style="color:#cccccc;">    </span><span style="background-color:#171717;color:#616161;">// Create an HTTP client.
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">var</span><span style="color:#cccccc;"> client </span><span>= </span><span style="color:#80d500;">http.Client</span><span style="color:#cccccc;">{ .allocator </span><span>=</span><span style="color:#cccccc;"> allocator };
+</span><span style="color:#cccccc;">    </span><span style="background-color:#171717;color:#616161;">// Release all associated resources with the client.
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">defer</span><span style="color:#cccccc;"> client.deinit();
+</span><span style="color:#cccccc;">
+</span><span style="color:#cccccc;">    </span><span style="background-color:#171717;color:#616161;">// Parse the URI.
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">const</span><span style="color:#cccccc;"> uri </span><span>=</span><span style="color:#cccccc;"> std.Uri.parse(</span><span style="color:#ffd700;">&quot;https://whatthecommit.com/index.txt&quot;</span><span style="color:#cccccc;">) </span><span style="color:#80d500;">catch unreachable</span><span style="color:#cccccc;">;
+</span><span style="color:#cccccc;">
+</span><span style="color:#cccccc;">    </span><span style="background-color:#171717;color:#616161;">// Create the headers that will be sent to the server.
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">var</span><span style="color:#cccccc;"> headers </span><span>= </span><span style="color:#80d500;">std.http.Headers</span><span style="color:#cccccc;">{ .allocator </span><span>=</span><span style="color:#cccccc;"> allocator };
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">defer</span><span style="color:#cccccc;"> headers.deinit();
+</span><span style="color:#cccccc;">
+</span><span style="color:#cccccc;">    </span><span style="background-color:#171717;color:#616161;">// Accept anything.
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">try</span><span style="color:#cccccc;"> headers.append(</span><span style="color:#ffd700;">&quot;accept&quot;</span><span style="color:#cccccc;">, </span><span style="color:#ffd700;">&quot;*/*&quot;</span><span style="color:#cccccc;">);
+</span><span style="color:#cccccc;">
+</span><span style="color:#cccccc;">    </span><span style="background-color:#171717;color:#616161;">// Make the connection to the server.
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">var</span><span style="color:#cccccc;"> request </span><span>= </span><span style="color:#80d500;">try</span><span style="color:#cccccc;"> client.request(.GET, uri, headers, .{});
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">defer</span><span style="color:#cccccc;"> request.deinit();
+</span><span style="color:#cccccc;">
+</span><span style="color:#cccccc;">    </span><span style="background-color:#171717;color:#616161;">// Send the request and headers to the server.
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">try</span><span style="color:#cccccc;"> request.start();
+</span><span style="color:#cccccc;">
+</span><span style="color:#cccccc;">    </span><span style="background-color:#171717;color:#616161;">// Wait for the server to send use a response.
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">try</span><span style="color:#cccccc;"> request.wait();
+</span><span style="color:#cccccc;">
+</span><span style="color:#cccccc;">    </span><span style="background-color:#171717;color:#616161;">// Read the entire response body, but only allow it to allocate 8KB of memory.
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">const</span><span style="color:#cccccc;"> body </span><span>=</span><span style="color:#cccccc;"> request.reader().readAllAlloc(allocator, </span><span style="color:#eddd5a;">8192</span><span style="color:#cccccc;">) </span><span style="color:#80d500;">catch unreachable</span><span style="color:#cccccc;">;
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">defer</span><span style="color:#cccccc;"> allocator.free(body);
+</span><span style="color:#cccccc;">
+</span><span style="color:#cccccc;">    </span><span style="background-color:#171717;color:#616161;">// Print out the response.
+</span><span style="color:#cccccc;">    std.log.info(</span><span style="color:#ffd700;">&quot;{s}&quot;</span><span style="color:#cccccc;">, .{body});
+</span><span style="color:#cccccc;">}
+</span></code></pre>
+<p>Let's run it!</p>
+<pre data-lang="sh" style="background-color:#191919;color:#ffffff;" class="language-sh "><code class="language-sh" data-lang="sh"><span style="color:#cccccc;">$ zig build run
+</span><span style="color:#cccccc;">error: TlsInitializationFailed
+</span><span style="color:#cccccc;">std/crypto/tls/Client.zig:257:17: 0x35cb35 in init__anon_9759 (std.http)
+</span><span style="color:#cccccc;">                </span><span style="color:#80d500;">return</span><span style="color:#cccccc;"> error.TlsUnexpectedMessage</span><span>;
+</span><span style="color:#cccccc;">                ^
+</span><span style="color:#cccccc;">std/http/Client.zig:913:103: 0x2a208b in connectUnproxied (std.http)
+</span><span style="color:#cccccc;">            conn.data.tls_client.* = std.crypto.tls.Client.init(stream, client.ca_bundle, host) catch return error.TlsInitializationFailed</span><span>;
+</span><span style="color:#cccccc;">                                                                                                      ^
+</span><span style="color:#cccccc;">std/http/Client.zig:948:9: 0x26f6a1 in connect (std.http)
+</span><span style="color:#cccccc;">        </span><span style="color:#80d500;">return</span><span style="color:#cccccc;"> client.connectUnproxied(host, port, protocol)</span><span>;
+</span><span style="color:#cccccc;">        ^
+</span><span style="color:#cccccc;">std/http/Client.zig:1013:44: 0x2678f8 in request (std.http)
+</span><span style="color:#cccccc;">    const conn = options.connection orelse try client.connect(host, port, protocol)</span><span>;
+</span><span style="color:#cccccc;">                                           ^
+</span><span style="color:#cccccc;">src/main.zig:25:19: 0x266f2f in main (std.http)
+</span><span style="color:#cccccc;">    var request = try client.request(.GET, uri, headers, .{})</span><span>;
+</span><span style="color:#cccccc;">                  ^
+</span><span style="color:#cccccc;">Build Summary: 3/5 steps succeeded</span><span>; </span><span style="color:#cccccc;">1 failed (disable with</span><span style="font-style:italic;color:#8aa6c1;"> --summary</span><span style="color:#cccccc;"> none)
+</span><span style="color:#cccccc;">run transitive failure
+</span><span style="color:#cccccc;">└─ run std.http failure
+</span></code></pre>
+<p><strong>Q</strong>: Oops, what happened?</p>
+<p><strong>A</strong>: Uhhhh...</p>
+<p>With a little bit of digging, I found an issue in the Zig repository:</p>
+<blockquote>
+<p><a href="https://github.com/ziglang/zig/issues/14172">https://github.com/ziglang/zig/issues/14172</a> (test std lib TLS implementation against many real world servers)</p>
+</blockquote>
+<p>It turns out, current TLS implementation in the standard library only supports <a href="https://www.cloudflare.com/learning/ssl/why-use-tls-1.3/">TLS 1.3</a>.</p>
+<p>Here are some comments regarding this:</p>
+<ul>
+<li>
+<blockquote>
+<p><a href="https://github.com/dadrian">@dadrian</a>: I assume the decision to only support 1.3 is at least semi-intentional, since 1.3 and 1.2 have different state machines.</p>
+</blockquote>
+</li>
+<li>
+<blockquote>
+<p><a href="https://github.com/jedisct1">@jedisct1</a>: Eventually, everybody's gonna move to TLS 1.3. I'm not sure that it's worth investing time in a TLS 1.2 implementation today, especially since TLS 1.2 has a lot of footguns.</p>
+</blockquote>
+</li>
+</ul>
+<p>And unfortunately, our beloved website <em>whatthecommit.com</em> uses TLS 1.2:</p>
+<pre data-lang="sh" style="background-color:#191919;color:#ffffff;" class="language-sh "><code class="language-sh" data-lang="sh"><span style="color:#cccccc;">$ curl</span><span style="font-style:italic;color:#8aa6c1;"> -v</span><span style="color:#cccccc;"> https://whatthecommit.com/index.txt
+</span><span style="color:#cccccc;">
+</span><span style="color:#cccccc;">* TLSv1.3 (IN), TLS handshake, Server hello (2)</span><span style="color:#8aa6c1;">:
+</span><span style="color:#cccccc;">* TLSv1.2 (IN), TLS handshake, Certificate (11)</span><span style="color:#8aa6c1;">:
+</span><span style="color:#cccccc;">* TLSv1.2 (IN), TLS handshake, Server key exchange (12)</span><span style="color:#8aa6c1;">:
+</span><span style="color:#cccccc;">* TLSv1.2 (IN), TLS handshake, Server finished (14)</span><span style="color:#8aa6c1;">:
+</span><span style="color:#cccccc;">* TLSv1.2 (OUT), TLS handshake, Client key exchange (16)</span><span style="color:#8aa6c1;">:
+</span><span style="color:#cccccc;">* TLSv1.2 (OUT), TLS change cipher, Change cipher spec (1)</span><span style="color:#8aa6c1;">:
+</span><span style="color:#cccccc;">* TLSv1.2 (OUT), TLS handshake, Finished (20)</span><span style="color:#8aa6c1;">:
+</span><span style="color:#cccccc;">* TLSv1.2 (IN), TLS handshake, Finished (20)</span><span style="color:#8aa6c1;">:
+</span><span style="color:#cccccc;">
+</span><span style="color:#cccccc;">* SSL connection using TLSv1.2 / ECDHE-RSA-AES128-GCM-SHA256
+</span></code></pre>
+<p>Also, we can check the TLS 1.3 support by running:</p>
+<pre data-lang="sh" style="background-color:#191919;color:#ffffff;" class="language-sh "><code class="language-sh" data-lang="sh"><span style="color:#cccccc;">$ curl</span><span style="font-style:italic;color:#8aa6c1;"> -v --tlsv1</span><span style="color:#cccccc;">.3 https://whatthecommit.com/index.txt
+</span><span style="color:#cccccc;">
+</span><span style="color:#cccccc;">*   Trying 3.141.206.122:443...
+</span><span style="color:#cccccc;">* Connected to whatthecommit.com (3.141.206.122) port 443 (#0)
+</span><span style="color:#cccccc;">* ALPN: offers h2,http/1.1
+</span><span style="color:#cccccc;">* TLSv1.3 (OUT), TLS handshake, Client hello (1)</span><span style="color:#8aa6c1;">:
+</span><span style="color:#cccccc;">*  CAfile: /etc/ssl/certs/ca-certificates.crt
+</span><span style="color:#cccccc;">*  CApath: none
+</span><span style="color:#cccccc;">* TLSv1.3 (IN), TLS alert, close notify (256)</span><span style="color:#8aa6c1;">:
+</span><span style="color:#cccccc;">* OpenSSL SSL_connect: SSL_ERROR_ZERO_RETURN in connection to whatthecommit.com:443
+</span><span style="color:#cccccc;">* Closing connection 0
+</span><span style="color:#cccccc;">
+</span><span style="color:#cccccc;">curl: (35) OpenSSL SSL_connect: SSL_ERROR_ZERO_RETURN in connection to whatthecommit.com:443
+</span></code></pre>
+<p>RIP.</p>
+<p><strong>Q</strong>: So, what do we do now?</p>
+<p><strong>A</strong>: Luckily I have set up a similar website in the past which can be used for testing in our case (and it supports TLS 1.3).</p>
+<blockquote>
+<p><a href="https://godsays.xyz"><strong>https://godsays.xyz</strong></a>: random text generator</p>
+</blockquote>
+<p>It is simply a website that spits out random sequence of words from a predefined wordlist every time you refresh it. What, you ask why this exists?</p>
+<blockquote>
+<p><a href="https://en.wikipedia.org/wiki/Terry_A._Davis">Terrence Andrew Davis</a> (December 15, 1969 – August 11, 2018) was an American programmer who created and designed the operating system <a href="https://en.wikipedia.org/wiki/TempleOS">TempleOS</a> alone. It was a highly complex and unusual undertaking for one person, as the project extended to building core components such as programming language, editor, compiler and kernel virtually from scratch.</p>
+<p>Contained in Terry's TempleOS masterpiece were various random text generators. Terry believed that by generating this text one could "speak to God".</p>
+</blockquote>
+<p>So I reproduced this logic in Rust and created a simple CLI program (<code>godsays</code>) and a webserver (<code>godsays-server</code>) for extended use cases.</p>
+<p>Repository: <a href="https://github.com/orhun/godsays"><strong>https://github.com/orhun/godsays</strong></a></p>
+<p>So we can simply update the URL in our program and try running it again as follows:</p>
+<pre data-lang="zig" style="background-color:#191919;color:#ffffff;" class="language-zig "><code class="language-zig" data-lang="zig"><span style="color:#cccccc;">$ sed </span><span>-</span><span style="color:#cccccc;">i </span><span style="color:#ffd700;">&quot;s|https://.*</span><span style="font-weight:bold;color:#ff2837;">\&quot;</span><span style="color:#ffd700;">|https://godsays.xyz</span><span style="font-weight:bold;color:#ff2837;">\&quot;</span><span style="color:#ffd700;">|g&quot;</span><span style="color:#cccccc;"> src</span><span>/</span><span style="color:#cccccc;">main.zig
+</span><span style="color:#cccccc;">
+</span><span style="color:#cccccc;">$ zig build run
+</span><span style="color:#cccccc;">info: </span><span style="color:#ffd700;">&quot;don&#39;t push it try again act SupremerCourt guppy but of course smack some sense into you ...&quot;
+</span></code></pre>
+<p>Yay, it worked! We successfully sent a <code>GET</code> request to a server and printed out the response.</p>
+<p><strong>Q</strong>: What about <code>POST</code> requests?</p>
+<p><strong>A</strong>: Good question. Right after we <code>send</code> the request, we can <em>write</em> to it as follows:</p>
+<pre data-lang="zig" style="background-color:#191919;color:#ffffff;" class="language-zig "><code class="language-zig" data-lang="zig"><span style="background-color:#171717;color:#616161;">// Make the connection to the server.
+</span><span style="color:#80d500;">var</span><span style="color:#cccccc;"> request </span><span>= </span><span style="color:#80d500;">try</span><span style="color:#cccccc;"> client.request(.POST, uri, headers, .{});
+</span><span style="color:#80d500;">defer</span><span style="color:#cccccc;"> request.deinit();
+</span><span style="color:#cccccc;">request.transfer_encoding </span><span>=</span><span style="color:#80d500;"> .chunked</span><span style="color:#cccccc;">;
+</span><span style="color:#cccccc;">
+</span><span style="background-color:#171717;color:#616161;">// Send the request and headers to the server.
+</span><span style="color:#80d500;">try</span><span style="color:#cccccc;"> request.start();
+</span><span style="color:#cccccc;">
+</span><span style="background-color:#171717;color:#616161;">// Send the payload.
+</span><span style="color:#80d500;">try</span><span style="color:#cccccc;"> request.writer().writeAll(</span><span style="color:#ffd700;">&quot;Zig Bits!</span><span style="font-weight:bold;color:#ff2837;">\n</span><span style="color:#ffd700;">&quot;</span><span style="color:#cccccc;">);
+</span><span style="color:#80d500;">try</span><span style="color:#cccccc;"> request.finish();
+</span><span style="color:#cccccc;">
+</span><span style="background-color:#171717;color:#616161;">// Wait for the server to send use a response.
+</span><span style="color:#80d500;">try</span><span style="color:#cccccc;"> request.wait();
+</span></code></pre>
+<p>And that concludes the HTTP client part, what an adventure!</p>
+<h3 id="bonus-git-yolo-zap">Bonus: <code>git-yolo</code> ⚡</h3>
+<p>Here is the semi-real-world application where I used the HTTP client from the Zig standard library to fetch a random commit message from whatthecommit.com (let's assume it works) and run the <code>git-commit</code> command for creating dummy commits with a random message.</p>
+<pre data-lang="zig" style="background-color:#191919;color:#ffffff;" class="language-zig "><code class="language-zig" data-lang="zig"><span style="background-color:#171717;color:#616161;">// Zig version: 0.11.0
+</span><span style="color:#cccccc;">
+</span><span style="color:#80d500;">const</span><span style="color:#cccccc;"> std </span><span>= </span><span style="color:#80d500;">@import</span><span style="color:#cccccc;">(</span><span style="color:#ffd700;">&quot;std&quot;</span><span style="color:#cccccc;">);
+</span><span style="color:#80d500;">const</span><span style="color:#cccccc;"> http </span><span>=</span><span style="color:#cccccc;"> std.http;
+</span><span style="color:#cccccc;">
+</span><span style="background-color:#171717;color:#616161;">// URL for fetching a random message.
+</span><span style="color:#80d500;">const</span><span style="color:#cccccc;"> RANDOM_MESSAGE_URL </span><span>= </span><span style="color:#ffd700;">&quot;https://whatthecommit.com/index.txt&quot;</span><span style="color:#cccccc;">;
+</span><span style="color:#cccccc;">
+</span><span style="background-color:#171717;color:#616161;">/// Returns a random message.
+</span><span style="color:#80d500;">fn </span><span>getRandomMessage</span><span style="color:#cccccc;">(</span><span style="font-style:italic;color:#8aa6c1;">allocator</span><span style="color:#cccccc;">: </span><span style="color:#80d500;">std.mem.Allocator</span><span style="color:#cccccc;">) </span><span>!</span><span style="color:#cccccc;">[]</span><span style="color:#80d500;">u8 </span><span style="color:#cccccc;">{
+</span><span style="color:#cccccc;">    </span><span style="background-color:#171717;color:#616161;">// Create an HTTP client.
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">var</span><span style="color:#cccccc;"> client </span><span>= </span><span style="color:#80d500;">http.Client</span><span style="color:#cccccc;">{ .allocator </span><span>=</span><span style="color:#cccccc;"> allocator };
+</span><span style="color:#cccccc;">    </span><span style="background-color:#171717;color:#616161;">// Release all associated resources with the client.
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">defer</span><span style="color:#cccccc;"> client.deinit();
+</span><span style="color:#cccccc;">    </span><span style="background-color:#171717;color:#616161;">// Parse the URI.
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">const</span><span style="color:#cccccc;"> uri </span><span>= </span><span style="color:#80d500;">try</span><span style="color:#cccccc;"> std.Uri.parse(RANDOM_MESSAGE_URL);
+</span><span style="color:#cccccc;">    </span><span style="background-color:#171717;color:#616161;">// Create the headers that will be sent to the server.
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">var</span><span style="color:#cccccc;"> headers </span><span>= </span><span style="color:#80d500;">std.http.Headers</span><span style="color:#cccccc;">{ .allocator </span><span>=</span><span style="color:#cccccc;"> allocator };
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">defer</span><span style="color:#cccccc;"> headers.deinit();
+</span><span style="color:#cccccc;">    </span><span style="background-color:#171717;color:#616161;">// Accept anything.
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">try</span><span style="color:#cccccc;"> headers.append(</span><span style="color:#ffd700;">&quot;accept&quot;</span><span style="color:#cccccc;">, </span><span style="color:#ffd700;">&quot;*/*&quot;</span><span style="color:#cccccc;">);
+</span><span style="color:#cccccc;">    </span><span style="background-color:#171717;color:#616161;">// Make the connection to the server.
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">var</span><span style="color:#cccccc;"> request </span><span>= </span><span style="color:#80d500;">try</span><span style="color:#cccccc;"> client.request(.GET, uri, headers, .{});
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">defer</span><span style="color:#cccccc;"> request.deinit();
+</span><span style="color:#cccccc;">    </span><span style="background-color:#171717;color:#616161;">// Send the request and headers to the server.
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">try</span><span style="color:#cccccc;"> request.start();
+</span><span style="color:#cccccc;">    </span><span style="background-color:#171717;color:#616161;">// Wait for the server to send use a response.
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">try</span><span style="color:#cccccc;"> request.wait();
+</span><span style="color:#cccccc;">    </span><span style="background-color:#171717;color:#616161;">// Return the body.
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">return try</span><span style="color:#cccccc;"> request.reader().readAllAlloc(allocator, </span><span style="color:#eddd5a;">8192</span><span style="color:#cccccc;">);
+</span><span style="color:#cccccc;">}
+</span><span style="color:#cccccc;">
+</span><span style="background-color:#171717;color:#616161;">/// Executes the `git commit` command with the given message parameter.
+</span><span style="color:#80d500;">fn </span><span>commit</span><span style="color:#cccccc;">(</span><span style="font-style:italic;color:#8aa6c1;">allocator</span><span style="color:#cccccc;">: </span><span style="color:#80d500;">std.mem.Allocator</span><span style="color:#cccccc;">, </span><span style="font-style:italic;color:#8aa6c1;">message</span><span style="color:#cccccc;">: []</span><span style="color:#80d500;">const u8</span><span style="color:#cccccc;">) </span><span>!</span><span style="color:#80d500;">void </span><span style="color:#cccccc;">{
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">var</span><span style="color:#cccccc;"> process </span><span>=</span><span style="color:#cccccc;"> std.ChildProcess.init(&amp;[</span><span style="color:#eddd5a;">_</span><span style="color:#cccccc;">][]</span><span style="color:#80d500;">const u8</span><span style="color:#cccccc;">{
+</span><span style="color:#cccccc;">        </span><span style="color:#ffd700;">&quot;git&quot;</span><span style="color:#cccccc;">,
+</span><span style="color:#cccccc;">        </span><span style="color:#ffd700;">&quot;commit&quot;</span><span style="color:#cccccc;">,
+</span><span style="color:#cccccc;">        </span><span style="color:#ffd700;">&quot;-m&quot;</span><span style="color:#cccccc;">,
+</span><span style="color:#cccccc;">        message,
+</span><span style="color:#cccccc;">    }, allocator);
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">try</span><span style="color:#cccccc;"> process.spawn();
+</span><span style="color:#cccccc;">}
+</span><span style="color:#cccccc;">
+</span><span style="background-color:#171717;color:#616161;">/// Entry-point of the application.
+</span><span style="color:#80d500;">pub fn </span><span>main</span><span style="color:#cccccc;">() </span><span>!</span><span style="color:#80d500;">void </span><span style="color:#cccccc;">{
+</span><span style="color:#cccccc;">    </span><span style="background-color:#171717;color:#616161;">// Create an allocator.
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">var</span><span style="color:#cccccc;"> gpa </span><span>=</span><span style="color:#cccccc;"> std.heap.GeneralPurposeAllocator(.{}){};
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">const</span><span style="color:#cccccc;"> allocator </span><span>=</span><span style="color:#cccccc;"> gpa.allocator();
+</span><span style="color:#cccccc;">    </span><span style="background-color:#171717;color:#616161;">// Get a random message.
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">var</span><span style="color:#cccccc;"> message </span><span>= </span><span style="color:#80d500;">try </span><span style="color:#cccccc;">getRandomMessage(allocator);
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">defer</span><span style="color:#cccccc;"> allocator.free(message);
+</span><span style="color:#cccccc;">    </span><span style="background-color:#171717;color:#616161;">// Create a git commit.
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">try </span><span style="color:#cccccc;">commit(allocator, message);
+</span><span style="color:#cccccc;">}
+</span></code></pre>
+<h2 id="building-an-http-server-zap">Building an HTTP server ⚡</h2>
+<img src="/ziggy_cool.svg" style="width: 20%"/>
+<p>Now that the <em>easy part</em> is done, let's get to the real deal: the HTTP server.</p>
+<p>For the following implementation, I took some inspiration from the <a href="https://github.com/ziglang/zig/blob/7cf2cbb33ef34c1d211135f56d30fe23b6cacd42/test/standalone/http.zig">tests in the standard library</a> and came up with a simplified version of it without multithreading and assertions. But don't worry, we will build something functional and easily extensible for different use-cases.</p>
+<p>To keep it simple, I think adding a single route as <code>/get</code> is enough. And why not return "Zig Bits!" from it?</p>
+<p>So, here is what we simply want:</p>
+<pre data-lang="sh" style="background-color:#191919;color:#ffffff;" class="language-sh "><code class="language-sh" data-lang="sh"><span style="color:#cccccc;">$ curl 127.0.0.1:8000/get
+</span><span style="color:#cccccc;">
+</span><span style="color:#cccccc;">Zig Bits!
+</span></code></pre>
+<p><strong>Q</strong>: Did you know that you can create an HTTP server in Python in a single line? Try <code>python -m http.server 8000</code>.</p>
+<p><strong>A</strong>: Don't care + didn't ask + L + Ratio</p>
+<p>Let's quickly define our constants for the server configuration:</p>
+<pre data-lang="zig" style="background-color:#191919;color:#ffffff;" class="language-zig "><code class="language-zig" data-lang="zig"><span style="color:#80d500;">const</span><span style="color:#cccccc;"> std </span><span>= </span><span style="color:#80d500;">@import</span><span style="color:#cccccc;">(</span><span style="color:#ffd700;">&quot;std&quot;</span><span style="color:#cccccc;">);
+</span><span style="color:#80d500;">const</span><span style="color:#cccccc;"> http </span><span>=</span><span style="color:#cccccc;"> std.http;
+</span><span style="color:#80d500;">const</span><span style="color:#cccccc;"> log </span><span>=</span><span style="color:#cccccc;"> std.log.scoped(.server);
+</span><span style="color:#cccccc;">
+</span><span style="color:#80d500;">const</span><span style="color:#cccccc;"> server_addr </span><span>= </span><span style="color:#ffd700;">&quot;127.0.0.1&quot;</span><span style="color:#cccccc;">;
+</span><span style="color:#80d500;">const</span><span style="color:#cccccc;"> server_port </span><span>= </span><span style="color:#eddd5a;">8000</span><span style="color:#cccccc;">;
+</span></code></pre>
+<p>One thing to note here is that we specified a scope for the log module so the log messages will appear as <code>info(server)</code>, <code>debug(server)</code>, etc. which is quite useful if you decide to implement other logging scopes one day.</p>
+<p>Next, we need to choose an allocator to use (as we did the same with the HTTP client). I would like to go with <a href="https://ziglang.org/documentation/master/std/#A;std:heap.GeneralPurposeAllocator"><code>std.heap.GeneralPurposeAllocator</code></a> once again for consistency with the HTTP client example.</p>
+<pre data-lang="zig" style="background-color:#191919;color:#ffffff;" class="language-zig "><code class="language-zig" data-lang="zig"><span style="background-color:#171717;color:#616161;">// Create an allocator.
+</span><span style="color:#80d500;">var</span><span style="color:#cccccc;"> gpa </span><span>=</span><span style="color:#cccccc;"> std.heap.GeneralPurposeAllocator(.{}){};
+</span><span style="color:#80d500;">defer</span><span style="color:#cccccc;"> std.debug.assert(gpa.deinit() </span><span>==</span><span style="color:#80d500;"> .ok</span><span style="color:#cccccc;">);
+</span><span style="color:#80d500;">const</span><span style="color:#cccccc;"> allocator </span><span>=</span><span style="color:#cccccc;"> gpa.allocator();
+</span></code></pre>
+<p>Great, now it is the time to construct our <code>Server</code> object and instruct that the resources will be freed when it goes out of scope.</p>
+<pre data-lang="zig" style="background-color:#191919;color:#ffffff;" class="language-zig "><code class="language-zig" data-lang="zig"><span style="background-color:#171717;color:#616161;">// Initialize the server.
+</span><span style="color:#80d500;">var</span><span style="color:#cccccc;"> server </span><span>=</span><span style="color:#cccccc;"> http.Server.init(allocator, .{ .reuse_address </span><span>= </span><span style="color:#80d500;">true </span><span style="color:#cccccc;">});
+</span><span style="color:#80d500;">defer</span><span style="color:#cccccc;"> server.deinit();
+</span></code></pre>
+<p>To bind the server to the address we have defined before:</p>
+<pre data-lang="zig" style="background-color:#191919;color:#ffffff;" class="language-zig "><code class="language-zig" data-lang="zig"><span style="background-color:#171717;color:#616161;">// Log the server address and port.
+</span><span style="color:#cccccc;">log.info(</span><span style="color:#ffd700;">&quot;Server is running at {s}:{d}&quot;</span><span style="color:#cccccc;">, .{ server_addr, server_port });
+</span><span style="color:#cccccc;">
+</span><span style="background-color:#171717;color:#616161;">// Parse the server address.
+</span><span style="color:#80d500;">const</span><span style="color:#cccccc;"> address </span><span>=</span><span style="color:#cccccc;"> std.net.Address.parseIp(server_addr, server_port) </span><span style="color:#80d500;">catch unreachable</span><span style="color:#cccccc;">;
+</span><span style="color:#80d500;">try</span><span style="color:#cccccc;"> server.listen(address);
+</span></code></pre>
+<p><strong>Q</strong>: This is going scaringly easy and straightforward. Hmm, what are the next steps?</p>
+<p><strong>A</strong>: Yeah, as you can see Zig is pretty easy at times. Now, we will define 2 functions to run the server and handle the requests.</p>
+<p><strong>Q</strong>: Fu-</p>
+<p>As in every HTTP server implementation, we need a mechanism to <em>block</em> the current thread, wait for the next request and handle it. To do that in Zig, we will do the following:</p>
+<ul>
+<li><code>accept</code> method of <code>Server</code> returns a <code>Response</code>.</li>
+<li><code>Response</code> contains useful information such as request method and headers.</li>
+<li><code>Response</code> also has helper methods for working with the requests. For example, <code>wait</code> method can be used to wait for client to complete the request head.</li>
+</ul>
+<p>When we put it all together, the server <em>runner</em> function looks like this:</p>
+<pre data-lang="zig" style="background-color:#191919;color:#ffffff;" class="language-zig "><code class="language-zig" data-lang="zig"><span style="background-color:#171717;color:#616161;">// Run the server and handle incoming requests.
+</span><span style="color:#80d500;">fn </span><span>runServer</span><span style="color:#cccccc;">(</span><span style="font-style:italic;color:#8aa6c1;">server</span><span style="color:#cccccc;">: </span><span>*</span><span style="color:#80d500;">http.Server</span><span style="color:#cccccc;">, </span><span style="font-style:italic;color:#8aa6c1;">allocator</span><span style="color:#cccccc;">: </span><span style="color:#80d500;">std.mem.Allocator</span><span style="color:#cccccc;">) </span><span>!</span><span style="color:#80d500;">void </span><span style="color:#cccccc;">{
+</span><span style="color:#cccccc;">    outer: </span><span style="color:#80d500;">while </span><span style="color:#cccccc;">(</span><span style="color:#80d500;">true</span><span style="color:#cccccc;">) {
+</span><span style="color:#cccccc;">        </span><span style="background-color:#171717;color:#616161;">// Accept incoming connection.
+</span><span style="color:#cccccc;">        </span><span style="color:#80d500;">var</span><span style="color:#cccccc;"> response </span><span>= </span><span style="color:#80d500;">try</span><span style="color:#cccccc;"> server.accept(.{
+</span><span style="color:#cccccc;">            .allocator </span><span>=</span><span style="color:#cccccc;"> allocator,
+</span><span style="color:#cccccc;">        });
+</span><span style="color:#cccccc;">        </span><span style="color:#80d500;">defer</span><span style="color:#cccccc;"> response.deinit();
+</span><span style="color:#cccccc;">
+</span><span style="color:#cccccc;">        </span><span style="color:#80d500;">while </span><span style="color:#cccccc;">(response.reset() </span><span>!=</span><span style="color:#80d500;"> .closing</span><span style="color:#cccccc;">) {
+</span><span style="color:#cccccc;">            </span><span style="background-color:#171717;color:#616161;">// Handle errors during request processing.
+</span><span style="color:#cccccc;">            response.wait() </span><span style="color:#80d500;">catch </span><span>|</span><span style="color:#cccccc;">err</span><span>| </span><span style="color:#80d500;">switch </span><span style="color:#cccccc;">(err) {
+</span><span style="color:#cccccc;">                </span><span style="color:#80d500;">error</span><span style="color:#cccccc;">.HttpHeadersInvalid </span><span>=&gt; </span><span style="color:#80d500;">continue</span><span style="color:#cccccc;"> :outer,
+</span><span style="color:#cccccc;">                </span><span style="color:#80d500;">error</span><span style="color:#cccccc;">.EndOfStream </span><span>=&gt; </span><span style="color:#80d500;">continue</span><span style="color:#cccccc;">,
+</span><span style="color:#cccccc;">                </span><span style="color:#80d500;">else </span><span>=&gt; </span><span style="color:#80d500;">return</span><span style="color:#cccccc;"> err,
+</span><span style="color:#cccccc;">            };
+</span><span style="color:#cccccc;">
+</span><span style="color:#cccccc;">            </span><span style="background-color:#171717;color:#616161;">// Process the request.
+</span><span style="color:#cccccc;">            </span><span style="color:#80d500;">try </span><span style="color:#cccccc;">handleRequest(</span><span>&amp;</span><span style="color:#cccccc;">response, allocator);
+</span><span style="color:#cccccc;">        }
+</span><span style="color:#cccccc;">    }
+</span><span style="color:#cccccc;">}
+</span></code></pre>
+<p>Here, we first create an infinite loop for accepting the incoming connections. Then there is another loop constructed for reading the response from a stream with the <code>wait</code> method. Also, the infinite loop is marked as <code>outer</code> to skip the response from the reader loop if the headers are invalid.</p>
+<p>As you can see, the request is processed as the last step in the server loop via <code>handleRequest</code> function.</p>
+<p>This is where the actual magic happens:</p>
+<pre data-lang="zig" style="background-color:#191919;color:#ffffff;" class="language-zig "><code class="language-zig" data-lang="zig"><span style="background-color:#171717;color:#616161;">// Handle an individual request.
+</span><span style="color:#80d500;">fn </span><span>handleRequest</span><span style="color:#cccccc;">(</span><span style="font-style:italic;color:#8aa6c1;">response</span><span style="color:#cccccc;">: </span><span>*</span><span style="color:#80d500;">http.Server.Response</span><span style="color:#cccccc;">, </span><span style="font-style:italic;color:#8aa6c1;">allocator</span><span style="color:#cccccc;">: </span><span style="color:#80d500;">std.mem.Allocator</span><span style="color:#cccccc;">) </span><span>!</span><span style="color:#80d500;">void </span><span style="color:#cccccc;">{
+</span><span style="color:#cccccc;">    </span><span style="background-color:#171717;color:#616161;">// Log the request details.
+</span><span style="color:#cccccc;">    log.info(</span><span style="color:#ffd700;">&quot;{s} {s} {s}&quot;</span><span style="color:#cccccc;">, .{ </span><span style="color:#8aa6c1;">@tagName</span><span style="color:#cccccc;">(response.request.method), </span><span style="color:#8aa6c1;">@tagName</span><span style="color:#cccccc;">(response.request.version), response.request.target });
+</span><span style="color:#cccccc;">
+</span><span style="color:#cccccc;">    </span><span style="background-color:#171717;color:#616161;">// Read the request body.
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">const</span><span style="color:#cccccc;"> body </span><span>= </span><span style="color:#80d500;">try</span><span style="color:#cccccc;"> response.reader().readAllAlloc(allocator, </span><span style="color:#eddd5a;">8192</span><span style="color:#cccccc;">);
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">defer</span><span style="color:#cccccc;"> allocator.free(body);
+</span><span style="color:#cccccc;">
+</span><span style="color:#cccccc;">    </span><span style="background-color:#171717;color:#616161;">// Set &quot;connection&quot; header to &quot;keep-alive&quot; if present in request headers.
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">if </span><span style="color:#cccccc;">(response.request.headers.contains(</span><span style="color:#ffd700;">&quot;connection&quot;</span><span style="color:#cccccc;">)) {
+</span><span style="color:#cccccc;">        </span><span style="color:#80d500;">try</span><span style="color:#cccccc;"> response.headers.append(</span><span style="color:#ffd700;">&quot;connection&quot;</span><span style="color:#cccccc;">, </span><span style="color:#ffd700;">&quot;keep-alive&quot;</span><span style="color:#cccccc;">);
+</span><span style="color:#cccccc;">    }
+</span><span style="color:#cccccc;">
+</span><span style="color:#cccccc;">    </span><span style="background-color:#171717;color:#616161;">// Check if the request target starts with &quot;/get&quot;.
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">if </span><span style="color:#cccccc;">(std.mem.startsWith(u8, response.request.target, </span><span style="color:#ffd700;">&quot;/get&quot;</span><span style="color:#cccccc;">)) {
+</span><span style="color:#cccccc;">        </span><span style="background-color:#171717;color:#616161;">// Check if the request target contains &quot;?chunked&quot;.
+</span><span style="color:#cccccc;">        </span><span style="color:#80d500;">if </span><span style="color:#cccccc;">(std.mem.indexOf(u8, response.request.target, </span><span style="color:#ffd700;">&quot;?chunked&quot;</span><span style="color:#cccccc;">) </span><span>!= </span><span style="color:#80d500;">null</span><span style="color:#cccccc;">) {
+</span><span style="color:#cccccc;">            response.transfer_encoding </span><span>=</span><span style="color:#80d500;"> .chunked</span><span style="color:#cccccc;">;
+</span><span style="color:#cccccc;">        } </span><span style="color:#80d500;">else </span><span style="color:#cccccc;">{
+</span><span style="color:#cccccc;">            response.transfer_encoding </span><span>=</span><span style="color:#cccccc;"> .{ .content_length </span><span>= </span><span style="color:#eddd5a;">10 </span><span style="color:#cccccc;">};
+</span><span style="color:#cccccc;">        }
+</span><span style="color:#cccccc;">
+</span><span style="color:#cccccc;">        </span><span style="background-color:#171717;color:#616161;">// Set &quot;content-type&quot; header to &quot;text/plain&quot;.
+</span><span style="color:#cccccc;">        </span><span style="color:#80d500;">try</span><span style="color:#cccccc;"> response.headers.append(</span><span style="color:#ffd700;">&quot;content-type&quot;</span><span style="color:#cccccc;">, </span><span style="color:#ffd700;">&quot;text/plain&quot;</span><span style="color:#cccccc;">);
+</span><span style="color:#cccccc;">
+</span><span style="color:#cccccc;">        </span><span style="background-color:#171717;color:#616161;">// Write the response body.
+</span><span style="color:#cccccc;">        </span><span style="color:#80d500;">try</span><span style="color:#cccccc;"> response.do();
+</span><span style="color:#cccccc;">        </span><span style="color:#80d500;">if </span><span style="color:#cccccc;">(response.request.method </span><span>!=</span><span style="color:#80d500;"> .HEAD</span><span style="color:#cccccc;">) {
+</span><span style="color:#cccccc;">            </span><span style="color:#80d500;">try</span><span style="color:#cccccc;"> response.writeAll(</span><span style="color:#ffd700;">&quot;Zig &quot;</span><span style="color:#cccccc;">);
+</span><span style="color:#cccccc;">            </span><span style="color:#80d500;">try</span><span style="color:#cccccc;"> response.writeAll(</span><span style="color:#ffd700;">&quot;Bits!</span><span style="font-weight:bold;color:#ff2837;">\n</span><span style="color:#ffd700;">&quot;</span><span style="color:#cccccc;">);
+</span><span style="color:#cccccc;">            </span><span style="color:#80d500;">try</span><span style="color:#cccccc;"> response.finish();
+</span><span style="color:#cccccc;">        }
+</span><span style="color:#cccccc;">    } </span><span style="color:#80d500;">else </span><span style="color:#cccccc;">{
+</span><span style="color:#cccccc;">        </span><span style="background-color:#171717;color:#616161;">// Set the response status to 404 (not found).
+</span><span style="color:#cccccc;">        response.status </span><span>=</span><span style="color:#80d500;"> .not_found</span><span style="color:#cccccc;">;
+</span><span style="color:#cccccc;">        </span><span style="color:#80d500;">try</span><span style="color:#cccccc;"> response.do();
+</span><span style="color:#cccccc;">    }
+</span><span style="color:#cccccc;">}
+</span></code></pre>
+<p>Let's break it down:</p>
+<ul>
+<li>First, the details of the incoming request are logged.</li>
+<li>Request body is being read and the memory is allocated respectfully (max 8KBs).</li>
+<li><a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Connection"><code>Connection</code></a> header is set if necessary.</li>
+<li>If the request target is starting with <code>/get</code>, then write "Zig Bits!" to the response body and return it with "text/plain" <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Type"><code>Content-Type</code></a> header.
+<ul>
+<li>Enable the chunked encoding if the target contains <code>?chunked</code>, use a fixed content length otherwise.</li>
+</ul>
+</li>
+<li>Return 404 if the request is not matched i.e. route is not configured.</li>
+</ul>
+<p>One little detail to give attention to is the difference between the <code>finish()</code> and <code>do()</code> methods of the <code>Response</code>. <code>do()</code> method simply sends the response headers, whereas <code>finish()</code> will send the final chunk for chunked messages or verify that we upheld our agreement to send a certain number of bytes. So if we are sending data, we should always finish off the response by calling <code>finish()</code>.</p>
+<p>Now that the requests are handled and we have our server functions, here is how we run the server and log the errors:</p>
+<pre data-lang="zig" style="background-color:#191919;color:#ffffff;" class="language-zig "><code class="language-zig" data-lang="zig"><span style="background-color:#171717;color:#616161;">// Run the server.
+</span><span style="color:#cccccc;">runServer(</span><span>&amp;</span><span style="color:#cccccc;">server, allocator) </span><span style="color:#80d500;">catch </span><span>|</span><span style="color:#cccccc;">err</span><span>| </span><span style="color:#cccccc;">{
+</span><span style="color:#cccccc;">    </span><span style="background-color:#171717;color:#616161;">// Handle server errors.
+</span><span style="color:#cccccc;">    log.err(</span><span style="color:#ffd700;">&quot;server error: {}</span><span style="font-weight:bold;color:#ff2837;">\n</span><span style="color:#ffd700;">&quot;</span><span style="color:#cccccc;">, .{err});
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">if </span><span style="color:#cccccc;">(</span><span style="color:#8aa6c1;">@errorReturnTrace</span><span style="color:#cccccc;">()) </span><span>|</span><span style="color:#cccccc;">trace</span><span>| </span><span style="color:#cccccc;">{
+</span><span style="color:#cccccc;">        std.debug.dumpStackTrace(trace</span><span>.*</span><span style="color:#cccccc;">);
+</span><span style="color:#cccccc;">    }
+</span><span style="color:#cccccc;">    std.os.exit(</span><span style="color:#eddd5a;">1</span><span style="color:#cccccc;">);
+</span><span style="color:#cccccc;">};
+</span></code></pre>
+<p>Final HTTP server code:</p>
+<pre data-lang="zig" style="background-color:#191919;color:#ffffff;" class="language-zig "><code class="language-zig" data-lang="zig"><span style="background-color:#171717;color:#616161;">// Zig version: 0.11.0
+</span><span style="color:#cccccc;">
+</span><span style="color:#80d500;">const</span><span style="color:#cccccc;"> std </span><span>= </span><span style="color:#80d500;">@import</span><span style="color:#cccccc;">(</span><span style="color:#ffd700;">&quot;std&quot;</span><span style="color:#cccccc;">);
+</span><span style="color:#80d500;">const</span><span style="color:#cccccc;"> http </span><span>=</span><span style="color:#cccccc;"> std.http;
+</span><span style="color:#80d500;">const</span><span style="color:#cccccc;"> log </span><span>=</span><span style="color:#cccccc;"> std.log.scoped(.server);
+</span><span style="color:#cccccc;">
+</span><span style="color:#80d500;">const</span><span style="color:#cccccc;"> server_addr </span><span>= </span><span style="color:#ffd700;">&quot;127.0.0.1&quot;</span><span style="color:#cccccc;">;
+</span><span style="color:#80d500;">const</span><span style="color:#cccccc;"> server_port </span><span>= </span><span style="color:#eddd5a;">8000</span><span style="color:#cccccc;">;
+</span><span style="color:#cccccc;">
+</span><span style="background-color:#171717;color:#616161;">// Run the server and handle incoming requests.
+</span><span style="color:#80d500;">fn </span><span>runServer</span><span style="color:#cccccc;">(</span><span style="font-style:italic;color:#8aa6c1;">server</span><span style="color:#cccccc;">: </span><span>*</span><span style="color:#80d500;">http.Server</span><span style="color:#cccccc;">, </span><span style="font-style:italic;color:#8aa6c1;">allocator</span><span style="color:#cccccc;">: </span><span style="color:#80d500;">std.mem.Allocator</span><span style="color:#cccccc;">) </span><span>!</span><span style="color:#80d500;">void </span><span style="color:#cccccc;">{
+</span><span style="color:#cccccc;">    outer: </span><span style="color:#80d500;">while </span><span style="color:#cccccc;">(</span><span style="color:#80d500;">true</span><span style="color:#cccccc;">) {
+</span><span style="color:#cccccc;">        </span><span style="background-color:#171717;color:#616161;">// Accept incoming connection.
+</span><span style="color:#cccccc;">        </span><span style="color:#80d500;">var</span><span style="color:#cccccc;"> response </span><span>= </span><span style="color:#80d500;">try</span><span style="color:#cccccc;"> server.accept(.{
+</span><span style="color:#cccccc;">            .allocator </span><span>=</span><span style="color:#cccccc;"> allocator,
+</span><span style="color:#cccccc;">        });
+</span><span style="color:#cccccc;">        </span><span style="color:#80d500;">defer</span><span style="color:#cccccc;"> response.deinit();
+</span><span style="color:#cccccc;">
+</span><span style="color:#cccccc;">        </span><span style="color:#80d500;">while </span><span style="color:#cccccc;">(response.reset() </span><span>!=</span><span style="color:#80d500;"> .closing</span><span style="color:#cccccc;">) {
+</span><span style="color:#cccccc;">            </span><span style="background-color:#171717;color:#616161;">// Handle errors during request processing.
+</span><span style="color:#cccccc;">            response.wait() </span><span style="color:#80d500;">catch </span><span>|</span><span style="color:#cccccc;">err</span><span>| </span><span style="color:#80d500;">switch </span><span style="color:#cccccc;">(err) {
+</span><span style="color:#cccccc;">                </span><span style="color:#80d500;">error</span><span style="color:#cccccc;">.HttpHeadersInvalid </span><span>=&gt; </span><span style="color:#80d500;">continue</span><span style="color:#cccccc;"> :outer,
+</span><span style="color:#cccccc;">                </span><span style="color:#80d500;">error</span><span style="color:#cccccc;">.EndOfStream </span><span>=&gt; </span><span style="color:#80d500;">continue</span><span style="color:#cccccc;">,
+</span><span style="color:#cccccc;">                </span><span style="color:#80d500;">else </span><span>=&gt; </span><span style="color:#80d500;">return</span><span style="color:#cccccc;"> err,
+</span><span style="color:#cccccc;">            };
+</span><span style="color:#cccccc;">
+</span><span style="color:#cccccc;">            </span><span style="background-color:#171717;color:#616161;">// Process the request.
+</span><span style="color:#cccccc;">            </span><span style="color:#80d500;">try </span><span style="color:#cccccc;">handleRequest(</span><span>&amp;</span><span style="color:#cccccc;">response, allocator);
+</span><span style="color:#cccccc;">        }
+</span><span style="color:#cccccc;">    }
+</span><span style="color:#cccccc;">}
+</span><span style="color:#cccccc;">
+</span><span style="background-color:#171717;color:#616161;">// Handle an individual request.
+</span><span style="color:#80d500;">fn </span><span>handleRequest</span><span style="color:#cccccc;">(</span><span style="font-style:italic;color:#8aa6c1;">response</span><span style="color:#cccccc;">: </span><span>*</span><span style="color:#80d500;">http.Server.Response</span><span style="color:#cccccc;">, </span><span style="font-style:italic;color:#8aa6c1;">allocator</span><span style="color:#cccccc;">: </span><span style="color:#80d500;">std.mem.Allocator</span><span style="color:#cccccc;">) </span><span>!</span><span style="color:#80d500;">void </span><span style="color:#cccccc;">{
+</span><span style="color:#cccccc;">    </span><span style="background-color:#171717;color:#616161;">// Log the request details.
+</span><span style="color:#cccccc;">    log.info(</span><span style="color:#ffd700;">&quot;{s} {s} {s}&quot;</span><span style="color:#cccccc;">, .{ </span><span style="color:#8aa6c1;">@tagName</span><span style="color:#cccccc;">(response.request.method), </span><span style="color:#8aa6c1;">@tagName</span><span style="color:#cccccc;">(response.request.version), response.request.target });
+</span><span style="color:#cccccc;">
+</span><span style="color:#cccccc;">    </span><span style="background-color:#171717;color:#616161;">// Read the request body.
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">const</span><span style="color:#cccccc;"> body </span><span>= </span><span style="color:#80d500;">try</span><span style="color:#cccccc;"> response.reader().readAllAlloc(allocator, </span><span style="color:#eddd5a;">8192</span><span style="color:#cccccc;">);
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">defer</span><span style="color:#cccccc;"> allocator.free(body);
+</span><span style="color:#cccccc;">
+</span><span style="color:#cccccc;">    </span><span style="background-color:#171717;color:#616161;">// Set &quot;connection&quot; header to &quot;keep-alive&quot; if present in request headers.
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">if </span><span style="color:#cccccc;">(response.request.headers.contains(</span><span style="color:#ffd700;">&quot;connection&quot;</span><span style="color:#cccccc;">)) {
+</span><span style="color:#cccccc;">        </span><span style="color:#80d500;">try</span><span style="color:#cccccc;"> response.headers.append(</span><span style="color:#ffd700;">&quot;connection&quot;</span><span style="color:#cccccc;">, </span><span style="color:#ffd700;">&quot;keep-alive&quot;</span><span style="color:#cccccc;">);
+</span><span style="color:#cccccc;">    }
+</span><span style="color:#cccccc;">
+</span><span style="color:#cccccc;">    </span><span style="background-color:#171717;color:#616161;">// Check if the request target starts with &quot;/get&quot;.
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">if </span><span style="color:#cccccc;">(std.mem.startsWith(u8, response.request.target, </span><span style="color:#ffd700;">&quot;/get&quot;</span><span style="color:#cccccc;">)) {
+</span><span style="color:#cccccc;">        </span><span style="background-color:#171717;color:#616161;">// Check if the request target contains &quot;?chunked&quot;.
+</span><span style="color:#cccccc;">        </span><span style="color:#80d500;">if </span><span style="color:#cccccc;">(std.mem.indexOf(u8, response.request.target, </span><span style="color:#ffd700;">&quot;?chunked&quot;</span><span style="color:#cccccc;">) </span><span>!= </span><span style="color:#80d500;">null</span><span style="color:#cccccc;">) {
+</span><span style="color:#cccccc;">            response.transfer_encoding </span><span>=</span><span style="color:#80d500;"> .chunked</span><span style="color:#cccccc;">;
+</span><span style="color:#cccccc;">        } </span><span style="color:#80d500;">else </span><span style="color:#cccccc;">{
+</span><span style="color:#cccccc;">            response.transfer_encoding </span><span>=</span><span style="color:#cccccc;"> .{ .content_length </span><span>= </span><span style="color:#eddd5a;">10 </span><span style="color:#cccccc;">};
+</span><span style="color:#cccccc;">        }
+</span><span style="color:#cccccc;">
+</span><span style="color:#cccccc;">        </span><span style="background-color:#171717;color:#616161;">// Set &quot;content-type&quot; header to &quot;text/plain&quot;.
+</span><span style="color:#cccccc;">        </span><span style="color:#80d500;">try</span><span style="color:#cccccc;"> response.headers.append(</span><span style="color:#ffd700;">&quot;content-type&quot;</span><span style="color:#cccccc;">, </span><span style="color:#ffd700;">&quot;text/plain&quot;</span><span style="color:#cccccc;">);
+</span><span style="color:#cccccc;">
+</span><span style="color:#cccccc;">        </span><span style="background-color:#171717;color:#616161;">// Write the response body.
+</span><span style="color:#cccccc;">        </span><span style="color:#80d500;">try</span><span style="color:#cccccc;"> response.do();
+</span><span style="color:#cccccc;">        </span><span style="color:#80d500;">if </span><span style="color:#cccccc;">(response.request.method </span><span>!=</span><span style="color:#80d500;"> .HEAD</span><span style="color:#cccccc;">) {
+</span><span style="color:#cccccc;">            </span><span style="color:#80d500;">try</span><span style="color:#cccccc;"> response.writeAll(</span><span style="color:#ffd700;">&quot;Zig &quot;</span><span style="color:#cccccc;">);
+</span><span style="color:#cccccc;">            </span><span style="color:#80d500;">try</span><span style="color:#cccccc;"> response.writeAll(</span><span style="color:#ffd700;">&quot;Bits!</span><span style="font-weight:bold;color:#ff2837;">\n</span><span style="color:#ffd700;">&quot;</span><span style="color:#cccccc;">);
+</span><span style="color:#cccccc;">            </span><span style="color:#80d500;">try</span><span style="color:#cccccc;"> response.finish();
+</span><span style="color:#cccccc;">        }
+</span><span style="color:#cccccc;">    } </span><span style="color:#80d500;">else </span><span style="color:#cccccc;">{
+</span><span style="color:#cccccc;">        </span><span style="background-color:#171717;color:#616161;">// Set the response status to 404 (not found).
+</span><span style="color:#cccccc;">        response.status </span><span>=</span><span style="color:#80d500;"> .not_found</span><span style="color:#cccccc;">;
+</span><span style="color:#cccccc;">        </span><span style="color:#80d500;">try</span><span style="color:#cccccc;"> response.do();
+</span><span style="color:#cccccc;">    }
+</span><span style="color:#cccccc;">}
+</span><span style="color:#cccccc;">
+</span><span style="color:#80d500;">pub fn </span><span>main</span><span style="color:#cccccc;">() </span><span>!</span><span style="color:#80d500;">void </span><span style="color:#cccccc;">{
+</span><span style="color:#cccccc;">    </span><span style="background-color:#171717;color:#616161;">// Create an allocator.
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">var</span><span style="color:#cccccc;"> gpa </span><span>=</span><span style="color:#cccccc;"> std.heap.GeneralPurposeAllocator(.{}){};
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">defer</span><span style="color:#cccccc;"> std.debug.assert(gpa.deinit() </span><span>==</span><span style="color:#80d500;"> .ok</span><span style="color:#cccccc;">);
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">const</span><span style="color:#cccccc;"> allocator </span><span>=</span><span style="color:#cccccc;"> gpa.allocator();
+</span><span style="color:#cccccc;">
+</span><span style="color:#cccccc;">    </span><span style="background-color:#171717;color:#616161;">// Initialize the server.
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">var</span><span style="color:#cccccc;"> server </span><span>=</span><span style="color:#cccccc;"> http.Server.init(allocator, .{ .reuse_address </span><span>= </span><span style="color:#80d500;">true </span><span style="color:#cccccc;">});
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">defer</span><span style="color:#cccccc;"> server.deinit();
+</span><span style="color:#cccccc;">
+</span><span style="color:#cccccc;">    </span><span style="background-color:#171717;color:#616161;">// Log the server address and port.
+</span><span style="color:#cccccc;">    log.info(</span><span style="color:#ffd700;">&quot;Server is running at {s}:{d}&quot;</span><span style="color:#cccccc;">, .{ server_addr, server_port });
+</span><span style="color:#cccccc;">
+</span><span style="color:#cccccc;">    </span><span style="background-color:#171717;color:#616161;">// Parse the server address.
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">const</span><span style="color:#cccccc;"> address </span><span>=</span><span style="color:#cccccc;"> std.net.Address.parseIp(server_addr, server_port) </span><span style="color:#80d500;">catch unreachable</span><span style="color:#cccccc;">;
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">try</span><span style="color:#cccccc;"> server.listen(address);
+</span><span style="color:#cccccc;">
+</span><span style="color:#cccccc;">    </span><span style="background-color:#171717;color:#616161;">// Run the server.
+</span><span style="color:#cccccc;">    runServer(</span><span>&amp;</span><span style="color:#cccccc;">server, allocator) </span><span style="color:#80d500;">catch </span><span>|</span><span style="color:#cccccc;">err</span><span>| </span><span style="color:#cccccc;">{
+</span><span style="color:#cccccc;">        </span><span style="background-color:#171717;color:#616161;">// Handle server errors.
+</span><span style="color:#cccccc;">        log.err(</span><span style="color:#ffd700;">&quot;server error: {}</span><span style="font-weight:bold;color:#ff2837;">\n</span><span style="color:#ffd700;">&quot;</span><span style="color:#cccccc;">, .{err});
+</span><span style="color:#cccccc;">        </span><span style="color:#80d500;">if </span><span style="color:#cccccc;">(</span><span style="color:#8aa6c1;">@errorReturnTrace</span><span style="color:#cccccc;">()) </span><span>|</span><span style="color:#cccccc;">trace</span><span>| </span><span style="color:#cccccc;">{
+</span><span style="color:#cccccc;">            std.debug.dumpStackTrace(trace</span><span>.*</span><span style="color:#cccccc;">);
+</span><span style="color:#cccccc;">        }
+</span><span style="color:#cccccc;">        std.os.exit(</span><span style="color:#eddd5a;">1</span><span style="color:#cccccc;">);
+</span><span style="color:#cccccc;">    };
+</span><span style="color:#cccccc;">}
+</span></code></pre>
+<p>Let's run it!</p>
+<pre data-lang="sh" style="background-color:#191919;color:#ffffff;" class="language-sh "><code class="language-sh" data-lang="sh"><span style="color:#cccccc;">$ zig build run
+</span><span style="color:#cccccc;">
+</span><span style="color:#cccccc;">info(server)</span><span style="color:#8aa6c1;">:</span><span style="color:#cccccc;"> Server is running at 127.0.0.1:8000
+</span><span style="color:#cccccc;">info(server)</span><span style="color:#8aa6c1;">:</span><span style="color:#cccccc;"> GET HTTP/1.1 /get
+</span><span style="color:#cccccc;">info(server)</span><span style="color:#8aa6c1;">:</span><span style="color:#cccccc;"> GET HTTP/1.1 /get</span><span>?</span><span style="color:#cccccc;">chunked
+</span></code></pre>
+<p>On another terminal:</p>
+<pre data-lang="sh" style="background-color:#191919;color:#ffffff;" class="language-sh "><code class="language-sh" data-lang="sh"><span style="color:#cccccc;">$ curl 127.0.0.1:8000/get
+</span><span style="color:#cccccc;">Zig Bits!
+</span><span style="color:#cccccc;">
+</span><span style="color:#cccccc;">$ curl 127.0.0.1:8000/get</span><span>?</span><span style="color:#cccccc;">chunked
+</span><span style="color:#cccccc;">Zig Bits!
+</span></code></pre>
+<p>Neat, now we have a functional HTTP server written purely in Zig!</p>
+<h2 id="benchmarks-zap">Benchmarks ⚡</h2>
+<img src="/ziggy_think.svg" style="width: 25%"/>
+<p>For seeing the speed of the Zig HTTP client compared to implementations in other programming languages, I created some benchmarks using <a href="https://github.com/sharkdp/hyperfine"><code>hyperfine</code></a>.</p>
+<p>The benchmarks can be found in this repo: <a href="https://github.com/orhun/zig-http-benchmarks"><strong>https://github.com/orhun/zig-http-benchmarks</strong></a></p>
+<p>Currently, I'm comparing the HTTP client against:</p>
+<ul>
+<li>Rust HTTP client (<a href="https://crates.io/crates/hyper">hyper</a>, <a href="https://crates.io/crates/reqwest">reqwest</a>, <a href="https://crates.io/crates/ureq">ureq</a>, <a href="https://crates.io/crates/attohttpc">attohttpc</a>)</li>
+<li>Go HTTP client (<code>net/http</code>)</li>
+<li>Python HTTP client (<code>requests</code>)</li>
+<li><a href="https://curl.se">curl</a></li>
+</ul>
+<p>The way it works is I run the Zig HTTP server and accept N number of requests from different clients and let the hyperfine do its magic.</p>
+<p>To run the benchmarks, simply run <code>./bench.sh</code>:</p>
+<pre data-lang="sh" style="background-color:#191919;color:#ffffff;" class="language-sh "><code class="language-sh" data-lang="sh"><span style="color:#cccccc;">rust-ureq ran
+</span><span style="color:#cccccc;">    1.18 ± 0.22 times faster than rust-hyper
+</span><span style="color:#cccccc;">    1.30 ± 0.27 times faster than rust-reqwest
+</span><span style="color:#cccccc;">    1.74 ± 0.38 times faster than go-http-client
+</span><span style="color:#cccccc;">    1.92 ± 0.40 times faster than rust-attohttpc
+</span><span style="color:#cccccc;">    2.17 ± 0.63 times faster than zig-http-client
+</span><span style="color:#cccccc;">    4.25 ± 0.73 times faster than curl
+</span><span style="color:#cccccc;">   10.31 ± 1.47 times faster than python-http-client
+</span></code></pre>
+<table><thead><tr><th style="text-align: left"><strong>Command</strong></th><th style="text-align: right"><strong>Mean [ms]</strong></th><th style="text-align: right"><strong>Min [ms]</strong></th><th style="text-align: right"><strong>Max [ms]</strong></th><th style="text-align: right"><strong>Relative</strong></th></tr></thead><tbody>
+<tr><td style="text-align: left"><code>curl</code></td><td style="text-align: right">295.2 ± 29.3</td><td style="text-align: right">248.6</td><td style="text-align: right">367.9</td><td style="text-align: right">4.25 ± 0.73</td></tr>
+<tr><td style="text-align: left"><code>zig-http-client</code></td><td style="text-align: right">150.9 ± 38.1</td><td style="text-align: right">98.5</td><td style="text-align: right">250.2</td><td style="text-align: right">2.17 ± 0.63</td></tr>
+<tr><td style="text-align: left"><code>rust-attohttpc</code></td><td style="text-align: right">133.4 ± 20.6</td><td style="text-align: right">101.1</td><td style="text-align: right">174.7</td><td style="text-align: right">1.92 ± 0.40</td></tr>
+<tr><td style="text-align: left"><code>rust-hyper</code></td><td style="text-align: right">82.1 ± 10.1</td><td style="text-align: right">65.7</td><td style="text-align: right">106.0</td><td style="text-align: right">1.18 ± 0.22</td></tr>
+<tr><td style="text-align: left"><code>rust-reqwest</code></td><td style="text-align: right">90.0 ± 14.0</td><td style="text-align: right">67.8</td><td style="text-align: right">126.0</td><td style="text-align: right">1.30 ± 0.27</td></tr>
+<tr><td style="text-align: left"><code>rust-ureq</code></td><td style="text-align: right">69.5 ± 9.6</td><td style="text-align: right">55.3</td><td style="text-align: right">92.9</td><td style="text-align: right">1.00</td></tr>
+<tr><td style="text-align: left"><code>go-http-client</code></td><td style="text-align: right">120.8 ± 20.0</td><td style="text-align: right">84.6</td><td style="text-align: right">171.6</td><td style="text-align: right">1.74 ± 0.38</td></tr>
+<tr><td style="text-align: left"><code>python-http-client</code></td><td style="text-align: right">716.5 ± 22.0</td><td style="text-align: right">665.9</td><td style="text-align: right">765.7</td><td style="text-align: right">10.31 ± 1.47</td></tr>
+</tbody></table>
+<p>Here is the <a href="https://en.wikipedia.org/wiki/Box_plot">whisker plot</a>:</p>
+<p><img src="https://raw.githubusercontent.com/orhun/zig-http-benchmarks/output/benchmarks-bw.png" alt="plot_whisker" /></p>
+<p>Thanks to <a href="https://github.com/dnaka91">@dnaka91</a> &amp; <a href="https://github.com/truemedian">@truemedian</a> for helping to make the comparison <a href="https://github.com/orhun/zig-http-benchmarks/issues/2">more fair</a>!</p>
+<h2 id="conclusion-zap">Conclusion ⚡</h2>
+<img src="/ziggy_pizza.svg" style="width: 25%"/>
+<p>I am still a beginner to Zig and learning new things as I experiment, so any comments about improving the code in any way is highly appreciated. Alternatively, you can send PRs to <a href="https://github.com/orhun/personal-blog">this repository</a> for editing this blog post.</p>
+<p>On the other hand, let me know if you have any interesting ideas for the benchmarks. All the code is available <a href="https://github.com/orhun/zig-http-benchmarks">here</a>.</p>
+<p>Hope you enjoyed the read, feel free to submit a comment below! Let me know what you think and what might be the topic for the next Zig Bits! ⚡</p>
+<p><em>viszontlátásra!</em></p>
+<h2 id="update-zap">Update ⚡</h2>
+<p>On Feb 23, 2024, commit <a href="https://github.com/ziglang/zig/commit/6395ba852a88f0e0b2a2f0659f1daf9d08e90157"><code>6395ba8</code></a> (fittingly named "std.http.Server: rework the API entirely") reworked the <code>std.http.Server</code> API entirely. Here is a new (basic) implementation that takes into account the new design:</p>
+<pre data-lang="zig" style="background-color:#191919;color:#ffffff;" class="language-zig "><code class="language-zig" data-lang="zig"><span style="background-color:#171717;color:#616161;">// Zig version 0.14.0
+</span><span style="color:#80d500;">const</span><span style="color:#cccccc;"> std </span><span>= </span><span style="color:#80d500;">@import</span><span style="color:#cccccc;">(</span><span style="color:#ffd700;">&quot;std&quot;</span><span style="color:#cccccc;">);
+</span><span style="color:#80d500;">const</span><span style="color:#cccccc;"> net </span><span>=</span><span style="color:#cccccc;"> std.net;
+</span><span style="color:#80d500;">const</span><span style="color:#cccccc;"> http </span><span>=</span><span style="color:#cccccc;"> std.http;
+</span><span style="color:#cccccc;">
+</span><span style="color:#80d500;">pub fn </span><span>main</span><span style="color:#cccccc;">() </span><span>!</span><span style="color:#80d500;">void </span><span style="color:#cccccc;">{
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">const</span><span style="color:#cccccc;"> addr </span><span>=</span><span style="color:#cccccc;"> net.Address.parseIp4(</span><span style="color:#ffd700;">&quot;127.0.0.1&quot;</span><span style="color:#cccccc;">, </span><span style="color:#eddd5a;">9090</span><span style="color:#cccccc;">) </span><span style="color:#80d500;">catch </span><span>|</span><span style="color:#cccccc;"> err </span><span>| </span><span style="color:#cccccc;">{
+</span><span style="color:#cccccc;">        std.debug.print(</span><span style="color:#ffd700;">&quot;An error occurred while resolving the IP address: {}</span><span style="font-weight:bold;color:#ff2837;">\n</span><span style="color:#ffd700;">&quot;</span><span style="color:#cccccc;">, .{err});
+</span><span style="color:#cccccc;">        </span><span style="color:#80d500;">return</span><span style="color:#cccccc;">; 
+</span><span style="color:#cccccc;">    };
+</span><span style="color:#cccccc;">
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">var</span><span style="color:#cccccc;"> server </span><span>= </span><span style="color:#80d500;">try</span><span style="color:#cccccc;"> addr.listen(.{});
+</span><span style="color:#cccccc;">
+</span><span style="color:#cccccc;">    start_server(</span><span>&amp;</span><span style="color:#cccccc;">server);
+</span><span style="color:#cccccc;">}
+</span><span style="color:#cccccc;">
+</span><span style="color:#80d500;">fn </span><span>start_server</span><span style="color:#cccccc;">(</span><span style="font-style:italic;color:#8aa6c1;">server</span><span style="color:#cccccc;">: </span><span>*</span><span style="color:#80d500;">net.Server</span><span style="color:#cccccc;">) </span><span style="color:#80d500;">void </span><span style="color:#cccccc;">{
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">while</span><span style="color:#cccccc;">(</span><span style="color:#80d500;">true</span><span style="color:#cccccc;">){
+</span><span style="color:#cccccc;">        </span><span style="color:#80d500;">var</span><span style="color:#cccccc;"> connection </span><span>=</span><span style="color:#cccccc;"> server.accept() </span><span style="color:#80d500;">catch </span><span>|</span><span style="color:#cccccc;">err</span><span>| </span><span style="color:#cccccc;">{
+</span><span style="color:#cccccc;">            std.debug.print(</span><span style="color:#ffd700;">&quot;Connection to client interrupted: {}</span><span style="font-weight:bold;color:#ff2837;">\n</span><span style="color:#ffd700;">&quot;</span><span style="color:#cccccc;">, .{err});
+</span><span style="color:#cccccc;">            </span><span style="color:#80d500;">continue</span><span style="color:#cccccc;">;
+</span><span style="color:#cccccc;">        };
+</span><span style="color:#cccccc;">        </span><span style="color:#80d500;">defer</span><span style="color:#cccccc;"> connection.stream.close();
+</span><span style="color:#cccccc;">
+</span><span style="color:#cccccc;">        </span><span style="color:#80d500;">var </span><span style="color:#cccccc;">read_buffer : [</span><span style="color:#eddd5a;">1024</span><span style="color:#cccccc;">]</span><span style="color:#80d500;">u8 </span><span>= </span><span style="color:#80d500;">undefined</span><span style="color:#cccccc;">;
+</span><span style="color:#cccccc;">        </span><span style="color:#80d500;">var</span><span style="color:#cccccc;"> http_server </span><span>=</span><span style="color:#cccccc;"> http.Server.init(connection, </span><span>&amp;</span><span style="color:#cccccc;">read_buffer);
+</span><span style="color:#cccccc;">
+</span><span style="color:#cccccc;">        </span><span style="color:#80d500;">var</span><span style="color:#cccccc;"> request </span><span>=</span><span style="color:#cccccc;"> http_server.receiveHead() </span><span style="color:#80d500;">catch </span><span>|</span><span style="color:#cccccc;">err</span><span>| </span><span style="color:#cccccc;">{
+</span><span style="color:#cccccc;">            std.debug.print(</span><span style="color:#ffd700;">&quot;Could not read head: {}</span><span style="font-weight:bold;color:#ff2837;">\n</span><span style="color:#ffd700;">&quot;</span><span style="color:#cccccc;">, .{err});
+</span><span style="color:#cccccc;">            </span><span style="color:#80d500;">continue</span><span style="color:#cccccc;">;
+</span><span style="color:#cccccc;">        };
+</span><span style="color:#cccccc;">        handle_request(</span><span>&amp;</span><span style="color:#cccccc;">request) </span><span style="color:#80d500;">catch </span><span>|</span><span style="color:#cccccc;">err</span><span>| </span><span style="color:#cccccc;">{
+</span><span style="color:#cccccc;">            std.debug.print(</span><span style="color:#ffd700;">&quot;Could not handle request: {}&quot;</span><span style="color:#cccccc;">, .{err});
+</span><span style="color:#cccccc;">            </span><span style="color:#80d500;">continue</span><span style="color:#cccccc;">;
+</span><span style="color:#cccccc;">        };
+</span><span style="color:#cccccc;">    }
+</span><span style="color:#cccccc;">}
+</span><span style="color:#cccccc;">
+</span><span style="color:#80d500;">fn </span><span>handle_request</span><span style="color:#cccccc;">(</span><span style="font-style:italic;color:#8aa6c1;">request</span><span style="color:#cccccc;">: </span><span>*</span><span style="color:#80d500;">http.Server.Request</span><span style="color:#cccccc;">) </span><span>!</span><span style="color:#80d500;">void </span><span style="color:#cccccc;">{
+</span><span style="color:#cccccc;">    std.debug.print(</span><span style="color:#ffd700;">&quot;Handling request for {s}</span><span style="font-weight:bold;color:#ff2837;">\n</span><span style="color:#ffd700;">&quot;</span><span style="color:#cccccc;">, .{ request.head.target });
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">try</span><span style="color:#cccccc;"> request.respond(</span><span style="color:#ffd700;">&quot;Hello http!</span><span style="font-weight:bold;color:#ff2837;">\n</span><span style="color:#ffd700;">&quot;</span><span style="color:#cccccc;">, .{});
+</span><span style="color:#cccccc;">}
+</span></code></pre>
+
+    </div>
+
+    
+        <footer>
+            <hr>
+            <p>
+                
+                    Published by Orhun Parmaksız
+                
+                
+                    
+                    in <a href="https://blog.orhun.dev/categories/zig-bits/">Zig Bits</a>
+                
+                
+            </p>
+            
+            
+            <div style="display: flex; justify-content: space-between; align-items: center">
+              <div>
+                <iframe
+                  src="https://github.com/sponsors/orhun/button"
+                  title="Sponsor @orhun"
+                  height="35"
+                  width="116"
+                  style="border: 0"
+                ></iframe>
+                <a href="https://www.buymeacoffee.com/orhun" target="_blank"
+                  ><img
+                    src="https://cdn.buymeacoffee.com/buttons/v2/default-white.png"
+                    alt="Buy Me A Coffee"
+                    style="height: 40px !important; width: 150px !important"
+                /></a>
+              </div>
+              <div>
+                <applause-button
+                  style="width: 50px; height: 50px"
+                  url="https://blog.orhun.dev&#x2F;zig-bits-04&#x2F;"
+                  color="white"
+                  multiclap="true"
+                />
+              </div>
+              <div>
+                <div style="width: auto; height: 39px">
+                  <p style="margin: 0; color: #fff; font-style: italic">✨ Sponsored by:</p>
+                </div>
+                <a href="https://terminaltrove.com/" target="_blank"
+                  ><img
+                    src="/sponsors/terminal_trove.png"
+                    alt="Terminal Trove"
+                    style="height: 40px; width: auto"
+                /></a>
+                <a href="https://rawkode.academy/" target="_blank"
+                  ><img
+                    src="/sponsors/rawkode_academy.png"
+                    alt="Rawkode Academy"
+                    style="height: 40px; width: auto"
+                /></a>
+                <a href="https://malwation.com/" target="_blank"
+                  ><img
+                    src="/sponsors/malwation.svg"
+                    alt="Malwation"
+                    style="height: 40px; width: auto"
+                /></a>
+              </div>
+            </div>
+            <script src="https://utteranc.es/client.js"
+                    repo="orhun/personal-blog"
+                    issue-term="url"
+                    label="comments"
+                    theme="github-dark"
+                    crossorigin="anonymous"
+                    async>
+            </script>
+        </footer>
+    
+</article>
+
+
+    </body>
+
+</html>

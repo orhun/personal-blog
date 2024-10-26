@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <meta http-equiv="content-type" content="text/html; charset=utf-8">
+      <meta property="og:type" content="website" />
+      <meta property="og:url" content="https://blog.orhun.dev"/>
+      
+      <meta property="og:title" content="Zig Bits 0x3: Mastering project management in Zig - Orhun&#x27;s Blog" />
+      
+      <meta property="og:image" content="https://blog.orhun.dev/crow.png" />
+      
+      <meta name="description" content="FOSS • Linux • Programming" />
+      <meta property="og:description" content="FOSS • Linux • Programming"/>
+      
+
+      <!-- Enable responsiveness on mobile devices-->
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+      <link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png">
+      <link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png">
+      <link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png">
+      <link rel="manifest" href="/favicon/site.webmanifest">
+
+      <script async src="https://umami.orhun.dev/script.js" data-website-id="56ca5ca7-ba9f-416e-8bee-a132c155d56b"></script>
+
+      <link rel="stylesheet" href="https://unpkg.com/applause-button/dist/applause-button.css" />
+      <script src="https://unpkg.com/applause-button/dist/applause-button.js"></script>
+
+      
+      <title>Zig Bits 0x3: Mastering project management in Zig - Orhun&#x27;s Blog</title>
+      
+
+      
+        <link rel="alternate" type="application/rss+xml" title="RSS" href="https://blog.orhun.dev/rss.xml">
+      
+
+      
+          <link rel="stylesheet" href="https://blog.orhun.dev/site.css">
+      
+
+      
+      
+    </head>
+
+    <body class="hack dark main container">
+        
+    
+        
+                
+                    <header>
+                        <nav itemscope itemtype="http://schema.org/SiteNavigationElement">
+                        
+                            <a itemprop="url"
+                               class=""
+                               href="https://blog.orhun.dev">
+                                <span itemprop="name">Home</span></a>
+                        
+                            <a itemprop="url"
+                               class=""
+                               href="https://blog.orhun.dev/categories">
+                                <span itemprop="name">Categories</span></a>
+                        
+                            <a itemprop="url"
+                               class=""
+                               href="https://github.com/orhun/personal-blog">
+                                <span itemprop="name">Source</span></a>
+                        
+                            <a itemprop="url"
+                               class=""
+                               href="https://github.com/orhun">
+                                <span itemprop="name">GitHub</span></a>
+                        
+                            <a itemprop="url"
+                               class=""
+                               href="https://donate.orhun.dev">
+                                <span itemprop="name">Donate</span></a>
+                        
+                            <a itemprop="url"
+                               class=""
+                               href="https://blog.orhun.dev/rss.xml">
+                                <span itemprop="name">RSS</span></a>
+                        
+                            <a itemprop="url"
+                               class=""
+                               href="https://orhun.dev">
+                                <span itemprop="name">About</span></a>
+                        
+                        </nav>
+                    </header>
+                
+            
+    
+
+<article itemscope itemtype="http://schema.org/BlogPosting">
+    <header>
+        <h1 itemprop="headline">Zig Bits 0x3: Mastering project management in Zig</h1>
+        <span class="muted">
+    <svg style="margin-bottom:-3px" class="i-clock" viewBox="0 0 32 32"
+         width="16" height="16" fill="none" stroke="currentcolor"
+         stroke-linecap="round" stroke-linejoin="round" stroke-width="6.25%">
+        <circle cx="16" cy="16" r="14"/>
+        <path d="M16 8 L16 16 20 20"/>
+    </svg>
+    <span>10 minute read</span>
+    <svg style="margin-bottom: -3px" class="i-edit" viewBox="0 0 32 32"
+         width="16" height="16" fill="none" stroke="currentcolor"
+         stroke-linecap="round" stroke-linejoin="round" stroke-width="6.25%">
+        <path d="M30 7 L25 2 5 22 3 29 10 27 Z M21 6 L26 11 Z M5 22 L10 27 Z"/>
+    </svg>
+
+    Published: 2023-04-19
+</span>
+    </header>
+    <div itemprop="articleBody">
+      <p>In this post, I'm sharing tips &amp; tricks about managing/maintaining an open-source Zig project and mentioning the commonly used practices. I'm also giving a brief introduction to my first-ever Zig project "<a href="https://github.com/orhun/linuxwave"><strong>linuxwave</strong></a>" which led to the writing of this series.</p>
+<span id="continue-reading"></span><center>
+<img src="/ziggy_fly.svg" style="width: 25%"/>
+</center>
+<p>Recently, I shared my first Zig project called "<a href="https://github.com/orhun/linuxwave">linuxwave</a>" which is a simple command-line tool for generating music from a (random) stream of data. I will talk about it more at the end of this post.</p>
+<p>While writing Zig in the past months, I sometimes had a hard time figuring out what to do or which way to go to efficiently do a certain thing. During those times, I either went for a hunt in the wild interwebs or asked a question in the <a href="https://discord.gg/invite/zig">Discord server</a> of Zig. Unfortunately, there is still a lack of documentation so I turned this <em>getting help process</em> into writing blog posts and sharing my findings. Here are the first 2 parts of this series which came out exactly in the way that I described - me trying to figure out things:</p>
+<ul>
+<li><a href="https://blog.orhun.dev/zig-bits-01/">Zig Bits 0x1: Returning slices from functions</a></li>
+<li><a href="https://blog.orhun.dev/zig-bits-02/">Zig Bits 0x2: Using defer to defeat memory leaks</a></li>
+</ul>
+<p>In the meantime, I was working on my project and writing Zig at every chance that I get. I must say, I absolutely enjoyed this process since it's been a while since I learned something low-level like Zig. Actually, it's been a while since I learned a new programming language as well. Development was really fun.</p>
+<p>However, like every good thing, this had an end. After the core functionality is there and the Zig code is thoroughly tested, I started to do chores that are more related to <em>project management</em> rather than actual development. Although it is sometimes boring, I still believe that doing <em>grunt</em> tasks is also important since it makes you able to efficiently maintain the project and paves the way for new contributors.</p>
+<p>So I will be sharing my experience of project management in Zig to document what could be done to achieve a better stance for your Zig project in the open-source community. This could also be perceived as me trying to apply the same open-source maintenance techniques that I use for my Rust projects to a Zig project.</p>
+<p>I will cover the following topics:</p>
+<ul>
+<li><a href="https://blog.orhun.dev/zig-bits-03/#adding-libraries-zap">Adding libraries</a></li>
+<li><a href="https://blog.orhun.dev/zig-bits-03/#running-tests-zap">Running tests</a></li>
+<li><a href="https://blog.orhun.dev/zig-bits-03/#code-coverage-zap">Code coverage</a></li>
+<li><a href="https://blog.orhun.dev/zig-bits-03/#documentation-generation-zap">Documentation generation</a></li>
+<li><a href="https://blog.orhun.dev/zig-bits-03/#ci-cd-zap">CI/CD</a></li>
+</ul>
+<p>So let's jump right into it.</p>
+<hr />
+<h2 id="adding-libraries-zap">Adding libraries ⚡</h2>
+<p>For newcomers, this is one of the prominent questions. Currently, there does not seem to be an easy and standard way like <code>cargo add</code> for adding libraries to your Zig project. However, there are some package managers available for this purpose:</p>
+<ul>
+<li><a href="https://github.com/mattnite/gyro">gyro</a>: A Zig package manager with an index, build runner, and build dependencies.</li>
+<li><a href="https://github.com/nektro/zigmod">zigmod</a>: A package manager for the Zig programming language.
+<ul>
+<li><a href="https://github.com/nektro/aquila">aquila</a>: A package index for Zig projects.</li>
+</ul>
+</li>
+</ul>
+<p>For my project, I followed a more straightforward approach: <a href="https://git-scm.com/book/en/v2/Git-Tools-Submodules">Git Submodules</a>!</p>
+<p>1- Create <code>libs</code> directory at the root of your project.<br />
+2- Add the library as a git submodule:</p>
+<p>Either run <code>git submodule add &lt;remote_url&gt; libs/&lt;lib&gt;</code> or add <code>.gitmodules</code> file. For example, for <a href="https://github.com/Hejsil/zig-clap"><code>zig-clap</code></a>:</p>
+<pre data-lang="ini" style="background-color:#191919;color:#ffffff;" class="language-ini "><code class="language-ini" data-lang="ini"><span style="color:#80d500;">[submodule &quot;libs/zig-clap&quot;]
+</span><span style="color:#cccccc;">  </span><span style="font-style:italic;color:#8aa6c1;">path </span><span>= </span><span style="color:#8aa6c1;">libs/zig-clap
+</span><span style="color:#cccccc;">  </span><span style="font-style:italic;color:#8aa6c1;">url </span><span>= </span><span style="color:#66ccff;">https://github.com/Hejsil/zig-clap
+</span></code></pre>
+<p>3- Then you need to add the package to your project in <code>build.zig</code> as follows:</p>
+<pre data-lang="zig" style="background-color:#191919;color:#ffffff;" class="language-zig "><code class="language-zig" data-lang="zig"><span style="color:#80d500;">const</span><span style="color:#cccccc;"> exe </span><span>=</span><span style="color:#cccccc;"> b.addExecutable(</span><span style="color:#ffd700;">&quot;exe_name&quot;</span><span style="color:#cccccc;">, </span><span style="color:#ffd700;">&quot;src/main.zig&quot;</span><span style="color:#cccccc;">);
+</span><span style="background-color:#171717;color:#616161;">// ...
+</span><span style="background-color:#171717;color:#616161;">// ...
+</span><span style="color:#cccccc;">exe.addPackagePath(</span><span style="color:#ffd700;">&quot;clap&quot;</span><span style="color:#cccccc;">, </span><span style="color:#ffd700;">&quot;libs/zig-clap/clap.zig&quot;</span><span style="color:#cccccc;">)
+</span></code></pre>
+<p>4- Now you can import the library from your source files like this:</p>
+<pre data-lang="zig" style="background-color:#191919;color:#ffffff;" class="language-zig "><code class="language-zig" data-lang="zig"><span style="color:#80d500;">const</span><span style="color:#cccccc;"> clap </span><span>= </span><span style="color:#80d500;">@import</span><span style="color:#cccccc;">(</span><span style="color:#ffd700;">&quot;clap&quot;</span><span style="color:#cccccc;">);
+</span></code></pre>
+<p><a href="https://github.com/Hejsil">Hejsil</a> summarizes this very well <a href="https://github.com/Hejsil/zig-clap/issues/61">in this issue</a>:</p>
+<blockquote>
+<p>Right now, there is no standard way to install Zig libraries. There are a few common ways people do it:</p>
+<ul>
+<li>
+<p>git submodule or copying and pasting the library into their own project.</p>
+<ul>
+<li>After this, you can add <code>exe.addPackagePath("clap", "path/to/clap.zig");</code> to your <code>build.zig</code> file to use the library</li>
+</ul>
+</li>
+<li>
+<p>Use an unofficial package manager such as <a href="https://github.com/nektro/zigmod"><code>zigmod</code></a> or <a href="https://github.com/mattnite/gyro"><code>gyro</code></a></p>
+<ul>
+<li>Look at the docs for these package managers for how to install packages using them. They should both be able to install <code>zig-clap</code> as far as I know.</li>
+</ul>
+</li>
+</ul>
+</blockquote>
+<hr />
+<h2 id="running-tests-zap">Running tests ⚡</h2>
+<p>While writing tests for my project, I realized I need to add tests for each file and specify which files to test in <code>build.zig</code>. For example:</p>
+<pre data-lang="zig" style="background-color:#191919;color:#ffffff;" class="language-zig "><code class="language-zig" data-lang="zig"><span style="color:#80d500;">const</span><span style="color:#cccccc;"> exe_tests </span><span>=</span><span style="color:#cccccc;"> b.addTest(</span><span style="color:#ffd700;">&quot;src/main.zig&quot;</span><span style="color:#cccccc;">);
+</span><span style="color:#cccccc;">exe_tests.setTarget(target);
+</span><span style="color:#cccccc;">exe_tests.setBuildMode(mode);
+</span><span style="color:#cccccc;">
+</span><span style="color:#80d500;">const</span><span style="color:#cccccc;"> test_step </span><span>=</span><span style="color:#cccccc;"> b.step(</span><span style="color:#ffd700;">&quot;test&quot;</span><span style="color:#cccccc;">, </span><span style="color:#ffd700;">&quot;Run unit tests&quot;</span><span style="color:#cccccc;">);
+</span><span style="color:#cccccc;">test_step.dependOn(</span><span>&amp;</span><span style="color:#cccccc;">exe_tests.step);
+</span></code></pre>
+<p>When I run this code with <code>zig build test</code>, it will only run the tests in <code>main.zig</code>. What I wanted is to run the tests in <em>every</em> file in my project so I did the most obvious thing that comes to mind:</p>
+<pre data-lang="zig" style="background-color:#191919;color:#ffffff;" class="language-zig "><code class="language-zig" data-lang="zig"><span style="color:#80d500;">const</span><span style="color:#cccccc;"> test_step </span><span>=</span><span style="color:#cccccc;"> b.step(</span><span style="color:#ffd700;">&quot;test&quot;</span><span style="color:#cccccc;">, </span><span style="color:#ffd700;">&quot;Run tests&quot;</span><span style="color:#cccccc;">);
+</span><span style="color:#cccccc;">
+</span><span style="background-color:#171717;color:#616161;">// loop through the modules and add them for testing
+</span><span style="color:#80d500;">for </span><span style="color:#cccccc;">([</span><span style="color:#eddd5a;">_</span><span style="color:#cccccc;">][]</span><span style="color:#80d500;">const u8</span><span style="color:#cccccc;">{ </span><span style="color:#ffd700;">&quot;main&quot;</span><span style="color:#cccccc;">, </span><span style="color:#ffd700;">&quot;wav&quot;</span><span style="color:#cccccc;">, </span><span style="color:#ffd700;">&quot;file&quot;</span><span style="color:#cccccc;">, </span><span style="color:#ffd700;">&quot;gen&quot; </span><span style="color:#cccccc;">}) </span><span>|</span><span style="color:#cccccc;">module</span><span>| </span><span style="color:#cccccc;">{
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">const</span><span style="color:#cccccc;"> test_module </span><span>=</span><span style="color:#cccccc;"> b.fmt(</span><span style="color:#ffd700;">&quot;src/{s}.zig&quot;</span><span style="color:#cccccc;">, .{module});
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">var</span><span style="color:#cccccc;"> exe_tests </span><span>=</span><span style="color:#cccccc;"> b.addTest(test_module);
+</span><span style="color:#cccccc;">    test_step.dependOn(</span><span>&amp;</span><span style="color:#cccccc;">exe_tests.step);
+</span><span style="color:#cccccc;">}
+</span></code></pre>
+<pre data-lang="sh" style="background-color:#191919;color:#ffffff;" class="language-sh "><code class="language-sh" data-lang="sh"><span style="color:#cccccc;">$ zig build test
+</span><span style="color:#cccccc;">
+</span><span style="color:#cccccc;">1/1 test.run... OK
+</span><span style="color:#cccccc;">All 1 tests passed.
+</span><span style="color:#cccccc;">1/2 test.encode WAV... OK
+</span><span style="color:#cccccc;">2/2 test.stream out WAV... OK
+</span><span style="color:#cccccc;">All 2 tests passed.
+</span><span style="color:#cccccc;">1/1 test.read bytes from the file... OK
+</span><span style="color:#cccccc;">All 1 tests passed.
+</span><span style="color:#cccccc;">1/1 test.generate music... OK
+</span><span style="color:#cccccc;">All 1 tests passed.
+</span></code></pre>
+<p>This works just fine but there is also another way (and a better way) of doing this which is mentioned in this <a href="https://www.reddit.com/r/Zig/comments/y65qa6/how_to_test_every_file_in_a_simple_zig_project/">Reddit thread</a>.</p>
+<blockquote>
+<p>You need to have a common file that "references" the testing code for them to be run by a single "addTest" statement in your build file. For example, in <code>src/myLibrary.zig</code>:</p>
+</blockquote>
+<pre data-lang="zig" style="background-color:#191919;color:#ffffff;" class="language-zig "><code class="language-zig" data-lang="zig"><span style="color:#80d500;">pub const</span><span style="color:#cccccc;"> A </span><span>= </span><span style="color:#80d500;">@import</span><span style="color:#cccccc;">(</span><span style="color:#ffd700;">&quot;A.zig&quot;</span><span style="color:#cccccc;">);
+</span><span style="color:#80d500;">pub const</span><span style="color:#cccccc;"> B </span><span>= </span><span style="color:#80d500;">@import</span><span style="color:#cccccc;">(</span><span style="color:#ffd700;">&quot;B.zig&quot;</span><span style="color:#cccccc;">);
+</span><span style="color:#80d500;">pub const</span><span style="color:#cccccc;"> SomeDataType </span><span>= </span><span style="color:#80d500;">@import</span><span style="color:#cccccc;">(</span><span style="color:#ffd700;">&quot;C.zig&quot;</span><span style="color:#cccccc;">).SomeDataType;
+</span><span style="color:#cccccc;">
+</span><span style="color:#80d500;">test </span><span style="color:#cccccc;">{
+</span><span style="color:#cccccc;">  </span><span style="color:#80d500;">@import</span><span style="color:#cccccc;">(</span><span style="color:#ffd700;">&quot;std&quot;</span><span style="color:#cccccc;">).testing.refAllDecls(</span><span style="color:#8aa6c1;">@This</span><span style="color:#cccccc;">());
+</span><span style="color:#cccccc;">}
+</span></code></pre>
+<blockquote>
+<p>Then in <code>build.zig</code>, you can simply add it as <code>b.addTest("src/myLibrary.zig")</code>.</p>
+</blockquote>
+<hr />
+<h2 id="code-coverage-zap">Code coverage ⚡</h2>
+<p>One of the cool things you can do is to track how much of your tests cover your code. This also helps with testing the functionality better and potentially eliminating bugs. Sometimes you even need to refactor your code to write tests for a certain function/module which makes the code better at the end of the day.</p>
+<p>In Rust projects, I usually follow this path for testing/coverage:</p>
+<ul>
+<li>Write tests</li>
+<li>Run them using <a href="https://github.com/nextest-rs/nextest">cargo-nextest</a></li>
+<li>Generate code coverage report with a tool
+<ul>
+<li><a href="https://github.com/xd009642/tarpaulin">cargo-tarpaulin</a></li>
+<li><a href="https://github.com/taiki-e/cargo-llvm-cov">cargo-llvm-cov</a></li>
+</ul>
+</li>
+<li>Upload it to <a href="https://about.codecov.io">Codecov.io</a></li>
+</ul>
+<p>For Zig, we will do the following:</p>
+<ul>
+<li>Write tests</li>
+<li>Run them using <code>zig build test</code></li>
+<li>Generate code coverage report with <a href="https://github.com/SimonKagstrom/kcov">kcov</a></li>
+<li>Upload it to <a href="https://about.codecov.io">Codecov.io</a></li>
+</ul>
+<p>After the tests are passed, the first step is to generate a code coverage report. While researching this topic, I came across <a href="https://zig.news/squeek502/code-coverage-for-zig-1dk1">this article</a> that tells you how you can do that with <a href="https://github.com/SimonKagstrom/kcov"><code>kcov</code></a>.</p>
+<p>We simply need to add a new flag in <code>build.zig</code> for generating the coverage report:</p>
+<pre data-lang="zig" style="background-color:#191919;color:#ffffff;" class="language-zig "><code class="language-zig" data-lang="zig"><span style="color:#80d500;">const</span><span style="color:#cccccc;"> coverage </span><span>=</span><span style="color:#cccccc;"> b.option(bool, </span><span style="color:#ffd700;">&quot;test-coverage&quot;</span><span style="color:#cccccc;">, </span><span style="color:#ffd700;">&quot;Generate test coverage&quot;</span><span style="color:#cccccc;">) </span><span style="color:#80d500;">orelse false</span><span style="color:#cccccc;">;
+</span><span style="color:#cccccc;">
+</span><span style="color:#80d500;">const</span><span style="color:#cccccc;"> exe_tests </span><span>=</span><span style="color:#cccccc;"> b.addTest(</span><span style="color:#ffd700;">&quot;src/main.zig&quot;</span><span style="color:#cccccc;">);
+</span><span style="color:#cccccc;">exe_tests.setTarget(target);
+</span><span style="color:#cccccc;">exe_tests.setBuildMode(mode);
+</span><span style="color:#cccccc;">
+</span><span style="color:#80d500;">if </span><span style="color:#cccccc;">(coverage) {
+</span><span style="color:#cccccc;">    exe_tests.setExecCmd(&amp;[</span><span style="color:#eddd5a;">_</span><span style="color:#cccccc;">]</span><span>?</span><span style="color:#cccccc;">[]</span><span style="color:#80d500;">const u8</span><span style="color:#cccccc;">{
+</span><span style="color:#cccccc;">        </span><span style="color:#ffd700;">&quot;kcov&quot;</span><span style="color:#cccccc;">,
+</span><span style="color:#cccccc;">        </span><span style="color:#ffd700;">&quot;kcov-output&quot;</span><span style="color:#cccccc;">,
+</span><span style="color:#cccccc;">        </span><span style="color:#80d500;">null</span><span style="color:#cccccc;">,
+</span><span style="color:#cccccc;">    });
+</span><span style="color:#cccccc;">}
+</span></code></pre>
+<p>Now when you run <code>zig build test -Dtest-coverage</code>, the report will be generated in <code>kcov-output</code>.</p>
+<p>Neat!</p>
+<p>The next step is to upload this report to Codecov. I put together a simple GitHub Actions workflow for that purpose:</p>
+<pre data-lang="yml" style="background-color:#191919;color:#ffffff;" class="language-yml "><code class="language-yml" data-lang="yml"><span style="background-color:#171717;color:#616161;"># contents of .github/workflows/ci.yml
+</span><span style="color:#cccccc;">
+</span><span style="color:#80d500;">name</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">Continuous Integration
+</span><span style="color:#cccccc;">
+</span><span style="color:#80d500;">on</span><span style="color:#cccccc;">:
+</span><span style="color:#cccccc;">  </span><span style="color:#80d500;">push</span><span style="color:#cccccc;">:
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">branches</span><span style="color:#cccccc;">:
+</span><span style="color:#cccccc;">      - </span><span style="color:#ffd700;">main
+</span><span style="color:#cccccc;">
+</span><span style="color:#80d500;">jobs</span><span style="color:#cccccc;">:
+</span><span style="color:#cccccc;">  </span><span style="color:#80d500;">test</span><span style="color:#cccccc;">:
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">name</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">Test
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">runs-on</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">ubuntu-latest
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">steps</span><span style="color:#cccccc;">:
+</span><span style="color:#cccccc;">      - </span><span style="color:#80d500;">name</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">Checkout the repository
+</span><span style="color:#cccccc;">        </span><span style="color:#80d500;">uses</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">actions/checkout@v3
+</span><span style="color:#cccccc;">        </span><span style="color:#80d500;">with</span><span style="color:#cccccc;">:
+</span><span style="color:#cccccc;">          </span><span style="background-color:#171717;color:#616161;"># include libraries
+</span><span style="color:#cccccc;">          </span><span style="color:#80d500;">submodules</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">recursive
+</span><span style="color:#cccccc;">
+</span><span style="color:#cccccc;">      - </span><span style="color:#80d500;">name</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">Install Zig
+</span><span style="color:#cccccc;">        </span><span style="color:#80d500;">uses</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">goto-bus-stop/setup-zig@v2
+</span><span style="color:#cccccc;">        </span><span style="color:#80d500;">with</span><span style="color:#cccccc;">:
+</span><span style="color:#cccccc;">          </span><span style="color:#80d500;">version</span><span style="color:#cccccc;">: </span><span style="color:#eddd5a;">0.10.1
+</span><span style="color:#cccccc;">
+</span><span style="color:#cccccc;">      - </span><span style="color:#80d500;">name</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">Install kcov
+</span><span style="color:#cccccc;">        </span><span style="color:#80d500;">run</span><span style="color:#cccccc;">: </span><span style="color:#80d500;">|
+</span><span style="color:#ffd700;">          sudo apt-get update
+</span><span style="color:#ffd700;">          sudo apt-get install -y \
+</span><span style="color:#ffd700;">            --no-install-recommends \
+</span><span style="color:#ffd700;">            --allow-unauthenticated \
+</span><span style="color:#ffd700;">            kcov
+</span><span style="color:#ffd700;">
+</span><span style="color:#cccccc;">      - </span><span style="color:#80d500;">name</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">Test
+</span><span style="color:#cccccc;">        </span><span style="color:#80d500;">run</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">zig build test -Dtest-coverage
+</span><span style="color:#cccccc;">
+</span><span style="color:#cccccc;">      - </span><span style="color:#80d500;">name</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">Upload coverage to Codecov
+</span><span style="color:#cccccc;">        </span><span style="color:#80d500;">uses</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">codecov/codecov-action@v3
+</span><span style="color:#cccccc;">        </span><span style="color:#80d500;">with</span><span style="color:#cccccc;">:
+</span><span style="color:#cccccc;">          </span><span style="color:#80d500;">name</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">code-coverage-report
+</span><span style="color:#cccccc;">          </span><span style="color:#80d500;">directory</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">kcov-output
+</span><span style="color:#cccccc;">          </span><span style="color:#80d500;">fail_ci_if_error</span><span style="color:#cccccc;">: </span><span style="color:#80d500;">true
+</span><span style="color:#cccccc;">          </span><span style="color:#80d500;">verbose</span><span style="color:#cccccc;">: </span><span style="color:#80d500;">true
+</span></code></pre>
+<p>And here we go: <a href="https://app.codecov.io/gh/orhun/linuxwave">https://app.codecov.io/gh/orhun/linuxwave</a></p>
+<p><img src="/zig-codecov.png" alt="codecov" /></p>
+<hr />
+<h2 id="documentation-generation-zap">Documentation generation ⚡</h2>
+<p>In <a href="https://ziglearn.org/chapter-3/#generating-documentation">Chapter 3</a> of <a href="https://ziglearn.org/">Ziglearn</a>, the documentation generation is explained in detail:</p>
+<blockquote>
+<p>The Zig compiler comes with automatic documentation generation. This can be invoked by adding <code>-femit-docs</code> to your <code>zig build-{exe, lib, obj}</code> or <code>zig run</code> command. This documentation is saved into <code>./docs</code>, as a small static website.</p>
+<p>This generation is experimental, and often fails with complex examples. This is used by the <a href="https://ziglang.org/documentation/master/std/">standard library documentation</a>.</p>
+</blockquote>
+<p>So we simply need to activate the <code>emit_docs</code> flag for the auto-generation of the documentation. As a bonus, I recommend adding a flag in <code>build.zig</code> as follows:</p>
+<pre data-lang="zig" style="background-color:#191919;color:#ffffff;" class="language-zig "><code class="language-zig" data-lang="zig"><span style="color:#80d500;">const</span><span style="color:#cccccc;"> documentation </span><span>=</span><span style="color:#cccccc;"> b.option(bool, </span><span style="color:#ffd700;">&quot;docs&quot;</span><span style="color:#cccccc;">, </span><span style="color:#ffd700;">&quot;Generate documentation&quot;</span><span style="color:#cccccc;">) </span><span style="color:#80d500;">orelse false</span><span style="color:#cccccc;">;
+</span><span style="color:#cccccc;">
+</span><span style="color:#80d500;">const</span><span style="color:#cccccc;"> exe </span><span>=</span><span style="color:#cccccc;"> b.addExecutable(exe_name, </span><span style="color:#ffd700;">&quot;src/main.zig&quot;</span><span style="color:#cccccc;">);
+</span><span style="color:#cccccc;">exe.setTarget(target);
+</span><span style="color:#cccccc;">exe.setBuildMode(mode);
+</span><span style="color:#cccccc;">
+</span><span style="color:#80d500;">if </span><span style="color:#cccccc;">(documentation) {
+</span><span style="color:#cccccc;">    exe.emit_docs </span><span>=</span><span style="color:#80d500;"> .emit</span><span style="color:#cccccc;">;
+</span><span style="color:#cccccc;">}
+</span></code></pre>
+<p>After this, you can generate the documentation via <code>zig build -Ddocs=true</code>.</p>
+<p>The generated static site in <code>docs/</code> looks like this:</p>
+<p><img src="/zig-docs.png" alt="docs" /></p>
+<p>It is cool but I would like to go one step further and deploy this site to <a href="https://pages.github.com">GitHub Pages</a>.</p>
+<p>I don't find it feasible to maintain the <code>docs/</code> folder in the repository so I added it to the <code>.gitignore</code>. What I want instead is to auto-generate the documentation and deploy it when I push commits to the <code>main</code> branch.</p>
+<p>To do that, you first need to enable GitHub Actions feature for the GitHub Pages:</p>
+<p><img src="/github-pages-1.png" alt="GitHub Pages I" /></p>
+<blockquote>
+<p>Repository -&gt; Settings -&gt; Pages -&gt; Build and deployment -&gt; Source -&gt; Select GitHub Actions instead of the legacy Deploy from a branch option.</p>
+</blockquote>
+<p>After that, we can simply add the following workflow file for deploying the documentation to the GitHub Pages:</p>
+<pre data-lang="yml" style="background-color:#191919;color:#ffffff;" class="language-yml "><code class="language-yml" data-lang="yml"><span style="background-color:#171717;color:#616161;"># contents of .github/workflows/pages.yml
+</span><span style="color:#cccccc;">
+</span><span style="color:#80d500;">name</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">GitHub Pages
+</span><span style="color:#cccccc;">
+</span><span style="color:#80d500;">on</span><span style="color:#cccccc;">:
+</span><span style="color:#cccccc;">  </span><span style="background-color:#171717;color:#616161;"># Runs on pushes targeting the default branch
+</span><span style="color:#cccccc;">  </span><span style="color:#80d500;">push</span><span style="color:#cccccc;">:
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">branches</span><span style="color:#cccccc;">: [</span><span style="color:#ffd700;">main</span><span style="color:#cccccc;">]
+</span><span style="color:#cccccc;">
+</span><span style="color:#cccccc;">  </span><span style="background-color:#171717;color:#616161;"># Allows you to run this workflow manually from the Actions tab
+</span><span style="color:#cccccc;">  </span><span style="color:#80d500;">workflow_dispatch</span><span style="color:#cccccc;">:
+</span><span style="color:#cccccc;">
+</span><span style="background-color:#171717;color:#616161;"># Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
+</span><span style="color:#80d500;">permissions</span><span style="color:#cccccc;">:
+</span><span style="color:#cccccc;">  </span><span style="color:#80d500;">contents</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">read
+</span><span style="color:#cccccc;">  </span><span style="color:#80d500;">pages</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">write
+</span><span style="color:#cccccc;">  </span><span style="color:#80d500;">id-token</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">write
+</span><span style="color:#cccccc;">
+</span><span style="background-color:#171717;color:#616161;"># Allow one concurrent deployment
+</span><span style="color:#80d500;">concurrency</span><span style="color:#cccccc;">:
+</span><span style="color:#cccccc;">  </span><span style="color:#80d500;">group</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">&quot;pages&quot;
+</span><span style="color:#cccccc;">  </span><span style="color:#80d500;">cancel-in-progress</span><span style="color:#cccccc;">: </span><span style="color:#80d500;">true
+</span><span style="color:#cccccc;">
+</span><span style="color:#80d500;">jobs</span><span style="color:#cccccc;">:
+</span><span style="color:#cccccc;">  </span><span style="color:#80d500;">deploy</span><span style="color:#cccccc;">:
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">name</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">Deploy website
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">runs-on</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">ubuntu-latest
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">environment</span><span style="color:#cccccc;">:
+</span><span style="color:#cccccc;">      </span><span style="color:#80d500;">name</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">github-pages
+</span><span style="color:#cccccc;">      </span><span style="color:#80d500;">url</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">${{ steps.deployment.outputs.page_url }}
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">steps</span><span style="color:#cccccc;">:
+</span><span style="color:#cccccc;">      - </span><span style="color:#80d500;">name</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">Checkout the repository
+</span><span style="color:#cccccc;">        </span><span style="color:#80d500;">uses</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">actions/checkout@v3
+</span><span style="color:#cccccc;">        </span><span style="color:#80d500;">with</span><span style="color:#cccccc;">:
+</span><span style="color:#cccccc;">          </span><span style="color:#80d500;">submodules</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">recursive
+</span><span style="color:#cccccc;">
+</span><span style="color:#cccccc;">      - </span><span style="color:#80d500;">name</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">Install Zig
+</span><span style="color:#cccccc;">        </span><span style="color:#80d500;">uses</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">goto-bus-stop/setup-zig@v2
+</span><span style="color:#cccccc;">        </span><span style="color:#80d500;">with</span><span style="color:#cccccc;">:
+</span><span style="color:#cccccc;">          </span><span style="color:#80d500;">version</span><span style="color:#cccccc;">: </span><span style="color:#eddd5a;">0.10.1
+</span><span style="color:#cccccc;">
+</span><span style="color:#cccccc;">      - </span><span style="color:#80d500;">name</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">Generate documentation
+</span><span style="color:#cccccc;">        </span><span style="color:#80d500;">run</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">zig build -Ddocs=true
+</span><span style="color:#cccccc;">
+</span><span style="color:#cccccc;">      - </span><span style="color:#80d500;">name</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">Setup Pages
+</span><span style="color:#cccccc;">        </span><span style="color:#80d500;">uses</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">actions/configure-pages@v3
+</span><span style="color:#cccccc;">      - </span><span style="color:#80d500;">name</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">Upload artifact
+</span><span style="color:#cccccc;">        </span><span style="color:#80d500;">uses</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">actions/upload-pages-artifact@v1
+</span><span style="color:#cccccc;">        </span><span style="color:#80d500;">with</span><span style="color:#cccccc;">:
+</span><span style="color:#cccccc;">          </span><span style="background-color:#171717;color:#616161;"># upload documentation
+</span><span style="color:#cccccc;">          </span><span style="color:#80d500;">path</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">docs
+</span><span style="color:#cccccc;">
+</span><span style="color:#cccccc;">      - </span><span style="color:#80d500;">name</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">Deploy to GitHub Pages
+</span><span style="color:#cccccc;">        </span><span style="color:#80d500;">id</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">deployment
+</span><span style="color:#cccccc;">        </span><span style="color:#80d500;">uses</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">actions/deploy-pages@v2
+</span></code></pre>
+<p>You can check out the deployment under Settings &gt; Pages:</p>
+<p><img src="/github-pages-2.png" alt="GitHub Pages II" /></p>
+<p>As an example, see the documentation of my project here: <a href="https://orhun.dev/linuxwave/docs/">https://orhun.dev/linuxwave/docs/</a></p>
+<hr />
+<h2 id="ci-cd-zap">CI/CD ⚡</h2>
+<p>Lastly, let's set up a CI/CD workflow for our project. There will be 2 workflow files:</p>
+<ul>
+<li><code>ci.yml</code>: for making sure that the project builds fine.
+<ul>
+<li>triggered via pushing a commit</li>
+</ul>
+</li>
+<li><code>cd.yml</code>: for distributing pre-built binaries for different platforms.
+<ul>
+<li>triggered via pushing a tag</li>
+</ul>
+</li>
+</ul>
+<h3 id="continuous-integration">Continuous Integration</h3>
+<p>Here is a GitHub Actions workflow file that automates the process of building, testing, and checking the formatting of a project every time there's a push or a pull request to the main branch:</p>
+<pre data-lang="yml" style="background-color:#191919;color:#ffffff;" class="language-yml "><code class="language-yml" data-lang="yml"><span style="color:#80d500;">name</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">Continuous Integration
+</span><span style="color:#cccccc;">
+</span><span style="color:#80d500;">on</span><span style="color:#cccccc;">:
+</span><span style="color:#cccccc;">  </span><span style="color:#80d500;">pull_request</span><span style="color:#cccccc;">:
+</span><span style="color:#cccccc;">  </span><span style="color:#80d500;">push</span><span style="color:#cccccc;">:
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">branches</span><span style="color:#cccccc;">:
+</span><span style="color:#cccccc;">      - </span><span style="color:#ffd700;">main
+</span><span style="color:#cccccc;">
+</span><span style="color:#80d500;">jobs</span><span style="color:#cccccc;">:
+</span><span style="color:#cccccc;">  </span><span style="color:#80d500;">build</span><span style="color:#cccccc;">:
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">name</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">&quot;Build with args: &#39;${{ matrix.OPTIMIZE }}&#39;&quot;
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">runs-on</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">ubuntu-latest
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">strategy</span><span style="color:#cccccc;">:
+</span><span style="color:#cccccc;">      </span><span style="color:#80d500;">fail-fast</span><span style="color:#cccccc;">: </span><span style="color:#80d500;">false
+</span><span style="color:#cccccc;">      </span><span style="color:#80d500;">matrix</span><span style="color:#cccccc;">:
+</span><span style="color:#cccccc;">        </span><span style="color:#80d500;">OPTIMIZE</span><span style="color:#cccccc;">: [</span><span style="color:#ffd700;">&quot;&quot;</span><span style="color:#cccccc;">, </span><span style="color:#ffd700;">&quot;-Drelease-safe&quot;</span><span style="color:#cccccc;">, </span><span style="color:#ffd700;">&quot;-Drelease-fast&quot;</span><span style="color:#cccccc;">, </span><span style="color:#ffd700;">&quot;-Drelease-small&quot;</span><span style="color:#cccccc;">]
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">steps</span><span style="color:#cccccc;">:
+</span><span style="color:#cccccc;">      - </span><span style="color:#80d500;">name</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">Checkout the repository
+</span><span style="color:#cccccc;">        </span><span style="color:#80d500;">uses</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">actions/checkout@v3
+</span><span style="color:#cccccc;">        </span><span style="color:#80d500;">with</span><span style="color:#cccccc;">:
+</span><span style="color:#cccccc;">          </span><span style="color:#80d500;">submodules</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">recursive
+</span><span style="color:#cccccc;">
+</span><span style="color:#cccccc;">      - </span><span style="color:#80d500;">name</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">Install Zig
+</span><span style="color:#cccccc;">        </span><span style="color:#80d500;">uses</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">goto-bus-stop/setup-zig@v2
+</span><span style="color:#cccccc;">        </span><span style="color:#80d500;">with</span><span style="color:#cccccc;">:
+</span><span style="color:#cccccc;">          </span><span style="color:#80d500;">version</span><span style="color:#cccccc;">: </span><span style="color:#eddd5a;">0.10.1
+</span><span style="color:#cccccc;">
+</span><span style="color:#cccccc;">      - </span><span style="color:#80d500;">name</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">Build
+</span><span style="color:#cccccc;">        </span><span style="color:#80d500;">run</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">zig build ${{ matrix.OPTIMIZE }}
+</span><span style="color:#cccccc;">
+</span><span style="color:#cccccc;">      - </span><span style="color:#80d500;">name</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">Test
+</span><span style="color:#cccccc;">        </span><span style="color:#80d500;">run</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">zig build test ${{ matrix.OPTIMIZE }}
+</span><span style="color:#cccccc;">
+</span><span style="color:#cccccc;">      - </span><span style="color:#80d500;">name</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">Check formatting
+</span><span style="color:#cccccc;">        </span><span style="color:#80d500;">run</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">zig fmt --check .
+</span></code></pre>
+<p>The binary is tested for 3 different optimization profiles:</p>
+<ul>
+<li><a href="https://ziglang.org/documentation/master/#toc-ReleaseFast">ReleaseFast</a>
+<ul>
+<li>Fast runtime performance</li>
+<li>Safety checks disabled</li>
+<li>Slow compilation speed</li>
+<li>Large binary size</li>
+</ul>
+</li>
+<li><a href="https://ziglang.org/documentation/master/#toc-ReleaseSafe">ReleaseSafe</a>
+<ul>
+<li>Medium runtime performance</li>
+<li>Safety checks enabled</li>
+<li>Slow compilation speed</li>
+<li>Large binary size</li>
+</ul>
+</li>
+<li><a href="https://ziglang.org/documentation/master/#toc-ReleaseSmall">ReleaseSmall</a>
+<ul>
+<li>Medium runtime performance</li>
+<li>Safety checks disabled</li>
+<li>Slow compilation speed</li>
+<li>Small binary size</li>
+</ul>
+</li>
+</ul>
+<h3 id="continuous-deployment">Continuous Deployment</h3>
+<p>Here is a GitHub Actions workflow file that automates the process of building a binary for a specific target and publishing it on GitHub every time there is a new version tag pushed to the repository:</p>
+<pre data-lang="yml" style="background-color:#191919;color:#ffffff;" class="language-yml "><code class="language-yml" data-lang="yml"><span style="color:#80d500;">name</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">Continuous Deployment
+</span><span style="color:#cccccc;">
+</span><span style="color:#80d500;">on</span><span style="color:#cccccc;">:
+</span><span style="color:#cccccc;">  </span><span style="color:#80d500;">push</span><span style="color:#cccccc;">:
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">tags</span><span style="color:#cccccc;">:
+</span><span style="color:#cccccc;">      - </span><span style="color:#ffd700;">&quot;v*.*.*&quot;
+</span><span style="color:#cccccc;">
+</span><span style="color:#80d500;">jobs</span><span style="color:#cccccc;">:
+</span><span style="color:#cccccc;">  </span><span style="color:#80d500;">publish-github</span><span style="color:#cccccc;">:
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">name</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">Publish on GitHub
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">runs-on</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">ubuntu-latest
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">strategy</span><span style="color:#cccccc;">:
+</span><span style="color:#cccccc;">      </span><span style="color:#80d500;">fail-fast</span><span style="color:#cccccc;">: </span><span style="color:#80d500;">false
+</span><span style="color:#cccccc;">      </span><span style="color:#80d500;">matrix</span><span style="color:#cccccc;">:
+</span><span style="color:#cccccc;">        </span><span style="color:#80d500;">TARGET</span><span style="color:#cccccc;">:
+</span><span style="color:#cccccc;">          [
+</span><span style="color:#cccccc;">            </span><span style="color:#ffd700;">x86_64-linux</span><span style="color:#cccccc;">,
+</span><span style="color:#cccccc;">            </span><span style="color:#ffd700;">x86_64-macos</span><span style="color:#cccccc;">,
+</span><span style="color:#cccccc;">            </span><span style="color:#ffd700;">x86_64-windows</span><span style="color:#cccccc;">,
+</span><span style="color:#cccccc;">            </span><span style="color:#ffd700;">aarch64-linux</span><span style="color:#cccccc;">,
+</span><span style="color:#cccccc;">            </span><span style="color:#ffd700;">aarch64-macos</span><span style="color:#cccccc;">,
+</span><span style="color:#cccccc;">            </span><span style="color:#ffd700;">aarch64-windows</span><span style="color:#cccccc;">,
+</span><span style="color:#cccccc;">            </span><span style="color:#ffd700;">arm-linux</span><span style="color:#cccccc;">,
+</span><span style="color:#cccccc;">            </span><span style="color:#ffd700;">riscv64-linux</span><span style="color:#cccccc;">,
+</span><span style="color:#cccccc;">            </span><span style="color:#ffd700;">i386-linux</span><span style="color:#cccccc;">,
+</span><span style="color:#cccccc;">          ]
+</span><span style="color:#cccccc;">
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">steps</span><span style="color:#cccccc;">:
+</span><span style="color:#cccccc;">      - </span><span style="color:#80d500;">name</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">Checkout the repository
+</span><span style="color:#cccccc;">        </span><span style="color:#80d500;">uses</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">actions/checkout@v3
+</span><span style="color:#cccccc;">        </span><span style="color:#80d500;">with</span><span style="color:#cccccc;">:
+</span><span style="color:#cccccc;">          </span><span style="color:#80d500;">submodules</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">recursive
+</span><span style="color:#cccccc;">
+</span><span style="color:#cccccc;">      - </span><span style="color:#80d500;">name</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">Set the release version
+</span><span style="color:#cccccc;">        </span><span style="color:#80d500;">run</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">echo &quot;RELEASE_VERSION=${GITHUB_REF:11}&quot; &gt;&gt; $GITHUB_ENV
+</span><span style="color:#cccccc;">
+</span><span style="color:#cccccc;">      - </span><span style="color:#80d500;">name</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">Install Zig
+</span><span style="color:#cccccc;">        </span><span style="color:#80d500;">uses</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">goto-bus-stop/setup-zig@v2
+</span><span style="color:#cccccc;">        </span><span style="color:#80d500;">with</span><span style="color:#cccccc;">:
+</span><span style="color:#cccccc;">          </span><span style="color:#80d500;">version</span><span style="color:#cccccc;">: </span><span style="color:#eddd5a;">0.10.1
+</span><span style="color:#cccccc;">
+</span><span style="color:#cccccc;">      - </span><span style="color:#80d500;">name</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">Build
+</span><span style="color:#cccccc;">        </span><span style="color:#80d500;">run</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">zig build -Drelease-safe -Dtarget=${{ matrix.TARGET }}
+</span><span style="color:#cccccc;">
+</span><span style="color:#cccccc;">      - </span><span style="color:#80d500;">name</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">Upload the binary
+</span><span style="color:#cccccc;">        </span><span style="color:#80d500;">uses</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">svenstaro/upload-release-action@v2
+</span><span style="color:#cccccc;">        </span><span style="color:#80d500;">with</span><span style="color:#cccccc;">:
+</span><span style="color:#cccccc;">          </span><span style="color:#80d500;">file</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">zig-out/bin/binary-${{ env.RELEASE_VERSION }}-${{ matrix.TARGET }}*
+</span><span style="color:#cccccc;">          </span><span style="color:#80d500;">file_glob</span><span style="color:#cccccc;">: </span><span style="color:#80d500;">true
+</span><span style="color:#cccccc;">          </span><span style="color:#80d500;">overwrite</span><span style="color:#cccccc;">: </span><span style="color:#80d500;">true
+</span><span style="color:#cccccc;">          </span><span style="color:#80d500;">tag</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">${{ github.ref }}
+</span><span style="color:#cccccc;">          </span><span style="color:#80d500;">repo_token</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">${{ secrets.GITHUB_TOKEN }}
+</span></code></pre>
+<p>As you can see here, it is really easy to cross-compile Zig projects by only providing the <code>-Dtarget</code> option.</p>
+<p><code>TARGET</code> variable in this workflow consists of 2 parts:</p>
+<ul>
+<li>CPU architecture (e.g. <code>x86_64</code>)</li>
+<li>Operating system (e.g. <code>linux</code>)</li>
+</ul>
+<p>You can get more information about cross compilation <a href="https://ziglearn.org/chapter-3/#cross-compilation">here</a>.</p>
+<hr />
+<h2 id="linuxwave-penguin-musical-note"><a href="https://github.com/orhun/linuxwave"><strong>linuxwave</strong></a> 🐧🎵</h2>
+<p>It is time for the main event.</p>
+<p><img src="https://raw.githubusercontent.com/orhun/linuxwave/main/assets/demo.gif" alt="demo" /></p>
+<center>
+<p><a href="https://www.youtube.com/watch?v=SLiEuvDmo8M"><strong>Click here to watch the demo!</strong></a></p>
+</center>
+<p><strong>linuxwave</strong> is a command-line tool written in Zig for generating music from the entropy of the Linux kernel (<code>/dev/urandom</code>). It can also encode WAV files as a music composition from a given input file.</p>
+<p>Here are some examples:</p>
+<ul>
+<li>Use A minor blues scale:</li>
+</ul>
+<pre data-lang="sh" style="background-color:#191919;color:#ffffff;" class="language-sh "><code class="language-sh" data-lang="sh"><span style="color:#cccccc;">linuxwave</span><span style="font-style:italic;color:#8aa6c1;"> -s</span><span style="color:#cccccc;"> 0,3,5,6,7,10</span><span style="font-style:italic;color:#8aa6c1;"> -n</span><span style="color:#cccccc;"> 220</span><span style="font-style:italic;color:#8aa6c1;"> -o</span><span style="color:#cccccc;"> blues.wav
+</span></code></pre>
+<ul>
+<li>Read from an arbitrary file and turn it into a 10-second music composition:</li>
+</ul>
+<pre data-lang="sh" style="background-color:#191919;color:#ffffff;" class="language-sh "><code class="language-sh" data-lang="sh"><span style="color:#cccccc;">linuxwave</span><span style="font-style:italic;color:#8aa6c1;"> -i</span><span style="color:#cccccc;"> build.zig</span><span style="font-style:italic;color:#8aa6c1;"> -n</span><span style="color:#cccccc;"> 261.63</span><span style="font-style:italic;color:#8aa6c1;"> -d</span><span style="color:#cccccc;"> 10</span><span style="font-style:italic;color:#8aa6c1;"> -o</span><span style="color:#cccccc;"> music.wav
+</span></code></pre>
+<ul>
+<li>Generate a <strong>calming music</strong>:</li>
+</ul>
+<pre data-lang="sh" style="background-color:#191919;color:#ffffff;" class="language-sh "><code class="language-sh" data-lang="sh"><span style="color:#cccccc;">linuxwave</span><span style="font-style:italic;color:#8aa6c1;"> -r</span><span style="color:#cccccc;"> 2000</span><span style="font-style:italic;color:#8aa6c1;"> -f</span><span style="color:#cccccc;"> S32_LE</span><span style="font-style:italic;color:#8aa6c1;"> -o</span><span style="color:#cccccc;"> calm.wav
+</span></code></pre>
+<ul>
+<li>Generate a <strong>chiptune music</strong>:</li>
+</ul>
+<pre data-lang="sh" style="background-color:#191919;color:#ffffff;" class="language-sh "><code class="language-sh" data-lang="sh"><span style="color:#cccccc;">linuxwave</span><span style="font-style:italic;color:#8aa6c1;"> -r</span><span style="color:#cccccc;"> 44100</span><span style="font-style:italic;color:#8aa6c1;"> -f</span><span style="color:#cccccc;"> U8</span><span style="font-style:italic;color:#8aa6c1;"> -c</span><span style="color:#cccccc;"> 2</span><span style="font-style:italic;color:#8aa6c1;"> -o</span><span style="color:#cccccc;"> chiptune.wav
+</span></code></pre>
+<p>More examples/presets are available in the <a href="https://github.com/orhun/linuxwave">repository</a>.</p>
+<p>✨ It is up to your imagination to generate fancy stuff!</p>
+<p>⚡ GitHub: <a href="https://github.com/orhun/linuxwave"><strong>https://github.com/orhun/linuxwave</strong></a></p>
+<h2 id="conclusion">Conclusion</h2>
+<img src="/ziggy_pizza.svg" style="width: 25%"/>
+<p>Before anyone comments about the title of this post, I must admit that we didn't actually <em>master</em> the project management in Zig completely (yet). But that was the most fitting title that ChatGPT suggested based on my bullet points so I decided to roll with it.</p>
+<p>I believe I covered a couple of important techniques and best practices for efficiently managing open-source Zig projects. I might share more stuff about this topic in the future and feel free to let me know if you have additional tips or any questions!</p>
+<p>I hope you enjoy the stuff you generate with <strong>linuxwave</strong>! Feel free to share them <a href="https://github.com/orhun/linuxwave/discussions/1">here</a>.</p>
+<p><a href="https://blog.orhun.dev/zig-bits-04/">Here</a> is the next post of the Zig Bits series! ("Building an HTTP client/server from scratch")</p>
+<p><em>sayonara!</em></p>
+
+    </div>
+
+    
+        <footer>
+            <hr>
+            <p>
+                
+                    Published by Orhun Parmaksız
+                
+                
+                    
+                    in <a href="https://blog.orhun.dev/categories/zig-bits/">Zig Bits</a>
+                
+                
+            </p>
+            
+            
+            <div style="display: flex; justify-content: space-between; align-items: center">
+              <div>
+                <iframe
+                  src="https://github.com/sponsors/orhun/button"
+                  title="Sponsor @orhun"
+                  height="35"
+                  width="116"
+                  style="border: 0"
+                ></iframe>
+                <a href="https://www.buymeacoffee.com/orhun" target="_blank"
+                  ><img
+                    src="https://cdn.buymeacoffee.com/buttons/v2/default-white.png"
+                    alt="Buy Me A Coffee"
+                    style="height: 40px !important; width: 150px !important"
+                /></a>
+              </div>
+              <div>
+                <applause-button
+                  style="width: 50px; height: 50px"
+                  url="https://blog.orhun.dev&#x2F;zig-bits-03&#x2F;"
+                  color="white"
+                  multiclap="true"
+                />
+              </div>
+              <div>
+                <div style="width: auto; height: 39px">
+                  <p style="margin: 0; color: #fff; font-style: italic">✨ Sponsored by:</p>
+                </div>
+                <a href="https://terminaltrove.com/" target="_blank"
+                  ><img
+                    src="/sponsors/terminal_trove.png"
+                    alt="Terminal Trove"
+                    style="height: 40px; width: auto"
+                /></a>
+                <a href="https://rawkode.academy/" target="_blank"
+                  ><img
+                    src="/sponsors/rawkode_academy.png"
+                    alt="Rawkode Academy"
+                    style="height: 40px; width: auto"
+                /></a>
+                <a href="https://malwation.com/" target="_blank"
+                  ><img
+                    src="/sponsors/malwation.svg"
+                    alt="Malwation"
+                    style="height: 40px; width: auto"
+                /></a>
+              </div>
+            </div>
+            <script src="https://utteranc.es/client.js"
+                    repo="orhun/personal-blog"
+                    issue-term="url"
+                    label="comments"
+                    theme="github-dark"
+                    crossorigin="anonymous"
+                    async>
+            </script>
+        </footer>
+    
+</article>
+
+
+    </body>
+
+</html>

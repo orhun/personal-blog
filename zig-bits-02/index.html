@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <meta http-equiv="content-type" content="text/html; charset=utf-8">
+      <meta property="og:type" content="website" />
+      <meta property="og:url" content="https://blog.orhun.dev"/>
+      
+      <meta property="og:title" content="Zig Bits 0x2: Using defer to defeat memory leaks - Orhun&#x27;s Blog" />
+      
+      <meta property="og:image" content="https://blog.orhun.dev/crow.png" />
+      
+      <meta name="description" content="FOSS • Linux • Programming" />
+      <meta property="og:description" content="FOSS • Linux • Programming"/>
+      
+
+      <!-- Enable responsiveness on mobile devices-->
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+      <link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png">
+      <link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png">
+      <link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png">
+      <link rel="manifest" href="/favicon/site.webmanifest">
+
+      <script async src="https://umami.orhun.dev/script.js" data-website-id="56ca5ca7-ba9f-416e-8bee-a132c155d56b"></script>
+
+      <link rel="stylesheet" href="https://unpkg.com/applause-button/dist/applause-button.css" />
+      <script src="https://unpkg.com/applause-button/dist/applause-button.js"></script>
+
+      
+      <title>Zig Bits 0x2: Using defer to defeat memory leaks - Orhun&#x27;s Blog</title>
+      
+
+      
+        <link rel="alternate" type="application/rss+xml" title="RSS" href="https://blog.orhun.dev/rss.xml">
+      
+
+      
+          <link rel="stylesheet" href="https://blog.orhun.dev/site.css">
+      
+
+      
+      
+    </head>
+
+    <body class="hack dark main container">
+        
+    
+        
+                
+                    <header>
+                        <nav itemscope itemtype="http://schema.org/SiteNavigationElement">
+                        
+                            <a itemprop="url"
+                               class=""
+                               href="https://blog.orhun.dev">
+                                <span itemprop="name">Home</span></a>
+                        
+                            <a itemprop="url"
+                               class=""
+                               href="https://blog.orhun.dev/categories">
+                                <span itemprop="name">Categories</span></a>
+                        
+                            <a itemprop="url"
+                               class=""
+                               href="https://github.com/orhun/personal-blog">
+                                <span itemprop="name">Source</span></a>
+                        
+                            <a itemprop="url"
+                               class=""
+                               href="https://github.com/orhun">
+                                <span itemprop="name">GitHub</span></a>
+                        
+                            <a itemprop="url"
+                               class=""
+                               href="https://donate.orhun.dev">
+                                <span itemprop="name">Donate</span></a>
+                        
+                            <a itemprop="url"
+                               class=""
+                               href="https://blog.orhun.dev/rss.xml">
+                                <span itemprop="name">RSS</span></a>
+                        
+                            <a itemprop="url"
+                               class=""
+                               href="https://orhun.dev">
+                                <span itemprop="name">About</span></a>
+                        
+                        </nav>
+                    </header>
+                
+            
+    
+
+<article itemscope itemtype="http://schema.org/BlogPosting">
+    <header>
+        <h1 itemprop="headline">Zig Bits 0x2: Using defer to defeat memory leaks</h1>
+        <span class="muted">
+    <svg style="margin-bottom:-3px" class="i-clock" viewBox="0 0 32 32"
+         width="16" height="16" fill="none" stroke="currentcolor"
+         stroke-linecap="round" stroke-linejoin="round" stroke-width="6.25%">
+        <circle cx="16" cy="16" r="14"/>
+        <path d="M16 8 L16 16 20 20"/>
+    </svg>
+    <span>7 minute read</span>
+    <svg style="margin-bottom: -3px" class="i-edit" viewBox="0 0 32 32"
+         width="16" height="16" fill="none" stroke="currentcolor"
+         stroke-linecap="round" stroke-linejoin="round" stroke-width="6.25%">
+        <path d="M30 7 L25 2 5 22 3 29 10 27 Z M21 6 L26 11 Z M5 22 L10 27 Z"/>
+    </svg>
+
+    Published: 2023-03-21
+</span>
+    </header>
+    <div itemprop="articleBody">
+      <p>Let's talk about how to detect memory leaks in Zig and avoid them by using the <code>defer</code> statement.</p>
+<span id="continue-reading"></span><center>
+<img src="/ziggy_fly.svg" style="width: 25%"/>
+</center>
+<h3 id="retrospective">Retrospective</h3>
+<p>In the <a href="https://blog.orhun.dev/zig-bits-01/">first part</a> of the Zig Bits series, I covered the topic of returning slices from functions and how Zig manages memory. I have learned that Zig arrays are allocated on the stack and they could be corrupted when they are accessed in the case that memory pointed to them are no longer available. It was fun.</p>
+<p>Some people also pointed out that one of the examples I gave wasn't idiomatic:</p>
+<pre data-lang="zig" style="background-color:#191919;color:#ffffff;" class="language-zig "><code class="language-zig" data-lang="zig"><span style="background-color:#171717;color:#616161;">// Zig version: 0.10.1
+</span><span style="color:#cccccc;">
+</span><span style="background-color:#171717;color:#616161;">// Import the standard library.
+</span><span style="color:#80d500;">const</span><span style="color:#cccccc;"> std </span><span>= </span><span style="color:#80d500;">@import</span><span style="color:#cccccc;">(</span><span style="color:#ffd700;">&quot;std&quot;</span><span style="color:#cccccc;">);
+</span><span style="color:#cccccc;">
+</span><span style="background-color:#171717;color:#616161;">/// Returns a slice.
+</span><span style="color:#80d500;">fn </span><span>zigBits</span><span style="color:#cccccc;">() </span><span>!</span><span style="color:#cccccc;">[]</span><span style="color:#80d500;">u8 </span><span style="color:#cccccc;">{
+</span><span style="color:#cccccc;">    </span><span style="background-color:#171717;color:#616161;">// Create an array literal.
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">var</span><span style="color:#cccccc;"> message </span><span>=</span><span style="color:#cccccc;"> [</span><span style="color:#eddd5a;">_</span><span style="color:#cccccc;">]</span><span style="color:#80d500;">u8</span><span style="color:#cccccc;">{ </span><span style="color:#ffd700;">&#39;z&#39;</span><span style="color:#cccccc;">, </span><span style="color:#ffd700;">&#39;i&#39;</span><span style="color:#cccccc;">, </span><span style="color:#ffd700;">&#39;g&#39;</span><span style="color:#cccccc;">, </span><span style="color:#ffd700;">&#39;b&#39;</span><span style="color:#cccccc;">, </span><span style="color:#ffd700;">&#39;i&#39;</span><span style="color:#cccccc;">, </span><span style="color:#ffd700;">&#39;t&#39;</span><span style="color:#cccccc;">, </span><span style="color:#ffd700;">&#39;s&#39; </span><span style="color:#cccccc;">};
+</span><span style="color:#cccccc;">
+</span><span style="color:#cccccc;">    </span><span style="background-color:#171717;color:#616161;">// Print the array as string.
+</span><span style="color:#cccccc;">    std.log.debug(</span><span style="color:#ffd700;">&quot;{s}&quot;</span><span style="color:#cccccc;">, .{message});
+</span><span style="color:#cccccc;">
+</span><span style="color:#cccccc;">    </span><span style="background-color:#171717;color:#616161;">// Allocate the slice on the heap and return.
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">var</span><span style="color:#cccccc;"> message_copy </span><span>= </span><span style="color:#80d500;">try</span><span style="color:#cccccc;"> std.heap.page_allocator.dupe(u8, </span><span>&amp;</span><span style="color:#cccccc;">message);
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">return</span><span style="color:#cccccc;"> message_copy;
+</span><span style="color:#cccccc;">}
+</span><span style="color:#cccccc;">
+</span><span style="background-color:#171717;color:#616161;">/// Entrypoint of the program.
+</span><span style="color:#80d500;">pub fn </span><span>main</span><span style="color:#cccccc;">() </span><span>!</span><span style="color:#80d500;">void </span><span style="color:#cccccc;">{
+</span><span style="color:#cccccc;">    </span><span style="background-color:#171717;color:#616161;">// Get the message.
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">const</span><span style="color:#cccccc;"> message </span><span>= </span><span style="color:#80d500;">try </span><span style="color:#cccccc;">zigBits();
+</span><span style="color:#cccccc;">
+</span><span style="color:#cccccc;">    </span><span style="background-color:#171717;color:#616161;">// Print the message.
+</span><span style="color:#cccccc;">    std.log.debug(</span><span style="color:#ffd700;">&quot;{s}&quot;</span><span style="color:#cccccc;">, .{message});
+</span><span style="color:#cccccc;">}
+</span></code></pre>
+<p>Here you can see that I used a hardcoded <a href="https://ziglang.org/documentation/master/std/#A;std:heap.page_allocator"><code>std.heap.page_allocator</code></a> for duplicating the memory. However, the Zig convention for allocation is that we declare an allocator at another higher-scoped unit of code and then pass the allocator as an argument to the function like the following:</p>
+<pre data-lang="zig" style="background-color:#191919;color:#ffffff;" class="language-zig "><code class="language-zig" data-lang="zig"><span style="background-color:#171717;color:#616161;">// Zig version: 0.10.1
+</span><span style="color:#cccccc;">
+</span><span style="background-color:#171717;color:#616161;">// Import the standard library.
+</span><span style="color:#80d500;">const</span><span style="color:#cccccc;"> std </span><span>= </span><span style="color:#80d500;">@import</span><span style="color:#cccccc;">(</span><span style="color:#ffd700;">&quot;std&quot;</span><span style="color:#cccccc;">);
+</span><span style="color:#cccccc;">
+</span><span style="background-color:#171717;color:#616161;">/// Returns a slice.
+</span><span style="color:#80d500;">fn </span><span>zigBits</span><span style="color:#cccccc;">(</span><span style="font-style:italic;color:#8aa6c1;">allocator</span><span style="color:#cccccc;">: </span><span style="color:#80d500;">std.mem.Allocator</span><span style="color:#cccccc;">) </span><span>!</span><span style="color:#cccccc;">[]</span><span style="color:#80d500;">u8 </span><span style="color:#cccccc;">{
+</span><span style="color:#cccccc;">    </span><span style="background-color:#171717;color:#616161;">// Create an array literal.
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">var</span><span style="color:#cccccc;"> message </span><span>=</span><span style="color:#cccccc;"> [</span><span style="color:#eddd5a;">_</span><span style="color:#cccccc;">]</span><span style="color:#80d500;">u8</span><span style="color:#cccccc;">{ </span><span style="color:#ffd700;">&#39;z&#39;</span><span style="color:#cccccc;">, </span><span style="color:#ffd700;">&#39;i&#39;</span><span style="color:#cccccc;">, </span><span style="color:#ffd700;">&#39;g&#39;</span><span style="color:#cccccc;">, </span><span style="color:#ffd700;">&#39;b&#39;</span><span style="color:#cccccc;">, </span><span style="color:#ffd700;">&#39;i&#39;</span><span style="color:#cccccc;">, </span><span style="color:#ffd700;">&#39;t&#39;</span><span style="color:#cccccc;">, </span><span style="color:#ffd700;">&#39;s&#39; </span><span style="color:#cccccc;">};
+</span><span style="color:#cccccc;">
+</span><span style="color:#cccccc;">    </span><span style="background-color:#171717;color:#616161;">// Print the array as string.
+</span><span style="color:#cccccc;">    std.log.debug(</span><span style="color:#ffd700;">&quot;{s}&quot;</span><span style="color:#cccccc;">, .{message});
+</span><span style="color:#cccccc;">
+</span><span style="color:#cccccc;">    </span><span style="background-color:#171717;color:#616161;">// Allocate the slice and return.
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">var</span><span style="color:#cccccc;"> message_copy </span><span>= </span><span style="color:#80d500;">try</span><span style="color:#cccccc;"> allocator.dupe(u8, </span><span>&amp;</span><span style="color:#cccccc;">message);
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">return</span><span style="color:#cccccc;"> message_copy;
+</span><span style="color:#cccccc;">}
+</span><span style="color:#cccccc;">
+</span><span style="background-color:#171717;color:#616161;">/// Entrypoint of the program.
+</span><span style="color:#80d500;">pub fn </span><span>main</span><span style="color:#cccccc;">() </span><span>!</span><span style="color:#80d500;">void </span><span style="color:#cccccc;">{
+</span><span style="color:#cccccc;">    </span><span style="background-color:#171717;color:#616161;">// Get the message.
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">const</span><span style="color:#cccccc;"> allocator </span><span>=</span><span style="color:#cccccc;"> std.heap.page_allocator;
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">const</span><span style="color:#cccccc;"> message </span><span>= </span><span style="color:#80d500;">try </span><span style="color:#cccccc;">zigBits(allocator);
+</span><span style="color:#cccccc;">
+</span><span style="color:#cccccc;">    </span><span style="background-color:#171717;color:#616161;">// Print the message.
+</span><span style="color:#cccccc;">    std.log.debug(</span><span style="color:#ffd700;">&quot;{s}&quot;</span><span style="color:#cccccc;">, .{message});
+</span><span style="color:#cccccc;">}
+</span></code></pre>
+<p>This way, the callers can decide the allocator type due to it being defined as generic <a href="https://ziglang.org/documentation/master/std/#A;std:mem.Allocator">std.mem.Allocator</a>.</p>
+<p>Now that this allocator usage is made clear, let's bear this in mind and jump right into our example program for Zig Bits part 2!</p>
+<h4 id="concatenating-paths">Concatenating paths</h4>
+<img src="/ziggy_fix.svg" style="width: 25%"/>
+<p>Here is our example program which simply aims to concatenate filesystem paths and print the result:</p>
+<pre data-lang="zig" style="background-color:#191919;color:#ffffff;" class="language-zig "><code class="language-zig" data-lang="zig"><span style="background-color:#171717;color:#616161;">// Zig version: 0.10.1
+</span><span style="color:#cccccc;">
+</span><span style="background-color:#171717;color:#616161;">// Import the standard library.
+</span><span style="color:#80d500;">const</span><span style="color:#cccccc;"> std </span><span>= </span><span style="color:#80d500;">@import</span><span style="color:#cccccc;">(</span><span style="color:#ffd700;">&quot;std&quot;</span><span style="color:#cccccc;">);
+</span><span style="color:#cccccc;">
+</span><span style="background-color:#171717;color:#616161;">/// Concatenates the given paths and returns a path under &#39;/home&#39; directory.
+</span><span style="color:#80d500;">fn </span><span>concatPath</span><span style="color:#cccccc;">(</span><span style="font-style:italic;color:#8aa6c1;">allocator</span><span style="color:#cccccc;">: </span><span style="color:#80d500;">std.mem.Allocator</span><span style="color:#cccccc;">, </span><span style="font-style:italic;color:#8aa6c1;">p1</span><span style="color:#cccccc;">: []</span><span style="color:#80d500;">const u8</span><span style="color:#cccccc;">, </span><span style="font-style:italic;color:#8aa6c1;">p2</span><span style="color:#cccccc;">: []</span><span style="color:#80d500;">const u8</span><span style="color:#cccccc;">) </span><span>!</span><span style="color:#cccccc;">[]</span><span style="color:#80d500;">const u8 </span><span style="color:#cccccc;">{
+</span><span style="color:#cccccc;">    </span><span style="background-color:#171717;color:#616161;">// Define the path separator (which is &#39;/&#39; for POSIX).
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">const</span><span style="color:#cccccc;"> separator </span><span>=</span><span style="color:#cccccc;"> std.fs.path.sep_str;
+</span><span style="color:#cccccc;">
+</span><span style="color:#cccccc;">    </span><span style="background-color:#171717;color:#616161;">// Concatenate the paths and return the result.
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">const</span><span style="color:#cccccc;"> path </span><span>= </span><span style="color:#80d500;">try</span><span style="color:#cccccc;"> std.fs.path.join(allocator, &amp;.{ separator, </span><span style="color:#ffd700;">&quot;home&quot;</span><span style="color:#cccccc;">, p1, p2 });
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">return</span><span style="color:#cccccc;"> path;
+</span><span style="color:#cccccc;">}
+</span><span style="color:#cccccc;">
+</span><span style="background-color:#171717;color:#616161;">/// Entrypoint of the program.
+</span><span style="color:#80d500;">pub fn </span><span>main</span><span style="color:#cccccc;">() </span><span>!</span><span style="color:#80d500;">void </span><span style="color:#cccccc;">{
+</span><span style="color:#cccccc;">    </span><span style="background-color:#171717;color:#616161;">// Choose an allocator based on our needs.
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">const</span><span style="color:#cccccc;"> allocator </span><span>=</span><span style="color:#cccccc;"> std.heap.page_allocator;
+</span><span style="color:#cccccc;">
+</span><span style="color:#cccccc;">    </span><span style="background-color:#171717;color:#616161;">// Concatenate.
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">const</span><span style="color:#cccccc;"> path </span><span>= </span><span style="color:#80d500;">try </span><span style="color:#cccccc;">concatPath(allocator, </span><span style="color:#ffd700;">&quot;zig&quot;</span><span style="color:#cccccc;">, </span><span style="color:#ffd700;">&quot;bits&quot;</span><span style="color:#cccccc;">);
+</span><span style="color:#cccccc;">
+</span><span style="color:#cccccc;">    </span><span style="background-color:#171717;color:#616161;">// Print the final path.
+</span><span style="color:#cccccc;">    std.log.debug(</span><span style="color:#ffd700;">&quot;{s}&quot;</span><span style="color:#cccccc;">, .{path});
+</span><span style="color:#cccccc;">}
+</span></code></pre>
+<p>As you might have guessed, the main thing we should focus on in this program is the <code>concatPath</code> function. It takes a generic allocator type (<code>allocator</code>) and concatenates the given <code>p1</code> and <code>p2</code> path strings. It also prepends "/home" to the final path. Very cool!</p>
+<p><strong>Q</strong>: Alright, we got it. Are you gonna run the damn thing?</p>
+<p>Oh yeah, sure:</p>
+<pre data-lang="sh" style="background-color:#191919;color:#ffffff;" class="language-sh "><code class="language-sh" data-lang="sh"><span style="color:#cccccc;">$ zig build run
+</span><span style="color:#cccccc;">
+</span><span style="color:#cccccc;">debug: /home/zig/bits
+</span></code></pre>
+<p>As you can see everything worked and we have successfully printed out the final path.</p>
+<p>See you in the next post!</p>
+<hr />
+<p><strong>Q</strong>: Uhhh, that can't be it, right?</p>
+<p>Of course not! Don't you see the memory leak there!?</p>
+<p><strong>Q</strong>: What?</p>
+<p>You heard me. Right there!</p>
+<p><strong>Q</strong>: It is pretty much impossible to see where you are pointing at right now.</p>
+<p>Okay okay, let's take a step back and start over.</p>
+<h3 id="explanation">Explanation</h3>
+<img src="/ziggy_think.svg" style="width: 25%"/>
+<p>What even is a memory leak and why does it happen?</p>
+<blockquote>
+<p>Imagine you're on vacation in Costa Rica and you come across an iguana sanctuary where they let you feed the iguanas. You start feeding them and soon realize that they have bottomless stomachs! No matter how much you feed them, they keep eating and eating until they become giant, indigestible beasts.</p>
+<p>In computer programming, a memory leak is like those insatiable iguanas - a program keeps consuming more and more memory without any limit. Just like the iguanas are never full, the program fails to release the memory it has used, causing a continual drain on the computer's resources. This can slow down or even crash the system if enough memory is consumed.</p>
+<p>Memory leaks are often caused by programming mistakes, like failing to release memory when it's no longer needed. They can also occur due to inefficient code or poorly designed algorithms. But just like not giving into the iguanas' endless hunger, programmers need to identify and fix memory leaks to prevent their programs from becoming giant, unmanageable beasts.</p>
+</blockquote>
+<p><strong>Q</strong>: Okay you had your fun with <a href="https://openai.com/blog/chatgpt">ChatGPT</a>, now, how do we check if we have memory leaks in our program?</p>
+<p>Before I show the conventional way of checking memory leaks, let's try something traditional: <a href="https://valgrind.org/">Valgrind</a>!</p>
+<h4 id="checking-memory-leaks-with-valgrind">Checking memory leaks with Valgrind</h4>
+<pre data-lang="sh" style="background-color:#191919;color:#ffffff;" class="language-sh "><code class="language-sh" data-lang="sh"><span style="color:#cccccc;">$ valgrind</span><span style="font-style:italic;color:#8aa6c1;"> --leak-check</span><span>=</span><span style="color:#cccccc;">full</span><span style="font-style:italic;color:#8aa6c1;"> --track-origins</span><span>=</span><span style="color:#cccccc;">yes</span><span style="font-style:italic;color:#8aa6c1;"> --show-leak-kinds</span><span>=</span><span style="color:#cccccc;">all</span><span style="font-style:italic;color:#8aa6c1;"> --num-callers</span><span>=</span><span style="color:#cccccc;">15 ./zig-out/bin/app
+</span><span style="color:#cccccc;">
+</span><span>=</span><span style="color:#ffd700;">=794283== </span><span style="color:#cccccc;">Memcheck, a memory error detector
+</span><span>=</span><span style="color:#ffd700;">=794283== </span><span style="color:#cccccc;">Copyright (C) 2002-2022, and GNU GPL</span><span style="color:#ffd700;">&#39;d, by Julian Seward et al.
+</span><span style="color:#ffd700;">==794283== Using Valgrind-3.20.0 and LibVEX; rerun with -h for copyright info
+</span><span style="color:#ffd700;">==794283== Command: ./zig-out/bin/app
+</span><span style="color:#ffd700;">==794283==
+</span><span style="color:#ffd700;">debug: /home/zig/bits
+</span><span style="color:#ffd700;">==794283==
+</span><span style="color:#ffd700;">==794283== HEAP SUMMARY:
+</span><span style="color:#ffd700;">==794283==     in use at exit: 0 bytes in 0 blocks
+</span><span style="color:#ffd700;">==794283==   total heap usage: 0 allocs, 0 frees, 0 bytes allocated
+</span><span style="color:#ffd700;">==794283==
+</span><span style="color:#ffd700;">==794283== All heap blocks were freed -- no leaks are possible
+</span><span style="color:#ffd700;">==794283==
+</span><span style="color:#ffd700;">==794283== For lists of detected and suppressed errors, rerun with: -s
+</span><span style="color:#ffd700;">==794283== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+</span></code></pre>
+<p><strong>Q</strong>: A-ha! I knew that you were trolling me. Where is the memory leak?</p>
+<p>Don't jump to the conclusion that quickly. <a href="https://cryptocode.github.io/blog/docs/valgrind-zig/">Apparently</a>, we need to switch to the <a href="https://ziglang.org/documentation/master/std/#A;std:heap.c_allocator">C allocator</a> so that Valgrind can trace memory allocations correctly via preloading:</p>
+<pre data-lang="diff" style="background-color:#191919;color:#ffffff;" class="language-diff "><code class="language-diff" data-lang="diff"><span style="background-color:#420e09;color:#f8f8f8;">- const allocator = std.heap.page_allocator;
+</span><span style="background-color:#253b22;color:#f8f8f8;">+ const allocator = std.heap.c_allocator;
+</span></code></pre>
+<p>Let's check if our program is still working properly:</p>
+<pre data-lang="sh" style="background-color:#191919;color:#ffffff;" class="language-sh "><code class="language-sh" data-lang="sh"><span style="color:#cccccc;">$ zig build run
+</span><span style="color:#cccccc;">
+</span><span style="color:#cccccc;">/usr/lib/zig/std/heap.zig:25:13: error: C allocator is only available when linking against libc
+</span><span style="color:#cccccc;">            @compileError(</span><span style="color:#ffd700;">&quot;C allocator is only available when linking against libc&quot;</span><span style="color:#cccccc;">)</span><span>;
+</span><span style="color:#cccccc;">            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+</span><span style="color:#cccccc;">/usr/lib/zig/std/c/linux.zig:289:12: error: dependency on libc must be explicitly specified in the build command
+</span><span style="color:#cccccc;">pub extern </span><span style="color:#ffd700;">&quot;c&quot;</span><span style="color:#cccccc;"> fn posix_memalign(memptr: </span><span>*?*</span><span style="color:#cccccc;">anyopaque, alignment: usize, size: usize) c_int</span><span>;
+</span><span style="color:#cccccc;">           ^~~
+</span><span style="color:#cccccc;">/usr/lib/zig/std/c/linux.zig:290:12: error: dependency on libc must be explicitly specified in the build command
+</span><span style="color:#cccccc;">pub extern </span><span style="color:#ffd700;">&quot;c&quot;</span><span style="color:#cccccc;"> fn malloc_usable_size(</span><span>?*</span><span style="color:#cccccc;">const anyopaque) usize</span><span>;
+</span><span style="color:#cccccc;">           ^~~
+</span><span style="color:#cccccc;">/usr/lib/zig/std/c.zig:236:12: error: dependency on libc must be explicitly specified in the build command
+</span><span style="color:#cccccc;">pub extern </span><span style="color:#ffd700;">&quot;c&quot;</span><span style="color:#cccccc;"> fn free(</span><span>?*</span><span style="color:#cccccc;">anyopaque) void</span><span>;
+</span><span style="color:#cccccc;">           ^~~
+</span></code></pre>
+<p>Ah, right. We need to link against <a href="https://en.wikipedia.org/wiki/C_standard_library"><code>libc</code></a> in <code>build.zig</code>:</p>
+<pre data-lang="zig" style="background-color:#191919;color:#ffffff;" class="language-zig "><code class="language-zig" data-lang="zig"><span style="color:#80d500;">const</span><span style="color:#cccccc;"> exe </span><span>=</span><span style="color:#cccccc;"> b.addExecutable(</span><span style="color:#ffd700;">&quot;app&quot;</span><span style="color:#cccccc;">, </span><span style="color:#ffd700;">&quot;src/main.zig&quot;</span><span style="color:#cccccc;">);
+</span><span style="color:#cccccc;">exe.linkLibC();
+</span></code></pre>
+<p>Let's run Valgrind again:</p>
+<pre data-lang="sh" style="background-color:#191919;color:#ffffff;" class="language-sh "><code class="language-sh" data-lang="sh"><span style="color:#cccccc;">$ valgrind</span><span style="font-style:italic;color:#8aa6c1;"> --leak-check</span><span>=</span><span style="color:#cccccc;">full</span><span style="font-style:italic;color:#8aa6c1;"> --track-origins</span><span>=</span><span style="color:#cccccc;">yes</span><span style="font-style:italic;color:#8aa6c1;"> --show-leak-kinds</span><span>=</span><span style="color:#cccccc;">all</span><span style="font-style:italic;color:#8aa6c1;"> --num-callers</span><span>=</span><span style="color:#cccccc;">15 ./zig-out/bin/app
+</span><span style="color:#cccccc;">
+</span><span>=</span><span style="color:#ffd700;">=800663== </span><span style="color:#cccccc;">Memcheck, a memory error detector
+</span><span>=</span><span style="color:#ffd700;">=800663== </span><span style="color:#cccccc;">Copyright (C) 2002-2022, and GNU GPL</span><span style="color:#ffd700;">&#39;d, by Julian Seward et al.
+</span><span style="color:#ffd700;">==800663== Using Valgrind-3.20.0 and LibVEX; rerun with -h for copyright info
+</span><span style="color:#ffd700;">==794283== Command: ./zig-out/bin/app
+</span><span style="color:#ffd700;">==800663==
+</span><span style="color:#ffd700;">debug: /home/zig/bits
+</span><span style="color:#ffd700;">==800663==
+</span><span style="color:#ffd700;">==800663== HEAP SUMMARY:
+</span><span style="color:#ffd700;">==800663==     in use at exit: 14 bytes in 1 blocks
+</span><span style="color:#ffd700;">==800663==   total heap usage: 1 allocs, 0 frees, 14 bytes allocated
+</span><span style="color:#ffd700;">==800663==
+</span><span style="color:#ffd700;">==800663== 14 bytes in 1 blocks are definitely lost in loss record 1 of 1
+</span><span style="color:#ffd700;">==800663==    at 0x4846E20: memalign (vg_replace_malloc.c:1531)
+</span><span style="color:#ffd700;">==800663==    by 0x4846F81: posix_memalign (vg_replace_malloc.c:1703)
+</span><span style="color:#ffd700;">==800663==    by 0x213E1A: heap.CAllocator.alignedAlloc (heap.zig:62)
+</span><span style="color:#ffd700;">==800663==    by 0x213ACF: heap.CAllocator.alloc (heap.zig:110)
+</span><span style="color:#ffd700;">==800663==    by 0x214602: rawAlloc (Allocator.zig:154)
+</span><span style="color:#ffd700;">==800663==    by 0x214602: mem.Allocator.allocAdvancedWithRetAddr__anon_3090 (Allocator.zig:302)
+</span><span style="color:#ffd700;">==800663==    by 0x212767: mem.Allocator.alloc__anon_1897 (Allocator.zig:194)
+</span><span style="color:#ffd700;">==800663==    by 0x211C6C: fs.path.joinSepMaybeZ__anon_1894 (path.zig:79)
+</span><span style="color:#ffd700;">==800663==    by 0x211218: fs.path.join (path.zig:111)
+</span><span style="color:#ffd700;">==800663==    by 0x212A43: main.concatPath (main.zig:12)
+</span><span style="color:#ffd700;">==800663==    by 0x212B77: main.main (main.zig:22)
+</span><span style="color:#ffd700;">==800663==    by 0x212FD7: callMain (start.zig:614)
+</span><span style="color:#ffd700;">==800663==    by 0x212FD7: initEventLoopAndCallMain (start.zig:548)
+</span><span style="color:#ffd700;">==800663==    by 0x212FD7: callMainWithArgs (start.zig:498)
+</span><span style="color:#ffd700;">==800663==    by 0x212FD7: main (start.zig:513)
+</span><span style="color:#ffd700;">==800663==
+</span><span style="color:#ffd700;">==800663== LEAK SUMMARY:
+</span><span style="color:#ffd700;">==800663==    definitely lost: 14 bytes in 1 blocks
+</span><span style="color:#ffd700;">==800663==    indirectly lost: 0 bytes in 0 blocks
+</span><span style="color:#ffd700;">==800663==      possibly lost: 0 bytes in 0 blocks
+</span><span style="color:#ffd700;">==800663==    still reachable: 0 bytes in 0 blocks
+</span><span style="color:#ffd700;">==800663==         suppressed: 0 bytes in 0 blocks
+</span><span style="color:#ffd700;">==800663==
+</span><span style="color:#ffd700;">==800663== For lists of detected and suppressed errors, rerun with: -s
+</span><span style="color:#ffd700;">==800663== ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+</span></code></pre>
+<p>Bingo! You can see from this output that our <code>concatPath</code> function actually leaks memory:</p>
+<pre data-lang="sh" style="background-color:#191919;color:#ffffff;" class="language-sh "><code class="language-sh" data-lang="sh"><span>=</span><span style="color:#ffd700;">=800663==    </span><span style="color:#cccccc;">by 0x211218: fs.path.join (path.zig:111)
+</span><span>=</span><span style="color:#ffd700;">=800663==    </span><span style="color:#cccccc;">by 0x212A43: main.concatPath (main.zig:12)
+</span><span>=</span><span style="color:#ffd700;">=800663==    </span><span style="color:#cccccc;">by 0x212B77: main.main (main.zig:22)
+</span><span>=</span><span style="color:#ffd700;">=800663==    </span><span style="color:#cccccc;">by 0x212FD7: callMain (start.zig:614)
+</span></code></pre>
+<p><strong>Q</strong>: Nice. But this Valgrind setup seems to require a bit of work and it requires <code>libc</code>. Isn't there a more <em>native</em> and recommended way of checking memory leaks in Zig?</p>
+<p>Good question. Of course, there is!</p>
+<h4 id="using-std-testing-allocator-for-detecting-memory-leaks">Using <a href="https://ziglang.org/documentation/master/std/#A;std:testing.allocator"><code>std.testing.allocator</code></a> for detecting memory leaks</h4>
+<p>When code allocates memory using the Zig standard library's testing allocator, <code>std.testing.allocator</code>, the default test runner will report any leaks that are found from using the testing allocator.</p>
+<p>For utilizing this, we can modify our program to add a simple test case that will check the expected output:</p>
+<pre data-lang="zig" style="background-color:#191919;color:#ffffff;" class="language-zig "><code class="language-zig" data-lang="zig"><span style="background-color:#171717;color:#616161;">// Zig version: 0.10.1
+</span><span style="color:#cccccc;">
+</span><span style="background-color:#171717;color:#616161;">// Import the standard library.
+</span><span style="color:#80d500;">const</span><span style="color:#cccccc;"> std </span><span>= </span><span style="color:#80d500;">@import</span><span style="color:#cccccc;">(</span><span style="color:#ffd700;">&quot;std&quot;</span><span style="color:#cccccc;">);
+</span><span style="color:#cccccc;">
+</span><span style="background-color:#171717;color:#616161;">/// Concatenates the given paths and returns a path under &#39;/home&#39; directory.
+</span><span style="color:#80d500;">fn </span><span>concatPath</span><span style="color:#cccccc;">(</span><span style="font-style:italic;color:#8aa6c1;">allocator</span><span style="color:#cccccc;">: </span><span style="color:#80d500;">std.mem.Allocator</span><span style="color:#cccccc;">, </span><span style="font-style:italic;color:#8aa6c1;">p1</span><span style="color:#cccccc;">: []</span><span style="color:#80d500;">const u8</span><span style="color:#cccccc;">, </span><span style="font-style:italic;color:#8aa6c1;">p2</span><span style="color:#cccccc;">: []</span><span style="color:#80d500;">const u8</span><span style="color:#cccccc;">) </span><span>!</span><span style="color:#cccccc;">[]</span><span style="color:#80d500;">const u8 </span><span style="color:#cccccc;">{
+</span><span style="color:#cccccc;">    </span><span style="background-color:#171717;color:#616161;">// Define the path separator (which is &#39;/&#39; for POSIX).
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">const</span><span style="color:#cccccc;"> separator </span><span>=</span><span style="color:#cccccc;"> std.fs.path.sep_str;
+</span><span style="color:#cccccc;">
+</span><span style="color:#cccccc;">    </span><span style="background-color:#171717;color:#616161;">// Concatenate the paths and return.
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">const</span><span style="color:#cccccc;"> path </span><span>= </span><span style="color:#80d500;">try</span><span style="color:#cccccc;"> std.fs.path.join(allocator, &amp;.{ separator, </span><span style="color:#ffd700;">&quot;home&quot;</span><span style="color:#cccccc;">, p1, p2 });
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">return</span><span style="color:#cccccc;"> path;
+</span><span style="color:#cccccc;">}
+</span><span style="color:#cccccc;">
+</span><span style="background-color:#171717;color:#616161;">// Test path concatenation.
+</span><span style="color:#80d500;">test </span><span style="color:#ffd700;">&quot;path concat&quot; </span><span style="color:#cccccc;">{
+</span><span style="color:#cccccc;">    </span><span style="background-color:#171717;color:#616161;">// Use the testing allocator for memory leak detection.
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">const</span><span style="color:#cccccc;"> allocator </span><span>=</span><span style="color:#cccccc;"> std.testing.allocator;
+</span><span style="color:#cccccc;">
+</span><span style="color:#cccccc;">    </span><span style="background-color:#171717;color:#616161;">// Run the function.
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">const</span><span style="color:#cccccc;"> path </span><span>= </span><span style="color:#80d500;">try </span><span style="color:#cccccc;">concatPath(allocator, </span><span style="color:#ffd700;">&quot;zig&quot;</span><span style="color:#cccccc;">, </span><span style="color:#ffd700;">&quot;bits&quot;</span><span style="color:#cccccc;">);
+</span><span style="color:#cccccc;">
+</span><span style="color:#cccccc;">    </span><span style="background-color:#171717;color:#616161;">// Assert the result.
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">try</span><span style="color:#cccccc;"> std.testing.expectEqualStrings(</span><span style="color:#ffd700;">&quot;/home/zig/bits&quot;</span><span style="color:#cccccc;">, path);
+</span><span style="color:#cccccc;">}
+</span></code></pre>
+<p>Let's run the tests:</p>
+<pre data-lang="sh" style="background-color:#191919;color:#ffffff;" class="language-sh "><code class="language-sh" data-lang="sh"><span style="color:#cccccc;">$ zig build test
+</span><span style="color:#cccccc;">
+</span><span style="color:#cccccc;">Test </span><span style="color:#80d500;">[</span><span style="color:#cccccc;">1/1</span><span style="color:#80d500;">]</span><span style="color:#cccccc;"> test.path concat... </span><span style="color:#80d500;">[</span><span style="color:#cccccc;">gpa</span><span style="color:#80d500;">]</span><span style="color:#cccccc;"> (err)</span><span style="color:#8aa6c1;">:</span><span style="color:#cccccc;"> memory address 0x7f6544978000 leaked:
+</span><span style="color:#cccccc;">/usr/lib/zig/std/fs/path.zig:79:36: 0x214449 in joinSepMaybeZ__anon_2120 (test)
+</span><span style="color:#cccccc;">    const buf = try allocator.alloc(u8, total_len)</span><span>;
+</span><span style="color:#cccccc;">                                   ^
+</span><span style="color:#cccccc;">/usr/lib/zig/std/fs/path.zig:111:25: 0x213a6b in join (test)
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">return</span><span style="color:#cccccc;"> joinSepMaybeZ(allocator, sep, isSep, paths, false)</span><span>;
+</span><span style="color:#cccccc;">                        ^
+</span><span style="color:#cccccc;">/tmp/tmp.mxqPUXlhnh/src/main.zig:12:38: 0x2151e3 in concatPath (test)
+</span><span style="color:#cccccc;">    const path = try std.fs.path.join(allocator, </span><span>&amp;</span><span style="color:#cccccc;">.{ separator, </span><span style="color:#ffd700;">&quot;home&quot;</span><span style="color:#cccccc;">, p1, p2 })</span><span>;
+</span><span style="color:#cccccc;">                                     ^
+</span><span style="color:#cccccc;">/tmp/tmp.mxqPUXlhnh/src/main.zig:22:32: 0x216523 in test.path concat (test)
+</span><span style="color:#cccccc;">    const path = try concatPath(allocator, </span><span style="color:#ffd700;">&quot;zig&quot;</span><span style="color:#cccccc;">, </span><span style="color:#ffd700;">&quot;bits&quot;</span><span style="color:#cccccc;">)</span><span>;
+</span><span style="color:#cccccc;">                               ^
+</span><span style="color:#cccccc;">/usr/lib/zig/test_runner.zig:63:28: 0x21e0d3 in main (test)
+</span><span style="color:#cccccc;">        } </span><span style="color:#80d500;">else </span><span>test_fn.func</span><span style="color:#cccccc;">();
+</span><span style="color:#cccccc;">                           ^
+</span><span style="color:#cccccc;">/usr/lib/zig/std/start.zig:604:22: 0x216dfc in posixCallMainAndExit (test)
+</span><span style="color:#cccccc;">            </span><span>root.main</span><span style="color:#cccccc;">();
+</span><span style="color:#cccccc;">                     ^
+</span><span style="color:#cccccc;">/usr/lib/zig/std/start.zig:376:5: 0x216901 in _start (test)
+</span><span style="color:#cccccc;">    @call(.{ .modifier = .never_inline }, posixCallMainAndExit, .{})</span><span>;
+</span><span style="color:#cccccc;">    ^
+</span><span style="color:#cccccc;">
+</span><span style="color:#cccccc;">All 1 tests passed.
+</span><span style="color:#cccccc;">1 errors were logged.
+</span><span style="color:#cccccc;">1 tests leaked memory.
+</span></code></pre>
+<p>Great! We just spotted a memory leak from the tests.</p>
+<pre data-lang="sh" style="background-color:#191919;color:#ffffff;" class="language-sh "><code class="language-sh" data-lang="sh"><span style="color:#cccccc;">Test </span><span style="color:#80d500;">[</span><span style="color:#cccccc;">1/1</span><span style="color:#80d500;">]</span><span style="color:#cccccc;"> test.path concat... </span><span style="color:#80d500;">[</span><span style="color:#cccccc;">gpa</span><span style="color:#80d500;">]</span><span style="color:#cccccc;"> (err)</span><span style="color:#8aa6c1;">:</span><span style="color:#cccccc;"> memory address 0x7f6544978000 leaked:
+</span></code></pre>
+<p>That's something very powerful when you think of it. Also, it definitely makes testing the Zig code more important.</p>
+<p><strong>Q</strong>: It's cool and all but I still don't know how to <em>fix</em> the memory leak.</p>
+<p>Oh, that... Follow me.</p>
+<h3 id="solution">Solution</h3>
+<img src="/ziggy_cool.svg" style="width: 20%"/>
+<p>The solution is to free the memory after using it. In other words, we need to free the memory allocated by <code>path</code> at the end of the program. Luckily, allocators in Zig have <a href="https://ziglang.org/documentation/master/std/#A;std:mem.Allocator.free"><code>free()</code></a> method for freeing arrays.</p>
+<p><strong>Q</strong>: So we will just call <code>allocator.free(path);</code> at the end of the program?</p>
+<p>Yes, but not quite. It would not be very convenient for having a lot of free calls at the end of our program. For example, in C, cleaning stuff up can leave a large distance between where the resource was acquired and where it is disposed of. However, in Zig, we have <a href="https://ziglang.org/documentation/master/#defer"><code>defer</code></a> statement for that purpose. It allows us to put the resource acquisition and disposal immediately next to each other in the code. For example:</p>
+<pre data-lang="zig" style="background-color:#191919;color:#ffffff;" class="language-zig "><code class="language-zig" data-lang="zig"><span style="color:#cccccc;">{
+</span><span style="color:#cccccc;">    </span><span style="background-color:#171717;color:#616161;">// allocate some memory
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">var</span><span style="color:#cccccc;"> general_purpose_allocator </span><span>=</span><span style="color:#cccccc;"> std.heap.GeneralPurposeAllocator(.{}){};
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">const</span><span style="color:#cccccc;"> gpa </span><span>=</span><span style="color:#cccccc;"> general_purpose_allocator.allocator();
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">const</span><span style="color:#cccccc;"> args </span><span>= </span><span style="color:#80d500;">try</span><span style="color:#cccccc;"> std.process.argsAlloc(gpa);
+</span><span style="color:#cccccc;">
+</span><span style="color:#cccccc;">    </span><span style="background-color:#171717;color:#616161;">// `defer` will execute an expression at the end of the current scope
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">defer</span><span style="color:#cccccc;"> std.process.argsFree(gpa, args);
+</span><span style="color:#cccccc;">
+</span><span style="color:#cccccc;">    </span><span style="background-color:#171717;color:#616161;">// more code
+</span><span style="color:#cccccc;">    </span><span style="background-color:#171717;color:#616161;">// ...
+</span><span style="color:#cccccc;">
+</span><span style="color:#cccccc;">} </span><span style="background-color:#171717;color:#616161;">// memory is freed!
+</span></code></pre>
+<p>It is a pattern that is often used when we acquire some sort of resource and want to ensure that the resource is dispensed with before we return, or otherwise leave a scope. Common use cases for <code>defer</code> are things like files or memory, but it can be anything, and any code too; the <code>defer</code> statement can accept a block of code if necessary. The only exception is, we can't use a <code>return</code> statement from <code>defer</code>.</p>
+<p>Let's modify our program to free the allocated memory at the end of the scope by using <code>defer</code>:</p>
+<pre data-lang="zig" style="background-color:#191919;color:#ffffff;" class="language-zig "><code class="language-zig" data-lang="zig"><span style="background-color:#171717;color:#616161;">// Zig version: 0.10.1
+</span><span style="color:#cccccc;">
+</span><span style="background-color:#171717;color:#616161;">// Import the standard library.
+</span><span style="color:#80d500;">const</span><span style="color:#cccccc;"> std </span><span>= </span><span style="color:#80d500;">@import</span><span style="color:#cccccc;">(</span><span style="color:#ffd700;">&quot;std&quot;</span><span style="color:#cccccc;">);
+</span><span style="color:#cccccc;">
+</span><span style="background-color:#171717;color:#616161;">/// Concatenates the given paths and returns a path under &#39;/home&#39; directory.
+</span><span style="color:#80d500;">fn </span><span>concatPath</span><span style="color:#cccccc;">(</span><span style="font-style:italic;color:#8aa6c1;">allocator</span><span style="color:#cccccc;">: </span><span style="color:#80d500;">std.mem.Allocator</span><span style="color:#cccccc;">, </span><span style="font-style:italic;color:#8aa6c1;">p1</span><span style="color:#cccccc;">: []</span><span style="color:#80d500;">const u8</span><span style="color:#cccccc;">, </span><span style="font-style:italic;color:#8aa6c1;">p2</span><span style="color:#cccccc;">: []</span><span style="color:#80d500;">const u8</span><span style="color:#cccccc;">) </span><span>!</span><span style="color:#cccccc;">[]</span><span style="color:#80d500;">const u8 </span><span style="color:#cccccc;">{
+</span><span style="color:#cccccc;">    </span><span style="background-color:#171717;color:#616161;">// Define the path separator (which is &#39;/&#39; for POSIX).
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">const</span><span style="color:#cccccc;"> separator </span><span>=</span><span style="color:#cccccc;"> std.fs.path.sep_str;
+</span><span style="color:#cccccc;">
+</span><span style="color:#cccccc;">    </span><span style="background-color:#171717;color:#616161;">// Concatenate the paths and return.
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">const</span><span style="color:#cccccc;"> path </span><span>= </span><span style="color:#80d500;">try</span><span style="color:#cccccc;"> std.fs.path.join(allocator, &amp;.{ separator, </span><span style="color:#ffd700;">&quot;home&quot;</span><span style="color:#cccccc;">, p1, p2 });
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">return</span><span style="color:#cccccc;"> path;
+</span><span style="color:#cccccc;">}
+</span><span style="color:#cccccc;">
+</span><span style="background-color:#171717;color:#616161;">/// Entrypoint of the program.
+</span><span style="color:#80d500;">pub fn </span><span>main</span><span style="color:#cccccc;">() </span><span>!</span><span style="color:#80d500;">void </span><span style="color:#cccccc;">{
+</span><span style="color:#cccccc;">    </span><span style="background-color:#171717;color:#616161;">// Choose an allocator based on our needs.
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">const</span><span style="color:#cccccc;"> allocator </span><span>=</span><span style="color:#cccccc;"> std.heap.page_allocator;
+</span><span style="color:#cccccc;">
+</span><span style="color:#cccccc;">    </span><span style="background-color:#171717;color:#616161;">// Concatenate.
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">const</span><span style="color:#cccccc;"> path </span><span>= </span><span style="color:#80d500;">try </span><span style="color:#cccccc;">concatPath(allocator, </span><span style="color:#ffd700;">&quot;zig&quot;</span><span style="color:#cccccc;">, </span><span style="color:#ffd700;">&quot;bits&quot;</span><span style="color:#cccccc;">);
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">defer</span><span style="color:#cccccc;"> allocator.free(path); </span><span style="background-color:#171717;color:#616161;">// free the memory at the end of the scope
+</span><span style="color:#cccccc;">
+</span><span style="color:#cccccc;">    </span><span style="background-color:#171717;color:#616161;">// Print the final path.
+</span><span style="color:#cccccc;">    std.log.debug(</span><span style="color:#ffd700;">&quot;{s}&quot;</span><span style="color:#cccccc;">, .{path});
+</span><span style="color:#cccccc;">}
+</span><span style="color:#cccccc;">
+</span><span style="background-color:#171717;color:#616161;">// Test path concatenation.
+</span><span style="color:#80d500;">test </span><span style="color:#ffd700;">&quot;path concat&quot; </span><span style="color:#cccccc;">{
+</span><span style="color:#cccccc;">    </span><span style="background-color:#171717;color:#616161;">// Use the testing allocator for memory leak detection.
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">const</span><span style="color:#cccccc;"> allocator </span><span>=</span><span style="color:#cccccc;"> std.testing.allocator;
+</span><span style="color:#cccccc;">
+</span><span style="color:#cccccc;">    </span><span style="background-color:#171717;color:#616161;">// Run the function.
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">const</span><span style="color:#cccccc;"> path </span><span>= </span><span style="color:#80d500;">try </span><span style="color:#cccccc;">concatPath(allocator, </span><span style="color:#ffd700;">&quot;zig&quot;</span><span style="color:#cccccc;">, </span><span style="color:#ffd700;">&quot;bits&quot;</span><span style="color:#cccccc;">);
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">defer</span><span style="color:#cccccc;"> allocator.free(path); </span><span style="background-color:#171717;color:#616161;">// free the memory at the end of the scope
+</span><span style="color:#cccccc;">
+</span><span style="color:#cccccc;">    </span><span style="background-color:#171717;color:#616161;">// Assert the result.
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">try</span><span style="color:#cccccc;"> std.testing.expectEqualStrings(</span><span style="color:#ffd700;">&quot;/home/zig/bits&quot;</span><span style="color:#cccccc;">, path);
+</span><span style="color:#cccccc;">}
+</span></code></pre>
+<p>Let's run the tests now:</p>
+<pre data-lang="sh" style="background-color:#191919;color:#ffffff;" class="language-sh "><code class="language-sh" data-lang="sh"><span style="color:#cccccc;">$ zig build test
+</span><span style="color:#cccccc;">
+</span><span style="color:#cccccc;">All 1 tests passed.
+</span></code></pre>
+<p>Yay! No leaks 💯</p>
+<p>For making it more clear, we can take a look how <code>defer</code> works under scopes:</p>
+<pre data-lang="zig" style="background-color:#191919;color:#ffffff;" class="language-zig "><code class="language-zig" data-lang="zig"><span style="background-color:#171717;color:#616161;">// Zig version: 0.10.1
+</span><span style="color:#cccccc;">
+</span><span style="background-color:#171717;color:#616161;">// Import the standard library.
+</span><span style="color:#80d500;">const</span><span style="color:#cccccc;"> std </span><span>= </span><span style="color:#80d500;">@import</span><span style="color:#cccccc;">(</span><span style="color:#ffd700;">&quot;std&quot;</span><span style="color:#cccccc;">);
+</span><span style="color:#cccccc;">
+</span><span style="background-color:#171717;color:#616161;">/// Concatenates the given paths and returns a path under &#39;/home&#39; directory.
+</span><span style="color:#80d500;">fn </span><span>concatPath</span><span style="color:#cccccc;">(</span><span style="font-style:italic;color:#8aa6c1;">allocator</span><span style="color:#cccccc;">: </span><span style="color:#80d500;">std.mem.Allocator</span><span style="color:#cccccc;">, </span><span style="font-style:italic;color:#8aa6c1;">p1</span><span style="color:#cccccc;">: []</span><span style="color:#80d500;">const u8</span><span style="color:#cccccc;">, </span><span style="font-style:italic;color:#8aa6c1;">p2</span><span style="color:#cccccc;">: []</span><span style="color:#80d500;">const u8</span><span style="color:#cccccc;">) </span><span>!</span><span style="color:#cccccc;">[]</span><span style="color:#80d500;">const u8 </span><span style="color:#cccccc;">{
+</span><span style="color:#cccccc;">    </span><span style="background-color:#171717;color:#616161;">// Define the path separator (which is &#39;/&#39; for POSIX).
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">const</span><span style="color:#cccccc;"> separator </span><span>=</span><span style="color:#cccccc;"> std.fs.path.sep_str;
+</span><span style="color:#cccccc;">
+</span><span style="color:#cccccc;">    </span><span style="background-color:#171717;color:#616161;">// Concatenate the paths and return.
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">const</span><span style="color:#cccccc;"> path </span><span>= </span><span style="color:#80d500;">try</span><span style="color:#cccccc;"> std.fs.path.join(allocator, &amp;.{ separator, </span><span style="color:#ffd700;">&quot;home&quot;</span><span style="color:#cccccc;">, p1, p2 });
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">return</span><span style="color:#cccccc;"> path;
+</span><span style="color:#cccccc;">}
+</span><span style="color:#cccccc;">
+</span><span style="background-color:#171717;color:#616161;">/// Entrypoint of the program.
+</span><span style="color:#80d500;">pub fn </span><span>main</span><span style="color:#cccccc;">() </span><span>!</span><span style="color:#80d500;">void </span><span style="color:#cccccc;">{
+</span><span style="color:#cccccc;">    </span><span style="background-color:#171717;color:#616161;">// Choose an allocator based on our needs.
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">const</span><span style="color:#cccccc;"> allocator </span><span>=</span><span style="color:#cccccc;"> std.heap.page_allocator;
+</span><span style="color:#cccccc;">    {
+</span><span style="color:#cccccc;">
+</span><span style="color:#cccccc;">        </span><span style="background-color:#171717;color:#616161;">// Concatenate.
+</span><span style="color:#cccccc;">        </span><span style="color:#80d500;">const</span><span style="color:#cccccc;"> path </span><span>= </span><span style="color:#80d500;">try </span><span style="color:#cccccc;">concatPath(allocator, </span><span style="color:#ffd700;">&quot;zig&quot;</span><span style="color:#cccccc;">, </span><span style="color:#ffd700;">&quot;bits&quot;</span><span style="color:#cccccc;">);
+</span><span style="color:#cccccc;">        </span><span style="color:#80d500;">defer</span><span style="color:#cccccc;"> allocator.free(path); </span><span style="background-color:#171717;color:#616161;">// free the memory at the end of the scope
+</span><span style="color:#cccccc;">
+</span><span style="color:#cccccc;">        </span><span style="background-color:#171717;color:#616161;">// Print the final path.
+</span><span style="color:#cccccc;">        std.log.debug(</span><span style="color:#ffd700;">&quot;{s}&quot;</span><span style="color:#cccccc;">, .{path});
+</span><span style="color:#cccccc;">    }
+</span><span style="color:#cccccc;">
+</span><span style="color:#cccccc;">    {
+</span><span style="color:#cccccc;">        </span><span style="background-color:#171717;color:#616161;">// Concatenate.
+</span><span style="color:#cccccc;">        </span><span style="color:#80d500;">const</span><span style="color:#cccccc;"> path </span><span>= </span><span style="color:#80d500;">try </span><span style="color:#cccccc;">concatPath(allocator, </span><span style="color:#ffd700;">&quot;zig&quot;</span><span style="color:#cccccc;">, </span><span style="color:#ffd700;">&quot;bits2&quot;</span><span style="color:#cccccc;">);
+</span><span style="color:#cccccc;">        </span><span style="color:#80d500;">defer</span><span style="color:#cccccc;"> allocator.free(path); </span><span style="background-color:#171717;color:#616161;">// free the memory at the end of the scope
+</span><span style="color:#cccccc;">
+</span><span style="color:#cccccc;">        </span><span style="background-color:#171717;color:#616161;">// Print the final path.
+</span><span style="color:#cccccc;">        std.log.debug(</span><span style="color:#ffd700;">&quot;{s}&quot;</span><span style="color:#cccccc;">, .{path});
+</span><span style="color:#cccccc;">    }
+</span><span style="color:#cccccc;">}
+</span><span style="color:#cccccc;">
+</span><span style="background-color:#171717;color:#616161;">// Test path concatenation.
+</span><span style="color:#80d500;">test </span><span style="color:#ffd700;">&quot;path concat&quot; </span><span style="color:#cccccc;">{
+</span><span style="color:#cccccc;">    </span><span style="background-color:#171717;color:#616161;">// Use the testing allocator for memory leak detection.
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">const</span><span style="color:#cccccc;"> allocator </span><span>=</span><span style="color:#cccccc;"> std.testing.allocator;
+</span><span style="color:#cccccc;">
+</span><span style="color:#cccccc;">    </span><span style="background-color:#171717;color:#616161;">// Run the function.
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">const</span><span style="color:#cccccc;"> path </span><span>= </span><span style="color:#80d500;">try </span><span style="color:#cccccc;">concatPath(allocator, </span><span style="color:#ffd700;">&quot;zig&quot;</span><span style="color:#cccccc;">, </span><span style="color:#ffd700;">&quot;bits&quot;</span><span style="color:#cccccc;">);
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">defer</span><span style="color:#cccccc;"> allocator.free(path); </span><span style="background-color:#171717;color:#616161;">// free the memory at the end of the scope
+</span><span style="color:#cccccc;">
+</span><span style="color:#cccccc;">    </span><span style="background-color:#171717;color:#616161;">// Assert the result.
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">try</span><span style="color:#cccccc;"> std.testing.expectEqualStrings(</span><span style="color:#ffd700;">&quot;/home/zig/bits&quot;</span><span style="color:#cccccc;">, path);
+</span><span style="color:#cccccc;">}
+</span></code></pre>
+<h4 id="bonus-i">Bonus I</h4>
+<p>It was also pointed on Discord by <code>rimuspp#1713</code> that there is another way of dealing with leaks: using the general purpose allocator!</p>
+<pre data-lang="zig" style="background-color:#191919;color:#ffffff;" class="language-zig "><code class="language-zig" data-lang="zig"><span style="background-color:#171717;color:#616161;">// Zig version: 0.10.1
+</span><span style="color:#cccccc;">
+</span><span style="background-color:#171717;color:#616161;">// Import the standard library.
+</span><span style="color:#80d500;">const</span><span style="color:#cccccc;"> std </span><span>= </span><span style="color:#80d500;">@import</span><span style="color:#cccccc;">(</span><span style="color:#ffd700;">&quot;std&quot;</span><span style="color:#cccccc;">);
+</span><span style="color:#cccccc;">
+</span><span style="background-color:#171717;color:#616161;">/// Concatenates the given paths and returns a path under &#39;/home&#39; directory.
+</span><span style="color:#80d500;">fn </span><span>concatPath</span><span style="color:#cccccc;">(</span><span style="font-style:italic;color:#8aa6c1;">allocator</span><span style="color:#cccccc;">: </span><span style="color:#80d500;">std.mem.Allocator</span><span style="color:#cccccc;">, </span><span style="font-style:italic;color:#8aa6c1;">p1</span><span style="color:#cccccc;">: []</span><span style="color:#80d500;">const u8</span><span style="color:#cccccc;">, </span><span style="font-style:italic;color:#8aa6c1;">p2</span><span style="color:#cccccc;">: []</span><span style="color:#80d500;">const u8</span><span style="color:#cccccc;">) </span><span>!</span><span style="color:#cccccc;">[]</span><span style="color:#80d500;">const u8 </span><span style="color:#cccccc;">{
+</span><span style="color:#cccccc;">    </span><span style="background-color:#171717;color:#616161;">// Define the path separator (which is &#39;/&#39; for POSIX).
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">const</span><span style="color:#cccccc;"> separator </span><span>=</span><span style="color:#cccccc;"> std.fs.path.sep_str;
+</span><span style="color:#cccccc;">
+</span><span style="color:#cccccc;">    </span><span style="background-color:#171717;color:#616161;">// Concatenate the paths and return.
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">const</span><span style="color:#cccccc;"> path </span><span>= </span><span style="color:#80d500;">try</span><span style="color:#cccccc;"> std.fs.path.join(allocator, &amp;.{ separator, </span><span style="color:#ffd700;">&quot;home&quot;</span><span style="color:#cccccc;">, p1, p2 });
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">return</span><span style="color:#cccccc;"> path;
+</span><span style="color:#cccccc;">}
+</span><span style="color:#cccccc;">
+</span><span style="background-color:#171717;color:#616161;">/// Entrypoint of the program.
+</span><span style="color:#80d500;">pub fn </span><span>main</span><span style="color:#cccccc;">() </span><span>!</span><span style="color:#80d500;">void </span><span style="color:#cccccc;">{
+</span><span style="color:#cccccc;">    </span><span style="background-color:#171717;color:#616161;">// Choose an allocator based on our needs.
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">var</span><span style="color:#cccccc;"> gpa </span><span>=</span><span style="color:#cccccc;"> std.heap.GeneralPurposeAllocator(.{}){};
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">defer </span><span style="color:#eddd5a;">_ </span><span>=</span><span style="color:#cccccc;"> gpa.deinit();
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">const</span><span style="color:#cccccc;"> allocator </span><span>=</span><span style="color:#cccccc;"> gpa.allocator();
+</span><span style="color:#cccccc;">    {
+</span><span style="color:#cccccc;">
+</span><span style="color:#cccccc;">        </span><span style="background-color:#171717;color:#616161;">// Concatenate.
+</span><span style="color:#cccccc;">        </span><span style="color:#80d500;">const</span><span style="color:#cccccc;"> path </span><span>= </span><span style="color:#80d500;">try </span><span style="color:#cccccc;">concatPath(allocator, </span><span style="color:#ffd700;">&quot;zig&quot;</span><span style="color:#cccccc;">, </span><span style="color:#ffd700;">&quot;bits&quot;</span><span style="color:#cccccc;">);
+</span><span style="color:#cccccc;">        </span><span style="color:#80d500;">defer</span><span style="color:#cccccc;"> allocator.free(path); </span><span style="background-color:#171717;color:#616161;">// free the memory at the end of the scope
+</span><span style="color:#cccccc;">
+</span><span style="color:#cccccc;">        </span><span style="background-color:#171717;color:#616161;">// Print the final path.
+</span><span style="color:#cccccc;">        std.log.debug(</span><span style="color:#ffd700;">&quot;{s}&quot;</span><span style="color:#cccccc;">, .{path});
+</span><span style="color:#cccccc;">    }
+</span><span style="color:#cccccc;">
+</span><span style="color:#cccccc;">    {
+</span><span style="color:#cccccc;">        </span><span style="background-color:#171717;color:#616161;">// Concatenate.
+</span><span style="color:#cccccc;">        </span><span style="color:#80d500;">const</span><span style="color:#cccccc;"> path </span><span>= </span><span style="color:#80d500;">try </span><span style="color:#cccccc;">concatPath(allocator, </span><span style="color:#ffd700;">&quot;zig&quot;</span><span style="color:#cccccc;">, </span><span style="color:#ffd700;">&quot;bits2&quot;</span><span style="color:#cccccc;">);
+</span><span style="color:#cccccc;">
+</span><span style="color:#cccccc;">        </span><span style="background-color:#171717;color:#616161;">// Print the final path.
+</span><span style="color:#cccccc;">        std.log.debug(</span><span style="color:#ffd700;">&quot;{s}&quot;</span><span style="color:#cccccc;">, .{path});
+</span><span style="color:#cccccc;">    }
+</span><span style="color:#cccccc;">}
+</span><span style="color:#cccccc;">
+</span><span style="background-color:#171717;color:#616161;">// Test path concatenation.
+</span><span style="color:#80d500;">test </span><span style="color:#ffd700;">&quot;path concat&quot; </span><span style="color:#cccccc;">{
+</span><span style="color:#cccccc;">    </span><span style="background-color:#171717;color:#616161;">// Use the testing allocator for memory leak detection.
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">const</span><span style="color:#cccccc;"> allocator </span><span>=</span><span style="color:#cccccc;"> std.testing.allocator;
+</span><span style="color:#cccccc;">
+</span><span style="color:#cccccc;">    </span><span style="background-color:#171717;color:#616161;">// Run the function.
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">const</span><span style="color:#cccccc;"> path </span><span>= </span><span style="color:#80d500;">try </span><span style="color:#cccccc;">concatPath(allocator, </span><span style="color:#ffd700;">&quot;zig&quot;</span><span style="color:#cccccc;">, </span><span style="color:#ffd700;">&quot;bits&quot;</span><span style="color:#cccccc;">);
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">defer</span><span style="color:#cccccc;"> allocator.free(path); </span><span style="background-color:#171717;color:#616161;">// free the memory at the end of the scope
+</span><span style="color:#cccccc;">
+</span><span style="color:#cccccc;">    </span><span style="background-color:#171717;color:#616161;">// Assert the result.
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">try</span><span style="color:#cccccc;"> std.testing.expectEqualStrings(</span><span style="color:#ffd700;">&quot;/home/zig/bits&quot;</span><span style="color:#cccccc;">, path);
+</span><span style="color:#cccccc;">}
+</span></code></pre>
+<p>This will leak and report on the main program itself:</p>
+<pre data-lang="sh" style="background-color:#191919;color:#ffffff;" class="language-sh "><code class="language-sh" data-lang="sh"><span style="color:#cccccc;">$ zig build run
+</span><span style="color:#cccccc;">
+</span><span style="color:#cccccc;">debug: /home/zig/bits
+</span><span style="color:#cccccc;">debug: /home/zig/bits2
+</span><span style="color:#cccccc;">error(gpa)</span><span style="color:#8aa6c1;">:</span><span style="color:#cccccc;"> memory address 0x7f88d8788000 leaked:
+</span><span style="color:#cccccc;">/usr/lib/zig/std/fs/path.zig:79:36: 0x2129f9 in joinSepMaybeZ__anon_3899 (tmp.bwNSfwKPEH)
+</span><span style="color:#cccccc;">    const buf = try allocator.alloc(u8, total_len)</span><span>;
+</span><span style="color:#cccccc;">                                   ^
+</span><span style="color:#cccccc;">/usr/lib/zig/std/fs/path.zig:111:25: 0x21201b in join (tmp.bwNSfwKPEH)
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">return</span><span style="color:#cccccc;"> joinSepMaybeZ(allocator, sep, isSep, paths, false)</span><span>;
+</span><span style="color:#cccccc;">                        ^
+</span><span style="color:#cccccc;">/tmp/tmp.bwNSfwKPEH/src/main.zig:12:38: 0x2136e3 in concatPath (tmp.bwNSfwKPEH)
+</span><span style="color:#cccccc;">    const path = try std.fs.path.join(allocator, </span><span>&amp;</span><span style="color:#cccccc;">.{ separator, </span><span style="color:#ffd700;">&quot;home&quot;</span><span style="color:#cccccc;">, p1, p2 })</span><span>;
+</span><span style="color:#cccccc;">                                     ^
+</span><span style="color:#cccccc;">/tmp/tmp.bwNSfwKPEH/src/main.zig:34:36: 0x2138d7 in main (tmp.bwNSfwKPEH)
+</span><span style="color:#cccccc;">        const path = try concatPath(allocator, </span><span style="color:#ffd700;">&quot;zig&quot;</span><span style="color:#cccccc;">, </span><span style="color:#ffd700;">&quot;bits2&quot;</span><span style="color:#cccccc;">)</span><span>;
+</span><span style="color:#cccccc;">                                   ^
+</span></code></pre>
+<p>This approach is also what powers <code>std.testing.allocator</code>.</p>
+<h4 id="bonus-ii">Bonus II</h4>
+<p>Another use case for <code>defer</code> is file operations such as creating/opening a file:</p>
+<pre data-lang="zig" style="background-color:#191919;color:#ffffff;" class="language-zig "><code class="language-zig" data-lang="zig"><span style="background-color:#171717;color:#616161;">// Zig version: 0.10.1
+</span><span style="color:#cccccc;">
+</span><span style="background-color:#171717;color:#616161;">// Import the standard library.
+</span><span style="color:#80d500;">const</span><span style="color:#cccccc;"> std </span><span>= </span><span style="color:#80d500;">@import</span><span style="color:#cccccc;">(</span><span style="color:#ffd700;">&quot;std&quot;</span><span style="color:#cccccc;">);
+</span><span style="color:#cccccc;">
+</span><span style="background-color:#171717;color:#616161;">/// Reads the given file and returns a byte array with the length of `len`.
+</span><span style="color:#80d500;">pub fn </span><span>readBytes</span><span style="color:#cccccc;">(
+</span><span style="color:#cccccc;">    </span><span style="font-style:italic;color:#8aa6c1;">allocator</span><span style="color:#cccccc;">: </span><span style="color:#80d500;">std.mem.Allocator</span><span style="color:#cccccc;">,
+</span><span style="color:#cccccc;">    </span><span style="font-style:italic;color:#8aa6c1;">path</span><span style="color:#cccccc;">: []</span><span style="color:#80d500;">const u8</span><span style="color:#cccccc;">,
+</span><span style="color:#cccccc;">    </span><span style="font-style:italic;color:#8aa6c1;">len</span><span style="color:#cccccc;">: </span><span style="color:#80d500;">usize</span><span style="color:#cccccc;">,
+</span><span style="color:#cccccc;">) </span><span>!</span><span style="color:#cccccc;">[]</span><span style="color:#80d500;">u8 </span><span style="color:#cccccc;">{
+</span><span style="color:#cccccc;">    </span><span style="background-color:#171717;color:#616161;">// Open the file.
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">const</span><span style="color:#cccccc;"> file </span><span>= </span><span style="color:#80d500;">try</span><span style="color:#cccccc;"> std.fs.cwd().openFile(path, .{});
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">defer</span><span style="color:#cccccc;"> file.close(); </span><span style="background-color:#171717;color:#616161;">// close the file at the end of the scope
+</span><span style="color:#cccccc;">
+</span><span style="color:#cccccc;">    </span><span style="background-color:#171717;color:#616161;">// Create a buffer for reading.
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">var</span><span style="color:#cccccc;"> list </span><span>= </span><span style="color:#80d500;">try</span><span style="color:#cccccc;"> std.ArrayList(u8).initCapacity(allocator, len);
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">var</span><span style="color:#cccccc;"> buffer </span><span>=</span><span style="color:#cccccc;"> list.allocatedSlice();
+</span><span style="color:#cccccc;">
+</span><span style="color:#cccccc;">    </span><span style="background-color:#171717;color:#616161;">// Read the file and return the read bytes.
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">const</span><span style="color:#cccccc;"> bytes_read </span><span>= </span><span style="color:#80d500;">try</span><span style="color:#cccccc;"> file.read(buffer);
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">return</span><span style="color:#cccccc;"> buffer[0</span><span>..</span><span style="color:#cccccc;">bytes_read];
+</span><span style="color:#cccccc;">}
+</span><span style="color:#cccccc;">
+</span><span style="color:#80d500;">test </span><span style="color:#ffd700;">&quot;read bytes from the file&quot; </span><span style="color:#cccccc;">{
+</span><span style="color:#cccccc;">    </span><span style="background-color:#171717;color:#616161;">// Get the current directory.
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">var </span><span style="color:#cccccc;">cwd_buffer: [std.fs.MAX_PATH_BYTES]</span><span style="color:#80d500;">u8 </span><span>= </span><span style="color:#80d500;">undefined</span><span style="color:#cccccc;">;
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">var</span><span style="color:#cccccc;"> cwd </span><span>= </span><span style="color:#80d500;">try</span><span style="color:#cccccc;"> std.os.getcwd(</span><span>&amp;</span><span style="color:#cccccc;">cwd_buffer);
+</span><span style="color:#cccccc;">
+</span><span style="color:#cccccc;">    </span><span style="background-color:#171717;color:#616161;">// Concatenate the current directory with `build.zig`.
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">const</span><span style="color:#cccccc;"> allocator </span><span>=</span><span style="color:#cccccc;"> std.testing.allocator;
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">const</span><span style="color:#cccccc;"> path </span><span>= </span><span style="color:#80d500;">try</span><span style="color:#cccccc;"> std.fs.path.join(allocator, &amp;.{ cwd, </span><span style="color:#ffd700;">&quot;build.zig&quot; </span><span style="color:#cccccc;">});
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">defer</span><span style="color:#cccccc;"> allocator.free(path); </span><span style="background-color:#171717;color:#616161;">// free the concatenated path
+</span><span style="color:#cccccc;">
+</span><span style="color:#cccccc;">    </span><span style="background-color:#171717;color:#616161;">// Read the contents of the file and compare.
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">const</span><span style="color:#cccccc;"> bytes </span><span>= </span><span style="color:#80d500;">try </span><span style="color:#cccccc;">readBytes(allocator, path, </span><span style="color:#eddd5a;">9</span><span style="color:#cccccc;">);
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">try</span><span style="color:#cccccc;"> std.testing.expectEqualStrings(</span><span style="color:#ffd700;">&quot;const std&quot;</span><span style="color:#cccccc;">, bytes);
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">defer</span><span style="color:#cccccc;"> allocator.free(bytes); </span><span style="background-color:#171717;color:#616161;">// free the read bytes
+</span><span style="color:#cccccc;">}
+</span></code></pre>
+<p>In this example, we are reading a number of bytes from an arbitrary file with <code>readBytes</code> function. As you can see, <code>defer</code> can be used to close the file at the end of a function. Also, we are using it for freeing the memory in the tests as shown before.</p>
+<p>Alternatively, it is possible to use <a href="https://ziglang.org/documentation/master/#errdefer"><code>errdefer</code></a> for cases that we want to execute something if the scope returns with an error:</p>
+<pre data-lang="zig" style="background-color:#191919;color:#ffffff;" class="language-zig "><code class="language-zig" data-lang="zig"><span style="background-color:#171717;color:#616161;">// Zig version: 0.10.1
+</span><span style="color:#cccccc;">
+</span><span style="background-color:#171717;color:#616161;">// Import the standard library.
+</span><span style="color:#80d500;">const</span><span style="color:#cccccc;"> std </span><span>= </span><span style="color:#80d500;">@import</span><span style="color:#cccccc;">(</span><span style="color:#ffd700;">&quot;std&quot;</span><span style="color:#cccccc;">);
+</span><span style="color:#cccccc;">
+</span><span style="background-color:#171717;color:#616161;">// This is especially useful in allowing a function to clean up properly
+</span><span style="background-color:#171717;color:#616161;">// on error, and replaces goto error handling tactics as seen in C.
+</span><span style="color:#80d500;">fn </span><span>deferErrorExample</span><span style="color:#cccccc;">(</span><span style="font-style:italic;color:#8aa6c1;">is_error</span><span style="color:#cccccc;">: </span><span style="color:#80d500;">bool</span><span style="color:#cccccc;">) </span><span>!</span><span style="color:#80d500;">void </span><span style="color:#cccccc;">{
+</span><span style="color:#cccccc;">    std.log.debug(</span><span style="color:#ffd700;">&quot;start of function&quot;</span><span style="color:#cccccc;">, .{});
+</span><span style="color:#cccccc;">
+</span><span style="color:#cccccc;">    </span><span style="background-color:#171717;color:#616161;">// This will always be executed on exit
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">defer </span><span style="color:#cccccc;">{
+</span><span style="color:#cccccc;">        std.log.debug(</span><span style="color:#ffd700;">&quot;end of function&quot;</span><span style="color:#cccccc;">, .{});
+</span><span style="color:#cccccc;">    }
+</span><span style="color:#cccccc;">
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">errdefer </span><span style="color:#cccccc;">{
+</span><span style="color:#cccccc;">        std.log.debug(</span><span style="color:#ffd700;">&quot;encountered an error!&quot;</span><span style="color:#cccccc;">, .{});
+</span><span style="color:#cccccc;">    }
+</span><span style="color:#cccccc;">
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">if </span><span style="color:#cccccc;">(is_error) {
+</span><span style="color:#cccccc;">        </span><span style="color:#80d500;">return error</span><span style="color:#cccccc;">.DeferError;
+</span><span style="color:#cccccc;">    }
+</span><span style="color:#cccccc;">}
+</span><span style="color:#cccccc;">
+</span><span style="background-color:#171717;color:#616161;">/// Entrypoint of the program.
+</span><span style="color:#80d500;">pub fn </span><span>main</span><span style="color:#cccccc;">() </span><span>!</span><span style="color:#80d500;">void </span><span style="color:#cccccc;">{
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">try </span><span style="color:#cccccc;">deferErrorExample(</span><span style="color:#80d500;">false</span><span style="color:#cccccc;">);
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">try </span><span style="color:#cccccc;">deferErrorExample(</span><span style="color:#80d500;">true</span><span style="color:#cccccc;">);
+</span><span style="color:#cccccc;">}
+</span></code></pre>
+<p>When we run it:</p>
+<pre data-lang="sh" style="background-color:#191919;color:#ffffff;" class="language-sh "><code class="language-sh" data-lang="sh"><span style="color:#cccccc;">$ zig build run
+</span><span style="color:#cccccc;">
+</span><span style="color:#cccccc;">debug: start of function
+</span><span style="color:#cccccc;">debug: end of function
+</span><span style="color:#cccccc;">
+</span><span style="color:#cccccc;">debug: start of function
+</span><span style="color:#cccccc;">debug: encountered an error!
+</span><span style="color:#cccccc;">debug: end of function
+</span><span style="color:#cccccc;">error: DeferError
+</span></code></pre>
+<h3 id="conclusion">Conclusion</h3>
+<img src="/ziggy_pizza.svg" style="width: 25%"/>
+<p>In Zig, the most convenient way of detecting memory leaks seems to test the code via <code>std.testing.allocator</code>. For that, we need to structure our program to pass <code>std.mem.Allocator</code> to the functions that allocate memory. After that, we can use the <code>free()</code> method of the allocator to free the memory.</p>
+<p>In that case, <code>defer</code> statement is handy for ensuring that the cleanup will happen at the end of the scope. It can also be used for different purposes that require execution when leaving the scope.</p>
+<p>Hope you enjoyed the read, any feedback is welcome! Let me know what you think and what might be the topic for the next Zig Bits 🦎</p>
+<p><a href="https://blog.orhun.dev/zig-bits-03/">Here</a> is the next post of the Zig Bits series! ("Mastering project management in Zig")</p>
+<p><em>görüşmək üzrə!</em></p>
+
+    </div>
+
+    
+        <footer>
+            <hr>
+            <p>
+                
+                    Published by Orhun Parmaksız
+                
+                
+                    
+                    in <a href="https://blog.orhun.dev/categories/zig-bits/">Zig Bits</a>
+                
+                
+            </p>
+            
+            
+            <div style="display: flex; justify-content: space-between; align-items: center">
+              <div>
+                <iframe
+                  src="https://github.com/sponsors/orhun/button"
+                  title="Sponsor @orhun"
+                  height="35"
+                  width="116"
+                  style="border: 0"
+                ></iframe>
+                <a href="https://www.buymeacoffee.com/orhun" target="_blank"
+                  ><img
+                    src="https://cdn.buymeacoffee.com/buttons/v2/default-white.png"
+                    alt="Buy Me A Coffee"
+                    style="height: 40px !important; width: 150px !important"
+                /></a>
+              </div>
+              <div>
+                <applause-button
+                  style="width: 50px; height: 50px"
+                  url="https://blog.orhun.dev&#x2F;zig-bits-02&#x2F;"
+                  color="white"
+                  multiclap="true"
+                />
+              </div>
+              <div>
+                <div style="width: auto; height: 39px">
+                  <p style="margin: 0; color: #fff; font-style: italic">✨ Sponsored by:</p>
+                </div>
+                <a href="https://terminaltrove.com/" target="_blank"
+                  ><img
+                    src="/sponsors/terminal_trove.png"
+                    alt="Terminal Trove"
+                    style="height: 40px; width: auto"
+                /></a>
+                <a href="https://rawkode.academy/" target="_blank"
+                  ><img
+                    src="/sponsors/rawkode_academy.png"
+                    alt="Rawkode Academy"
+                    style="height: 40px; width: auto"
+                /></a>
+                <a href="https://malwation.com/" target="_blank"
+                  ><img
+                    src="/sponsors/malwation.svg"
+                    alt="Malwation"
+                    style="height: 40px; width: auto"
+                /></a>
+              </div>
+            </div>
+            <script src="https://utteranc.es/client.js"
+                    repo="orhun/personal-blog"
+                    issue-term="url"
+                    label="comments"
+                    theme="github-dark"
+                    crossorigin="anonymous"
+                    async>
+            </script>
+        </footer>
+    
+</article>
+
+
+    </body>
+
+</html>

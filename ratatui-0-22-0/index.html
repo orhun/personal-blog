@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <meta http-equiv="content-type" content="text/html; charset=utf-8">
+      <meta property="og:type" content="website" />
+      <meta property="og:url" content="https://blog.orhun.dev"/>
+      
+      <meta property="og:title" content="Generating terminal user interfaces with Ratatui + ChatGPT - Orhun&#x27;s Blog" />
+      
+      <meta property="og:image" content="https://blog.orhun.dev/crow.png" />
+      
+      <meta name="description" content="FOSS • Linux • Programming" />
+      <meta property="og:description" content="FOSS • Linux • Programming"/>
+      
+
+      <!-- Enable responsiveness on mobile devices-->
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+      <link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png">
+      <link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png">
+      <link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png">
+      <link rel="manifest" href="/favicon/site.webmanifest">
+
+      <script async src="https://umami.orhun.dev/script.js" data-website-id="56ca5ca7-ba9f-416e-8bee-a132c155d56b"></script>
+
+      <link rel="stylesheet" href="https://unpkg.com/applause-button/dist/applause-button.css" />
+      <script src="https://unpkg.com/applause-button/dist/applause-button.js"></script>
+
+      
+      <title>Generating terminal user interfaces with Ratatui + ChatGPT - Orhun&#x27;s Blog</title>
+      
+
+      
+        <link rel="alternate" type="application/rss+xml" title="RSS" href="https://blog.orhun.dev/rss.xml">
+      
+
+      
+          <link rel="stylesheet" href="https://blog.orhun.dev/site.css">
+      
+
+      
+      
+    </head>
+
+    <body class="hack dark main container">
+        
+    
+        
+                
+                    <header>
+                        <nav itemscope itemtype="http://schema.org/SiteNavigationElement">
+                        
+                            <a itemprop="url"
+                               class=""
+                               href="https://blog.orhun.dev">
+                                <span itemprop="name">Home</span></a>
+                        
+                            <a itemprop="url"
+                               class=""
+                               href="https://blog.orhun.dev/categories">
+                                <span itemprop="name">Categories</span></a>
+                        
+                            <a itemprop="url"
+                               class=""
+                               href="https://github.com/orhun/personal-blog">
+                                <span itemprop="name">Source</span></a>
+                        
+                            <a itemprop="url"
+                               class=""
+                               href="https://github.com/orhun">
+                                <span itemprop="name">GitHub</span></a>
+                        
+                            <a itemprop="url"
+                               class=""
+                               href="https://donate.orhun.dev">
+                                <span itemprop="name">Donate</span></a>
+                        
+                            <a itemprop="url"
+                               class=""
+                               href="https://blog.orhun.dev/rss.xml">
+                                <span itemprop="name">RSS</span></a>
+                        
+                            <a itemprop="url"
+                               class=""
+                               href="https://orhun.dev">
+                                <span itemprop="name">About</span></a>
+                        
+                        </nav>
+                    </header>
+                
+            
+    
+
+<article itemscope itemtype="http://schema.org/BlogPosting">
+    <header>
+        <h1 itemprop="headline">Generating terminal user interfaces with Ratatui + ChatGPT</h1>
+        <span class="muted">
+    <svg style="margin-bottom:-3px" class="i-clock" viewBox="0 0 32 32"
+         width="16" height="16" fill="none" stroke="currentcolor"
+         stroke-linecap="round" stroke-linejoin="round" stroke-width="6.25%">
+        <circle cx="16" cy="16" r="14"/>
+        <path d="M16 8 L16 16 20 20"/>
+    </svg>
+    <span>8 minute read</span>
+    <svg style="margin-bottom: -3px" class="i-edit" viewBox="0 0 32 32"
+         width="16" height="16" fill="none" stroke="currentcolor"
+         stroke-linecap="round" stroke-linejoin="round" stroke-width="6.25%">
+        <path d="M30 7 L25 2 5 22 3 29 10 27 Z M21 6 L26 11 Z M5 22 L10 27 Z"/>
+    </svg>
+
+    Published: 2023-07-17
+</span>
+    </header>
+    <div itemprop="articleBody">
+      <p>"<a href="https://github.com/ratatui-org/ratatui"><strong>Ratatui</strong></a>" is a Rust library for building rich terminal user interfaces. In this post, I'm sharing what's new in the latest version and also a fun way to easily create terminal user interfaces in a jiffy.</p>
+<span id="continue-reading"></span><center>
+<p><img src="/ratatui-logo.png" alt="ratatui" /></p>
+</center>
+<p>See my <a href="https://blog.orhun.dev/ratatui-0-21-0/">previous blog post</a> about <code>ratatui</code> for retrospectives and the status of the project.</p>
+<p>Today marks the new release of <code>ratatui</code> and we are very excited to share the new things we have been working on in the last month. But before anything, a couple of news about the project:</p>
+<ul>
+<li>We had a meeting on 2023-07-16, you can read the meeting notes <a href="https://github.com/ratatui-org/ratatui/discussions/316">here</a>.</li>
+<li>We will have scheduled meetings soon for discussing the status of the project more often. (Still deciding the time &amp; day for that).</li>
+<li>Join the <a href="https://discord.gg/pMCEU9hNEj">Discord server</a> for keeping up-to-date with <code>ratatui</code> news and contributing to the project!</li>
+</ul>
+<p>We appreciate everyone who contribute to the project and most importantly <a href="https://github.com/fdehau">Florian Dehau</a> for creating tui-rs in the first place! 💖</p>
+<p>Today, I decided to do something different and share a fun thing that has been on my mind for a while before going into what's new in <code>ratatui</code>.</p>
+<p>So, without further ado, let's dive into it! 🐁</p>
+<hr />
+<h2 id="generating-terminal-user-interfaces">Generating terminal user interfaces</h2>
+<p>I have a new open source project coming up in the next months and I am happy to say that I have been using <code>ratatui</code> extensively to build it from the ground. Although it is fun to write TUI code, I sometimes think if it would be possible to find an easier/faster way to avoid boilerplate code and speed up the development. We are still working on improving the widget/stylization API of <code>ratatui</code> to avoid code repetition but still, I sometimes find myself rewriting the same code over and over again.</p>
+<p>One day, I had a flashback to a moment from months back where I needed to design a very basic HTML page but I was too lazy to do it and used <a href="https://en.wikipedia.org/wiki/ChatGPT">ChatGPT</a> for it. Well, what if I generate the TUI code as well and save myself from the burden of imagining the widget positions in my mind and trying to <em>code out</em> abstract things. That would be nice, right?</p>
+<p><strong>Q</strong>: Well, ChatGPT does not support image processing for now. So why waste your time writing prompts for your design instead of writing the actual code instead?</p>
+<p><strong>A</strong>: Who said I am going to write prompts?</p>
+<p><strong>Q</strong>: Huh?</p>
+<p>That's right. While I was using ChatGPT to generate that simple HTML page, I came up with a text-based but also visual solution. Ladies and gentlemen, I present to you:</p>
+<blockquote>
+<p><strong>ASCIIFlow</strong>: a client-side only web based application for drawing ASCII diagrams.</p>
+<p>GitHub: <a href="https://github.com/lewish/asciiflow">https://github.com/lewish/asciiflow</a></p>
+</blockquote>
+<p><img src="/asciiflow-example.png" alt="ASCIIFlow" /></p>
+<center>
+<p><a href="https://asciiflow.com">https://asciiflow.com</a></p>
+</center>
+<p>So you can simply draw boxes, lines, arrows, texts, and whatever you imagine on a canvas and export it (or copy it to the clipboard) easily.</p>
+<p>In case it isn't clear, our plan is to:</p>
+<ul>
+<li>Design the interface on ASCIIFlow.</li>
+<li>Give the ASCII design (text) to ChatGPT.</li>
+<li>Generate Rust (<code>ratatui</code>) code.</li>
+<li>Profit.</li>
+</ul>
+<p>Let's try it!</p>
+<blockquote>
+<p><strong>Prompt</strong>: Write the Rust code for using <code>tui-rs</code> library for building the following terminal user interface:</p>
+<pre data-lang="go" style="background-color:#191919;color:#ffffff;" class="language-go "><code class="language-go" data-lang="go"><span style="color:#cccccc;">┌────────────────orhun&#39;s blog────────────────────┐
+</span><span style="color:#cccccc;">│                                                │
+</span><span style="color:#cccccc;">│ ┌─ratatui is awesome──────────┐ ┌─stars──────┐ │
+</span><span style="color:#cccccc;">│ │ </span><span>- </span><span style="color:#cccccc;">written in Rust           │ │            │ │
+</span><span style="color:#cccccc;">│ │                             │ │          │ │ │
+</span><span style="color:#cccccc;">│ │ </span><span>- </span><span style="color:#cccccc;">easy to use               │ │         ┌┘ │ │
+</span><span style="color:#cccccc;">│ │                             │ │         │  │ │
+</span><span style="color:#cccccc;">│ │ </span><span>- </span><span style="color:#cccccc;">whole lotta widgets       │ │      ┌──┘  │ │
+</span><span style="color:#cccccc;">│ │                             │ │      │     │ │
+</span><span style="color:#cccccc;">│ │ </span><span>- </span><span style="color:#cccccc;">different backends        │ │      │     │ │
+</span><span style="color:#cccccc;">│ │                             │ │      │     │ │
+</span><span style="color:#cccccc;">│ │ </span><span>- </span><span style="color:#cccccc;">kick</span><span>-</span><span style="color:#cccccc;">ass name             │ │ ┌────┘     │ │
+</span><span style="color:#cccccc;">│ │                             │ │ │          │ │
+</span><span style="color:#cccccc;">│ │ (this is a scrollable list) │ │            │ │
+</span><span style="color:#cccccc;">│ └─────────────────────────────┘ └────────────┘ │
+</span><span style="color:#cccccc;">│                                                │
+</span><span style="color:#cccccc;">└────────────────────────────────────────────────┘
+</span></code></pre>
+</blockquote>
+<p>Unfortunately, ChatGPT doesn't have the knowledge of <code>ratatui</code> yet and it cakes its pants when you want to use it so we are using <code>tui-rs</code> in our prompt. Also, it suggests using <code>tui-rs</code> <code>0.16.0</code> which shows how much it is left behind.</p>
+<p>But anyways, it can generate some <em>usable</em> Rust code for us.</p>
+<p><img src="/tui-rs-chatgpt.png" alt="tui-rs ChatGPT" /></p>
+<p>If we remove the unrelated parts such as terminal/backend initialization and event handling, we are left with:</p>
+<details>
+<summary><b>Click to expand</b></summary>
+<pre data-lang="rs" style="background-color:#191919;color:#ffffff;" class="language-rs "><code class="language-rs" data-lang="rs"><span style="color:#80d500;">let</span><span style="color:#cccccc;"> chunks </span><span>= </span><span style="color:#cccccc;">Layout::default()
+</span><span style="color:#cccccc;">        .</span><span style="color:#8aa6c1;">direction</span><span style="color:#cccccc;">(Direction::Vertical)
+</span><span style="color:#cccccc;">        .</span><span style="color:#8aa6c1;">constraints</span><span style="color:#cccccc;">([Constraint::Length(</span><span style="color:#eddd5a;">3</span><span style="color:#cccccc;">), Constraint::Min(</span><span style="color:#eddd5a;">3</span><span style="color:#cccccc;">), Constraint::Length(</span><span style="color:#eddd5a;">1</span><span style="color:#cccccc;">)].</span><span style="color:#8aa6c1;">as_ref</span><span style="color:#cccccc;">())
+</span><span style="color:#cccccc;">        .</span><span style="color:#8aa6c1;">split</span><span style="color:#cccccc;">(terminal.</span><span style="color:#8aa6c1;">size</span><span style="color:#cccccc;">()</span><span>?</span><span style="color:#cccccc;">);
+</span><span style="color:#cccccc;">
+</span><span style="color:#80d500;">let</span><span style="color:#cccccc;"> header </span><span>= </span><span style="color:#cccccc;">Block::default()
+</span><span style="color:#cccccc;">    .</span><span style="color:#8aa6c1;">borders</span><span style="color:#cccccc;">(Borders::</span><span style="color:#66ccff;">ALL</span><span style="color:#cccccc;">)
+</span><span style="color:#cccccc;">    .</span><span style="color:#8aa6c1;">title</span><span style="color:#cccccc;">(</span><span style="color:#ffd700;">&quot;orhun&#39;s blog&quot;</span><span style="color:#cccccc;">)
+</span><span style="color:#cccccc;">    .</span><span style="color:#8aa6c1;">title_style</span><span style="color:#cccccc;">(Style::default().</span><span style="color:#8aa6c1;">fg</span><span style="color:#cccccc;">(Color::Cyan));
+</span><span style="color:#cccccc;">
+</span><span style="color:#80d500;">let</span><span style="color:#cccccc;"> paragraph </span><span>= </span><span style="color:#cccccc;">Paragraph::new(</span><span style="color:#ffd700;">&quot;ratatui is awesome&quot;</span><span style="color:#cccccc;">)
+</span><span style="color:#cccccc;">    .</span><span style="color:#8aa6c1;">block</span><span style="color:#cccccc;">(Block::default().</span><span style="color:#8aa6c1;">title</span><span style="color:#cccccc;">(</span><span style="color:#ffd700;">&quot;&quot;</span><span style="color:#cccccc;">.</span><span style="color:#8aa6c1;">as_ref</span><span style="color:#cccccc;">()).</span><span style="color:#8aa6c1;">borders</span><span style="color:#cccccc;">(Borders::</span><span style="color:#66ccff;">ALL</span><span style="color:#cccccc;">));
+</span><span style="color:#cccccc;">
+</span><span style="color:#80d500;">let</span><span style="color:#cccccc;"> stars </span><span>= </span><span style="color:#cccccc;">Paragraph::new(</span><span style="color:#ffd700;">&quot;stars&quot;</span><span style="color:#cccccc;">)
+</span><span style="color:#cccccc;">    .</span><span style="color:#8aa6c1;">block</span><span style="color:#cccccc;">(Block::default().</span><span style="color:#8aa6c1;">title</span><span style="color:#cccccc;">(</span><span style="color:#ffd700;">&quot;&quot;</span><span style="color:#cccccc;">.</span><span style="color:#8aa6c1;">as_ref</span><span style="color:#cccccc;">()).</span><span style="color:#8aa6c1;">borders</span><span style="color:#cccccc;">(Borders::</span><span style="color:#66ccff;">ALL</span><span style="color:#cccccc;">));
+</span><span style="color:#cccccc;">
+</span><span style="color:#80d500;">let</span><span style="color:#cccccc;"> widgets </span><span>= </span><span style="color:#cccccc;">vec![
+</span><span style="color:#cccccc;">    ListItem::new(</span><span style="color:#ffd700;">&quot;- written in Rust&quot;</span><span style="color:#cccccc;">),
+</span><span style="color:#cccccc;">    ListItem::new(</span><span style="color:#ffd700;">&quot;- easy to use&quot;</span><span style="color:#cccccc;">),
+</span><span style="color:#cccccc;">    ListItem::new(</span><span style="color:#ffd700;">&quot;- whole lotta widgets&quot;</span><span style="color:#cccccc;">),
+</span><span style="color:#cccccc;">    ListItem::new(</span><span style="color:#ffd700;">&quot;- different backends&quot;</span><span style="color:#cccccc;">),
+</span><span style="color:#cccccc;">    ListItem::new(</span><span style="color:#ffd700;">&quot;- kick-ass name&quot;</span><span style="color:#cccccc;">),
+</span><span style="color:#cccccc;">];
+</span><span style="color:#cccccc;">
+</span><span style="color:#80d500;">let</span><span style="color:#cccccc;"> list </span><span>= </span><span style="color:#cccccc;">List::new(widgets)
+</span><span style="color:#cccccc;">    .</span><span style="color:#8aa6c1;">block</span><span style="color:#cccccc;">(Block::default().</span><span style="color:#8aa6c1;">title</span><span style="color:#cccccc;">(</span><span style="color:#ffd700;">&quot;&quot;</span><span style="color:#cccccc;">.</span><span style="color:#8aa6c1;">as_ref</span><span style="color:#cccccc;">()).</span><span style="color:#8aa6c1;">borders</span><span style="color:#cccccc;">(Borders::</span><span style="color:#66ccff;">ALL</span><span style="color:#cccccc;">))
+</span><span style="color:#cccccc;">    .</span><span style="color:#8aa6c1;">highlight_style</span><span style="color:#cccccc;">(Style::default().</span><span style="color:#8aa6c1;">fg</span><span style="color:#cccccc;">(Color::LightGreen));
+</span><span style="color:#cccccc;">
+</span><span style="color:#80d500;">let</span><span style="color:#cccccc;"> dataset </span><span>= </span><span style="color:#cccccc;">Dataset::default()
+</span><span style="color:#cccccc;">    .</span><span style="color:#8aa6c1;">name</span><span style="color:#cccccc;">(</span><span style="color:#ffd700;">&quot;Stars&quot;</span><span style="color:#cccccc;">)
+</span><span style="color:#cccccc;">    .</span><span style="color:#8aa6c1;">marker</span><span style="color:#cccccc;">(tui::symbols::Marker::Dot)
+</span><span style="color:#cccccc;">    .</span><span style="color:#8aa6c1;">graph_type</span><span style="color:#cccccc;">(GraphType::Line)
+</span><span style="color:#cccccc;">    .</span><span style="color:#8aa6c1;">style</span><span style="color:#cccccc;">(Style::default().</span><span style="color:#8aa6c1;">fg</span><span style="color:#cccccc;">(Color::Yellow))
+</span><span style="color:#cccccc;">    .</span><span style="color:#8aa6c1;">data</span><span style="color:#cccccc;">(</span><span>&amp;</span><span style="color:#cccccc;">[
+</span><span style="color:#cccccc;">        (</span><span style="color:#eddd5a;">0.0</span><span style="color:#cccccc;">, </span><span style="color:#eddd5a;">0.0</span><span style="color:#cccccc;">),
+</span><span style="color:#cccccc;">        (</span><span style="color:#eddd5a;">1.0</span><span style="color:#cccccc;">, </span><span style="color:#eddd5a;">100.0</span><span style="color:#cccccc;">),
+</span><span style="color:#cccccc;">        (</span><span style="color:#eddd5a;">2.0</span><span style="color:#cccccc;">, </span><span style="color:#eddd5a;">200.0</span><span style="color:#cccccc;">),
+</span><span style="color:#cccccc;">        (</span><span style="color:#eddd5a;">3.0</span><span style="color:#cccccc;">, </span><span style="color:#eddd5a;">300.0</span><span style="color:#cccccc;">),
+</span><span style="color:#cccccc;">        (</span><span style="color:#eddd5a;">4.0</span><span style="color:#cccccc;">, </span><span style="color:#eddd5a;">400.0</span><span style="color:#cccccc;">),
+</span><span style="color:#cccccc;">        (</span><span style="color:#eddd5a;">5.0</span><span style="color:#cccccc;">, </span><span style="color:#eddd5a;">500.0</span><span style="color:#cccccc;">),
+</span><span style="color:#cccccc;">        (</span><span style="color:#eddd5a;">6.0</span><span style="color:#cccccc;">, </span><span style="color:#eddd5a;">600.0</span><span style="color:#cccccc;">),
+</span><span style="color:#cccccc;">    ]);
+</span><span style="color:#cccccc;">
+</span><span style="color:#80d500;">let</span><span style="color:#cccccc;"> chart </span><span>= </span><span style="color:#cccccc;">Chart::new(vec![dataset])
+</span><span style="color:#cccccc;">    .</span><span style="color:#8aa6c1;">block</span><span style="color:#cccccc;">(Block::default().</span><span style="color:#8aa6c1;">title</span><span style="color:#cccccc;">(</span><span style="color:#ffd700;">&quot;&quot;</span><span style="color:#cccccc;">.</span><span style="color:#8aa6c1;">as_ref</span><span style="color:#cccccc;">()).</span><span style="color:#8aa6c1;">borders</span><span style="color:#cccccc;">(Borders::</span><span style="color:#66ccff;">ALL</span><span style="color:#cccccc;">))
+</span><span style="color:#cccccc;">    .</span><span style="color:#8aa6c1;">x_axis</span><span style="color:#cccccc;">(
+</span><span style="color:#cccccc;">        tui::widgets::Axis::default()
+</span><span style="color:#cccccc;">            .</span><span style="color:#8aa6c1;">title</span><span style="color:#cccccc;">(</span><span style="color:#ffd700;">&quot;Time&quot;</span><span style="color:#cccccc;">)
+</span><span style="color:#cccccc;">            .</span><span style="color:#8aa6c1;">style</span><span style="color:#cccccc;">(Style::default().</span><span style="color:#8aa6c1;">fg</span><span style="color:#cccccc;">(Color::White)),
+</span><span style="color:#cccccc;">    )
+</span><span style="color:#cccccc;">    .</span><span style="color:#8aa6c1;">y_axis</span><span style="color:#cccccc;">(
+</span><span style="color:#cccccc;">        tui::widgets::Axis::default()
+</span><span style="color:#cccccc;">            .</span><span style="color:#8aa6c1;">title</span><span style="color:#cccccc;">(</span><span style="color:#ffd700;">&quot;Stars&quot;</span><span style="color:#cccccc;">)
+</span><span style="color:#cccccc;">            .</span><span style="color:#8aa6c1;">style</span><span style="color:#cccccc;">(Style::default().</span><span style="color:#8aa6c1;">fg</span><span style="color:#cccccc;">(Color::White)),
+</span><span style="color:#cccccc;">    );
+</span><span style="color:#cccccc;">
+</span><span style="color:#cccccc;">terminal.</span><span style="color:#8aa6c1;">draw</span><span style="color:#cccccc;">(|</span><span style="color:#80d500;">mut </span><span style="font-style:italic;color:#8aa6c1;">f</span><span style="color:#cccccc;">| {
+</span><span style="color:#cccccc;">    f.</span><span style="color:#8aa6c1;">render_widget</span><span style="color:#cccccc;">(header, chunks[</span><span style="color:#eddd5a;">0</span><span style="color:#cccccc;">]);
+</span><span style="color:#cccccc;">    f.</span><span style="color:#8aa6c1;">render_widget</span><span style="color:#cccccc;">(paragraph, chunks[</span><span style="color:#eddd5a;">1</span><span style="color:#cccccc;">]);
+</span><span style="color:#cccccc;">    f.</span><span style="color:#8aa6c1;">render_widget</span><span style="color:#cccccc;">(stars, chunks[</span><span style="color:#eddd5a;">1</span><span style="color:#cccccc;">]);
+</span><span style="color:#cccccc;">    f.</span><span style="color:#8aa6c1;">render_stateful_widget</span><span style="color:#cccccc;">(list, chunks[</span><span style="color:#eddd5a;">1</span><span style="color:#cccccc;">], </span><span>&amp;</span><span style="color:#80d500;">mut </span><span style="color:#8aa6c1;">Default</span><span style="color:#cccccc;">::default());
+</span><span style="color:#cccccc;">    f.</span><span style="color:#8aa6c1;">render_widget</span><span style="color:#cccccc;">(chart, chunks[</span><span style="color:#eddd5a;">2</span><span style="color:#cccccc;">]);
+</span><span style="color:#cccccc;">})</span><span>?</span><span style="color:#cccccc;">;
+</span></code></pre>
+</details>
+<p>Which is clearly wrong but can be a good stepping stone for what we actually want to build.</p>
+<p>Here is the final layout code with some edits:</p>
+<details>
+<summary><b>Click to expand</b></summary>
+<pre data-lang="rs" style="background-color:#191919;color:#ffffff;" class="language-rs "><code class="language-rs" data-lang="rs"><span style="background-color:#171717;color:#616161;">// Render the header first.
+</span><span style="color:#80d500;">let</span><span style="color:#cccccc;"> header </span><span>= </span><span style="color:#cccccc;">Block::default()
+</span><span style="color:#cccccc;">    .</span><span style="color:#8aa6c1;">borders</span><span style="color:#cccccc;">(Borders::</span><span style="color:#66ccff;">ALL</span><span style="color:#cccccc;">)
+</span><span style="color:#cccccc;">    .</span><span style="color:#8aa6c1;">title</span><span style="color:#cccccc;">(Title::from(</span><span style="color:#ffd700;">&quot;orhun&#39;s blog&quot;</span><span style="color:#cccccc;">).</span><span style="color:#8aa6c1;">alignment</span><span style="color:#cccccc;">(Alignment::Center))
+</span><span style="color:#cccccc;">    .</span><span style="color:#8aa6c1;">title_style</span><span style="color:#cccccc;">(Style::default().</span><span style="color:#8aa6c1;">fg</span><span style="color:#cccccc;">(Color::Cyan));
+</span><span style="color:#cccccc;">f.</span><span style="color:#8aa6c1;">render_widget</span><span style="color:#cccccc;">(header, terminal.</span><span style="color:#8aa6c1;">size</span><span style="color:#cccccc;">()</span><span>?</span><span style="color:#cccccc;">);
+</span><span style="color:#cccccc;">
+</span><span style="background-color:#171717;color:#616161;">// Split the layout.
+</span><span style="color:#80d500;">let</span><span style="color:#cccccc;"> chunks </span><span>= </span><span style="color:#cccccc;">Layout::default()
+</span><span style="color:#cccccc;">    .</span><span style="color:#8aa6c1;">direction</span><span style="color:#cccccc;">(Direction::Horizontal)
+</span><span style="color:#cccccc;">    .</span><span style="color:#8aa6c1;">margin</span><span style="color:#cccccc;">(</span><span style="color:#eddd5a;">1</span><span style="color:#cccccc;">)
+</span><span style="color:#cccccc;">    .</span><span style="color:#8aa6c1;">constraints</span><span style="color:#cccccc;">([Constraint::Percentage(</span><span style="color:#eddd5a;">70</span><span style="color:#cccccc;">), Constraint::Percentage(</span><span style="color:#eddd5a;">30</span><span style="color:#cccccc;">)].</span><span style="color:#8aa6c1;">as_ref</span><span style="color:#cccccc;">())
+</span><span style="color:#cccccc;">    .</span><span style="color:#8aa6c1;">split</span><span style="color:#cccccc;">(terminal.</span><span style="color:#8aa6c1;">size</span><span style="color:#cccccc;">()</span><span>?</span><span style="color:#cccccc;">);
+</span><span style="color:#cccccc;">
+</span><span style="background-color:#171717;color:#616161;">// Prepare the list.
+</span><span style="color:#80d500;">let</span><span style="color:#cccccc;"> widgets </span><span>= </span><span style="color:#cccccc;">vec![
+</span><span style="color:#cccccc;">    ListItem::new(</span><span style="color:#ffd700;">&quot;- written in Rust&quot;</span><span style="color:#cccccc;">),
+</span><span style="color:#cccccc;">    ListItem::new(</span><span style="color:#ffd700;">&quot;- easy to use&quot;</span><span style="color:#cccccc;">),
+</span><span style="color:#cccccc;">    ListItem::new(</span><span style="color:#ffd700;">&quot;- whole lotta widgets&quot;</span><span style="color:#cccccc;">),
+</span><span style="color:#cccccc;">    ListItem::new(</span><span style="color:#ffd700;">&quot;- different backends&quot;</span><span style="color:#cccccc;">),
+</span><span style="color:#cccccc;">    ListItem::new(</span><span style="color:#ffd700;">&quot;- kick-ass name&quot;</span><span style="color:#cccccc;">),
+</span><span style="color:#cccccc;">];
+</span><span style="color:#cccccc;">
+</span><span style="color:#80d500;">let</span><span style="color:#cccccc;"> list </span><span>= </span><span style="color:#cccccc;">List::new(widgets)
+</span><span style="color:#cccccc;">    .</span><span style="color:#8aa6c1;">block</span><span style="color:#cccccc;">(
+</span><span style="color:#cccccc;">        Block::default()
+</span><span style="color:#cccccc;">            .</span><span style="color:#8aa6c1;">title</span><span style="color:#cccccc;">(</span><span style="color:#ffd700;">&quot;ratatui is awesome&quot;</span><span style="color:#cccccc;">.</span><span style="color:#8aa6c1;">as_ref</span><span style="color:#cccccc;">())
+</span><span style="color:#cccccc;">            .</span><span style="color:#8aa6c1;">borders</span><span style="color:#cccccc;">(Borders::</span><span style="color:#66ccff;">ALL</span><span style="color:#cccccc;">),
+</span><span style="color:#cccccc;">    )
+</span><span style="color:#cccccc;">    .</span><span style="color:#8aa6c1;">highlight_style</span><span style="color:#cccccc;">(Style::default().</span><span style="color:#8aa6c1;">fg</span><span style="color:#cccccc;">(Color::LightGreen));
+</span><span style="color:#cccccc;">
+</span><span style="background-color:#171717;color:#616161;">// Prepare the chart.
+</span><span style="color:#80d500;">let</span><span style="color:#cccccc;"> dataset </span><span>= </span><span style="color:#cccccc;">Dataset::default()
+</span><span style="color:#cccccc;">    .</span><span style="color:#8aa6c1;">name</span><span style="color:#cccccc;">(</span><span style="color:#ffd700;">&quot;Stars&quot;</span><span style="color:#cccccc;">)
+</span><span style="color:#cccccc;">    .</span><span style="color:#8aa6c1;">marker</span><span style="color:#cccccc;">(Marker::Dot)
+</span><span style="color:#cccccc;">    .</span><span style="color:#8aa6c1;">graph_type</span><span style="color:#cccccc;">(GraphType::Line)
+</span><span style="color:#cccccc;">    .</span><span style="color:#8aa6c1;">style</span><span style="color:#cccccc;">(Style::default().</span><span style="color:#8aa6c1;">fg</span><span style="color:#cccccc;">(Color::Yellow))
+</span><span style="color:#cccccc;">    .</span><span style="color:#8aa6c1;">data</span><span style="color:#cccccc;">(</span><span>&amp;</span><span style="color:#cccccc;">[
+</span><span style="color:#cccccc;">        (</span><span style="color:#eddd5a;">0.0</span><span style="color:#cccccc;">, </span><span style="color:#eddd5a;">0.0</span><span style="color:#cccccc;">),
+</span><span style="color:#cccccc;">        (</span><span style="color:#eddd5a;">1.0</span><span style="color:#cccccc;">, </span><span style="color:#eddd5a;">100.0</span><span style="color:#cccccc;">),
+</span><span style="color:#cccccc;">        (</span><span style="color:#eddd5a;">2.0</span><span style="color:#cccccc;">, </span><span style="color:#eddd5a;">200.0</span><span style="color:#cccccc;">),
+</span><span style="color:#cccccc;">        (</span><span style="color:#eddd5a;">3.0</span><span style="color:#cccccc;">, </span><span style="color:#eddd5a;">300.0</span><span style="color:#cccccc;">),
+</span><span style="color:#cccccc;">        (</span><span style="color:#eddd5a;">4.0</span><span style="color:#cccccc;">, </span><span style="color:#eddd5a;">400.0</span><span style="color:#cccccc;">),
+</span><span style="color:#cccccc;">        (</span><span style="color:#eddd5a;">5.0</span><span style="color:#cccccc;">, </span><span style="color:#eddd5a;">500.0</span><span style="color:#cccccc;">),
+</span><span style="color:#cccccc;">        (</span><span style="color:#eddd5a;">6.0</span><span style="color:#cccccc;">, </span><span style="color:#eddd5a;">600.0</span><span style="color:#cccccc;">),
+</span><span style="color:#cccccc;">    ]);
+</span><span style="color:#cccccc;">
+</span><span style="color:#80d500;">let</span><span style="color:#cccccc;"> chart </span><span>= </span><span style="color:#cccccc;">Chart::new(vec![dataset])
+</span><span style="color:#cccccc;">    .</span><span style="color:#8aa6c1;">block</span><span style="color:#cccccc;">(
+</span><span style="color:#cccccc;">        Block::default()
+</span><span style="color:#cccccc;">            .</span><span style="color:#8aa6c1;">title</span><span style="color:#cccccc;">(</span><span style="color:#ffd700;">&quot;stars&quot;</span><span style="color:#cccccc;">.</span><span style="color:#8aa6c1;">as_ref</span><span style="color:#cccccc;">())
+</span><span style="color:#cccccc;">            .</span><span style="color:#8aa6c1;">borders</span><span style="color:#cccccc;">(Borders::</span><span style="color:#66ccff;">ALL</span><span style="color:#cccccc;">),
+</span><span style="color:#cccccc;">    )
+</span><span style="color:#cccccc;">    .</span><span style="color:#8aa6c1;">x_axis</span><span style="color:#cccccc;">(
+</span><span style="color:#cccccc;">        Axis::default()
+</span><span style="color:#cccccc;">            .</span><span style="color:#8aa6c1;">title</span><span style="color:#cccccc;">(</span><span style="color:#ffd700;">&quot;Time&quot;</span><span style="color:#cccccc;">)
+</span><span style="color:#cccccc;">            .</span><span style="color:#8aa6c1;">style</span><span style="color:#cccccc;">(Style::default().</span><span style="color:#8aa6c1;">fg</span><span style="color:#cccccc;">(Color::White))
+</span><span style="color:#cccccc;">            .</span><span style="color:#8aa6c1;">bounds</span><span style="color:#cccccc;">([</span><span style="color:#eddd5a;">0.0</span><span style="color:#cccccc;">, </span><span style="color:#eddd5a;">6.0</span><span style="color:#cccccc;">]),
+</span><span style="color:#cccccc;">    )
+</span><span style="color:#cccccc;">    .</span><span style="color:#8aa6c1;">y_axis</span><span style="color:#cccccc;">(
+</span><span style="color:#cccccc;">        Axis::default()
+</span><span style="color:#cccccc;">            .</span><span style="color:#8aa6c1;">title</span><span style="color:#cccccc;">(</span><span style="color:#ffd700;">&quot;Stars&quot;</span><span style="color:#cccccc;">)
+</span><span style="color:#cccccc;">            .</span><span style="color:#8aa6c1;">style</span><span style="color:#cccccc;">(Style::default().</span><span style="color:#8aa6c1;">fg</span><span style="color:#cccccc;">(Color::White))
+</span><span style="color:#cccccc;">            .</span><span style="color:#8aa6c1;">bounds</span><span style="color:#cccccc;">([</span><span style="color:#eddd5a;">0.0</span><span style="color:#cccccc;">, </span><span style="color:#eddd5a;">600.0</span><span style="color:#cccccc;">]),
+</span><span style="color:#cccccc;">    );
+</span><span style="color:#cccccc;">
+</span><span style="background-color:#171717;color:#616161;">// Render.
+</span><span style="color:#cccccc;">terminal.</span><span style="color:#8aa6c1;">draw</span><span style="color:#cccccc;">(|</span><span style="color:#80d500;">mut </span><span style="font-style:italic;color:#8aa6c1;">f</span><span style="color:#cccccc;">| {
+</span><span style="color:#cccccc;">    f.</span><span style="color:#8aa6c1;">render_stateful_widget</span><span style="color:#cccccc;">(list, chunks[</span><span style="color:#eddd5a;">0</span><span style="color:#cccccc;">], </span><span>&amp;</span><span style="color:#80d500;">mut </span><span style="color:#8aa6c1;">Default</span><span style="color:#cccccc;">::default());
+</span><span style="color:#cccccc;">    f.</span><span style="color:#8aa6c1;">render_widget</span><span style="color:#cccccc;">(chart, chunks[</span><span style="color:#eddd5a;">1</span><span style="color:#cccccc;">]);
+</span><span style="color:#cccccc;">})</span><span>?</span><span style="color:#cccccc;">;
+</span></code></pre>
+</details>
+<p>And here we have it:</p>
+<p><img src="/ratatui-demo.jpg" alt="demo" /></p>
+<h2 id="what-s-new"><strong>What's new?</strong></h2>
+<img src="/ratatui-logo.png" style="width: 15%"/>
+<p>Now that we have seen what we can do using <code>ratatui</code>, it is time to get into the details of the latest release!</p>
+<p><strong>Full changelog</strong>: <a href="https://github.com/ratatui-org/ratatui/releases/tag/v0.22.0">https://github.com/ratatui-org/ratatui/releases/tag/v0.22.0</a></p>
+<hr />
+<h3 id="prelude">Prelude</h3>
+<p>We now have a <code>prelude</code> module! This allows users of the library to easily use <code>ratatui</code> without a huge amount of imports.</p>
+<pre data-lang="rs" style="background-color:#191919;color:#ffffff;" class="language-rs "><code class="language-rs" data-lang="rs"><span>use </span><span style="color:#cccccc;">ratatui::prelude::</span><span>*</span><span style="color:#cccccc;">;
+</span></code></pre>
+<p>Aside from the main types that are used in the library, this <code>prelude</code> also re-exports several modules to make it easy to qualify types that would otherwise collide. For example:</p>
+<pre data-lang="rs" style="background-color:#191919;color:#ffffff;" class="language-rs "><code class="language-rs" data-lang="rs"><span>use </span><span style="color:#cccccc;">ratatui::{prelude::</span><span>*</span><span style="color:#cccccc;">, widgets::</span><span>*</span><span style="color:#cccccc;">};
+</span><span style="color:#cccccc;">
+</span><span style="color:#cccccc;">#[derive(Debug, Default, PartialEq, Eq)]
+</span><span style="color:#80d500;">struct </span><span style="color:#cccccc;">Line;
+</span><span style="color:#cccccc;">
+</span><span style="color:#cccccc;">assert_eq!(Line::default(), Line);
+</span><span style="color:#cccccc;">assert_eq!(text::Line::default(), ratatui::text::Line::from(vec![]));
+</span></code></pre>
+<hr />
+<h3 id="new-widget-scrollbar">New widget: Scrollbar</h3>
+<p>A scrollbar widget has been added which can be used with any <code>Rect</code>. It can also be customized with different styles and symbols.</p>
+<p>Here are the components of a <code>Scrollbar</code>:</p>
+<pre data-lang="sh" style="background-color:#191919;color:#ffffff;" class="language-sh "><code class="language-sh" data-lang="sh"><span>&lt;</span><span style="color:#cccccc;">--▮-------</span><span>&gt;
+</span><span style="color:#cccccc;">^  ^   ^   ^
+</span><span style="color:#cccccc;">│  │   │   └ end
+</span><span style="color:#cccccc;">│  │   └──── track
+</span><span style="color:#cccccc;">│  └──────── thumb
+</span><span style="color:#cccccc;">└─────────── begin
+</span></code></pre>
+<p>To use it, render it as a stateful widget along with <code>ScrollbarState</code>:</p>
+<pre data-lang="rs" style="background-color:#191919;color:#ffffff;" class="language-rs "><code class="language-rs" data-lang="rs"><span style="color:#cccccc;">frame.</span><span style="color:#8aa6c1;">render_stateful_widget</span><span style="color:#cccccc;">(
+</span><span style="color:#cccccc;">    Scrollbar::default()
+</span><span style="color:#cccccc;">        .</span><span style="color:#8aa6c1;">orientation</span><span style="color:#cccccc;">(ScrollbarOrientation::VerticalRight)
+</span><span style="color:#cccccc;">        .</span><span style="color:#8aa6c1;">begin_symbol</span><span style="color:#cccccc;">(</span><span style="color:#8aa6c1;">Some</span><span style="color:#cccccc;">(</span><span style="color:#ffd700;">&quot;↑&quot;</span><span style="color:#cccccc;">))
+</span><span style="color:#cccccc;">        .</span><span style="color:#8aa6c1;">end_symbol</span><span style="color:#cccccc;">(</span><span style="color:#8aa6c1;">Some</span><span style="color:#cccccc;">(</span><span style="color:#ffd700;">&quot;↓&quot;</span><span style="color:#cccccc;">)),
+</span><span style="color:#cccccc;">    rect,
+</span><span style="color:#cccccc;">    </span><span>&amp;</span><span style="color:#80d500;">mut</span><span style="color:#cccccc;"> scrollbar_state,
+</span><span style="color:#cccccc;">);
+</span></code></pre>
+<p>Will result in:</p>
+<pre data-lang="sh" style="background-color:#191919;color:#ffffff;" class="language-sh "><code class="language-sh" data-lang="sh"><span style="color:#cccccc;">┌scrollbar──────────────────↑
+</span><span style="color:#cccccc;">│This is a longer line      ║
+</span><span style="color:#cccccc;">│Veeeeeeeeeeeeeeeery    looo█
+</span><span style="color:#cccccc;">│This is a line             ║
+</span><span style="color:#cccccc;">└───────────────────────────↓
+</span></code></pre>
+<hr />
+<h3 id="block-support-multiple-titles">Block: support multiple titles</h3>
+<p><code>Block</code> widget now supports having more than one title via <code>Title</code> widget.</p>
+<p>Each title will be rendered with a single space separating titles that are in the same position or alignment. When both centered and non-centered titles are rendered, the centered space is calculated based on the full width of the block, rather than the leftover width.</p>
+<p>You can provide various types as the title, including strings, string slices, borrowed strings (<code>Cow&lt;str&gt;</code>), spans, or vectors of spans (<code>Vec&lt;Span&gt;</code>).</p>
+<p>It can be used as follows:</p>
+<pre data-lang="rs" style="background-color:#191919;color:#ffffff;" class="language-rs "><code class="language-rs" data-lang="rs"><span style="color:#cccccc;">Block::default()
+</span><span style="color:#cccccc;">    .</span><span style="color:#8aa6c1;">borders</span><span style="color:#cccccc;">(Borders::</span><span style="color:#66ccff;">ALL</span><span style="color:#cccccc;">)
+</span><span style="color:#cccccc;">    .</span><span style="color:#8aa6c1;">title</span><span style="color:#cccccc;">(</span><span style="color:#ffd700;">&quot;Title&quot;</span><span style="color:#cccccc;">) </span><span style="background-color:#171717;color:#616161;">// By default in the top right corner
+</span><span style="color:#cccccc;">    .</span><span style="color:#8aa6c1;">title</span><span style="color:#cccccc;">(Title::from(</span><span style="color:#ffd700;">&quot;Left&quot;</span><span style="color:#cccccc;">).</span><span style="color:#8aa6c1;">alignment</span><span style="color:#cccccc;">(Alignment::Left))
+</span><span style="color:#cccccc;">    .</span><span style="color:#8aa6c1;">title</span><span style="color:#cccccc;">(Title::from(</span><span style="color:#ffd700;">&quot;Center&quot;</span><span style="color:#cccccc;">).</span><span style="color:#8aa6c1;">alignment</span><span style="color:#cccccc;">(Alignment::Center))
+</span><span style="color:#cccccc;">    .</span><span style="color:#8aa6c1;">title</span><span style="color:#cccccc;">(Title::from(</span><span style="color:#ffd700;">&quot;Bottom&quot;</span><span style="color:#cccccc;">).</span><span style="color:#8aa6c1;">position</span><span style="color:#cccccc;">(Position::Bottom))
+</span><span style="color:#cccccc;">    .</span><span style="color:#8aa6c1;">title</span><span style="color:#cccccc;">(
+</span><span style="color:#cccccc;">        Title::from(</span><span style="color:#ffd700;">&quot;Bottom center&quot;</span><span style="color:#cccccc;">)
+</span><span style="color:#cccccc;">            .</span><span style="color:#8aa6c1;">alignment</span><span style="color:#cccccc;">(Alignment::Center)
+</span><span style="color:#cccccc;">            .</span><span style="color:#8aa6c1;">position</span><span style="color:#cccccc;">(Position::Bottom),
+</span><span style="color:#cccccc;">    );
+</span></code></pre>
+<p>Results in:</p>
+<pre data-lang="sh" style="background-color:#191919;color:#ffffff;" class="language-sh "><code class="language-sh" data-lang="sh"><span style="color:#cccccc;">┌Title─Left──Center─────────────┐
+</span><span style="color:#cccccc;">│                               │
+</span><span style="color:#cccccc;">│                               │
+</span><span style="color:#cccccc;">│                               │
+</span><span style="color:#cccccc;">└Bottom───Bottom center─────────┘
+</span></code></pre>
+<hr />
+<h3 id="barchart-support-groups">Barchart: support groups</h3>
+<p><code>Barchart</code> has been improved to support adding multiple bars from different data sets. This can be done by using the newly added <code>Bar</code> and <code>BarGroup</code> objects.</p>
+<p>This makes it possible to render fancy stuff like this:</p>
+<p><img src="/ratatui-barchart.jpg" alt="ratatui barchart" /></p>
+<p>See the <a href="https://github.com/ratatui-org/ratatui/blob/main/examples/barchart.rs">barchart example</a> for more information and implementation details.</p>
+<hr />
+<h3 id="stylization-shorthands">Stylization shorthands</h3>
+<p>It is possible to use style shorthands for <code>str</code>, <code>Span</code>, and <code>Paragraph</code>.</p>
+<p>A crazy example would be:</p>
+<pre data-lang="rs" style="background-color:#191919;color:#ffffff;" class="language-rs "><code class="language-rs" data-lang="rs"><span style="color:#ffd700;">&quot;hello&quot;
+</span><span style="color:#cccccc;">    .</span><span style="color:#8aa6c1;">on_black</span><span style="color:#cccccc;">()
+</span><span style="color:#cccccc;">    .</span><span style="color:#8aa6c1;">black</span><span style="color:#cccccc;">()
+</span><span style="color:#cccccc;">    .</span><span style="color:#8aa6c1;">bold</span><span style="color:#cccccc;">()
+</span><span style="color:#cccccc;">    .</span><span style="color:#8aa6c1;">underline</span><span style="color:#cccccc;">()
+</span><span style="color:#cccccc;">    .</span><span style="color:#8aa6c1;">dimmed</span><span style="color:#cccccc;">()
+</span><span style="color:#cccccc;">    .</span><span style="color:#8aa6c1;">slow_blink</span><span style="color:#cccccc;">()
+</span><span style="color:#cccccc;">    .</span><span style="color:#8aa6c1;">crossed_out</span><span style="color:#cccccc;">()
+</span><span style="color:#cccccc;">    .</span><span style="color:#8aa6c1;">reversed</span><span style="color:#cccccc;">()
+</span></code></pre>
+<p>This especially helps with concise styling:</p>
+<pre data-lang="rs" style="background-color:#191919;color:#ffffff;" class="language-rs "><code class="language-rs" data-lang="rs"><span style="color:#cccccc;">assert_eq!(
+</span><span style="color:#cccccc;">  </span><span style="color:#ffd700;">&quot;hello&quot;</span><span style="color:#cccccc;">.</span><span style="color:#8aa6c1;">red</span><span style="color:#cccccc;">().</span><span style="color:#8aa6c1;">on_blue</span><span style="color:#cccccc;">().</span><span style="color:#8aa6c1;">bold</span><span style="color:#cccccc;">(),
+</span><span style="color:#cccccc;">  Span::styled(</span><span style="color:#ffd700;">&quot;hello&quot;</span><span style="color:#cccccc;">, Style::default().</span><span style="color:#8aa6c1;">fg</span><span style="color:#cccccc;">(Color::Red).</span><span style="color:#8aa6c1;">bg</span><span style="color:#cccccc;">(Color::Blue).</span><span style="color:#8aa6c1;">add_modifier</span><span style="color:#cccccc;">(Modifier::</span><span style="color:#66ccff;">BOLD</span><span style="color:#cccccc;">))
+</span><span style="color:#cccccc;">)
+</span></code></pre>
+<hr />
+<h3 id="stylize-everything">Stylize everything!</h3>
+<p>All widgets can be styled now (i.e. <code>set_style</code>)</p>
+<p><code>Styled</code> trait is implemented for all the remaining widgets, including:</p>
+<ul>
+<li><code>Barchart</code></li>
+<li><code>Chart</code> (including <code>Axis</code> and <code>Dataset</code>)</li>
+<li><code>Gauge</code> and <code>LineGauge</code></li>
+<li><code>List</code> and <code>ListItem</code></li>
+<li><code>Sparkline</code></li>
+<li><code>Table</code>, <code>Row</code>, and <code>Cell</code></li>
+<li><code>Tabs</code></li>
+<li><code>Style</code></li>
+</ul>
+<hr />
+<h3 id="constant-styles">Constant styles</h3>
+<p><code>Style</code>s can be constructed in a <code>const</code> context as follows:</p>
+<pre data-lang="rs" style="background-color:#191919;color:#ffffff;" class="language-rs "><code class="language-rs" data-lang="rs"><span style="color:#80d500;">const </span><span style="color:#66ccff;">DEFAULT_MODIFIER</span><span style="color:#cccccc;">: Modifier </span><span>= </span><span style="color:#cccccc;">Modifier::</span><span style="color:#66ccff;">BOLD</span><span style="color:#cccccc;">.</span><span style="color:#8aa6c1;">union</span><span style="color:#cccccc;">(Modifier::</span><span style="color:#66ccff;">ITALIC</span><span style="color:#cccccc;">);
+</span><span style="color:#80d500;">const </span><span style="color:#66ccff;">EMPTY</span><span style="color:#cccccc;">: Modifier </span><span>= </span><span style="color:#cccccc;">Modifier::empty();
+</span><span style="color:#cccccc;">
+</span><span style="color:#80d500;">const </span><span style="color:#66ccff;">DEFAULT_STYLE</span><span style="color:#cccccc;">: Style </span><span>= </span><span style="color:#cccccc;">Style::with(</span><span style="color:#66ccff;">DEFAULT_MODIFIER</span><span style="color:#cccccc;">, </span><span style="color:#66ccff;">EMPTY</span><span style="color:#cccccc;">)
+</span><span style="color:#cccccc;">    .</span><span style="color:#8aa6c1;">fg</span><span style="color:#cccccc;">(Color::Red)
+</span><span style="color:#cccccc;">    .</span><span style="color:#8aa6c1;">bg</span><span style="color:#cccccc;">(Color::Black);
+</span></code></pre>
+<hr />
+<h3 id="more-colors-formats">More colors formats</h3>
+<p>It is now possible to parse hyphenated color names like <code>light-red</code> via <code>Color::from_str</code>.</p>
+<p>Additionally, all colors from the <a href="https://en.wikipedia.org/wiki/ANSI_escape_code#Colors">ANSI color table</a> are supported (though some names are not exactly the same).</p>
+<ul>
+<li><code>gray</code> is sometimes called <code>white</code> - this is not supported as we use <code>white</code> for bright white</li>
+<li><code>gray</code> is sometimes called <code>silver</code> - this is supported</li>
+<li><code>darkgray</code> is sometimes called <code>light black</code> or <code>bright black</code> (both are supported)</li>
+<li><code>white</code> is sometimes called <code>light white</code> or <code>bright white</code> (both are supported)</li>
+<li>we support <code>bright</code> and <code>light</code> prefixes for all colors</li>
+<li>we support <code>-</code> and <code>_</code> and <code> </code> as separators for all colors</li>
+<li>we support both <code>gray</code> and <code>grey</code> spellings</li>
+</ul>
+<p>For example:</p>
+<pre data-lang="rs" style="background-color:#191919;color:#ffffff;" class="language-rs "><code class="language-rs" data-lang="rs"><span>use </span><span style="color:#cccccc;">ratatui::style::Color;
+</span><span>use </span><span style="color:#cccccc;">std::str::FromStr;
+</span><span style="color:#cccccc;">
+</span><span style="color:#cccccc;">assert_eq!(Color::from_str(</span><span style="color:#ffd700;">&quot;red&quot;</span><span style="color:#cccccc;">), </span><span style="color:#8aa6c1;">Ok</span><span style="color:#cccccc;">(Color::Red));
+</span><span style="color:#cccccc;">assert_eq!(</span><span style="color:#ffd700;">&quot;red&quot;</span><span style="color:#cccccc;">.</span><span style="color:#8aa6c1;">parse</span><span style="color:#cccccc;">(), </span><span style="color:#8aa6c1;">Ok</span><span style="color:#cccccc;">(Color::Red));
+</span><span style="color:#cccccc;">assert_eq!(</span><span style="color:#ffd700;">&quot;lightred&quot;</span><span style="color:#cccccc;">.</span><span style="color:#8aa6c1;">parse</span><span style="color:#cccccc;">(), </span><span style="color:#8aa6c1;">Ok</span><span style="color:#cccccc;">(Color::LightRed));
+</span><span style="color:#cccccc;">assert_eq!(</span><span style="color:#ffd700;">&quot;light red&quot;</span><span style="color:#cccccc;">.</span><span style="color:#8aa6c1;">parse</span><span style="color:#cccccc;">(), </span><span style="color:#8aa6c1;">Ok</span><span style="color:#cccccc;">(Color::LightRed));
+</span><span style="color:#cccccc;">assert_eq!(</span><span style="color:#ffd700;">&quot;light-red&quot;</span><span style="color:#cccccc;">.</span><span style="color:#8aa6c1;">parse</span><span style="color:#cccccc;">(), </span><span style="color:#8aa6c1;">Ok</span><span style="color:#cccccc;">(Color::LightRed));
+</span><span style="color:#cccccc;">assert_eq!(</span><span style="color:#ffd700;">&quot;light_red&quot;</span><span style="color:#cccccc;">.</span><span style="color:#8aa6c1;">parse</span><span style="color:#cccccc;">(), </span><span style="color:#8aa6c1;">Ok</span><span style="color:#cccccc;">(Color::LightRed));
+</span><span style="color:#cccccc;">assert_eq!(</span><span style="color:#ffd700;">&quot;lightRed&quot;</span><span style="color:#cccccc;">.</span><span style="color:#8aa6c1;">parse</span><span style="color:#cccccc;">(), </span><span style="color:#8aa6c1;">Ok</span><span style="color:#cccccc;">(Color::LightRed));
+</span><span style="color:#cccccc;">assert_eq!(</span><span style="color:#ffd700;">&quot;bright red&quot;</span><span style="color:#cccccc;">.</span><span style="color:#8aa6c1;">parse</span><span style="color:#cccccc;">(), </span><span style="color:#8aa6c1;">Ok</span><span style="color:#cccccc;">(Color::LightRed));
+</span><span style="color:#cccccc;">assert_eq!(</span><span style="color:#ffd700;">&quot;bright-red&quot;</span><span style="color:#cccccc;">.</span><span style="color:#8aa6c1;">parse</span><span style="color:#cccccc;">(), </span><span style="color:#8aa6c1;">Ok</span><span style="color:#cccccc;">(Color::LightRed));
+</span><span style="color:#cccccc;">assert_eq!(</span><span style="color:#ffd700;">&quot;silver&quot;</span><span style="color:#cccccc;">.</span><span style="color:#8aa6c1;">parse</span><span style="color:#cccccc;">(), </span><span style="color:#8aa6c1;">Ok</span><span style="color:#cccccc;">(Color::Gray));
+</span><span style="color:#cccccc;">assert_eq!(</span><span style="color:#ffd700;">&quot;dark-grey&quot;</span><span style="color:#cccccc;">.</span><span style="color:#8aa6c1;">parse</span><span style="color:#cccccc;">(), </span><span style="color:#8aa6c1;">Ok</span><span style="color:#cccccc;">(Color::DarkGray));
+</span><span style="color:#cccccc;">assert_eq!(</span><span style="color:#ffd700;">&quot;dark gray&quot;</span><span style="color:#cccccc;">.</span><span style="color:#8aa6c1;">parse</span><span style="color:#cccccc;">(), </span><span style="color:#8aa6c1;">Ok</span><span style="color:#cccccc;">(Color::DarkGray));
+</span><span style="color:#cccccc;">assert_eq!(</span><span style="color:#ffd700;">&quot;light-black&quot;</span><span style="color:#cccccc;">.</span><span style="color:#8aa6c1;">parse</span><span style="color:#cccccc;">(), </span><span style="color:#8aa6c1;">Ok</span><span style="color:#cccccc;">(Color::DarkGray));
+</span><span style="color:#cccccc;">assert_eq!(</span><span style="color:#ffd700;">&quot;white&quot;</span><span style="color:#cccccc;">.</span><span style="color:#8aa6c1;">parse</span><span style="color:#cccccc;">(), </span><span style="color:#8aa6c1;">Ok</span><span style="color:#cccccc;">(Color::White));
+</span><span style="color:#cccccc;">assert_eq!(</span><span style="color:#ffd700;">&quot;bright white&quot;</span><span style="color:#cccccc;">.</span><span style="color:#8aa6c1;">parse</span><span style="color:#cccccc;">(), </span><span style="color:#8aa6c1;">Ok</span><span style="color:#cccccc;">(Color::White));
+</span></code></pre>
+<hr />
+<h3 id="integrations">Integrations</h3>
+<p>Following tools are now integrated into the repository:</p>
+<ul>
+<li><a href="https://github.com/rhysd/cargo-husky"><code>cargo-husky</code></a>: git pre-push hooks</li>
+<li><a href="https://github.com/Canop/bacon"><code>bacon</code></a>: background code checks / coverage</li>
+<li><a href="https://github.com/commitizen/cz-cli"><code>commitizen</code></a>: conventional commits</li>
+<li><a href="https://github.com/EmbarkStudios/cargo-deny"><code>cargo-deny</code></a>: linting dependencies</li>
+<li><a href="https://github.com/crate-ci/typos"><code>typos</code></a>: spell checker</li>
+</ul>
+<hr />
+<h3 id="other">Other</h3>
+<ul>
+<li>Benchmarks added for the <code>Paragraph</code> widget</li>
+<li>Added underline colors support for <code>crossterm</code> backend</li>
+<li>Mark some of the low-level functions of <code>Block</code>, <code>Layout</code> and <code>Rect</code> as <code>const</code></li>
+<li>The project license has been updated to acknowledge <code>ratatui</code> developers</li>
+</ul>
+<hr />
+<h2 id="endnote">Endnote</h2>
+<p>Feel free to join the <a href="https://discord.gg/pMCEU9hNEj">Discord server</a> for chatting/getting help about <code>ratatui</code>. If you are interested in contributing, check out our <a href="https://github.com/ratatui-org/ratatui/blob/main/CONTRIBUTING.md">contribution guidelines</a> and <a href="https://github.com/ratatui-org/ratatui/issues">open issues</a> for getting started!</p>
+<p>Also, check out <a href="https://github.com/ratatui-org/ratatui/wiki/Apps-using-Ratatui">these cool apps</a> using <code>ratatui</code>!</p>
+<p>Lastly, shout out to these awesome people for their first contributions to the project:</p>
+<ul>
+<li><a href="https://github.com/Nydragon">@Nydragon</a></li>
+<li><a href="https://github.com/snpefk">@snpefk</a></li>
+<li><a href="https://github.com/Philipp-M">@Philipp-M</a></li>
+<li><a href="https://github.com/mrbcmorris">@mrbcmorris</a></li>
+<li><a href="https://github.com/endepointe">@endepointe</a></li>
+<li><a href="https://github.com/kdheepak">@kdheepak</a></li>
+<li><a href="https://github.com/samyosm">@samyosm</a></li>
+<li><a href="https://github.com/SLASHLogin">@SLASHLogin</a></li>
+<li><a href="https://github.com/karthago1">@karthago1</a></li>
+<li><a href="https://github.com/BoolPurist">@BoolPurist</a></li>
+<li><a href="https://github.com/Nogesma">@Nogesma</a></li>
+<li><a href="https://github.com/lthoerner">@lthoerner</a></li>
+</ul>
+<p>Cheers!</p>
+<p>🐭</p>
+
+    </div>
+
+    
+        <footer>
+            <hr>
+            <p>
+                
+                    Published by Orhun Parmaksız
+                
+                
+                    
+                    in <a href="https://blog.orhun.dev/categories/ratatui/">Ratatui</a>
+                
+                
+            </p>
+            
+            
+            <div style="display: flex; justify-content: space-between; align-items: center">
+              <div>
+                <iframe
+                  src="https://github.com/sponsors/orhun/button"
+                  title="Sponsor @orhun"
+                  height="35"
+                  width="116"
+                  style="border: 0"
+                ></iframe>
+                <a href="https://www.buymeacoffee.com/orhun" target="_blank"
+                  ><img
+                    src="https://cdn.buymeacoffee.com/buttons/v2/default-white.png"
+                    alt="Buy Me A Coffee"
+                    style="height: 40px !important; width: 150px !important"
+                /></a>
+              </div>
+              <div>
+                <applause-button
+                  style="width: 50px; height: 50px"
+                  url="https://blog.orhun.dev&#x2F;ratatui-0-22-0&#x2F;"
+                  color="white"
+                  multiclap="true"
+                />
+              </div>
+              <div>
+                <div style="width: auto; height: 39px">
+                  <p style="margin: 0; color: #fff; font-style: italic">✨ Sponsored by:</p>
+                </div>
+                <a href="https://terminaltrove.com/" target="_blank"
+                  ><img
+                    src="/sponsors/terminal_trove.png"
+                    alt="Terminal Trove"
+                    style="height: 40px; width: auto"
+                /></a>
+                <a href="https://rawkode.academy/" target="_blank"
+                  ><img
+                    src="/sponsors/rawkode_academy.png"
+                    alt="Rawkode Academy"
+                    style="height: 40px; width: auto"
+                /></a>
+                <a href="https://malwation.com/" target="_blank"
+                  ><img
+                    src="/sponsors/malwation.svg"
+                    alt="Malwation"
+                    style="height: 40px; width: auto"
+                /></a>
+              </div>
+            </div>
+            <script src="https://utteranc.es/client.js"
+                    repo="orhun/personal-blog"
+                    issue-term="url"
+                    label="comments"
+                    theme="github-dark"
+                    crossorigin="anonymous"
+                    async>
+            </script>
+        </footer>
+    
+</article>
+
+
+    </body>
+
+</html>

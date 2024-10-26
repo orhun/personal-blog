@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <meta http-equiv="content-type" content="text/html; charset=utf-8">
+      <meta property="og:type" content="website" />
+      <meta property="og:url" content="https://blog.orhun.dev"/>
+      
+      <meta property="og:title" content="Spin Up Your Own No-Bullshit File Hosting Service - Orhun&#x27;s Blog" />
+      
+      <meta property="og:image" content="https://blog.orhun.dev/crow.png" />
+      
+      <meta name="description" content="FOSS • Linux • Programming" />
+      <meta property="og:description" content="FOSS • Linux • Programming"/>
+      
+
+      <!-- Enable responsiveness on mobile devices-->
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+      <link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png">
+      <link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png">
+      <link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png">
+      <link rel="manifest" href="/favicon/site.webmanifest">
+
+      <script async src="https://umami.orhun.dev/script.js" data-website-id="56ca5ca7-ba9f-416e-8bee-a132c155d56b"></script>
+
+      <link rel="stylesheet" href="https://unpkg.com/applause-button/dist/applause-button.css" />
+      <script src="https://unpkg.com/applause-button/dist/applause-button.js"></script>
+
+      
+      <title>Spin Up Your Own No-Bullshit File Hosting Service - Orhun&#x27;s Blog</title>
+      
+
+      
+        <link rel="alternate" type="application/rss+xml" title="RSS" href="https://blog.orhun.dev/rss.xml">
+      
+
+      
+          <link rel="stylesheet" href="https://blog.orhun.dev/site.css">
+      
+
+      
+      
+    </head>
+
+    <body class="hack dark main container">
+        
+    
+        
+                
+                    <header>
+                        <nav itemscope itemtype="http://schema.org/SiteNavigationElement">
+                        
+                            <a itemprop="url"
+                               class=""
+                               href="https://blog.orhun.dev">
+                                <span itemprop="name">Home</span></a>
+                        
+                            <a itemprop="url"
+                               class=""
+                               href="https://blog.orhun.dev/categories">
+                                <span itemprop="name">Categories</span></a>
+                        
+                            <a itemprop="url"
+                               class=""
+                               href="https://github.com/orhun/personal-blog">
+                                <span itemprop="name">Source</span></a>
+                        
+                            <a itemprop="url"
+                               class=""
+                               href="https://github.com/orhun">
+                                <span itemprop="name">GitHub</span></a>
+                        
+                            <a itemprop="url"
+                               class=""
+                               href="https://donate.orhun.dev">
+                                <span itemprop="name">Donate</span></a>
+                        
+                            <a itemprop="url"
+                               class=""
+                               href="https://blog.orhun.dev/rss.xml">
+                                <span itemprop="name">RSS</span></a>
+                        
+                            <a itemprop="url"
+                               class=""
+                               href="https://orhun.dev">
+                                <span itemprop="name">About</span></a>
+                        
+                        </nav>
+                    </header>
+                
+            
+    
+
+<article itemscope itemtype="http://schema.org/BlogPosting">
+    <header>
+        <h1 itemprop="headline">Spin Up Your Own No-Bullshit File Hosting Service</h1>
+        <span class="muted">
+    <svg style="margin-bottom:-3px" class="i-clock" viewBox="0 0 32 32"
+         width="16" height="16" fill="none" stroke="currentcolor"
+         stroke-linecap="round" stroke-linejoin="round" stroke-width="6.25%">
+        <circle cx="16" cy="16" r="14"/>
+        <path d="M16 8 L16 16 20 20"/>
+    </svg>
+    <span>5 minute read</span>
+    <svg style="margin-bottom: -3px" class="i-edit" viewBox="0 0 32 32"
+         width="16" height="16" fill="none" stroke="currentcolor"
+         stroke-linecap="round" stroke-linejoin="round" stroke-width="6.25%">
+        <path d="M30 7 L25 2 5 22 3 29 10 27 Z M21 6 L26 11 Z M5 22 L10 27 Z"/>
+    </svg>
+
+    Published: 2021-02-14
+</span>
+    </header>
+    <div itemprop="articleBody">
+      <p>A guide for spinning up your own instance of 0x0, a no-bullshit file hosting and URL shortening service.</p>
+<span id="continue-reading"></span>
+<p><a href="https://git.0x0.st/mia/0x0">0x0</a> (AKA "The Null Pointer") is a "no-bullshit file hosting and URL shortening service" that I've been using for a couple of months now. It's very easy to use, simple and straightforward. Although you can use the homepage of the project (<a href="https://0x0.st/">0x0.st</a>) for hosting files and shortening links, I'd like to tell you how did I spin up my own instance of <a href="https://git.0x0.st/mia/0x0">0x0</a> because (as the author of the project says) <em>centralization is bad!</em></p>
+<ul>
+<li><a href="https://blog.orhun.dev/no-bullshit-file-hosting/#requirements">Requirements</a></li>
+<li><a href="https://blog.orhun.dev/no-bullshit-file-hosting/#configuring-0x0">Configuring 0x0</a></li>
+<li><a href="https://blog.orhun.dev/no-bullshit-file-hosting/#testing-0x0-with-uwsgi">Testing 0x0 with uWSGI</a></li>
+<li><a href="https://blog.orhun.dev/no-bullshit-file-hosting/#configuring-uwsgi">Configuring uWSGI</a></li>
+<li><a href="https://blog.orhun.dev/no-bullshit-file-hosting/#creating-a-systemd-unit-file-for-uwsgi">Creating a systemd unit file for uWSGI</a></li>
+<li><a href="https://blog.orhun.dev/no-bullshit-file-hosting/#configuring-nginx-for-proxying-requests">Configuring Nginx for proxying requests</a></li>
+<li><a href="https://blog.orhun.dev/no-bullshit-file-hosting/#getting-an-ssl-certificate">Getting an SSL certificate</a></li>
+<li><a href="https://blog.orhun.dev/no-bullshit-file-hosting/#using-0x0">Using 0x0</a></li>
+<li><a href="https://blog.orhun.dev/no-bullshit-file-hosting/#conclusion">Conclusion</a></li>
+</ul>
+<h2 id="requirements">Requirements</h2>
+<ul>
+<li>A server and preferably a domain. (I'll be using Ubuntu 20.04.1 from <a href="https://aws.amazon.com/free/">AWS Free Tier</a> and a <a href="https://www.freenom.com/en/freeandpaiddomains.html">free domain</a>)</li>
+<li>Linux dependencies: <a href="https://ubuntu.com/tutorials/install-and-configure-nginx">Nginx</a>, <a href="https://certbot.eff.org/docs/install.html">Certbot</a>, <a href="https://www.digitalocean.com/community/tutorials/how-to-install-python-3-and-set-up-a-programming-environment-on-an-ubuntu-20-04-server">Python3</a></li>
+<li>Python dependencies: <a href="https://uwsgi-docs.readthedocs.io/en/latest/Install.html">uWSGI</a>, <a href="https://pip.pypa.io/en/stable/installation/">python-pip</a>
+<ul>
+<li>pip install -r <a href="https://git.0x0.st/mia/0x0/src/branch/master/requirements.txt">requirements.txt</a></li>
+</ul>
+</li>
+</ul>
+<h2 id="configuring-0x0">Configuring 0x0</h2>
+<p>Connect to your server via SSH and clone the repository:</p>
+<pre data-lang="sh" style="background-color:#191919;color:#ffffff;" class="language-sh "><code class="language-sh" data-lang="sh"><span style="color:#8aa6c1;">cd </span><span style="color:#cccccc;">$HOME/
+</span><span style="color:#cccccc;">git clone https://git.0x0.st/mia/0x0 </span><span>&amp;&amp; </span><span style="color:#8aa6c1;">cd</span><span style="color:#cccccc;"> 0x0/
+</span></code></pre>
+<p>Then you can tweak some settings like maximum file size and storage path in <a href="https://git.0x0.st/mia/0x0/src/branch/master/fhost.py">fhost.py</a> or in <code>instance/config.py</code>.</p>
+<p>Don't forget to create the configuration file and initialize the database before proceeding:</p>
+<pre data-lang="sh" style="background-color:#191919;color:#ffffff;" class="language-sh "><code class="language-sh" data-lang="sh"><span style="color:#cccccc;">mkdir instance/
+</span><span style="color:#cccccc;">touch instance/config.py
+</span><span style="color:#cccccc;">python3 fhost.py db upgrade
+</span></code></pre>
+<h2 id="testing-0x0-with-uwsgi">Testing 0x0 with uWSGI</h2>
+<p>After you <a href="https://uwsgi-docs.readthedocs.io/en/latest/Install.html">install</a> uWSGI, you can simply test if 0x0 runs with the following command<a href="https://git.0x0.st/mia/0x0/issues/8">*</a>:</p>
+<pre data-lang="sh" style="background-color:#191919;color:#ffffff;" class="language-sh "><code class="language-sh" data-lang="sh"><span style="color:#cccccc;">uwsgi</span><span style="font-style:italic;color:#8aa6c1;"> --socket</span><span style="color:#cccccc;"> 0.0.0.0:8080</span><span style="font-style:italic;color:#8aa6c1;"> --protocol</span><span>=</span><span style="color:#cccccc;">http</span><span style="font-style:italic;color:#8aa6c1;"> --wsgi-file</span><span style="color:#cccccc;"> fhost.py</span><span style="font-style:italic;color:#8aa6c1;"> --callable</span><span style="color:#cccccc;"> app
+</span></code></pre>
+<p><strong>Note:</strong> If <code>--wsgi-file</code> option is not recognized, make sure you have python plugin for uWSGI installed and loaded. <a href="https://stackoverflow.com/questions/31330905/uwsgi-options-wsgi-file-and-module-not-recognized">*</a></p>
+<p>You should be seeing the homepage of 0x0 at <code>http://your_server_ip:8080</code>. If not, debug time...</p>
+<h2 id="configuring-uwsgi">Configuring uWSGI</h2>
+<p>Now we can create a configuration file for UWSGI to serve 0x0 more easily for production. Since this <a href="https://www.digitalocean.com/community/tutorials/how-to-serve-flask-applications-with-uswgi-and-nginx-on-ubuntu-18-04#step-4-%E2%80%94-configuring-uwsgi">tutorial</a> also suggests doing this, I don't see any reason to not do so!</p>
+<p><code>$HOME/0x0/0x0.ini</code></p>
+<pre data-lang="ini" style="background-color:#191919;color:#ffffff;" class="language-ini "><code class="language-ini" data-lang="ini"><span style="color:#80d500;">[uwsgi]
+</span><span style="font-style:italic;color:#8aa6c1;">wsgi-file </span><span>=</span><span style="color:#cccccc;"> fhost</span><span>.</span><span style="color:#cccccc;">py
+</span><span style="font-style:italic;color:#8aa6c1;">callable </span><span>=</span><span style="color:#cccccc;"> app
+</span><span style="color:#cccccc;">
+</span><span style="font-style:italic;color:#8aa6c1;">master </span><span>= </span><span style="color:#80d500;">true       </span><span style="background-color:#171717;color:#616161;"># Master mode
+</span><span style="font-style:italic;color:#8aa6c1;">processes </span><span>= </span><span style="color:#eddd5a;">5       </span><span style="background-color:#171717;color:#616161;"># Spawn 5 worker processes to serve requests
+</span><span style="color:#cccccc;">
+</span><span style="font-style:italic;color:#8aa6c1;">socket </span><span>=</span><span style="color:#cccccc;"> 0x0</span><span>.</span><span style="color:#cccccc;">sock   </span><span style="background-color:#171717;color:#616161;"># Unix socket
+</span><span style="font-style:italic;color:#8aa6c1;">chmod-socket </span><span>= </span><span style="color:#eddd5a;">660  </span><span style="background-color:#171717;color:#616161;"># Socket permissions
+</span><span style="font-style:italic;color:#8aa6c1;">vacuum </span><span>= </span><span style="color:#80d500;">true       </span><span style="background-color:#171717;color:#616161;"># Clean up the socket when process exits
+</span><span style="color:#cccccc;">
+</span><span style="font-style:italic;color:#8aa6c1;">die-on-term </span><span>= </span><span style="color:#80d500;">true  </span><span style="background-color:#171717;color:#616161;"># Shutdown if SIGTERM is received
+</span></code></pre>
+<p>Then you can use the <code>-c</code> option for using this configuration file:</p>
+<pre data-lang="sh" style="background-color:#191919;color:#ffffff;" class="language-sh "><code class="language-sh" data-lang="sh"><span style="color:#cccccc;">uwsgi</span><span style="font-style:italic;color:#8aa6c1;"> -c</span><span style="color:#cccccc;"> 0x0.ini
+</span></code></pre>
+<h2 id="creating-a-systemd-unit-file-for-uwsgi">Creating a systemd unit file for uWSGI</h2>
+<p>We can create a systemd unit file to start our service on boot. Something basic like this will do the job:</p>
+<p><code>/etc/systemd/system/0x0.service</code></p>
+<pre data-lang="ini" style="background-color:#191919;color:#ffffff;" class="language-ini "><code class="language-ini" data-lang="ini"><span style="color:#80d500;">[Unit]
+</span><span style="font-style:italic;color:#8aa6c1;">Description</span><span>=</span><span style="color:#cccccc;">uWSGI instance to serve 0x0
+</span><span style="font-style:italic;color:#8aa6c1;">After</span><span>=</span><span style="color:#cccccc;">network</span><span>.</span><span style="color:#cccccc;">target
+</span><span style="color:#cccccc;">
+</span><span style="color:#80d500;">[Service]
+</span><span style="font-style:italic;color:#8aa6c1;">User</span><span>=</span><span style="color:#cccccc;">ubuntu
+</span><span style="font-style:italic;color:#8aa6c1;">Group</span><span>=</span><span style="color:#cccccc;">www</span><span>-</span><span style="color:#cccccc;">data
+</span><span style="font-style:italic;color:#8aa6c1;">WorkingDirectory</span><span>=/</span><span style="color:#cccccc;">home</span><span>/</span><span style="color:#cccccc;">ubuntu</span><span>/</span><span style="color:#cccccc;">0x0
+</span><span style="font-style:italic;color:#8aa6c1;">ExecStart</span><span>=/</span><span style="color:#cccccc;">home</span><span>/</span><span style="color:#cccccc;">ubuntu</span><span>/.</span><span style="color:#cccccc;">local</span><span>/</span><span style="color:#cccccc;">bin</span><span>/</span><span style="color:#cccccc;">uwsgi </span><span>--</span><span style="color:#cccccc;">ini 0x0</span><span>.</span><span style="color:#cccccc;">ini
+</span><span style="color:#cccccc;">
+</span><span style="color:#80d500;">[Install]
+</span><span style="font-style:italic;color:#8aa6c1;">WantedBy</span><span>=</span><span style="color:#cccccc;">multi</span><span>-</span><span style="color:#cccccc;">user</span><span>.</span><span style="color:#cccccc;">target
+</span></code></pre>
+<p>Change <code>ubuntu</code> to your <code>$USER</code> and you can configure the rest as you like.</p>
+<p>Start/enable the service:</p>
+<pre data-lang="sh" style="background-color:#191919;color:#ffffff;" class="language-sh "><code class="language-sh" data-lang="sh"><span style="color:#cccccc;">sudo systemctl start 0x0
+</span><span style="color:#cccccc;">sudo systemctl enable 0x0
+</span></code></pre>
+<p>Check if it's running w/o errors:</p>
+<pre data-lang="sh" style="background-color:#191919;color:#ffffff;" class="language-sh "><code class="language-sh" data-lang="sh"><span style="color:#cccccc;">sudo systemctl status 0x0
+</span></code></pre>
+<p>If you see any errors: debug time once again. My condolences.</p>
+<h2 id="configuring-nginx-for-proxying-requests">Configuring Nginx for proxying requests</h2>
+<p>Now we can configure Nginx to pass requests to our Unix socket (<code>0x0.sock</code>) via <code>uwsgi</code> protocol.</p>
+<p>First, let's create a server block configuration:</p>
+<p><code>/etc/nginx/sites-available/0x0</code></p>
+<pre data-lang="nginx" style="background-color:#191919;color:#ffffff;" class="language-nginx "><code class="language-nginx" data-lang="nginx"><span>server {
+</span><span>    server_name your_domain www.your_domain;
+</span><span>
+</span><span>    location / {
+</span><span>        include uwsgi_params;
+</span><span>        uwsgi_pass unix:/home/ubuntu/0x0/0x0.sock; # Unix socket location
+</span><span>    }
+</span><span>
+</span><span>    location /up {               # Upload directory (FHOST_STORAGE_PATH in fhost.py)
+</span><span>        root /home/ubuntu/0x0;   # Root of the upload directory
+</span><span>        internal;
+</span><span>    }
+</span><span>
+</span><span>}
+</span></code></pre>
+<p>Enable the server block configuration:</p>
+<pre data-lang="sh" style="background-color:#191919;color:#ffffff;" class="language-sh "><code class="language-sh" data-lang="sh"><span style="color:#cccccc;">sudo ln</span><span style="font-style:italic;color:#8aa6c1;"> -s</span><span style="color:#cccccc;"> /etc/nginx/sites-available/0x0 /etc/nginx/sites-enabled
+</span></code></pre>
+<p>And lastly {re,}start Nginx to read the new configuration:</p>
+<pre data-lang="sh" style="background-color:#191919;color:#ffffff;" class="language-sh "><code class="language-sh" data-lang="sh"><span style="color:#cccccc;">sudo systemctl restart nginx
+</span></code></pre>
+<p>If everything went well, you should be seeing your site up at <code>http://your_domain</code>. If not, check the following:</p>
+<ul>
+<li><code>sudo less /var/log/nginx/{error,access}.log</code></li>
+<li><code>sudo journalctl -u {nginx,0x0}</code></li>
+</ul>
+<h2 id="getting-an-ssl-certificate">Getting an SSL certificate</h2>
+<p>We can simply use <a href="https://certbot.eff.org/">Certbot</a> to get an SSL certificate and secure our application. In order to do that, install Certbot and <code>nginx</code> plugin:</p>
+<pre data-lang="sh" style="background-color:#191919;color:#ffffff;" class="language-sh "><code class="language-sh" data-lang="sh"><span style="color:#cccccc;">sudo apt-get install certbot
+</span><span style="color:#cccccc;">sudo apt-get install python3-certbot-nginx
+</span></code></pre>
+<p>Then use <code>nginx</code> plugin to create a new certificate:</p>
+<pre data-lang="sh" style="background-color:#191919;color:#ffffff;" class="language-sh "><code class="language-sh" data-lang="sh"><span style="color:#cccccc;">sudo certbot</span><span style="font-style:italic;color:#8aa6c1;"> --nginx -d</span><span style="color:#cccccc;"> your_domain</span><span style="font-style:italic;color:#8aa6c1;"> -d</span><span style="color:#cccccc;"> www.your_domain
+</span></code></pre>
+<p>It's going to ask for some information and eventually reconfigure Nginx to use the newly created SSL certificate.</p>
+<p>Add <code>uwsgi_param UWSGI_SCHEME https;</code> to your server block config (for enforcing HTTPS) and your new server block might look like this at the end:</p>
+<pre data-lang="nginx" style="background-color:#191919;color:#ffffff;" class="language-nginx "><code class="language-nginx" data-lang="nginx"><span>server {
+</span><span>    server_name your_domain www.your_domain;
+</span><span>
+</span><span>    location / {
+</span><span>        include uwsgi_params;
+</span><span>        uwsgi_pass unix:/home/ubuntu/0x0/0x0.sock;
+</span><span>        uwsgi_param UWSGI_SCHEME https;
+</span><span>    }
+</span><span>
+</span><span>    location /up {
+</span><span>        root /home/ubuntu/0x0;
+</span><span>        internal;
+</span><span>    }
+</span><span>
+</span><span>    listen 443 ssl; # managed by Certbot
+</span><span>    ssl_certificate /etc/letsencrypt/live/your_domain/fullchain.pem; # managed by Certbot
+</span><span>    ssl_certificate_key /etc/letsencrypt/live/your_domain/privkey.pem; # managed by Certbot
+</span><span>    include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
+</span><span>    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
+</span><span>}
+</span><span>
+</span><span>server {
+</span><span>    if ($host = www.your_domain) {
+</span><span>        return 301 https://$host$request_uri;
+</span><span>    } # managed by Certbot
+</span><span>
+</span><span>
+</span><span>    if ($host = your_domain) {
+</span><span>        return 301 https://$host$request_uri;
+</span><span>    } # managed by Certbot
+</span><span>
+</span><span>
+</span><span>    listen 80;
+</span><span>    server_name your_domain www.your_domain;
+</span><span>    return 404; # managed by Certbot
+</span><span>}
+</span></code></pre>
+<p>And voila! Your very own 0x0 instance is live at <code>https://your_domain</code>.</p>
+<h2 id="using-0x0">Using 0x0</h2>
+<ul>
+<li>For posting files: <code>curl -F'file=@yourfile.png' https://your_domain</code></li>
+<li>For posting remote URLs: <code>curl -F'url=http://example.com/image.jpg' https://your_domain</code></li>
+<li>For shortening URLs: <code>curl -F'shorten=http://example.com/some/long/url' https://your_domain</code></li>
+</ul>
+<p>I recommend setting up aliases for these commands or using a wrapper script like <a href="https://github.com/Calinou/0x0">this</a>.</p>
+<p>To make files expire, simply create a cronjob that runs <code>cleanup.py</code> every now and then.</p>
+<h2 id="conclusion">Conclusion</h2>
+<p>And here we have a "no-bullshit" file hosting and URL shortening service! Of course, we could've automated the process by writing a Dockerfile but it was my first <em>significant</em> attempt on these topics so I wanted to share my story by blogging it.</p>
+<p>Feel free to <a href="https://orhun.dev/">contact</a> me for improvements/fixes!</p>
+<p>viel spaß! :)</p>
+
+    </div>
+
+    
+        <footer>
+            <hr>
+            <p>
+                
+                    Published by Orhun Parmaksız
+                
+                
+                    
+                    in <a href="https://blog.orhun.dev/categories/projects/">Projects</a>
+                
+                
+            </p>
+            
+            
+            <div style="display: flex; justify-content: space-between; align-items: center">
+              <div>
+                <iframe
+                  src="https://github.com/sponsors/orhun/button"
+                  title="Sponsor @orhun"
+                  height="35"
+                  width="116"
+                  style="border: 0"
+                ></iframe>
+                <a href="https://www.buymeacoffee.com/orhun" target="_blank"
+                  ><img
+                    src="https://cdn.buymeacoffee.com/buttons/v2/default-white.png"
+                    alt="Buy Me A Coffee"
+                    style="height: 40px !important; width: 150px !important"
+                /></a>
+              </div>
+              <div>
+                <applause-button
+                  style="width: 50px; height: 50px"
+                  url="https://blog.orhun.dev&#x2F;no-bullshit-file-hosting&#x2F;"
+                  color="white"
+                  multiclap="true"
+                />
+              </div>
+              <div>
+                <div style="width: auto; height: 39px">
+                  <p style="margin: 0; color: #fff; font-style: italic">✨ Sponsored by:</p>
+                </div>
+                <a href="https://terminaltrove.com/" target="_blank"
+                  ><img
+                    src="/sponsors/terminal_trove.png"
+                    alt="Terminal Trove"
+                    style="height: 40px; width: auto"
+                /></a>
+                <a href="https://rawkode.academy/" target="_blank"
+                  ><img
+                    src="/sponsors/rawkode_academy.png"
+                    alt="Rawkode Academy"
+                    style="height: 40px; width: auto"
+                /></a>
+                <a href="https://malwation.com/" target="_blank"
+                  ><img
+                    src="/sponsors/malwation.svg"
+                    alt="Malwation"
+                    style="height: 40px; width: auto"
+                /></a>
+              </div>
+            </div>
+            <script src="https://utteranc.es/client.js"
+                    repo="orhun/personal-blog"
+                    issue-term="url"
+                    label="comments"
+                    theme="github-dark"
+                    crossorigin="anonymous"
+                    async>
+            </script>
+        </footer>
+    
+</article>
+
+
+    </body>
+
+</html>

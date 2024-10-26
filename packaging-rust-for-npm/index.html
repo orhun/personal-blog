@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <meta http-equiv="content-type" content="text/html; charset=utf-8">
+      <meta property="og:type" content="website" />
+      <meta property="og:url" content="https://blog.orhun.dev"/>
+      
+      <meta property="og:title" content="Packaging Rust Applications for the NPM Registry - Orhun&#x27;s Blog" />
+      
+      <meta property="og:image" content="https://blog.orhun.dev/crow.png" />
+      
+      <meta name="description" content="FOSS • Linux • Programming" />
+      <meta property="og:description" content="FOSS • Linux • Programming"/>
+      
+
+      <!-- Enable responsiveness on mobile devices-->
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+      <link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png">
+      <link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png">
+      <link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png">
+      <link rel="manifest" href="/favicon/site.webmanifest">
+
+      <script async src="https://umami.orhun.dev/script.js" data-website-id="56ca5ca7-ba9f-416e-8bee-a132c155d56b"></script>
+
+      <link rel="stylesheet" href="https://unpkg.com/applause-button/dist/applause-button.css" />
+      <script src="https://unpkg.com/applause-button/dist/applause-button.js"></script>
+
+      
+      <title>Packaging Rust Applications for the NPM Registry - Orhun&#x27;s Blog</title>
+      
+
+      
+        <link rel="alternate" type="application/rss+xml" title="RSS" href="https://blog.orhun.dev/rss.xml">
+      
+
+      
+          <link rel="stylesheet" href="https://blog.orhun.dev/site.css">
+      
+
+      
+      
+    </head>
+
+    <body class="hack dark main container">
+        
+    
+        
+                
+                    <header>
+                        <nav itemscope itemtype="http://schema.org/SiteNavigationElement">
+                        
+                            <a itemprop="url"
+                               class=""
+                               href="https://blog.orhun.dev">
+                                <span itemprop="name">Home</span></a>
+                        
+                            <a itemprop="url"
+                               class=""
+                               href="https://blog.orhun.dev/categories">
+                                <span itemprop="name">Categories</span></a>
+                        
+                            <a itemprop="url"
+                               class=""
+                               href="https://github.com/orhun/personal-blog">
+                                <span itemprop="name">Source</span></a>
+                        
+                            <a itemprop="url"
+                               class=""
+                               href="https://github.com/orhun">
+                                <span itemprop="name">GitHub</span></a>
+                        
+                            <a itemprop="url"
+                               class=""
+                               href="https://donate.orhun.dev">
+                                <span itemprop="name">Donate</span></a>
+                        
+                            <a itemprop="url"
+                               class=""
+                               href="https://blog.orhun.dev/rss.xml">
+                                <span itemprop="name">RSS</span></a>
+                        
+                            <a itemprop="url"
+                               class=""
+                               href="https://orhun.dev">
+                                <span itemprop="name">About</span></a>
+                        
+                        </nav>
+                    </header>
+                
+            
+    
+
+<article itemscope itemtype="http://schema.org/BlogPosting">
+    <header>
+        <h1 itemprop="headline">Packaging Rust Applications for the NPM Registry</h1>
+        <span class="muted">
+    <svg style="margin-bottom:-3px" class="i-clock" viewBox="0 0 32 32"
+         width="16" height="16" fill="none" stroke="currentcolor"
+         stroke-linecap="round" stroke-linejoin="round" stroke-width="6.25%">
+        <circle cx="16" cy="16" r="14"/>
+        <path d="M16 8 L16 16 20 20"/>
+    </svg>
+    <span>10 minute read</span>
+    <svg style="margin-bottom: -3px" class="i-edit" viewBox="0 0 32 32"
+         width="16" height="16" fill="none" stroke="currentcolor"
+         stroke-linecap="round" stroke-linejoin="round" stroke-width="6.25%">
+        <path d="M30 7 L25 2 5 22 3 29 10 27 Z M21 6 L26 11 Z M5 22 L10 27 Z"/>
+    </svg>
+
+    Published: 2023-01-24
+</span>
+    </header>
+    <div itemprop="articleBody">
+      <p>Recently I packaged my project <a href="https://github.com/orhun/git-cliff">git-cliff</a> (changelog generator written in <a href="https://www.rust-lang.org/">Rust</a>) for <a href="https://www.npmjs.com/">NPM</a> with the help of my friend <a href="https://github.com/atlj">@atlj</a>. I thought this would be an interesting topic for a blog post since it has a certain technical depth about distributing binaries and frankly it still amazes me how the whole thing works so smoothly. So let's create a simple Rust project, package it for NPM and fully automate the release process via <a href="https://docs.github.com/en/actions">GitHub Actions</a>.</p>
+<span id="continue-reading"></span>
+<p><strong>Q</strong>: Wait, what? I thought NPM was just for Javascript stuff!?</p>
+<p><strong>A</strong>: Actually, no. As long as you have the correct set of tools for executing a binary and packaging it, you're set. It doesn't necessarily need to be a Rust package as well, you can package <em>anything</em> and do <em>anything</em> when the package is installed/executed. That's why NPM is so dangerous! - a topic for another blog post.</p>
+<p><strong>Q</strong>: Okay, I see. But... why do this? Can't you just download the binary and run it?</p>
+<p><strong>A</strong>: As an answer to this question, I would like to outline my conversation with <a href="https://github.com/atlj">@atlj</a>. Please note that it's not the actual conversation and we do not talk like that. Or maybe we do. Anyways, here it is:</p>
+<p><em>atlj</em>: Yo orhun, let's package <code>git-cliff</code> for NPM so that it will be more accessible to frontend devs and <a href="https://docs.npmjs.com/cli/v8/commands/npx"><code>npx</code></a> is very convenient for installing/running stuff.</p>
+<p><em>orhun</em>: Sounds good. But how do we do it?</p>
+<p><em>atlj</em>: Check this sh*t out: <a href="https://github.com/evilmartians/lefthook">lefthook (GitHub)</a> &amp; <a href="https://www.npmjs.com/package/lefthook">lefthook (NPM)</a></p>
+<p><em>orhun</em>: Oh, it's a <a href="https://go.dev/">Go</a> project and they have an NPM package. WTF!</p>
+<p><em>atlj</em>: Yeah, we can do the same. Or even better.</p>
+<p><em>orhun</em>: I'm down.</p>
+<p>So the inspiration came from <a href="https://github.com/evilmartians/lefthook">lefthook</a> and we wanted to see how we can take this approach and apply it to <code>git-cliff</code>.</p>
+<p>It worked flawlessly! Just run:</p>
+<pre data-lang="sh" style="background-color:#191919;color:#ffffff;" class="language-sh "><code class="language-sh" data-lang="sh"><span style="color:#cccccc;">npx git-cliff@latest
+</span></code></pre>
+<p><strong>Q</strong>: Show me how.</p>
+<p><strong>A</strong>: Follow me. 🐇</p>
+<h3 id="npm">NPM</h3>
+<p>First of all, let's understand what NPM is and how the NPM registry works.</p>
+<p>NPM (originally short for "Node Package Manager") is the default package manager for the Javascript runtime environment <a href="https://nodejs.org/en/">Node.js</a>. It consists of a command line client (<code>npm</code>) and an online database of public and paid-for private packages, called the <a href="https://www.npmjs.com/">NPM registry</a>. This is where we will push our packages.</p>
+<p>The packages in the NPM registry are in <a href="https://en.wikipedia.org/wiki/CommonJS">CommonJS</a> format and include a metadata file in <a href="https://en.wikipedia.org/wiki/JSON">JSON</a> format (<code>package.json</code>). The registry does not have any vetting process for submission, which means that packages found there can potentially be low quality, insecure, or malicious. NPM relies on user reports to take down such packages. You can manually check your package to find insecure dependencies by running <code>npm audit</code>.</p>
+<p>To install a package or the dependencies specified by a package, you can run <code>npm install</code>. On the other hand, <code>npx</code> can be used to run an arbitrary command from an NPM package which is either installed locally or fetched remotely. It handles both installation and execution. In that sense, we can think of it as a shortcut for <code>npm install</code> &amp; <code>npm run</code>.</p>
+<p>At the end of this blog post, we're aiming to install/run our application with <code>npx &lt;app&gt;</code>.</p>
+<h3 id="overview">Overview</h3>
+<p>Let me make it clear that we won't be compiling our Rust application into <a href="https://webassembly.org/">WASM</a> for packaging it for the NPM registry. That's a <a href="https://github.com/rustwasm/wasm-pack"><code>wasm-pack</code></a> task on its own. You can read more about this approach <a href="https://rustwasm.github.io/book/game-of-life/publishing-to-npm.html">here</a> and <a href="https://popcornpaws.medium.com/creating-an-npm-package-written-in-rust-ce02f7c55458">here</a>.</p>
+<p>Instead, we will be distributing <em>binaries</em> that are built for different targets (i.e. architectures/platforms). Each NPM package will be responsible for <em>wrapping</em> the target-specific binary and there will be a "base" package that is exposed to the end user. This is why this packaging approach is more portable since you only need to compile binaries for different architectures and place the binaries inside NPM packages.</p>
+<p>Let's break it down:</p>
+<p><img src="/npm-packaging-diagram.png" alt="NPM packaging diagram" /></p>
+<p>Here, we are taking the following advantages of <code>package.json</code>:</p>
+<ol>
+<li><a href="https://docs.npmjs.com/cli/v9/configuring-npm/package-json#bin"><code>bin</code></a>: This field points to our main executable (a command or local file name) in the package. When the package is installed globally, that file will be linked inside the global bins directory. For example, on an Unix-like OS it'll create a symlink from the <code>index.js</code> script to <code>/usr/local/bin/myapp</code> and in the case of Windows it will create a cmd file usually at <code>C:\Users\&lt;Username&gt;\AppData\Roaming\npm\myapp.cmd</code> which runs the <code>index.js</code> script.</li>
+</ol>
+<p>One thing to note here is that the file referenced in <code>bin</code> should have <code>#!/usr/bin/env node</code> as <a href="https://en.wikipedia.org/wiki/Shebang_(Unix)">shebang</a>, otherwise the script is started without the <code>node</code> executable.</p>
+<ol start="2">
+<li><a href="https://docs.npmjs.com/cli/v9/configuring-npm/package-json#optionaldependencies"><code>optionaldependencies</code></a>: This field is for the dependencies that can be used but not strictly needed for the package. We will be specifying our target-specific NPM packages in this field since we only want to install the appropriate package for the current architecture.</li>
+</ol>
+<p>But how do we distinguish between different targets and know which optional dependency to install? Well, <code>os</code> and <code>cpu</code> help us to filter the correct dependency among different dependencies.</p>
+<ol start="3">
+<li><a href="https://docs.npmjs.com/cli/v9/configuring-npm/package-json#os"><code>os</code></a>: Specifies which operating systems the package will be running on.</li>
+</ol>
+<p>Possible values are 'aix', 'darwin', 'freebsd','linux', 'openbsd', 'sunos', and 'win32'.</p>
+<ol start="4">
+<li><a href="https://docs.npmjs.com/cli/v9/configuring-npm/package-json#cpu"><code>cpu</code></a>: Specifies which CPU architecture the package will be running on.</li>
+</ol>
+<p>Possible values are 'arm', 'arm64', 'ia32', 'mips', 'mipsel', 'ppc', 'ppc64', 's390', 's390x', and 'x64'.</p>
+<h3 id="packaging">Packaging</h3>
+<p>Our project structure will be the following:</p>
+<pre data-lang="sh" style="background-color:#191919;color:#ffffff;" class="language-sh "><code class="language-sh" data-lang="sh"><span style="color:#cccccc;">$ git ls-tree</span><span style="font-style:italic;color:#8aa6c1;"> -r --name-only</span><span style="color:#cccccc;"> HEAD </span><span>| </span><span style="color:#cccccc;">tree</span><span style="font-style:italic;color:#8aa6c1;"> --fromfile
+</span><span style="color:#8aa6c1;">.
+</span><span style="color:#cccccc;">├── Cargo.lock
+</span><span style="color:#cccccc;">├── Cargo.toml </span><span style="background-color:#171717;color:#616161;"># ----------------&gt; manifest of the Rust application
+</span><span style="color:#cccccc;">├── .github
+</span><span style="color:#cccccc;">│   └── workflows
+</span><span style="color:#cccccc;">│       └── cd.yml </span><span style="background-color:#171717;color:#616161;"># ------------&gt; GitHub Actions workflow for automated releases
+</span><span style="color:#cccccc;">├── .gitignore
+</span><span style="color:#cccccc;">├── npm
+</span><span style="color:#cccccc;">│   ├── app
+</span><span style="color:#cccccc;">│   │   ├── package.json </span><span style="background-color:#171717;color:#616161;"># ------&gt; metadata of the base NPM package
+</span><span style="color:#cccccc;">│   │   ├── src
+</span><span style="color:#cccccc;">│   │   │   └── index.ts </span><span style="background-color:#171717;color:#616161;"># ------&gt; entrypoint of the base NPM package (binary executor)
+</span><span style="color:#cccccc;">│   │   ├── tsconfig.json
+</span><span style="color:#cccccc;">│   │   └── yarn.lock
+</span><span style="color:#cccccc;">│   └── package.json.tmpl </span><span style="background-color:#171717;color:#616161;"># -----&gt; template for the target-specific NPM packages
+</span><span style="color:#cccccc;">└── src
+</span><span style="color:#cccccc;">    └── main.rs </span><span style="background-color:#171717;color:#616161;"># ---------------&gt; entrypoint of the Rust application
+</span></code></pre>
+<p>Let's create a simple Rust project first:</p>
+<pre data-lang="sh" style="background-color:#191919;color:#ffffff;" class="language-sh "><code class="language-sh" data-lang="sh"><span style="color:#cccccc;">$ cargo new</span><span style="font-style:italic;color:#8aa6c1;"> --bin</span><span style="color:#cccccc;"> app </span><span>&amp;&amp; </span><span style="color:#8aa6c1;">cd</span><span style="color:#cccccc;"> app/
+</span><span style="color:#cccccc;">
+</span><span style="color:#cccccc;">$ cargo run
+</span><span style="color:#cccccc;">
+</span><span style="color:#cccccc;">Hello, world!
+</span></code></pre>
+<p>Next, we need to add our "base" package's <code>package.json</code> file as follows (some fields are stripped):</p>
+<pre data-lang="json" style="background-color:#191919;color:#ffffff;" class="language-json "><code class="language-json" data-lang="json"><span style="color:#cccccc;">{
+</span><span style="color:#cccccc;">  </span><span style="color:#ffd700;">&quot;name&quot;</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">&quot;app&quot;</span><span style="color:#cccccc;">,
+</span><span style="color:#cccccc;">  </span><span style="color:#ffd700;">&quot;version&quot;</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">&quot;0.1.0&quot;</span><span style="color:#cccccc;">,
+</span><span style="color:#cccccc;">  </span><span style="color:#ffd700;">&quot;bin&quot;</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">&quot;lib/index.js&quot;</span><span style="color:#cccccc;">,
+</span><span style="color:#cccccc;">  </span><span style="color:#ffd700;">&quot;scripts&quot;</span><span style="color:#cccccc;">: {
+</span><span style="color:#cccccc;">    </span><span style="color:#ffd700;">&quot;typecheck&quot;</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">&quot;tsc --noEmit&quot;</span><span style="color:#cccccc;">,
+</span><span style="color:#cccccc;">    </span><span style="color:#ffd700;">&quot;lint&quot;</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">&quot;eslint .&quot;</span><span style="color:#cccccc;">,
+</span><span style="color:#cccccc;">    </span><span style="color:#ffd700;">&quot;lint:fix&quot;</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">&quot;eslint . --fix&quot;</span><span style="color:#cccccc;">,
+</span><span style="color:#cccccc;">    </span><span style="color:#ffd700;">&quot;build&quot;</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">&quot;tsc&quot;</span><span style="color:#cccccc;">,
+</span><span style="color:#cccccc;">    </span><span style="color:#ffd700;">&quot;dev&quot;</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">&quot;yarn build &amp;&amp; node lib/index.js&quot;
+</span><span style="color:#cccccc;">  },
+</span><span style="color:#cccccc;">  </span><span style="color:#ffd700;">&quot;devDependencies&quot;</span><span style="color:#cccccc;">: {
+</span><span style="color:#cccccc;">    </span><span style="color:#ffd700;">&quot;@types/node&quot;</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">&quot;^18.11.18&quot;</span><span style="color:#cccccc;">,
+</span><span style="color:#cccccc;">    </span><span style="color:#ffd700;">&quot;@typescript-eslint/eslint-plugin&quot;</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">&quot;^5.48.0&quot;</span><span style="color:#cccccc;">,
+</span><span style="color:#cccccc;">    </span><span style="color:#ffd700;">&quot;@typescript-eslint/parser&quot;</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">&quot;^5.48.0&quot;</span><span style="color:#cccccc;">,
+</span><span style="color:#cccccc;">    </span><span style="color:#ffd700;">&quot;eslint&quot;</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">&quot;^8.31.0&quot;</span><span style="color:#cccccc;">,
+</span><span style="color:#cccccc;">    </span><span style="color:#ffd700;">&quot;typescript&quot;</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">&quot;^4.9.4&quot;
+</span><span style="color:#cccccc;">  },
+</span><span style="color:#cccccc;">  </span><span style="color:#ffd700;">&quot;optionalDependencies&quot;</span><span style="color:#cccccc;">: {
+</span><span style="color:#cccccc;">    </span><span style="color:#ffd700;">&quot;app-linux-x64&quot;</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">&quot;0.1.0&quot;</span><span style="color:#cccccc;">,
+</span><span style="color:#cccccc;">    </span><span style="color:#ffd700;">&quot;app-linux-arm64&quot;</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">&quot;0.1.0&quot;</span><span style="color:#cccccc;">,
+</span><span style="color:#cccccc;">    </span><span style="color:#ffd700;">&quot;app-darwin-x64&quot;</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">&quot;0.1.0&quot;</span><span style="color:#cccccc;">,
+</span><span style="color:#cccccc;">    </span><span style="color:#ffd700;">&quot;app-darwin-arm64&quot;</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">&quot;0.1.0&quot;</span><span style="color:#cccccc;">,
+</span><span style="color:#cccccc;">    </span><span style="color:#ffd700;">&quot;app-windows-x64&quot;</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">&quot;0.1.0&quot;</span><span style="color:#cccccc;">,
+</span><span style="color:#cccccc;">    </span><span style="color:#ffd700;">&quot;app-windows-arm64&quot;</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">&quot;0.1.0&quot;
+</span><span style="color:#cccccc;">  }
+</span><span style="color:#cccccc;">}
+</span></code></pre>
+<p>As you can see here, we are setting an optional dependency to each of our target-specific packages so that NPM can decide on the correct package to install based at runtime. So let's add a template for generating these packages.</p>
+<blockquote>
+<p>Huh, wait. Did you say "generating"?</p>
+</blockquote>
+<p>Yes, I think it's a good idea to generate NPM packages during the <a href="https://blog.orhun.dev/packaging-rust-for-npm/#automation">continuous deployment</a> workflow instead of having 6 different folders and <code>package.json</code> files in our project. The only thing that changes between these packages is the <code>name</code>, <code>os</code>, and the <code>cpu</code> fields so we can simply create them from a template via <a href="https://linux.die.net/man/1/envsubst"><code>envsubst(1)</code></a>.</p>
+<p>Considering this, we can come up with the following template:</p>
+<pre data-lang="json" style="background-color:#191919;color:#ffffff;" class="language-json "><code class="language-json" data-lang="json"><span style="color:#cccccc;">{
+</span><span style="color:#cccccc;">  </span><span style="color:#ffd700;">&quot;name&quot;</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">&quot;${node_pkg}&quot;</span><span style="color:#cccccc;">,
+</span><span style="color:#cccccc;">  </span><span style="color:#ffd700;">&quot;version&quot;</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">&quot;${node_version}&quot;</span><span style="color:#cccccc;">,
+</span><span style="color:#cccccc;">  </span><span style="color:#ffd700;">&quot;os&quot;</span><span style="color:#cccccc;">: [</span><span style="color:#ffd700;">&quot;${node_os}&quot;</span><span style="color:#cccccc;">],
+</span><span style="color:#cccccc;">  </span><span style="color:#ffd700;">&quot;cpu&quot;</span><span style="color:#cccccc;">: [</span><span style="color:#ffd700;">&quot;${node_arch}&quot;</span><span style="color:#cccccc;">]
+</span><span style="color:#cccccc;">}
+</span></code></pre>
+<blockquote>
+<p>Okay, that's cool and all but where do we put the binary?</p>
+</blockquote>
+<p>Good question. Our directory structure will look like this after we generate <code>package.json</code> file and build the binary:</p>
+<pre data-lang="sh" style="background-color:#191919;color:#ffffff;" class="language-sh "><code class="language-sh" data-lang="sh"><span style="color:#cccccc;">$ rg</span><span style="font-style:italic;color:#8aa6c1;"> --files</span><span style="color:#cccccc;"> npm </span><span>| </span><span style="color:#cccccc;">tree</span><span style="font-style:italic;color:#8aa6c1;"> --fromfile
+</span><span style="color:#cccccc;">
+</span><span style="color:#8aa6c1;">.
+</span><span style="color:#cccccc;">└── npm
+</span><span style="color:#cccccc;">    ├── app </span><span style="background-color:#171717;color:#616161;"># ----------------&gt; base package
+</span><span style="color:#cccccc;">    │   ├── package.json
+</span><span style="color:#cccccc;">    │   ├── src
+</span><span style="color:#cccccc;">    │   │   └── index.ts </span><span style="background-color:#171717;color:#616161;"># ---&gt; executor
+</span><span style="color:#cccccc;">    │   ├── tsconfig.json
+</span><span style="color:#cccccc;">    │   └── yarn.lock
+</span><span style="color:#cccccc;">    ├── app-linux-x64 </span><span style="background-color:#171717;color:#616161;"># ------&gt; generated package for linux
+</span><span style="color:#cccccc;">    │   ├── bin
+</span><span style="color:#cccccc;">    │   │   └── app </span><span style="background-color:#171717;color:#616161;"># --------&gt; binary
+</span><span style="color:#cccccc;">    │   └── package.json </span><span style="background-color:#171717;color:#616161;"># ---&gt; metadata
+</span><span style="color:#cccccc;">    └── package.json.tmpl
+</span></code></pre>
+<p>Now we know that the correct optional dependency will be installed alongside our base package and it will contain the binary. But, how do we locate it and execute it? Well, that's why we have our <code>src/index.ts</code>:</p>
+<pre data-lang="ts" style="background-color:#191919;color:#ffffff;" class="language-ts "><code class="language-ts" data-lang="ts"><span style="background-color:#171717;color:#616161;">#!/usr/bin/env node</span><span style="color:#cccccc;">
+</span><span style="color:#cccccc;">
+</span><span style="color:#80d500;">import </span><span style="color:#cccccc;">{ spawnSync } </span><span style="color:#80d500;">from </span><span style="color:#ffd700;">&quot;child_process&quot;</span><span style="color:#cccccc;">;
+</span><span style="color:#cccccc;">
+</span><span style="background-color:#171717;color:#616161;">/**
+</span><span style="background-color:#171717;color:#616161;"> * Returns the executable path which is located inside `node_modules`
+</span><span style="background-color:#171717;color:#616161;"> * The naming convention is app-${os}-${arch}
+</span><span style="background-color:#171717;color:#616161;"> * If the platform is `win32` or `cygwin`, executable will include a `.exe` extension.
+</span><span style="background-color:#171717;color:#616161;"> * </span><span style="background-color:#171717;color:#80d500;">@see </span><span style="background-color:#171717;color:#616161;">https://nodejs.org/api/os.html#osarch
+</span><span style="background-color:#171717;color:#616161;"> * </span><span style="background-color:#171717;color:#80d500;">@see </span><span style="background-color:#171717;color:#616161;">https://nodejs.org/api/os.html#osplatform
+</span><span style="background-color:#171717;color:#616161;"> * </span><span style="background-color:#171717;color:#80d500;">@example </span><span style="background-color:#171717;color:#cccccc;">&quot;x/xx/node_modules/app-darwin-arm64&quot;
+</span><span style="background-color:#171717;color:#616161;"> */</span><span style="color:#cccccc;">
+</span><span style="color:#80d500;">function </span><span>getExePath</span><span style="color:#cccccc;">() {
+</span><span style="color:#cccccc;">  </span><span style="color:#80d500;">const </span><span style="color:#cccccc;">arch </span><span>= </span><span style="color:#8aa6c1;">process</span><span style="color:#cccccc;">.</span><span style="color:#8aa6c1;">arch</span><span style="color:#cccccc;">;
+</span><span style="color:#cccccc;">  </span><span style="color:#80d500;">let </span><span style="color:#cccccc;">os </span><span>= </span><span style="color:#8aa6c1;">process</span><span style="color:#cccccc;">.</span><span style="color:#8aa6c1;">platform </span><span style="color:#80d500;">as </span><span style="color:#8aa6c1;">string</span><span style="color:#cccccc;">;
+</span><span style="color:#cccccc;">  </span><span style="color:#80d500;">let </span><span style="color:#cccccc;">extension </span><span>= </span><span style="color:#ffd700;">&quot;&quot;</span><span style="color:#cccccc;">;
+</span><span style="color:#cccccc;">  </span><span style="color:#80d500;">if </span><span style="color:#cccccc;">([</span><span style="color:#ffd700;">&quot;win32&quot;</span><span style="color:#cccccc;">, </span><span style="color:#ffd700;">&quot;cygwin&quot;</span><span style="color:#cccccc;">].</span><span>includes</span><span style="color:#cccccc;">(</span><span style="color:#8aa6c1;">process</span><span style="color:#cccccc;">.</span><span style="color:#8aa6c1;">platform</span><span style="color:#cccccc;">)) {
+</span><span style="color:#cccccc;">    os </span><span>= </span><span style="color:#ffd700;">&quot;windows&quot;</span><span style="color:#cccccc;">;
+</span><span style="color:#cccccc;">    extension </span><span>= </span><span style="color:#ffd700;">&quot;.exe&quot;</span><span style="color:#cccccc;">;
+</span><span style="color:#cccccc;">  }
+</span><span style="color:#cccccc;">
+</span><span style="color:#cccccc;">  </span><span style="color:#80d500;">try </span><span style="color:#cccccc;">{
+</span><span style="color:#cccccc;">    </span><span style="background-color:#171717;color:#616161;">// Since the binary will be located inside `node_modules`, we can simply call `require.resolve`</span><span style="color:#cccccc;">
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">return </span><span style="color:#cccccc;">require.</span><span style="color:#8aa6c1;">resolve</span><span style="color:#cccccc;">(</span><span style="color:#ffd700;">`app-${os}-${arch}/bin/app${extension}`</span><span style="color:#cccccc;">);
+</span><span style="color:#cccccc;">  } </span><span style="color:#80d500;">catch </span><span style="color:#cccccc;">(e) {
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">throw </span><span>new </span><span style="color:#cccccc;">Error(
+</span><span style="color:#cccccc;">      </span><span style="color:#ffd700;">`Couldn&#39;t find application binary inside node_modules for ${os}-${arch}`
+</span><span style="color:#cccccc;">    );
+</span><span style="color:#cccccc;">  }
+</span><span style="color:#cccccc;">}
+</span><span style="color:#cccccc;">
+</span><span style="background-color:#171717;color:#616161;">/**
+</span><span style="background-color:#171717;color:#616161;"> * Runs the application with args using nodejs spawn
+</span><span style="background-color:#171717;color:#616161;"> */</span><span style="color:#cccccc;">
+</span><span style="color:#80d500;">function </span><span>run</span><span style="color:#cccccc;">() {
+</span><span style="color:#cccccc;">  </span><span style="color:#80d500;">const </span><span style="color:#cccccc;">args </span><span>= </span><span style="color:#8aa6c1;">process</span><span style="color:#cccccc;">.</span><span style="color:#8aa6c1;">argv</span><span style="color:#cccccc;">.</span><span style="color:#8aa6c1;">slice</span><span style="color:#cccccc;">(</span><span style="color:#eddd5a;">2</span><span style="color:#cccccc;">);
+</span><span style="color:#cccccc;">  </span><span style="color:#80d500;">const </span><span style="color:#cccccc;">processResult </span><span>= spawnSync</span><span style="color:#cccccc;">(</span><span>getExePath</span><span style="color:#cccccc;">(), args, { stdio: </span><span style="color:#ffd700;">&quot;inherit&quot; </span><span style="color:#cccccc;">});
+</span><span style="color:#cccccc;">  </span><span style="color:#8aa6c1;">process</span><span style="color:#cccccc;">.</span><span style="color:#8aa6c1;">exit</span><span style="color:#cccccc;">(processResult.</span><span style="color:#8aa6c1;">status </span><span>?? </span><span style="color:#eddd5a;">0</span><span style="color:#cccccc;">);
+</span><span style="color:#cccccc;">}
+</span><span style="color:#cccccc;">
+</span><span>run</span><span style="color:#cccccc;">();
+</span></code></pre>
+<p>When we build the package via <code>yarn build</code>, it will generate <code>lib/index.js</code> which will be our entrypoint for the wrapper.</p>
+<p>After we have everything in place, we can simply publish these packages via <code>npm publish</code>. However, please note that optional dependencies should be present in NPM registry for building a package. This means that you need to publish each optional dependency before attempting to publish the base package. Otherwise, you might get an error like the following:</p>
+<pre style="background-color:#191919;color:#ffffff;"><code><span>error An unexpected error occurred: &quot;https://registry.npmjs.org/app-linux-x64: Not found&quot;.
+</span><span>info If you think this is a bug, please open a bug report with the information provided in &quot;/home/runner/work/packaging-rust-for-npm/packaging-rust-for-npm/npm/app/yarn-error.log&quot;.
+</span><span>info Visit https://yarnpkg.com/en/docs/cli/install for documentation about this command.
+</span><span>Error: Process completed with exit code 1.
+</span></code></pre>
+<h3 id="automation">Automation</h3>
+<p>We can automate the publishing process of the NPM packages with a <a href="https://docs.github.com/en/actions">GitHub Actions</a> workflow which runs when a tag is pushed or a release is created.</p>
+<p><img src="/npm-packaging-workflow.png" alt="NPM packaging workflow" /></p>
+<p>As you can see above, we need to use a <a href="https://docs.github.com/en/actions/using-jobs/using-a-matrix-for-your-jobs">build matrix</a> for building binaries and publishing the target-specific NPM packages. For that, we can create the following matrix:</p>
+<pre data-lang="yml" style="background-color:#191919;color:#ffffff;" class="language-yml "><code class="language-yml" data-lang="yml"><span style="color:#80d500;">matrix</span><span style="color:#cccccc;">:
+</span><span style="color:#cccccc;">  </span><span style="color:#80d500;">build</span><span style="color:#cccccc;">:
+</span><span style="color:#cccccc;">    - {
+</span><span style="color:#cccccc;">        </span><span style="color:#80d500;">NAME</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">linux-x64-glibc</span><span style="color:#cccccc;">,
+</span><span style="color:#cccccc;">        </span><span style="color:#80d500;">OS</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">ubuntu-20.04</span><span style="color:#cccccc;">,
+</span><span style="color:#cccccc;">        </span><span style="color:#80d500;">TOOLCHAIN</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">stable</span><span style="color:#cccccc;">,
+</span><span style="color:#cccccc;">        </span><span style="color:#80d500;">TARGET</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">x86_64-unknown-linux-gnu</span><span style="color:#cccccc;">,
+</span><span style="color:#cccccc;">      }
+</span><span style="color:#cccccc;">    - {
+</span><span style="color:#cccccc;">        </span><span style="color:#80d500;">NAME</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">linux-arm64-glibc</span><span style="color:#cccccc;">,
+</span><span style="color:#cccccc;">        </span><span style="color:#80d500;">OS</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">ubuntu-20.04</span><span style="color:#cccccc;">,
+</span><span style="color:#cccccc;">        </span><span style="color:#80d500;">TOOLCHAIN</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">stable</span><span style="color:#cccccc;">,
+</span><span style="color:#cccccc;">        </span><span style="color:#80d500;">TARGET</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">aarch64-unknown-linux-gnu</span><span style="color:#cccccc;">,
+</span><span style="color:#cccccc;">      }
+</span><span style="color:#cccccc;">    - {
+</span><span style="color:#cccccc;">        </span><span style="color:#80d500;">NAME</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">win32-x64-msvc</span><span style="color:#cccccc;">,
+</span><span style="color:#cccccc;">        </span><span style="color:#80d500;">OS</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">windows-2022</span><span style="color:#cccccc;">,
+</span><span style="color:#cccccc;">        </span><span style="color:#80d500;">TOOLCHAIN</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">stable</span><span style="color:#cccccc;">,
+</span><span style="color:#cccccc;">        </span><span style="color:#80d500;">TARGET</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">x86_64-pc-windows-msvc</span><span style="color:#cccccc;">,
+</span><span style="color:#cccccc;">      }
+</span><span style="color:#cccccc;">    - {
+</span><span style="color:#cccccc;">        </span><span style="color:#80d500;">NAME</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">win32-arm64-msvc</span><span style="color:#cccccc;">,
+</span><span style="color:#cccccc;">        </span><span style="color:#80d500;">OS</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">windows-2022</span><span style="color:#cccccc;">,
+</span><span style="color:#cccccc;">        </span><span style="color:#80d500;">TOOLCHAIN</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">stable</span><span style="color:#cccccc;">,
+</span><span style="color:#cccccc;">        </span><span style="color:#80d500;">TARGET</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">aarch64-pc-windows-msvc</span><span style="color:#cccccc;">,
+</span><span style="color:#cccccc;">      }
+</span><span style="color:#cccccc;">    - {
+</span><span style="color:#cccccc;">        </span><span style="color:#80d500;">NAME</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">darwin-x64</span><span style="color:#cccccc;">,
+</span><span style="color:#cccccc;">        </span><span style="color:#80d500;">OS</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">macos-14</span><span style="color:#cccccc;">,
+</span><span style="color:#cccccc;">        </span><span style="color:#80d500;">TOOLCHAIN</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">stable</span><span style="color:#cccccc;">,
+</span><span style="color:#cccccc;">        </span><span style="color:#80d500;">TARGET</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">x86_64-apple-darwin</span><span style="color:#cccccc;">,
+</span><span style="color:#cccccc;">      }
+</span><span style="color:#cccccc;">    - {
+</span><span style="color:#cccccc;">        </span><span style="color:#80d500;">NAME</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">darwin-arm64</span><span style="color:#cccccc;">,
+</span><span style="color:#cccccc;">        </span><span style="color:#80d500;">OS</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">macos-14</span><span style="color:#cccccc;">,
+</span><span style="color:#cccccc;">        </span><span style="color:#80d500;">TOOLCHAIN</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">stable</span><span style="color:#cccccc;">,
+</span><span style="color:#cccccc;">        </span><span style="color:#80d500;">TARGET</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">aarch64-apple-darwin</span><span style="color:#cccccc;">,
+</span><span style="color:#cccccc;">      }
+</span></code></pre>
+<p>Here, we have the following fields in each matrix field:</p>
+<ul>
+<li><code>NAME</code>: Name of the build (formatted as <code>&lt;os&gt;-&lt;arch&gt;-&lt;env&gt;</code>).</li>
+<li><code>OS</code>: Type of machine to run the job on (i.e. runner).</li>
+<li><code>TOOLCHAIN</code>: Type of the <a href="https://rust-lang.github.io/rustup/concepts/toolchains.html">Rust toolchain</a>.</li>
+<li><code>TARGET</code>: Type of the <a href="https://doc.rust-lang.org/nightly/rustc/platform-support.html">Rust target (i.e. target triple)</a>.</li>
+</ul>
+<p>The important part is we will later use <code>NAME</code> to derive the name of the NPM package. For example, <code>linux-x64-glibc</code> will correspond to <code>&lt;app&gt;-linux-x64</code>.</p>
+<p>Next, we can build a binary for each build target as follows:</p>
+<pre data-lang="yml" style="background-color:#191919;color:#ffffff;" class="language-yml "><code class="language-yml" data-lang="yml"><span style="color:#cccccc;">- </span><span style="color:#80d500;">name</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">Checkout
+</span><span style="color:#cccccc;">  </span><span style="color:#80d500;">uses</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">actions/checkout@v3
+</span><span style="color:#cccccc;">
+</span><span style="color:#cccccc;">- </span><span style="color:#80d500;">name</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">Set the release version
+</span><span style="color:#cccccc;">  </span><span style="color:#80d500;">shell</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">bash
+</span><span style="color:#cccccc;">  </span><span style="color:#80d500;">run</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">echo &quot;RELEASE_VERSION=${GITHUB_REF:11}&quot; &gt;&gt; $GITHUB_ENV
+</span><span style="color:#cccccc;">
+</span><span style="color:#cccccc;">- </span><span style="color:#80d500;">name</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">Install Rust toolchain
+</span><span style="color:#cccccc;">  </span><span style="color:#80d500;">uses</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">actions-rs/toolchain@v1
+</span><span style="color:#cccccc;">  </span><span style="color:#80d500;">with</span><span style="color:#cccccc;">:
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">toolchain</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">${{ matrix.build.TOOLCHAIN }}
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">target</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">${{ matrix.build.TARGET }}
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">override</span><span style="color:#cccccc;">: </span><span style="color:#80d500;">true
+</span><span style="color:#cccccc;">
+</span><span style="color:#cccccc;">- </span><span style="color:#80d500;">name</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">Build
+</span><span style="color:#cccccc;">  </span><span style="color:#80d500;">uses</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">actions-rs/cargo@v1
+</span><span style="color:#cccccc;">  </span><span style="color:#80d500;">with</span><span style="color:#cccccc;">:
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">command</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">build
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">args</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">--release --locked --target ${{ matrix.build.TARGET }}
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">use-cross</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">${{ matrix.build.OS == &#39;ubuntu-20.04&#39; }} </span><span style="background-color:#171717;color:#616161;"># use `cross` for Linux builds
+</span></code></pre>
+<p>And then, we finally generate the NPM package and publish it:</p>
+<pre data-lang="sh" style="background-color:#191919;color:#ffffff;" class="language-sh "><code class="language-sh" data-lang="sh"><span style="color:#cccccc;">- name: Install node
+</span><span style="color:#cccccc;">  uses: actions/setup-node@v3
+</span><span style="color:#cccccc;">  with:
+</span><span style="color:#cccccc;">    node-version: </span><span style="color:#ffd700;">&quot;16&quot;
+</span><span style="color:#cccccc;">    registry-url: </span><span style="color:#ffd700;">&quot;https://registry.npmjs.org&quot;
+</span><span style="color:#cccccc;">
+</span><span style="color:#cccccc;">- name: Publish to NPM
+</span><span style="color:#cccccc;">  shell: bash
+</span><span style="color:#cccccc;">  run: </span><span>|
+</span><span style="color:#cccccc;">    </span><span style="color:#8aa6c1;">cd</span><span style="color:#cccccc;"> npm
+</span><span style="color:#cccccc;">    </span><span style="background-color:#171717;color:#616161;"># set the binary name
+</span><span style="color:#cccccc;">    bin</span><span>=</span><span style="color:#ffd700;">&quot;app&quot;
+</span><span style="color:#cccccc;">    </span><span style="background-color:#171717;color:#616161;"># derive the OS and architecture from the build matrix name
+</span><span style="color:#cccccc;">    </span><span style="background-color:#171717;color:#616161;"># note: when split by a hyphen, the first part is the OS and the second is the architecture
+</span><span style="color:#cccccc;">    node_os</span><span>=</span><span style="color:#ffd700;">$(</span><span style="color:#8aa6c1;">echo </span><span style="color:#ffd700;">&quot;${{ matrix.build.NAME }}&quot; </span><span>| </span><span style="color:#ffd700;">cut</span><span style="font-style:italic;color:#8aa6c1;"> -d </span><span style="color:#ffd700;">&#39;-&#39;</span><span style="font-style:italic;color:#8aa6c1;"> -f1</span><span style="color:#ffd700;">)
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">export </span><span style="color:#cccccc;">node_os
+</span><span style="color:#cccccc;">    node_arch</span><span>=</span><span style="color:#ffd700;">$(</span><span style="color:#8aa6c1;">echo </span><span style="color:#ffd700;">&quot;${{ matrix.build.NAME }}&quot; </span><span>| </span><span style="color:#ffd700;">cut</span><span style="font-style:italic;color:#8aa6c1;"> -d </span><span style="color:#ffd700;">&#39;-&#39;</span><span style="font-style:italic;color:#8aa6c1;"> -f2</span><span style="color:#ffd700;">)
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">export </span><span style="color:#cccccc;">node_arch
+</span><span style="color:#cccccc;">    </span><span style="background-color:#171717;color:#616161;"># set the version
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">export </span><span style="color:#cccccc;">node_version</span><span>=</span><span style="color:#ffd700;">&quot;${{ env.RELEASE_VERSION }}&quot;
+</span><span style="color:#cccccc;">    </span><span style="background-color:#171717;color:#616161;"># set the package name
+</span><span style="color:#cccccc;">    </span><span style="background-color:#171717;color:#616161;"># note: use &#39;windows&#39; as OS name instead of &#39;win32&#39;
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">if </span><span style="color:#8aa6c1;">[ </span><span style="color:#ffd700;">&quot;${{ matrix.build.OS }}&quot; </span><span>= </span><span style="color:#ffd700;">&quot;windows-2022&quot; </span><span style="color:#8aa6c1;">]</span><span>; </span><span style="color:#80d500;">then
+</span><span style="color:#cccccc;">      </span><span style="color:#80d500;">export </span><span style="color:#cccccc;">node_pkg</span><span>=</span><span style="color:#ffd700;">&quot;${bin}-windows-${node_arch}&quot;
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">else
+</span><span style="color:#cccccc;">      </span><span style="color:#80d500;">export </span><span style="color:#cccccc;">node_pkg</span><span>=</span><span style="color:#ffd700;">&quot;${bin}-${node_os}-${node_arch}&quot;
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">fi
+</span><span style="color:#cccccc;">    </span><span style="background-color:#171717;color:#616161;"># create the package directory
+</span><span style="color:#cccccc;">    mkdir</span><span style="font-style:italic;color:#8aa6c1;"> -p </span><span style="color:#ffd700;">&quot;${node_pkg}/bin&quot;
+</span><span style="color:#cccccc;">    </span><span style="background-color:#171717;color:#616161;"># generate package.json from the template
+</span><span style="color:#cccccc;">    envsubst </span><span>&lt;</span><span style="color:#cccccc;"> package.json.tmpl </span><span>&gt; </span><span style="color:#ffd700;">&quot;${node_pkg}/package.json&quot;
+</span><span style="color:#cccccc;">    </span><span style="background-color:#171717;color:#616161;"># copy the binary into the package
+</span><span style="color:#cccccc;">    </span><span style="background-color:#171717;color:#616161;"># note: windows binaries has &#39;.exe&#39; extension
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">if </span><span style="color:#8aa6c1;">[ </span><span style="color:#ffd700;">&quot;${{ matrix.build.OS }}&quot; </span><span>= </span><span style="color:#ffd700;">&quot;windows-2022&quot; </span><span style="color:#8aa6c1;">]</span><span>; </span><span style="color:#80d500;">then
+</span><span style="color:#cccccc;">      bin</span><span>=</span><span style="color:#ffd700;">&quot;${bin}.exe&quot;
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">fi
+</span><span style="color:#cccccc;">    cp </span><span style="color:#ffd700;">&quot;../target/${{ matrix.build.TARGET }}/release/${bin}&quot; &quot;${node_pkg}/bin&quot;
+</span><span style="color:#cccccc;">    </span><span style="background-color:#171717;color:#616161;"># publish the package
+</span><span style="color:#cccccc;">    </span><span style="color:#8aa6c1;">cd </span><span style="color:#ffd700;">&quot;${node_pkg}&quot;
+</span><span style="color:#cccccc;">    npm publish</span><span style="font-style:italic;color:#8aa6c1;"> --access</span><span style="color:#cccccc;"> public
+</span><span style="color:#cccccc;">  env:
+</span><span style="color:#cccccc;">    NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+</span></code></pre>
+<p>As the final step, we publish the base package in another job:</p>
+<pre data-lang="yml" style="background-color:#191919;color:#ffffff;" class="language-yml "><code class="language-yml" data-lang="yml"><span style="color:#80d500;">publish-npm-base</span><span style="color:#cccccc;">:
+</span><span style="color:#cccccc;">  </span><span style="color:#80d500;">name</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">Publish the base NPM package
+</span><span style="color:#cccccc;">  </span><span style="color:#80d500;">needs</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">publish-npm-binaries
+</span><span style="color:#cccccc;">  </span><span style="color:#80d500;">runs-on</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">ubuntu-20.04
+</span><span style="color:#cccccc;">  </span><span style="color:#80d500;">steps</span><span style="color:#cccccc;">:
+</span><span style="color:#cccccc;">    - </span><span style="color:#80d500;">name</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">Checkout
+</span><span style="color:#cccccc;">      </span><span style="color:#80d500;">uses</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">actions/checkout@v3
+</span><span style="color:#cccccc;">
+</span><span style="color:#cccccc;">    - </span><span style="color:#80d500;">name</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">Install node
+</span><span style="color:#cccccc;">      </span><span style="color:#80d500;">uses</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">actions/setup-node@v3
+</span><span style="color:#cccccc;">      </span><span style="color:#80d500;">with</span><span style="color:#cccccc;">:
+</span><span style="color:#cccccc;">        </span><span style="color:#80d500;">node-version</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">&quot;16&quot;
+</span><span style="color:#cccccc;">        </span><span style="color:#80d500;">registry-url</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">&quot;https://registry.npmjs.org&quot;
+</span><span style="color:#cccccc;">
+</span><span style="color:#cccccc;">    - </span><span style="color:#80d500;">name</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">Publish the package
+</span><span style="color:#cccccc;">      </span><span style="color:#80d500;">shell</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">bash
+</span><span style="color:#cccccc;">      </span><span style="color:#80d500;">run</span><span style="color:#cccccc;">: </span><span style="color:#80d500;">|
+</span><span style="color:#ffd700;">        cd npm/app
+</span><span style="color:#ffd700;">        yarn install # requires optional dependencies to be present in the registry
+</span><span style="color:#ffd700;">        yarn build
+</span><span style="color:#ffd700;">        npm publish --access public
+</span><span style="color:#cccccc;">      </span><span style="color:#80d500;">env</span><span style="color:#cccccc;">:
+</span><span style="color:#cccccc;">        </span><span style="color:#80d500;">NODE_AUTH_TOKEN</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">${{ secrets.NPM_TOKEN }}
+</span></code></pre>
+<p>Here is the complete workflow file:</p>
+<details>
+<summary>`cd.yml` (*click to expand*)</summary>
+<pre data-lang="yml" style="background-color:#191919;color:#ffffff;" class="language-yml "><code class="language-yml" data-lang="yml"><span style="color:#80d500;">name</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">Continuous Deployment
+</span><span style="color:#cccccc;">
+</span><span style="color:#80d500;">on</span><span style="color:#cccccc;">:
+</span><span style="color:#cccccc;">  </span><span style="color:#80d500;">push</span><span style="color:#cccccc;">:
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">tags</span><span style="color:#cccccc;">:
+</span><span style="color:#cccccc;">      - </span><span style="color:#ffd700;">&quot;v*.*.*&quot;
+</span><span style="color:#cccccc;">
+</span><span style="color:#80d500;">jobs</span><span style="color:#cccccc;">:
+</span><span style="color:#cccccc;">  </span><span style="color:#80d500;">publish-npm-binaries</span><span style="color:#cccccc;">:
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">name</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">Publish NPM packages
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">runs-on</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">${{ matrix.build.os }}
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">strategy</span><span style="color:#cccccc;">:
+</span><span style="color:#cccccc;">      </span><span style="color:#80d500;">fail-fast</span><span style="color:#cccccc;">: </span><span style="color:#80d500;">false
+</span><span style="color:#cccccc;">      </span><span style="color:#80d500;">matrix</span><span style="color:#cccccc;">:
+</span><span style="color:#cccccc;">        </span><span style="color:#80d500;">build</span><span style="color:#cccccc;">:
+</span><span style="color:#cccccc;">          - {
+</span><span style="color:#cccccc;">              </span><span style="color:#80d500;">NAME</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">linux-x64-glibc</span><span style="color:#cccccc;">,
+</span><span style="color:#cccccc;">              </span><span style="color:#80d500;">OS</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">ubuntu-20.04</span><span style="color:#cccccc;">,
+</span><span style="color:#cccccc;">              </span><span style="color:#80d500;">TOOLCHAIN</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">stable</span><span style="color:#cccccc;">,
+</span><span style="color:#cccccc;">              </span><span style="color:#80d500;">TARGET</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">x86_64-unknown-linux-gnu</span><span style="color:#cccccc;">,
+</span><span style="color:#cccccc;">            }
+</span><span style="color:#cccccc;">          - {
+</span><span style="color:#cccccc;">              </span><span style="color:#80d500;">NAME</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">linux-arm64-glibc</span><span style="color:#cccccc;">,
+</span><span style="color:#cccccc;">              </span><span style="color:#80d500;">OS</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">ubuntu-20.04</span><span style="color:#cccccc;">,
+</span><span style="color:#cccccc;">              </span><span style="color:#80d500;">TOOLCHAIN</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">stable</span><span style="color:#cccccc;">,
+</span><span style="color:#cccccc;">              </span><span style="color:#80d500;">TARGET</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">aarch64-unknown-linux-gnu</span><span style="color:#cccccc;">,
+</span><span style="color:#cccccc;">            }
+</span><span style="color:#cccccc;">          - {
+</span><span style="color:#cccccc;">              </span><span style="color:#80d500;">NAME</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">win32-x64-msvc</span><span style="color:#cccccc;">,
+</span><span style="color:#cccccc;">              </span><span style="color:#80d500;">OS</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">windows-2022</span><span style="color:#cccccc;">,
+</span><span style="color:#cccccc;">              </span><span style="color:#80d500;">TOOLCHAIN</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">stable</span><span style="color:#cccccc;">,
+</span><span style="color:#cccccc;">              </span><span style="color:#80d500;">TARGET</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">x86_64-pc-windows-msvc</span><span style="color:#cccccc;">,
+</span><span style="color:#cccccc;">            }
+</span><span style="color:#cccccc;">          - {
+</span><span style="color:#cccccc;">              </span><span style="color:#80d500;">NAME</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">win32-arm64-msvc</span><span style="color:#cccccc;">,
+</span><span style="color:#cccccc;">              </span><span style="color:#80d500;">OS</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">windows-2022</span><span style="color:#cccccc;">,
+</span><span style="color:#cccccc;">              </span><span style="color:#80d500;">TOOLCHAIN</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">stable</span><span style="color:#cccccc;">,
+</span><span style="color:#cccccc;">              </span><span style="color:#80d500;">TARGET</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">aarch64-pc-windows-msvc</span><span style="color:#cccccc;">,
+</span><span style="color:#cccccc;">            }
+</span><span style="color:#cccccc;">          - {
+</span><span style="color:#cccccc;">              </span><span style="color:#80d500;">NAME</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">darwin-x64</span><span style="color:#cccccc;">,
+</span><span style="color:#cccccc;">              </span><span style="color:#80d500;">OS</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">macos-14</span><span style="color:#cccccc;">,
+</span><span style="color:#cccccc;">              </span><span style="color:#80d500;">TOOLCHAIN</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">stable</span><span style="color:#cccccc;">,
+</span><span style="color:#cccccc;">              </span><span style="color:#80d500;">TARGET</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">x86_64-apple-darwin</span><span style="color:#cccccc;">,
+</span><span style="color:#cccccc;">            }
+</span><span style="color:#cccccc;">          - {
+</span><span style="color:#cccccc;">              </span><span style="color:#80d500;">NAME</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">darwin-arm64</span><span style="color:#cccccc;">,
+</span><span style="color:#cccccc;">              </span><span style="color:#80d500;">OS</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">macos-14</span><span style="color:#cccccc;">,
+</span><span style="color:#cccccc;">              </span><span style="color:#80d500;">TOOLCHAIN</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">stable</span><span style="color:#cccccc;">,
+</span><span style="color:#cccccc;">              </span><span style="color:#80d500;">TARGET</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">aarch64-apple-darwin</span><span style="color:#cccccc;">,
+</span><span style="color:#cccccc;">            }
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">steps</span><span style="color:#cccccc;">:
+</span><span style="color:#cccccc;">      - </span><span style="color:#80d500;">name</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">Checkout
+</span><span style="color:#cccccc;">        </span><span style="color:#80d500;">uses</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">actions/checkout@v3
+</span><span style="color:#cccccc;">
+</span><span style="color:#cccccc;">      - </span><span style="color:#80d500;">name</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">Set the release version
+</span><span style="color:#cccccc;">        </span><span style="color:#80d500;">shell</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">bash
+</span><span style="color:#cccccc;">        </span><span style="color:#80d500;">run</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">echo &quot;RELEASE_VERSION=${GITHUB_REF:11}&quot; &gt;&gt; $GITHUB_ENV
+</span><span style="color:#cccccc;">
+</span><span style="color:#cccccc;">      - </span><span style="color:#80d500;">name</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">Install Rust toolchain
+</span><span style="color:#cccccc;">        </span><span style="color:#80d500;">uses</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">actions-rs/toolchain@v1
+</span><span style="color:#cccccc;">        </span><span style="color:#80d500;">with</span><span style="color:#cccccc;">:
+</span><span style="color:#cccccc;">          </span><span style="color:#80d500;">toolchain</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">${{ matrix.build.TOOLCHAIN }}
+</span><span style="color:#cccccc;">          </span><span style="color:#80d500;">target</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">${{ matrix.build.TARGET }}
+</span><span style="color:#cccccc;">          </span><span style="color:#80d500;">override</span><span style="color:#cccccc;">: </span><span style="color:#80d500;">true
+</span><span style="color:#cccccc;">
+</span><span style="color:#cccccc;">      - </span><span style="color:#80d500;">name</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">Build
+</span><span style="color:#cccccc;">        </span><span style="color:#80d500;">uses</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">actions-rs/cargo@v1
+</span><span style="color:#cccccc;">        </span><span style="color:#80d500;">with</span><span style="color:#cccccc;">:
+</span><span style="color:#cccccc;">          </span><span style="color:#80d500;">command</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">build
+</span><span style="color:#cccccc;">          </span><span style="color:#80d500;">args</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">--release --locked --target ${{ matrix.build.TARGET }}
+</span><span style="color:#cccccc;">          </span><span style="color:#80d500;">use-cross</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">${{ matrix.build.OS == &#39;ubuntu-20.04&#39; }} </span><span style="background-color:#171717;color:#616161;"># use `cross` for Linux builds
+</span><span style="color:#cccccc;">
+</span><span style="color:#cccccc;">      - </span><span style="color:#80d500;">name</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">Install node
+</span><span style="color:#cccccc;">        </span><span style="color:#80d500;">uses</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">actions/setup-node@v3
+</span><span style="color:#cccccc;">        </span><span style="color:#80d500;">with</span><span style="color:#cccccc;">:
+</span><span style="color:#cccccc;">          </span><span style="color:#80d500;">node-version</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">&quot;16&quot;
+</span><span style="color:#cccccc;">          </span><span style="color:#80d500;">registry-url</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">&quot;https://registry.npmjs.org&quot;
+</span><span style="color:#cccccc;">
+</span><span style="color:#cccccc;">      - </span><span style="color:#80d500;">name</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">Publish to NPM
+</span><span style="color:#cccccc;">        </span><span style="color:#80d500;">shell</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">bash
+</span><span style="color:#cccccc;">        </span><span style="color:#80d500;">run</span><span style="color:#cccccc;">: </span><span style="color:#80d500;">|
+</span><span style="color:#ffd700;">          cd npm
+</span><span style="color:#ffd700;">          # set the binary name
+</span><span style="color:#ffd700;">          bin=&quot;app&quot;
+</span><span style="color:#ffd700;">          # derive the OS and architecture from the build matrix name
+</span><span style="color:#ffd700;">          # note: when split by a hyphen, first part is the OS and the second is the architecture
+</span><span style="color:#ffd700;">          node_os=$(echo &quot;${{ matrix.build.NAME }}&quot; | cut -d &#39;-&#39; -f1)
+</span><span style="color:#ffd700;">          export node_os
+</span><span style="color:#ffd700;">          node_arch=$(echo &quot;${{ matrix.build.NAME }}&quot; | cut -d &#39;-&#39; -f2)
+</span><span style="color:#ffd700;">          export node_arch
+</span><span style="color:#ffd700;">          # set the version
+</span><span style="color:#ffd700;">          export node_version=&quot;${{ env.RELEASE_VERSION }}&quot;
+</span><span style="color:#ffd700;">          # set the package name
+</span><span style="color:#ffd700;">          # note: use &#39;windows&#39; as OS name instead of &#39;win32&#39;
+</span><span style="color:#ffd700;">          if [ &quot;${{ matrix.build.OS }}&quot; = &quot;windows-2022&quot; ]; then
+</span><span style="color:#ffd700;">            export node_pkg=&quot;${bin}-windows-${node_arch}&quot;
+</span><span style="color:#ffd700;">          else
+</span><span style="color:#ffd700;">            export node_pkg=&quot;${bin}-${node_os}-${node_arch}&quot;
+</span><span style="color:#ffd700;">          fi
+</span><span style="color:#ffd700;">          # create the package directory
+</span><span style="color:#ffd700;">          mkdir -p &quot;${node_pkg}/bin&quot;
+</span><span style="color:#ffd700;">          # generate package.json from the template
+</span><span style="color:#ffd700;">          envsubst &lt; package.json.tmpl &gt; &quot;${node_pkg}/package.json&quot;
+</span><span style="color:#ffd700;">          # copy the binary into the package
+</span><span style="color:#ffd700;">          # note: windows binaries has &#39;.exe&#39; extension
+</span><span style="color:#ffd700;">          if [ &quot;${{ matrix.build.OS }}&quot; = &quot;windows-2022&quot; ]; then
+</span><span style="color:#ffd700;">            bin=&quot;${bin}.exe&quot;
+</span><span style="color:#ffd700;">          fi
+</span><span style="color:#ffd700;">          cp &quot;../target/${{ matrix.build.TARGET }}/release/${bin}&quot; &quot;${node_pkg}/bin&quot;
+</span><span style="color:#ffd700;">          # publish the package
+</span><span style="color:#ffd700;">          cd &quot;${node_pkg}&quot;
+</span><span style="color:#ffd700;">          npm publish --access public
+</span><span style="color:#cccccc;">        </span><span style="color:#80d500;">env</span><span style="color:#cccccc;">:
+</span><span style="color:#cccccc;">          </span><span style="color:#80d500;">NODE_AUTH_TOKEN</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">${{ secrets.NPM_TOKEN }}
+</span><span style="color:#cccccc;">
+</span><span style="color:#cccccc;">  </span><span style="color:#80d500;">publish-npm-base</span><span style="color:#cccccc;">:
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">name</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">Publish the base NPM package
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">needs</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">publish-npm-binaries
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">runs-on</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">ubuntu-20.04
+</span><span style="color:#cccccc;">    </span><span style="color:#80d500;">steps</span><span style="color:#cccccc;">:
+</span><span style="color:#cccccc;">      - </span><span style="color:#80d500;">name</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">Checkout
+</span><span style="color:#cccccc;">        </span><span style="color:#80d500;">uses</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">actions/checkout@v3
+</span><span style="color:#cccccc;">
+</span><span style="color:#cccccc;">      - </span><span style="color:#80d500;">name</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">Install node
+</span><span style="color:#cccccc;">        </span><span style="color:#80d500;">uses</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">actions/setup-node@v3
+</span><span style="color:#cccccc;">        </span><span style="color:#80d500;">with</span><span style="color:#cccccc;">:
+</span><span style="color:#cccccc;">          </span><span style="color:#80d500;">node-version</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">&quot;16&quot;
+</span><span style="color:#cccccc;">          </span><span style="color:#80d500;">registry-url</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">&quot;https://registry.npmjs.org&quot;
+</span><span style="color:#cccccc;">
+</span><span style="color:#cccccc;">      - </span><span style="color:#80d500;">name</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">Publish the package
+</span><span style="color:#cccccc;">        </span><span style="color:#80d500;">shell</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">bash
+</span><span style="color:#cccccc;">        </span><span style="color:#80d500;">run</span><span style="color:#cccccc;">: </span><span style="color:#80d500;">|
+</span><span style="color:#ffd700;">          cd npm/app
+</span><span style="color:#ffd700;">          yarn install # requires optional dependencies to be present in the registry
+</span><span style="color:#ffd700;">          yarn build
+</span><span style="color:#ffd700;">          npm publish --access public
+</span><span style="color:#cccccc;">        </span><span style="color:#80d500;">env</span><span style="color:#cccccc;">:
+</span><span style="color:#cccccc;">          </span><span style="color:#80d500;">NODE_AUTH_TOKEN</span><span style="color:#cccccc;">: </span><span style="color:#ffd700;">${{ secrets.NPM_TOKEN }}
+</span></code></pre>
+</details>
+<br>
+<h4 id="why-use-app-windows-x64-instead-of-app-win32-x64">Why use <code>app-windows-x64</code> instead of <code>app-win32-x64</code>?</h4>
+<p>If you read the GitHub Actions workflow file carefully, you might have realized there is an extra check for publishing the package as <code>app-windows-x64</code> although using <code>app-win32-x64</code> would be easier because we already named our build matrix as <code>win32-x64-msvc</code>.</p>
+<p>The reason for that change is the NPM registry itself:</p>
+<blockquote>
+<p>npm ERR! 403 403 Forbidden - PUT https://registry.npmjs.org/app-win32-x64 - Package name triggered spam detection; if you believe this is in error, please contact support at https://npmjs.com/support</p>
+</blockquote>
+<p>Apparently, NPM doesn't like numbers in package names and recognizes them as spam. As stupid as it sounds, it's true. Other people on the internet also suffered from this issue:</p>
+<blockquote>
+<p>Stupid npm 😡 the name of chip is pcf8575, which name should I use?</p>
+<ul>
+<li>a random NPM victim</li>
+</ul>
+</blockquote>
+<p>However, I reached out to the support and they actually helped me to publish the <code>win32</code> package.</p>
+<blockquote>
+<p>Hi Orhun,</p>
+<p>Sorry to hear about the trouble you were having.</p>
+<p>We've initiated some blocks related to package names. Our hope is this will help with both security and spam concerns we're facing.</p>
+<p>As support, we're able to move beyond the block. I've published the <code>git-cliff-win32-x64</code> and <code>git-cliff-win32-arm64</code> packages and transferred write access to the packages over to your <code>orhun</code> user account.</p>
+</blockquote>
+<p>But it's better to just have it named as <code>windows</code> since we don't want to deal with the spam protection mechanism.</p>
+<h3 id="result">Result</h3>
+<p>After publishing the NPM packages for your Rust project, you can use <code>npx</code> to install/run the application. For example:</p>
+<pre data-lang="sh" style="background-color:#191919;color:#ffffff;" class="language-sh "><code class="language-sh" data-lang="sh"><span style="color:#cccccc;">$ npx git-cliff@latest
+</span><span style="color:#cccccc;">
+</span><span style="color:#cccccc;">Need to install the following packages:
+</span><span style="color:#cccccc;">  git-cliff@1.1.2
+</span><span style="color:#cccccc;">Ok to proceed</span><span>?</span><span style="color:#cccccc;"> (y) y
+</span></code></pre>
+<p>As an alternative to <code>npx</code>, you can use <a href="https://github.com/egoist/dum"><code>dum</code></a> which is a faster alternative written in Rust:</p>
+<pre data-lang="sh" style="background-color:#191919;color:#ffffff;" class="language-sh "><code class="language-sh" data-lang="sh"><span style="color:#cccccc;">$ dum install git-cliff
+</span><span style="color:#cccccc;">
+</span><span style="color:#cccccc;">$ dum run git-cliff
+</span></code></pre>
+<h3 id="conclusion">Conclusion</h3>
+<p>I hope this guide was helpful for people who want to do crazy stuff like putting their Rust projects on NPM!</p>
+<p>All the code can be found in this repository: <a href="https://github.com/orhun/packaging-rust-for-npm">https://github.com/orhun/packaging-rust-for-npm</a></p>
+<p>Cheers!</p>
+
+    </div>
+
+    
+        <footer>
+            <hr>
+            <p>
+                
+                    Published by Orhun Parmaksız
+                
+                
+                    
+                    in <a href="https://blog.orhun.dev/categories/rust/">Rust</a>
+                
+                
+            </p>
+            
+            
+            <div style="display: flex; justify-content: space-between; align-items: center">
+              <div>
+                <iframe
+                  src="https://github.com/sponsors/orhun/button"
+                  title="Sponsor @orhun"
+                  height="35"
+                  width="116"
+                  style="border: 0"
+                ></iframe>
+                <a href="https://www.buymeacoffee.com/orhun" target="_blank"
+                  ><img
+                    src="https://cdn.buymeacoffee.com/buttons/v2/default-white.png"
+                    alt="Buy Me A Coffee"
+                    style="height: 40px !important; width: 150px !important"
+                /></a>
+              </div>
+              <div>
+                <applause-button
+                  style="width: 50px; height: 50px"
+                  url="https://blog.orhun.dev&#x2F;packaging-rust-for-npm&#x2F;"
+                  color="white"
+                  multiclap="true"
+                />
+              </div>
+              <div>
+                <div style="width: auto; height: 39px">
+                  <p style="margin: 0; color: #fff; font-style: italic">✨ Sponsored by:</p>
+                </div>
+                <a href="https://terminaltrove.com/" target="_blank"
+                  ><img
+                    src="/sponsors/terminal_trove.png"
+                    alt="Terminal Trove"
+                    style="height: 40px; width: auto"
+                /></a>
+                <a href="https://rawkode.academy/" target="_blank"
+                  ><img
+                    src="/sponsors/rawkode_academy.png"
+                    alt="Rawkode Academy"
+                    style="height: 40px; width: auto"
+                /></a>
+                <a href="https://malwation.com/" target="_blank"
+                  ><img
+                    src="/sponsors/malwation.svg"
+                    alt="Malwation"
+                    style="height: 40px; width: auto"
+                /></a>
+              </div>
+            </div>
+            <script src="https://utteranc.es/client.js"
+                    repo="orhun/personal-blog"
+                    issue-term="url"
+                    label="comments"
+                    theme="github-dark"
+                    crossorigin="anonymous"
+                    async>
+            </script>
+        </footer>
+    
+</article>
+
+
+    </body>
+
+</html>
