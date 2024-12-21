@@ -112,7 +112,7 @@ See [this issue][applause-button-issue]:
 
 <q>Suffering from success, huh?</q>
 
-For now this button is disfunctional, but I might self-host it in the future or switch to something else. Let me know if you know any alternatives!
+For now this button is dysfunctional, but I might self-host it in the future or switch to something else. Let me know if you know any alternatives!
 
 ---
 
@@ -215,7 +215,7 @@ For that, I'm hosting my images on a simple Nginx server on the same droplet whe
 
 ## **Conclusion** ✨
 
-My blog is not that impressive (yet), it's just a static site. What I want to achieve is to make it fully browseable on the terminal. Also vice-versa, I want to make a terminal UI for my blog that is fully browseable on the web. The latter has been already achieved by [this blog][AvidRustacean] which is built with [Ratatui], the project that I'm working on. We will see where this _rat hole_ will lead me.
+My blog is not that impressive (yet), it's just a static site. What I want to achieve is to make it fully browsable on the terminal. Also vice-versa, I want to make a terminal UI for my blog that is fully browsable on the web. The latter has been already achieved by [this blog][AvidRustacean] which is built with [Ratatui], the project that I'm working on. We will see where this _rat hole_ will lead me.
 
 Anyhoo, I hope this post was helpful for you. If you have any questions or feedback, feel free to leave a comment below!
 
