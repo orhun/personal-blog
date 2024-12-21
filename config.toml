@@ -18,7 +18,7 @@ compile_sass = false
 minify_html = false
 
 # Whether to build a search index to be used later on by a JavaScript library
-build_search_index = false
+build_search_index = true
 
 # When set to "true", a feed is automatically generated.
 generate_feeds = true
@@ -40,6 +40,12 @@ highlight_theme = "axar"
 # When set to "true", emoji aliases translated to their corresponding
 # Unicode emoji equivalent in the rendered Markdown files. (e.g.: :smile: => 😄)
 render_emoji = false
+
+[search]
+index_format = "elasticlunr_json"
+include_title = true
+include_description = true
+include_content = true
 
 [extra]
 author = "Orhun Parmaksız"

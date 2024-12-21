@@ -67,14 +67,21 @@
             {% block header %}
                 {% if config.extra.after_dark_menu %}
                     <header>
-                        <nav itemscope itemtype="http://schema.org/SiteNavigationElement">
+                    <nav itemscope itemtype="http://schema.org/SiteNavigationElement" class="nav-flex">
                         {% for item in config.extra.after_dark_menu %}
                             <a itemprop="url"
-                               class="{% if item.url | replace(from="$BASE_URL", to=config.base_url) == current_url %}active{% endif %}"
-                               href="{{ item.url | safe | replace(from="$BASE_URL", to=config.base_url) | safe }}">
-                                <span itemprop="name">{{ item.name }}</span></a>
+                              class="{% if item.url | replace(from="$BASE_URL", to=config.base_url) == current_url %}active{% endif %}"
+                              href="{{ item.url | safe | replace(from="$BASE_URL", to=config.base_url) | safe }}">
+                                <span itemprop="name">{{ item.name }}</span>
+                            </a>
                         {% endfor %}
-                        </nav>
+                        <div class="search-container">
+                            <input type="text" id="search" placeholder="Search...">
+                            <div class="search-results">
+                                <div class="search-results__items"></div>
+                            </div>
+                        </div>
+                    </nav>
                     </header>
                 {% endif %}
             {% endblock header %}
@@ -103,5 +110,8 @@
             </main>
         {% endblock content %}
     </body>
+
+    <script type="text/javascript" src="{{ get_url(path="elasticlunr.min.js") }}"></script>
+    <script type="text/javascript" src="{{ get_url(path="js/search.js") }}"></script>
 
 </html>
