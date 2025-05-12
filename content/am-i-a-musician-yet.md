@@ -18,7 +18,16 @@ Apparently, I didn't drop everything or become violent towards my computer, but 
 
 <center>
 
-<iframe width="720" height="420" src="https://www.youtube.com/embed/SLiEuvDmo8M?si=y7DU9YOof_KfQFwJ" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+<div style="position: relative; width: 100%; max-width: 720px; margin: auto; padding-bottom: 56.25%; height: 0; overflow: hidden;">
+  <iframe 
+    src="https://www.youtube.com/embed/SLiEuvDmo8M?si=y7DU9YOof_KfQFwJ" 
+    title="YouTube video player" 
+    style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0;"
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+    referrerpolicy="strict-origin-when-cross-origin"
+    allowfullscreen>
+  </iframe>
+</div>
 
 Also, a couple of months ago, I got inspired and encouraged by my good friend [Harun](https://github.com/harunocaksiz) and got myself an electric guitar to play some of my favorite shoegaze/grunge tracks:
 
