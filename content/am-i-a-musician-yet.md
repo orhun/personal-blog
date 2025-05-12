@@ -620,7 +620,7 @@ I bought and assembled an amazing kit there: <g>Squeaking Rat!!!</g>
 
 <img src="https://static.orhun.dev/sb/squeaking-rat-2.jpg" width="40%" align="left"/>
 
-<img src="https://static.orhun.dev/sb/squeaking-rat-3.jpg" width="40%" alighn="right"/>
+<img src="https://static.orhun.dev/sb/squeaking-rat-3.jpg" width="40%" align="right"/>
 
 </center>
 
