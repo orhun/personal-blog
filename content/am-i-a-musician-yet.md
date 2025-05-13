@@ -605,7 +605,7 @@ I can summarize my second day with this T-shirt I guess:
 
 _(<g>Sunday<g/> - Superbooth is over but the grind continues.)_
 
-Today I'm heading to **DIY Kit Day** organized by [Berlin Modular Society](https://berlinmodularsociety.com/)!
+Today I'm heading to [**DIY Kit Day**](https://berlinmodularsociety.com) at [Klunkerkranich](http://klunkerkranich.org/)!
 
 It's where you can buy DIY kits and assemble them, listen to some live modular music and just hang out with audio folks at a nice rooftop!
 
