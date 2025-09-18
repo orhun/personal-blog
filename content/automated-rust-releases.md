@@ -478,13 +478,15 @@ pull_request_rules:
       update:
 ```
 
-Lastly, we need to create an account on https://mergify.com and add our GitHub repository to the dashboard:
+Then, we need to create an account on https://mergify.com, setup GitHub integration (Integrations > GitHub > Configure) and add our repository:
 
 <center>
 
 ![mergify dashboard](/mergify-dashboard.png)
 
 </center>
+
+Lastly, we need to enforce a GitHub repository branch protection rule by enabling `Require status checks to pass` and adding a check for `Mergify Merge Protections` (see the [Mergify documentation](https://docs.mergify.com/merge-protections/setup/)).
 
 Now `Mergify` will start to process the open pull requests:
 
