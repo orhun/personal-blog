@@ -486,8 +486,7 @@ Then, we need to create an account on https://mergify.com, setup GitHub integrat
 
 </center>
 
-Lastly, we need to enforce a GitHub repository branch protection rule by enabling `Require status checks to pass` and adding a check for `Mergify Merge Protections` (see the [Mergify documentation](https://docs.mergify.com/merge-protections/setup/)
-).
+Lastly, we need to enforce a GitHub repository branch protection rule by enabling `Require status checks to pass` and adding a check for `Mergify Merge Protections` (see the [Mergify documentation](https://docs.mergify.com/merge-protections/setup/)).
 
 Now `Mergify` will start to process the open pull requests:
 
