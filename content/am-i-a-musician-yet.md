@@ -721,7 +721,7 @@ I have been doing something called <g>talk-driven development</g>.
 
 That's what I did with [Ratzilla](https://github.com/orhun/ratzilla), see my talk at [FOSDEM 2025](https://www.youtube.com/watch?v=iepbyYrF_YQ). I think it's a great way to beat [the comfort of delay](https://www.youtube.com/watch?v=sHxDZPSLvKk) and keep myself on the grind.
 
-And yes, I am doing <g>talk-drive development</g> again these days... but for a music-related project this time. I will start small with a learning tool for my guitar and then maybe I will build a full-fledged Eurorack or some kind of music production workspace in the future.
+And yes, I am doing <g>talk-driven development</g> again these days... but for a music-related project this time. I will start small with a learning tool for my guitar and then maybe I will build a full-fledged Eurorack or some kind of music production workspace in the future.
 
 I'm planning to [livestream](https://blog.orhun.dev/livestreaming/) my whole journey and I'll start in the following weeks. So make sure you follow me [on YouTube](https://youtube.com/@orhundev) if you don't want to miss the new tunes & TUIs!
 
