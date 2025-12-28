@@ -1,0 +1,30 @@
+<link
+  rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/firacode/6.2.0/fira_code.min.css"
+/>
+
+<div id="ratzilla-demo"></div>
+
+<script type="module">
+  import init from "{{ get_url(path='wasm/ratzilla/demo2.js') }}";
+
+  const wasm = await init({
+    module_or_path: "{{ get_url(path='wasm/ratzilla/demo2_bg.wasm') }}",
+  });
+
+  dispatchEvent(
+    new CustomEvent("TrunkApplicationStarted", { detail: { wasm } }),
+  );
+</script>
+
+<style>
+  #ratzilla-demo {
+    width: 100%;
+    height: 420px;
+  }
+
+  #ratzilla-demo pre {
+    font-family: "Fira Code", monospace;
+    font-size: 16px;
+  }
+</style>
