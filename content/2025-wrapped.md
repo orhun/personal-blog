@@ -346,6 +346,7 @@ Here are some cool stats!
 
 - Pushed 4192 commits (currently on a [2514-day commit streak](https://github.com/orhun/))
 - 1,893,227 impressions on [LinkedIn](https://www.linkedin.com/in/orhunp/) (reached 164,694 members)
+- [Programming language tierlist 2025](https://www.youtube.com/watch?v=EyX-CTm8XKo)
 - K/D ratio: 0/0 (no rats were harmed)
 
 All in all, I give 2025 a **solid 🐀/10.**
