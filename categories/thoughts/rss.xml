@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+    <channel>
+      <title>Orhun&#x27;s Blog - Thoughts</title>
+      <link>https://blog.orhun.dev</link>
+      <description>FOSS • Linux • Programming</description>
+      <generator>Zola</generator>
+      <language>en</language>
+      <atom:link href="https://blog.orhun.dev/categories/thoughts/rss.xml" rel="self" type="application/rss+xml"/>
+      <lastBuildDate>Wed, 31 Dec 2025 00:00:00 +0000</lastBuildDate>
+      <item>
+          <title>Looking back on 2025</title>
+          <pubDate>Wed, 31 Dec 2025 00:00:00 +0000</pubDate>
+          <author>Unknown</author>
+          <link>https://blog.orhun.dev/2025-wrapped/</link>
+          <guid>https://blog.orhun.dev/2025-wrapped/</guid>
+          <description xml:base="https://blog.orhun.dev/2025-wrapped/">&lt;p&gt;2025 was a crazy simulation. A lot of glitches, plot twists and fun stuff™.&lt;&#x2F;p&gt;</description>
+      </item>
+      <item>
+          <title>Am I a musician yet? - Superbooth 2025 Experience</title>
+          <pubDate>Mon, 12 May 2025 00:00:00 +0000</pubDate>
+          <author>Unknown</author>
+          <link>https://blog.orhun.dev/am-i-a-musician-yet/</link>
+          <guid>https://blog.orhun.dev/am-i-a-musician-yet/</guid>
+          <description xml:base="https://blog.orhun.dev/am-i-a-musician-yet/">&lt;p&gt;I went to Berlin for a music event and here is what happened.&lt;&#x2F;p&gt;</description>
+      </item>
+      <item>
+          <title>Why I started livestreaming as a Rust developer?</title>
+          <pubDate>Fri, 06 Sep 2024 00:00:00 +0000</pubDate>
+          <author>Unknown</author>
+          <link>https://blog.orhun.dev/livestreaming/</link>
+          <guid>https://blog.orhun.dev/livestreaming/</guid>
+          <description xml:base="https://blog.orhun.dev/livestreaming/">&lt;p&gt;Some thoughts on why I started livestreaming my open-source development sessions and my future plans.&lt;&#x2F;p&gt;</description>
+      </item>
+      <item>
+          <title>The Name Quest</title>
+          <pubDate>Fri, 03 May 2024 00:00:00 +0000</pubDate>
+          <author>Unknown</author>
+          <link>https://blog.orhun.dev/mongolia-trip/</link>
+          <guid>https://blog.orhun.dev/mongolia-trip/</guid>
+          <description xml:base="https://blog.orhun.dev/mongolia-trip/">&lt;p&gt;I went on a trip to Mongolia to find out the meaning behind my name.&lt;&#x2F;p&gt;</description>
+      </item>
+      <item>
+          <title>Ratatui Received Funding: What&#x27;s Next?</title>
+          <pubDate>Mon, 08 Apr 2024 00:00:00 +0000</pubDate>
+          <author>Unknown</author>
+          <link>https://blog.orhun.dev/open-source-funding-with-ratatui/</link>
+          <guid>https://blog.orhun.dev/open-source-funding-with-ratatui/</guid>
+          <description xml:base="https://blog.orhun.dev/open-source-funding-with-ratatui/">&lt;p&gt;Let&#x27;s delve into the realm of open source funding along with Ratatui&#x27;s journey.&lt;&#x2F;p&gt;</description>
+      </item>
+      <item>
+          <title>My FOSDEM 2024 Experience</title>
+          <pubDate>Mon, 05 Feb 2024 00:00:00 +0000</pubDate>
+          <author>Unknown</author>
+          <link>https://blog.orhun.dev/fosdem-2024-experience/</link>
+          <guid>https://blog.orhun.dev/fosdem-2024-experience/</guid>
+          <description xml:base="https://blog.orhun.dev/fosdem-2024-experience/">&lt;p&gt;Sharing my experience after giving a talk at FOSDEM 2024!&lt;&#x2F;p&gt;</description>
+      </item>
+      <item>
+          <title>Open Source Grindset Explained</title>
+          <pubDate>Sun, 25 Dec 2022 00:00:00 +0000</pubDate>
+          <author>Unknown</author>
+          <link>https://blog.orhun.dev/open-source-grindset/</link>
+          <guid>https://blog.orhun.dev/open-source-grindset/</guid>
+          <description xml:base="https://blog.orhun.dev/open-source-grindset/">&lt;p&gt;Let&#x27;s talk about how to develop an open sourcerer mindset.&lt;&#x2F;p&gt;</description>
+      </item>
+      <item>
+          <title>I finally found out why I&#x27;m so depressed</title>
+          <pubDate>Wed, 06 Jul 2022 00:00:00 +0000</pubDate>
+          <author>Unknown</author>
+          <link>https://blog.orhun.dev/norway-depression/</link>
+          <guid>https://blog.orhun.dev/norway-depression/</guid>
+          <description xml:base="https://blog.orhun.dev/norway-depression/">&lt;p&gt;I&#x27;m in Norway and depressed.&lt;&#x2F;p&gt;</description>
+      </item>
+      <item>
+          <title>My motivation towards working on open source</title>
+          <pubDate>Sat, 02 Jul 2022 00:00:00 +0000</pubDate>
+          <author>Unknown</author>
+          <link>https://blog.orhun.dev/open-source-motivation/</link>
+          <guid>https://blog.orhun.dev/open-source-motivation/</guid>
+          <description xml:base="https://blog.orhun.dev/open-source-motivation/">&lt;p&gt;Some thoughts about open source and the software industry.&lt;&#x2F;p&gt;</description>
+      </item>
+      <item>
+          <title>My First Month as an Arch Linux Trusted User</title>
+          <pubDate>Sat, 06 Feb 2021 00:00:00 +0000</pubDate>
+          <author>Unknown</author>
+          <link>https://blog.orhun.dev/my-first-month-as-tu/</link>
+          <guid>https://blog.orhun.dev/my-first-month-as-tu/</guid>
+          <description xml:base="https://blog.orhun.dev/my-first-month-as-tu/">&lt;p&gt;There&#x27;s a start for everything. A new blog... New responsibilities... Maybe a new role in a Linux distribution that is for advanced users...&lt;&#x2F;p&gt;</description>
+      </item>
+    </channel>
+</rss>
