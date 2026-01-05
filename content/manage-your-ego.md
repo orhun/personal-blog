@@ -1,6 +1,7 @@
 +++
 title = "If you have one project and you keep bragging about it, just stop."
 date = 2023-03-13
+draft = true
 
 [taxonomies]
 categories = ["Thoughts"]
