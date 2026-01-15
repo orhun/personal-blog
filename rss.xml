@@ -1,0 +1,276 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+    <channel>
+      <title>Orhun&#x27;s Blog</title>
+      <link>https://blog.orhun.dev</link>
+      <description>FOSS • Linux • Programming</description>
+      <generator>Zola</generator>
+      <language>en</language>
+      <atom:link href="https://blog.orhun.dev/rss.xml" rel="self" type="application/rss+xml"/>
+      <lastBuildDate>Wed, 31 Dec 2025 00:00:00 +0000</lastBuildDate>
+      <item>
+          <title>Looking back on 2025</title>
+          <pubDate>Wed, 31 Dec 2025 00:00:00 +0000</pubDate>
+          <author>Unknown</author>
+          <link>https://blog.orhun.dev/2025-wrapped/</link>
+          <guid>https://blog.orhun.dev/2025-wrapped/</guid>
+          <description xml:base="https://blog.orhun.dev/2025-wrapped/">&lt;p&gt;2025 was a crazy simulation. A lot of glitches, plot twists and fun stuff™.&lt;&#x2F;p&gt;</description>
+      </item>
+      <item>
+          <title>Am I a musician yet? - Superbooth 2025 Experience</title>
+          <pubDate>Mon, 12 May 2025 00:00:00 +0000</pubDate>
+          <author>Unknown</author>
+          <link>https://blog.orhun.dev/am-i-a-musician-yet/</link>
+          <guid>https://blog.orhun.dev/am-i-a-musician-yet/</guid>
+          <description xml:base="https://blog.orhun.dev/am-i-a-musician-yet/">&lt;p&gt;I went to Berlin for a music event and here is what happened.&lt;&#x2F;p&gt;</description>
+      </item>
+      <item>
+          <title>How I set up this blog</title>
+          <pubDate>Mon, 23 Dec 2024 00:00:00 +0000</pubDate>
+          <author>Unknown</author>
+          <link>https://blog.orhun.dev/setting-up-this-blog/</link>
+          <guid>https://blog.orhun.dev/setting-up-this-blog/</guid>
+          <description xml:base="https://blog.orhun.dev/setting-up-this-blog/">&lt;p&gt;Like my blog? Here is how I set it up.&lt;&#x2F;p&gt;</description>
+      </item>
+      <item>
+          <title>Can&#x27;t trust any VPN these days</title>
+          <pubDate>Wed, 16 Oct 2024 00:00:00 +0000</pubDate>
+          <author>Unknown</author>
+          <link>https://blog.orhun.dev/cant-trust-any-vpn/</link>
+          <guid>https://blog.orhun.dev/cant-trust-any-vpn/</guid>
+          <description xml:base="https://blog.orhun.dev/cant-trust-any-vpn/">&lt;p&gt;After Turkey banned Discord, I had to jump through some hoops, fix my VPN, and learn a bit about how DNS works.&lt;&#x2F;p&gt;</description>
+      </item>
+      <item>
+          <title>Why I started livestreaming as a Rust developer?</title>
+          <pubDate>Fri, 06 Sep 2024 00:00:00 +0000</pubDate>
+          <author>Unknown</author>
+          <link>https://blog.orhun.dev/livestreaming/</link>
+          <guid>https://blog.orhun.dev/livestreaming/</guid>
+          <description xml:base="https://blog.orhun.dev/livestreaming/">&lt;p&gt;Some thoughts on why I started livestreaming my open-source development sessions and my future plans.&lt;&#x2F;p&gt;</description>
+      </item>
+      <item>
+          <title>The Name Quest</title>
+          <pubDate>Fri, 03 May 2024 00:00:00 +0000</pubDate>
+          <author>Unknown</author>
+          <link>https://blog.orhun.dev/mongolia-trip/</link>
+          <guid>https://blog.orhun.dev/mongolia-trip/</guid>
+          <description xml:base="https://blog.orhun.dev/mongolia-trip/">&lt;p&gt;I went on a trip to Mongolia to find out the meaning behind my name.&lt;&#x2F;p&gt;</description>
+      </item>
+      <item>
+          <title>Ratatui Received Funding: What&#x27;s Next?</title>
+          <pubDate>Mon, 08 Apr 2024 00:00:00 +0000</pubDate>
+          <author>Unknown</author>
+          <link>https://blog.orhun.dev/open-source-funding-with-ratatui/</link>
+          <guid>https://blog.orhun.dev/open-source-funding-with-ratatui/</guid>
+          <description xml:base="https://blog.orhun.dev/open-source-funding-with-ratatui/">&lt;p&gt;Let&#x27;s delve into the realm of open source funding along with Ratatui&#x27;s journey.&lt;&#x2F;p&gt;</description>
+      </item>
+      <item>
+          <title>My FOSDEM 2024 Experience</title>
+          <pubDate>Mon, 05 Feb 2024 00:00:00 +0000</pubDate>
+          <author>Unknown</author>
+          <link>https://blog.orhun.dev/fosdem-2024-experience/</link>
+          <guid>https://blog.orhun.dev/fosdem-2024-experience/</guid>
+          <description xml:base="https://blog.orhun.dev/fosdem-2024-experience/">&lt;p&gt;Sharing my experience after giving a talk at FOSDEM 2024!&lt;&#x2F;p&gt;</description>
+      </item>
+      <item>
+          <title>Why stdout is faster than stderr?</title>
+          <pubDate>Wed, 10 Jan 2024 00:00:00 +0000</pubDate>
+          <author>Unknown</author>
+          <link>https://blog.orhun.dev/stdout-vs-stderr/</link>
+          <guid>https://blog.orhun.dev/stdout-vs-stderr/</guid>
+          <description xml:base="https://blog.orhun.dev/stdout-vs-stderr/">&lt;p&gt;I recently realized stdout is much faster than stderr for Rust. Here are my findings after diving deep into this rabbit hole.&lt;&#x2F;p&gt;</description>
+      </item>
+      <item>
+          <title>Fully Automated Releases for Rust Projects</title>
+          <pubDate>Tue, 24 Oct 2023 00:00:00 +0000</pubDate>
+          <author>Unknown</author>
+          <link>https://blog.orhun.dev/automated-rust-releases/</link>
+          <guid>https://blog.orhun.dev/automated-rust-releases/</guid>
+          <description xml:base="https://blog.orhun.dev/automated-rust-releases/">&lt;p&gt;Here is how you can publish a Rust project with a single click of a button and automate &lt;em&gt;everything&lt;&#x2F;em&gt;.&lt;&#x2F;p&gt;</description>
+      </item>
+      <item>
+          <title>From tui-rs to Ratatui: 6 Months of Cooking Up Rust TUIs</title>
+          <pubDate>Mon, 28 Aug 2023 00:00:00 +0000</pubDate>
+          <author>Unknown</author>
+          <link>https://blog.orhun.dev/ratatui-0-23-0/</link>
+          <guid>https://blog.orhun.dev/ratatui-0-23-0/</guid>
+          <description xml:base="https://blog.orhun.dev/ratatui-0-23-0/">&lt;p&gt;Let&#x27;s take a look at what is new in the new version of &quot;&lt;a rel=&quot;external&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;ratatui-org&#x2F;ratatui&quot;&gt;&lt;strong&gt;Ratatui&lt;&#x2F;strong&gt;&lt;&#x2F;a&gt;&quot; and how it became the successor of &lt;a rel=&quot;external&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;fdehau&#x2F;tui-rs&quot;&gt;&lt;code&gt;tui-rs&lt;&#x2F;code&gt;&lt;&#x2F;a&gt;.&lt;&#x2F;p&gt;</description>
+      </item>
+      <item>
+          <title>Generating terminal user interfaces with Ratatui + ChatGPT</title>
+          <pubDate>Mon, 17 Jul 2023 00:00:00 +0000</pubDate>
+          <author>Unknown</author>
+          <link>https://blog.orhun.dev/ratatui-0-22-0/</link>
+          <guid>https://blog.orhun.dev/ratatui-0-22-0/</guid>
+          <description xml:base="https://blog.orhun.dev/ratatui-0-22-0/">&lt;p&gt;&quot;&lt;a rel=&quot;external&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;ratatui-org&#x2F;ratatui&quot;&gt;&lt;strong&gt;Ratatui&lt;&#x2F;strong&gt;&lt;&#x2F;a&gt;&quot; is a Rust library for building rich terminal user interfaces. In this post, I&#x27;m sharing what&#x27;s new in the latest version and also a fun way to easily create terminal user interfaces in a jiffy.&lt;&#x2F;p&gt;</description>
+      </item>
+      <item>
+          <title>Zig Bits 0x4: Building an HTTP client&#x2F;server from scratch</title>
+          <pubDate>Tue, 11 Jul 2023 00:00:00 +0000</pubDate>
+          <author>Unknown</author>
+          <link>https://blog.orhun.dev/zig-bits-04/</link>
+          <guid>https://blog.orhun.dev/zig-bits-04/</guid>
+          <description xml:base="https://blog.orhun.dev/zig-bits-04/">&lt;p&gt;Let&#x27;s experiment with the &lt;a rel=&quot;external&quot; href=&quot;https:&#x2F;&#x2F;ziglang.org&#x2F;documentation&#x2F;master&#x2F;std&#x2F;#A;std:http&quot;&gt;&lt;code&gt;std.http&lt;&#x2F;code&gt;&lt;&#x2F;a&gt; module of Zig &lt;code&gt;&amp;gt;=0.11&lt;&#x2F;code&gt; and create an HTTP server&#x2F;client from scratch (along with some benchmarks)!&lt;&#x2F;p&gt;</description>
+      </item>
+      <item>
+          <title>Ratatui: Build rich terminal user interfaces using Rust</title>
+          <pubDate>Mon, 29 May 2023 00:00:00 +0000</pubDate>
+          <author>Unknown</author>
+          <link>https://blog.orhun.dev/ratatui-0-21-0/</link>
+          <guid>https://blog.orhun.dev/ratatui-0-21-0/</guid>
+          <description xml:base="https://blog.orhun.dev/ratatui-0-21-0/">&lt;p&gt;&quot;&lt;a rel=&quot;external&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;ratatui-org&#x2F;ratatui&quot;&gt;&lt;strong&gt;Ratatui&lt;&#x2F;strong&gt;&lt;&#x2F;a&gt;&quot; came a long way since its transition from the original &lt;a rel=&quot;external&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;fdehau&#x2F;tui-rs&quot;&gt;&lt;code&gt;tui-rs&lt;&#x2F;code&gt;&lt;&#x2F;a&gt; crate. In this post, let&#x27;s take a look at what&#x27;s new in the latest version.&lt;&#x2F;p&gt;</description>
+      </item>
+      <item>
+          <title>Taking Rust to the Cloud: Blazingly Fast File Sharing</title>
+          <pubDate>Wed, 17 May 2023 00:00:00 +0000</pubDate>
+          <author>Unknown</author>
+          <link>https://blog.orhun.dev/blazingly-fast-file-sharing/</link>
+          <guid>https://blog.orhun.dev/blazingly-fast-file-sharing/</guid>
+          <description xml:base="https://blog.orhun.dev/blazingly-fast-file-sharing/">&lt;p&gt;&quot;&lt;a rel=&quot;external&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;orhun&#x2F;rustypaste&quot;&gt;&lt;strong&gt;rustypaste&lt;&#x2F;strong&gt;&lt;&#x2F;a&gt;&quot; is a self-hosted and minimal file upload&#x2F;pastebin service written in Rust. In this post, I will be talking about its features and telling the story behind how I deployed it to &lt;a rel=&quot;external&quot; href=&quot;https:&#x2F;&#x2F;www.shuttle.rs&quot;&gt;shuttle.rs&lt;&#x2F;a&gt; to make it publicly available for free use.&lt;&#x2F;p&gt;</description>
+      </item>
+      <item>
+          <title>Zig Bits 0x3: Mastering project management in Zig</title>
+          <pubDate>Wed, 19 Apr 2023 00:00:00 +0000</pubDate>
+          <author>Unknown</author>
+          <link>https://blog.orhun.dev/zig-bits-03/</link>
+          <guid>https://blog.orhun.dev/zig-bits-03/</guid>
+          <description xml:base="https://blog.orhun.dev/zig-bits-03/">&lt;p&gt;In this post, I&#x27;m sharing tips &amp;amp; tricks about managing&#x2F;maintaining an open-source Zig project and mentioning the commonly used practices. I&#x27;m also giving a brief introduction to my first-ever Zig project &quot;&lt;a rel=&quot;external&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;orhun&#x2F;linuxwave&quot;&gt;&lt;strong&gt;linuxwave&lt;&#x2F;strong&gt;&lt;&#x2F;a&gt;&quot; which led to the writing of this series.&lt;&#x2F;p&gt;</description>
+      </item>
+      <item>
+          <title>Setting up a packaging environment for Alpine Linux (introducing alpkg)</title>
+          <pubDate>Mon, 27 Mar 2023 00:00:00 +0000</pubDate>
+          <author>Unknown</author>
+          <link>https://blog.orhun.dev/alpine-packaging-setup/</link>
+          <guid>https://blog.orhun.dev/alpine-packaging-setup/</guid>
+          <description xml:base="https://blog.orhun.dev/alpine-packaging-setup/">&lt;p&gt;Recently I have been interested in &lt;a rel=&quot;external&quot; href=&quot;https:&#x2F;&#x2F;www.alpinelinux.org&quot;&gt;Alpine Linux&lt;&#x2F;a&gt; and thought it would be nice to maintain some Rust packages in their repositories. In this post, I will share my notes&#x2F;adventures on setting up a packaging environment and a tool called &quot;&lt;strong&gt;alpkg&lt;&#x2F;strong&gt;&quot; for automating this process.&lt;&#x2F;p&gt;</description>
+      </item>
+      <item>
+          <title>Zig Bits 0x2: Using defer to defeat memory leaks</title>
+          <pubDate>Tue, 21 Mar 2023 00:00:00 +0000</pubDate>
+          <author>Unknown</author>
+          <link>https://blog.orhun.dev/zig-bits-02/</link>
+          <guid>https://blog.orhun.dev/zig-bits-02/</guid>
+          <description xml:base="https://blog.orhun.dev/zig-bits-02/">&lt;p&gt;Let&#x27;s talk about how to detect memory leaks in Zig and avoid them by using the &lt;code&gt;defer&lt;&#x2F;code&gt; statement.&lt;&#x2F;p&gt;</description>
+      </item>
+      <item>
+          <title>Introducing runst: Handle desktop notifications neatly on Linux!</title>
+          <pubDate>Sun, 05 Mar 2023 00:00:00 +0000</pubDate>
+          <author>Unknown</author>
+          <link>https://blog.orhun.dev/introducing-runst/</link>
+          <guid>https://blog.orhun.dev/introducing-runst/</guid>
+          <description xml:base="https://blog.orhun.dev/introducing-runst/">&lt;p&gt;&lt;code&gt;runst&lt;&#x2F;code&gt; is a dead simple notification daemon 🦡 In this post, I&#x27;m introducing the project and giving different usage examples that will improve your Linux desktop experience.&lt;&#x2F;p&gt;</description>
+      </item>
+      <item>
+          <title>Zig Bits 0x1: Returning slices from functions</title>
+          <pubDate>Fri, 17 Feb 2023 00:00:00 +0000</pubDate>
+          <author>Unknown</author>
+          <link>https://blog.orhun.dev/zig-bits-01/</link>
+          <guid>https://blog.orhun.dev/zig-bits-01/</guid>
+          <description xml:base="https://blog.orhun.dev/zig-bits-01/">&lt;p&gt;I decided to start a new blog series called &quot;Zig Bits&quot; where I share interesting bits of information about the &lt;a rel=&quot;external&quot; href=&quot;https:&#x2F;&#x2F;ziglang.org&#x2F;&quot;&gt;Zig programming language&lt;&#x2F;a&gt;. This series will be especially for beginners because I&#x27;m also a beginner.&lt;&#x2F;p&gt;</description>
+      </item>
+      <item>
+          <title>Packaging Rust Applications for the NPM Registry</title>
+          <pubDate>Tue, 24 Jan 2023 00:00:00 +0000</pubDate>
+          <author>Unknown</author>
+          <link>https://blog.orhun.dev/packaging-rust-for-npm/</link>
+          <guid>https://blog.orhun.dev/packaging-rust-for-npm/</guid>
+          <description xml:base="https://blog.orhun.dev/packaging-rust-for-npm/">&lt;p&gt;Recently I packaged my project &lt;a rel=&quot;external&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;orhun&#x2F;git-cliff&quot;&gt;git-cliff&lt;&#x2F;a&gt; (changelog generator written in &lt;a rel=&quot;external&quot; href=&quot;https:&#x2F;&#x2F;www.rust-lang.org&#x2F;&quot;&gt;Rust&lt;&#x2F;a&gt;) for &lt;a rel=&quot;external&quot; href=&quot;https:&#x2F;&#x2F;www.npmjs.com&#x2F;&quot;&gt;NPM&lt;&#x2F;a&gt; with the help of my friend &lt;a rel=&quot;external&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;atlj&quot;&gt;@atlj&lt;&#x2F;a&gt;. I thought this would be an interesting topic for a blog post since it has a certain technical depth about distributing binaries and frankly it still amazes me how the whole thing works so smoothly. So let&#x27;s create a simple Rust project, package it for NPM and fully automate the release process via &lt;a rel=&quot;external&quot; href=&quot;https:&#x2F;&#x2F;docs.github.com&#x2F;en&#x2F;actions&quot;&gt;GitHub Actions&lt;&#x2F;a&gt;.&lt;&#x2F;p&gt;</description>
+      </item>
+      <item>
+          <title>Zero-dependency random number generation in Rust</title>
+          <pubDate>Tue, 03 Jan 2023 00:00:00 +0000</pubDate>
+          <author>Unknown</author>
+          <link>https://blog.orhun.dev/zero-deps-random-in-rust/</link>
+          <guid>https://blog.orhun.dev/zero-deps-random-in-rust/</guid>
+          <description xml:base="https://blog.orhun.dev/zero-deps-random-in-rust/">&lt;p&gt;Let&#x27;s investigate how to generate random numbers without external dependencies in Rust.&lt;&#x2F;p&gt;</description>
+      </item>
+      <item>
+          <title>Open Source Grindset Explained</title>
+          <pubDate>Sun, 25 Dec 2022 00:00:00 +0000</pubDate>
+          <author>Unknown</author>
+          <link>https://blog.orhun.dev/open-source-grindset/</link>
+          <guid>https://blog.orhun.dev/open-source-grindset/</guid>
+          <description xml:base="https://blog.orhun.dev/open-source-grindset/">&lt;p&gt;Let&#x27;s talk about how to develop an open sourcerer mindset.&lt;&#x2F;p&gt;</description>
+      </item>
+      <item>
+          <title>I finally found out why I&#x27;m so depressed</title>
+          <pubDate>Wed, 06 Jul 2022 00:00:00 +0000</pubDate>
+          <author>Unknown</author>
+          <link>https://blog.orhun.dev/norway-depression/</link>
+          <guid>https://blog.orhun.dev/norway-depression/</guid>
+          <description xml:base="https://blog.orhun.dev/norway-depression/">&lt;p&gt;I&#x27;m in Norway and depressed.&lt;&#x2F;p&gt;</description>
+      </item>
+      <item>
+          <title>My motivation towards working on open source</title>
+          <pubDate>Sat, 02 Jul 2022 00:00:00 +0000</pubDate>
+          <author>Unknown</author>
+          <link>https://blog.orhun.dev/open-source-motivation/</link>
+          <guid>https://blog.orhun.dev/open-source-motivation/</guid>
+          <description xml:base="https://blog.orhun.dev/open-source-motivation/">&lt;p&gt;Some thoughts about open source and the software industry.&lt;&#x2F;p&gt;</description>
+      </item>
+      <item>
+          <title>Move away from streaming platforms &amp; take your music offline</title>
+          <pubDate>Fri, 03 Jun 2022 00:00:00 +0000</pubDate>
+          <author>Unknown</author>
+          <link>https://blog.orhun.dev/take-your-music-offline/</link>
+          <guid>https://blog.orhun.dev/take-your-music-offline/</guid>
+          <description xml:base="https://blog.orhun.dev/take-your-music-offline/">&lt;p&gt;I don&#x27;t use &lt;a rel=&quot;external&quot; href=&quot;https:&#x2F;&#x2F;en.wikipedia.org&#x2F;wiki&#x2F;Spotify&quot;&gt;Spotify&lt;&#x2F;a&gt; or any other streaming platform for listening to music. Some call it old habits, some call it needless effort, but I&#x27;m very used to downloading &lt;a rel=&quot;external&quot; href=&quot;https:&#x2F;&#x2F;en.wikipedia.org&#x2F;wiki&#x2F;MP3&quot;&gt;MP3&lt;&#x2F;a&gt; files over the internet and putting them in a folder on my phone then using the whatever default media player I have installed. However, for a couple of years, I have been following a better and automated approach for taking my music offline and feeling a bit less like I&#x27;m in a &lt;a rel=&quot;external&quot; href=&quot;https:&#x2F;&#x2F;en.wikipedia.org&#x2F;wiki&#x2F;Consumerism&quot;&gt;consumerism&lt;&#x2F;a&gt; bubble.&lt;&#x2F;p&gt;</description>
+      </item>
+      <item>
+          <title>How hard upgrading a Rust JWT library could be?</title>
+          <pubDate>Fri, 22 Apr 2022 00:00:00 +0000</pubDate>
+          <author>Unknown</author>
+          <link>https://blog.orhun.dev/upgrading-rust-jwt/</link>
+          <guid>https://blog.orhun.dev/upgrading-rust-jwt/</guid>
+          <description xml:base="https://blog.orhun.dev/upgrading-rust-jwt/">&lt;p&gt;Recently one of my clients requested me to maintain their Rust project. It is a web server that is built with &lt;a rel=&quot;external&quot; href=&quot;https:&#x2F;&#x2F;rocket.rs&#x2F;&quot;&gt;Rocket&lt;&#x2F;a&gt; + &lt;a rel=&quot;external&quot; href=&quot;http:&#x2F;&#x2F;diesel.rs&#x2F;&quot;&gt;Diesel&lt;&#x2F;a&gt; and running stable for a couple of years now. Like any other Rust developer would do, the first thing that I checked was the outdated dependencies via &lt;code&gt;cargo-outdated&lt;&#x2F;code&gt;. The result was close to what I expected: most of the dependencies were out-of-date. However, among all those crates, &lt;a rel=&quot;external&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;mikkyang&#x2F;rust-jwt&quot;&gt;rust-jwt&lt;&#x2F;a&gt; caught my eye. It was 12 minor versions behind!&lt;&#x2F;p&gt;</description>
+      </item>
+      <item>
+          <title>Rewriting sysctl(8) in Rust: systeroid</title>
+          <pubDate>Sun, 17 Apr 2022 00:00:00 +0000</pubDate>
+          <author>Unknown</author>
+          <link>https://blog.orhun.dev/rewriting-sysctl-in-rust/</link>
+          <guid>https://blog.orhun.dev/rewriting-sysctl-in-rust/</guid>
+          <description xml:base="https://blog.orhun.dev/rewriting-sysctl-in-rust/">&lt;p&gt;&lt;a rel=&quot;external&quot; href=&quot;https:&#x2F;&#x2F;en.wikipedia.org&#x2F;wiki&#x2F;Sysctl&quot;&gt;sysctl&lt;&#x2F;a&gt; is a simple and great tool for modifying the kernel parameters. It does its job very well by providing an easy-to-use interface for &lt;code&gt;&#x2F;proc&#x2F;sys&lt;&#x2F;code&gt;. It is maintained as a part of &lt;a rel=&quot;external&quot; href=&quot;https:&#x2F;&#x2F;gitlab.com&#x2F;procps-ng&#x2F;procps&quot;&gt;procps&lt;&#x2F;a&gt; toolkit for years and it can easily be considered a legacy tool today. So why not push it to its limits and turn it into a more user-friendly and even more useful tool with the power of Rust?&lt;&#x2F;p&gt;</description>
+      </item>
+      <item>
+          <title>git-cliff 0.5.0</title>
+          <pubDate>Wed, 15 Dec 2021 00:00:00 +0000</pubDate>
+          <author>Unknown</author>
+          <link>https://blog.orhun.dev/git-cliff-0-5-0/</link>
+          <guid>https://blog.orhun.dev/git-cliff-0-5-0/</guid>
+          <description xml:base="https://blog.orhun.dev/git-cliff-0-5-0/">&lt;p&gt;git-cliff is a highly customizable changelog generator that follows conventional commit specifications ⛰️ In this post, I&#x27;m explaining the new features in the 0.5.0 release while giving insight into the different use-cases.&lt;&#x2F;p&gt;</description>
+      </item>
+      <item>
+          <title>Introducing gpg-tui, a Terminal User Interface for GnuPG</title>
+          <pubDate>Sat, 29 May 2021 00:00:00 +0000</pubDate>
+          <author>Unknown</author>
+          <link>https://blog.orhun.dev/introducing-gpg-tui/</link>
+          <guid>https://blog.orhun.dev/introducing-gpg-tui/</guid>
+          <description xml:base="https://blog.orhun.dev/introducing-gpg-tui/">&lt;p&gt;gpg-tui is a TUI for managing the GnuPG keys 🔐 In this post, I&#x27;m giving a brief introduction to the project as well as describing the thought process and main development challenges behind it.&lt;&#x2F;p&gt;</description>
+      </item>
+      <item>
+          <title>Spin Up Your Own No-Bullshit File Hosting Service</title>
+          <pubDate>Sun, 14 Feb 2021 00:00:00 +0000</pubDate>
+          <author>Unknown</author>
+          <link>https://blog.orhun.dev/no-bullshit-file-hosting/</link>
+          <guid>https://blog.orhun.dev/no-bullshit-file-hosting/</guid>
+          <description xml:base="https://blog.orhun.dev/no-bullshit-file-hosting/">&lt;p&gt;A guide for spinning up your own instance of 0x0, a no-bullshit file hosting and URL shortening service.&lt;&#x2F;p&gt;</description>
+      </item>
+      <item>
+          <title>My First Month as an Arch Linux Trusted User</title>
+          <pubDate>Sat, 06 Feb 2021 00:00:00 +0000</pubDate>
+          <author>Unknown</author>
+          <link>https://blog.orhun.dev/my-first-month-as-tu/</link>
+          <guid>https://blog.orhun.dev/my-first-month-as-tu/</guid>
+          <description xml:base="https://blog.orhun.dev/my-first-month-as-tu/">&lt;p&gt;There&#x27;s a start for everything. A new blog... New responsibilities... Maybe a new role in a Linux distribution that is for advanced users...&lt;&#x2F;p&gt;</description>
+      </item>
+      <item>
+          <title>Kmon! Let&#x27;s manage the Linux kernel modules!</title>
+          <pubDate>Thu, 02 Apr 2020 00:00:00 +0000</pubDate>
+          <author>Unknown</author>
+          <link>https://blog.orhun.dev/introducing-kmon/</link>
+          <guid>https://blog.orhun.dev/introducing-kmon/</guid>
+          <description xml:base="https://blog.orhun.dev/introducing-kmon/">&lt;p&gt;Introducing kmon, a Linux kernel manager and activity monitor 🐧💻&lt;&#x2F;p&gt;</description>
+      </item>
+    </channel>
+</rss>

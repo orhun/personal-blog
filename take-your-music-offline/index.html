@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <meta http-equiv="content-type" content="text/html; charset=utf-8">
+      <meta property="og:type" content="website" />
+      <meta property="og:url" content="https://blog.orhun.dev"/>
+      
+      <meta property="og:title" content="Move away from streaming platforms & take your music offline - Orhun&#x27;s Blog" />
+      
+      <meta property="og:image" content="https://blog.orhun.dev/crow.png" />
+      
+      <meta name="description" content="FOSS • Linux • Programming" />
+      <meta property="og:description" content="FOSS • Linux • Programming"/>
+      
+
+      <!-- Enable responsiveness on mobile devices-->
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+      <link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png">
+      <link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png">
+      <link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png">
+      <link rel="manifest" href="/favicon/site.webmanifest">
+
+      <script async src="https://umami.orhun.dev/script.js" data-website-id="56ca5ca7-ba9f-416e-8bee-a132c155d56b"></script>
+
+      <link rel="stylesheet" href="https://unpkg.com/applause-button/dist/applause-button.css" />
+      <script src="https://unpkg.com/applause-button/dist/applause-button.js"></script>
+
+      
+      <title>Move away from streaming platforms &amp; take your music offline - Orhun&#x27;s Blog</title>
+      
+      <link rel="alternate" type="application/rss+xml" title="Orhun&#x27;s Blog RSS Feed" href="https://blog.orhun.dev/rss.xml" />
+
+      
+          <link rel="stylesheet" href="https://blog.orhun.dev/site.css">
+      
+
+      
+      
+    </head>
+
+    <body class="hack dark main container">
+        
+    
+        
+                
+                    <header>
+                    <nav itemscope itemtype="http://schema.org/SiteNavigationElement" class="nav-flex">
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://blog.orhun.dev">
+                                <span itemprop="name">Home</span>
+                            </a>
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://blog.orhun.dev/categories">
+                                <span itemprop="name">Categories</span>
+                            </a>
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://github.com/orhun/personal-blog">
+                                <span itemprop="name">Source</span>
+                            </a>
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://github.com/orhun">
+                                <span itemprop="name">GitHub</span>
+                            </a>
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://donate.orhun.dev">
+                                <span itemprop="name">Donate</span>
+                            </a>
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://blog.orhun.dev/rss.xml">
+                                <span itemprop="name">RSS</span>
+                            </a>
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://orhun.dev">
+                                <span itemprop="name">About</span>
+                            </a>
+                        
+                        <div class="search-container">
+                            <input type="text" id="search" placeholder="Search...">
+                            <div class="search-results">
+                                <div class="search-results__items"></div>
+                            </div>
+                        </div>
+                    </nav>
+                    </header>
+                
+            
+    
+
+<article itemscope itemtype="http://schema.org/BlogPosting">
+    <header>
+        <h1 itemprop="headline">Move away from streaming platforms &amp; take your music offline</h1>
+        <span class="muted">
+    <svg style="margin-bottom:-3px" class="i-clock" viewBox="0 0 32 32"
+         width="16" height="16" fill="none" stroke="currentcolor"
+         stroke-linecap="round" stroke-linejoin="round" stroke-width="6.25%">
+        <circle cx="16" cy="16" r="14"/>
+        <path d="M16 8 L16 16 20 20"/>
+    </svg>
+    <span>8 minute read</span>
+    <svg style="margin-bottom: -3px" class="i-edit" viewBox="0 0 32 32"
+         width="16" height="16" fill="none" stroke="currentcolor"
+         stroke-linecap="round" stroke-linejoin="round" stroke-width="6.25%">
+        <path d="M30 7 L25 2 5 22 3 29 10 27 Z M21 6 L26 11 Z M5 22 L10 27 Z"/>
+    </svg>
+
+    Published: 2022-06-03
+</span>
+    </header>
+    <div itemprop="articleBody">
+      <p>I don't use <a rel="external" href="https://en.wikipedia.org/wiki/Spotify">Spotify</a> or any other streaming platform for listening to music. Some call it old habits, some call it needless effort, but I'm very used to downloading <a rel="external" href="https://en.wikipedia.org/wiki/MP3">MP3</a> files over the internet and putting them in a folder on my phone then using the whatever default media player I have installed. However, for a couple of years, I have been following a better and automated approach for taking my music offline and feeling a bit less like I'm in a <a rel="external" href="https://en.wikipedia.org/wiki/Consumerism">consumerism</a> bubble.</p>
+<span id="continue-reading"></span>
+<p>While I'm working, I usually have <a rel="external" href="https://en.wikipedia.org/wiki/YouTube">YouTube</a> open on one tab playing music. So I created a separate YouTube account/channel dedicated to creating playlists. In my workflow, after saving what I listen to a playlist, the next step would be downloading these tracks as MP3 and transferring them to my phone. But before I dive into details about how I'm doing that, there are some questions that I would like to answer.</p>
+<p><strong>Q:</strong> If you already have your music on YouTube, why not use YouTube on your phone?<br />
+<strong>A:</strong> I would like to be able to listen to music when I'm offline (i.e. when there is no internet connection).</p>
+<p><strong>Q:</strong> Have you heard of <a rel="external" href="https://music.youtube.com/">YouTube Music</a>?<br />
+<strong>A:</strong> Yes, is it free?</p>
+<p><strong>Q:</strong> But YouTube is full of ads, isn't it annoying?<br />
+<strong>A:</strong> I have an AdBlock extension.</p>
+<p><strong>Q:</strong> You are using YouTube at the end of the day. Doesn't it conflict with what you are trying to achieve while saying "move away from streaming platforms"?<br />
+<strong>A:</strong> Yes, it is partially true. But I would like to discover new artists/music so I need a "source" for that. I'm only taking the good parts of YouTube (e.g. its algorithm) and self-hosting the rest.</p>
+<p><strong>Q:</strong> What about supporting the artists?<br />
+<strong>A:</strong> Streaming is not the only way to support an artist.</p>
+<p><strong>Q:</strong> Why are you doing this?<br />
+<strong>A:</strong> I would like to keep the hard copy of the media that I want to <em>consume</em>. I don't want to leave everything to "the cloud" and I find that wrong. Also, in some cases, I have witnessed the removal of the music that I like since I follow rather obscure artists. Plus, having physical files is great for collecting/archiving purposes. TL;DR: I love files.</p>
+<p><strong>Q:</strong> Is this a meme?<br />
+<strong>A:</strong> No, check out <a rel="external" href="https://www.youtube.com/watch?v=wWaWt9d3yw0">"Boomer Yells at Cloud Computing" by Luke Smith</a>.</p>
+<h3 id="overview">Overview</h3>
+<ol>
+<li>Create playlists on YouTube</li>
+<li>Download MP3 from YouTube periodically</li>
+<li>Synchronize the MP3 files over to your phone</li>
+<li>Use an open source MP3 player to listen to music</li>
+</ol>
+<h3 id="things-that-you-need">Things that you need</h3>
+<ul>
+<li>A home server (base of operations)
+<ul>
+<li>I have a <a rel="external" href="https://www.raspberrypi.com/products/raspberry-pi-4-model-b/">Raspberry Pi 4</a> running <a rel="external" href="https://archlinuxarm.org/">Arch Linux ARM</a></li>
+</ul>
+</li>
+<li>An external drive (for storing MP3 files)
+<ul>
+<li>I have a 2.5" external hard disk drive with 1TB of storage connected to my Raspberry Pi</li>
+</ul>
+</li>
+<li>A YouTube account (for creating playlists)</li>
+<li><a rel="external" href="https://youtube-dl.org/">youtube-dl</a> (<a rel="external" href="https://github.com/ytdl-org/youtube-dl">GitHub</a>) (for downloading playlists)</li>
+<li><a rel="external" href="https://f-droid.org/en/packages/org.amoradi.syncopoli/">Syncopoli</a> (<a rel="external" href="https://gitlab.com/fengshaun/syncopoli">GitLab</a>) (for <code>rsync</code>'ing MP3 files to an <a rel="external" href="https://en.wikipedia.org/wiki/Android_(operating_system)">Android</a> phone)</li>
+<li><a rel="external" href="https://f-droid.org/packages/com.iven.musicplayergo/">Music Player GO</a> (<a rel="external" href="https://github.com/enricocid/Music-Player-GO">GitHub</a>) (for actually listening to music)</li>
+</ul>
+<p><img src="/offline-diagram.png" alt="Diagram" /></p>
+<h4 id="setting-up-the-storage">Setting up the storage</h4>
+<p><img src="/raspberry-pi.jpg" style="width: 50%" alt="Raspberry Pi"/><br></p>
+<p>In my case, I just connected my external hard drive to Raspberry Pi and updated <code>/etc/fstab</code> to mount it on boot.</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="ini"><span class="giallo-l"><span style="color: #5F6672;font-style: italic;"># Static information about the filesystems.</span></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;"># See fstab(5) for details.</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;"># &lt;file system&gt; &lt;dir&gt; &lt;type&gt; &lt;options&gt; &lt;dump&gt; &lt;pass&gt;</span></span>
+<span class="giallo-l"><span>/dev/sda1       /mnt/tera exfat rw,user,</span><span style="color: #E06C75;">uid</span><span>=1000,</span><span style="color: #E06C75;">umask</span><span>=007,exec 0 0</span></span></code></pre>
+<p>So it will be mounted to <code>/mnt/tera</code> on boot. Note that I have <code>HPFS/NTFS/exFAT</code> filesystem on this drive and your situation might be different.</p>
+<p>Next step is creating a separate directory on this drive (since I have some other files) and symlinking it to somewhere more convenient.</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #B57EDC;">mkdir</span><span style="color: #56B6C2;"> -p</span><span style="color: #98C379;"> /mnt/tera/backups/YouTube/</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">ln</span><span style="color: #56B6C2;"> -s</span><span style="color: #98C379;"> /mnt/tera/backups/ /backups</span></span></code></pre>
+<p>So that I will be able to use <code>/backups</code> as a directory pointing to my backups in the drive. Later on, I will be downloading the MP3 files to <code>/backups/YouTube</code> directory.</p>
+<h4 id="creating-a-youtube-account">Creating a YouTube account</h4>
+<p>I like having things separated so I suggest having a YouTube channel just for creating playlists. You can create these playlists as public or private since <code>youtube-dl</code> supports both. You can use <a rel="external" href="https://github.com/ytdl-org/youtube-dl#how-do-i-pass-cookies-to-youtube-dl"><code>--cookies</code></a> argument for specifying a cookie if needed.</p>
+<p>Then you can start creating playlists as you are discovering new music/artists thanks to the great algorithm of YouTube!</p>
+<p><img src="/youtube-playlists.png" alt="YouTube Playlists" /></p>
+<h4 id="downloading-playlists">Downloading playlists</h4>
+<p>In order to keep track of the downloaded videos (tracks), we will need to use <a rel="external" href="https://github.com/ytdl-org/youtube-dl#how-do-i-download-only-new-videos-from-a-playlist"><code>download-archive</code></a> feature of <code>youtube-dl</code>.</p>
+<blockquote>
+<p>With this feature you should initially download the complete playlist with --download-archive /path/to/download/archive/file.txt that will record identifiers of all the videos in a special file. Each subsequent run with the same --download-archive will download only new videos and skip all videos that have been downloaded before. Note that only successful downloads are recorded in the file.</p>
+</blockquote>
+<p>So running the following command will suffice our needs and download the each playlist in their designated folder:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #B57EDC;">$</span><span style="color: #98C379;"> youtube-dl</span><span style="color: #56B6C2;"> \</span></span>
+<span class="giallo-l"><span style="color: #56B6C2;">    --socket-timeout 15 \</span></span>
+<span class="giallo-l"><span style="color: #56B6C2;">    --ignore-errors \</span></span>
+<span class="giallo-l"><span style="color: #56B6C2;">    --extract-audio \</span></span>
+<span class="giallo-l"><span style="color: #56B6C2;">    --audio-format</span><span style="color: #98C379;"> mp3</span><span style="color: #56B6C2;"> \</span></span>
+<span class="giallo-l"><span style="color: #56B6C2;">    --audio-quality 0 \</span></span>
+<span class="giallo-l"><span style="color: #56B6C2;">    --add-metadata \</span></span>
+<span class="giallo-l"><span style="color: #56B6C2;">    --metadata-from-title=</span><span>&quot;</span><span style="color: #98C379;">%(artist)s - %(title)s</span><span>&quot;</span><span style="color: #56B6C2;"> \</span></span>
+<span class="giallo-l"><span style="color: #56B6C2;">    --embed-thumbnail \</span></span>
+<span class="giallo-l"><span style="color: #56B6C2;">    --download-archive</span><span> &quot;</span><span style="color: #98C379;">.archive</span><span>&quot;</span><span style="color: #56B6C2;"> \</span></span>
+<span class="giallo-l"><span style="color: #56B6C2;">    --output</span><span> &#39;</span><span style="color: #98C379;">%(playlist)s/%(title)s.%(ext)s</span><span>&#39;</span><span style="color: #56B6C2;"> \</span></span>
+<span class="giallo-l"><span>    &quot;</span><span style="color: #98C379;">https://www.youtube.com/channel/&lt;channel_id&gt;/playlists</span><span>&quot;</span></span></code></pre>
+<p>Each directory will contain the MP3 files from that playlist:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #B57EDC;">$</span><span style="color: #98C379;"> ls patapon/ sonic/</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #B57EDC;">patapon/:</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">&quot;09. Moudamepon&#39;s Theme - Disk 2 - Patapon Complete Soundtrack.mp3&quot;</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">&#39;Patapon Soundtrack - 10 ビビリッチのテーマ.mp3&#39;</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #B57EDC;">sonic/:</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">&#39;Burning Depths - Sonic &amp; All-Stars Racing Transformed [OST].mp3&#39;</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">&#39;Disquieting Shadow - Sonic Heroes [OST].mp3&#39;</span></span></code></pre>
+<p>List of video IDs will be stored in <code>.archive</code>:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #B57EDC;">youtube</span><span style="color: #98C379;"> Hcrkbtcjoi4</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">youtube</span><span style="color: #98C379;"> Hn1vLFDm98I</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">youtube</span><span style="color: #98C379;"> _pUL7u-mYqA</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">...</span></span></code></pre>
+<p>Also, I wanted to keep track of what I have added to this list so I've used a git repository. Here is the final script:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #5F6672;font-style: italic;">#!/usr/bin/env bash</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #B57EDC;">set</span><span style="color: #56B6C2;"> -e</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #B57EDC;">cd</span><span style="color: #98C379;"> /backups/YouTube/</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #B57EDC;">youtube-dl</span><span style="color: #56B6C2;"> \</span></span>
+<span class="giallo-l"><span style="color: #56B6C2;">    --socket-timeout 15 \</span></span>
+<span class="giallo-l"><span style="color: #56B6C2;">    --ignore-errors \</span></span>
+<span class="giallo-l"><span style="color: #56B6C2;">    --extract-audio \</span></span>
+<span class="giallo-l"><span style="color: #56B6C2;">    --audio-format</span><span style="color: #98C379;"> mp3</span><span style="color: #56B6C2;"> \</span></span>
+<span class="giallo-l"><span style="color: #56B6C2;">    --audio-quality 0 \</span></span>
+<span class="giallo-l"><span style="color: #56B6C2;">    --add-metadata \</span></span>
+<span class="giallo-l"><span style="color: #56B6C2;">    --metadata-from-title=</span><span>&quot;</span><span style="color: #98C379;">%(artist)s - %(title)s</span><span>&quot;</span><span style="color: #56B6C2;"> \</span></span>
+<span class="giallo-l"><span style="color: #56B6C2;">    --embed-thumbnail \</span></span>
+<span class="giallo-l"><span style="color: #56B6C2;">    --download-archive</span><span> &quot;</span><span style="color: #98C379;">.archive</span><span>&quot;</span><span style="color: #56B6C2;"> \</span></span>
+<span class="giallo-l"><span style="color: #56B6C2;">    --output</span><span> &#39;</span><span style="color: #98C379;">%(playlist)s/%(title)s.%(ext)s</span><span>&#39;</span><span style="color: #56B6C2;"> \</span></span>
+<span class="giallo-l"><span>    &quot;</span><span style="color: #98C379;">https://www.youtube.com/channel/&lt;channel_id&gt;/playlists</span><span>&quot;</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #B57EDC;">git</span><span style="color: #98C379;"> add .archive</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #B57EDC;">git</span><span style="color: #56B6C2;"> -c</span><span style="color: #98C379;"> user.name=</span><span>&quot;</span><span style="color: #98C379;">ytdl</span><span>&quot;</span><span style="color: #56B6C2;"> \</span></span>
+<span class="giallo-l"><span style="color: #56B6C2;">    -c</span><span style="color: #98C379;"> user.email=</span><span>&quot;</span><span style="color: #98C379;">ytdl@git</span><span>&quot;</span><span style="color: #56B6C2;"> \</span></span>
+<span class="giallo-l"><span style="color: #98C379;">    commit</span><span style="color: #56B6C2;"> -m</span><span> &quot;</span><span style="color: #98C379;">upd: v</span><span>$(</span><span style="color: #B57EDC;">date</span><span style="color: #98C379;"> +</span><span>&#39;</span><span style="color: #98C379;">%s</span><span>&#39;)&quot;</span></span></code></pre><h4 id="setting-up-the-cronjob">Setting up the cronjob</h4>
+<p>Now we will need to create a <a rel="external" href="https://en.wikipedia.org/wiki/Cron">cronjob</a> for periodically downloading the playlists using the previous script.</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #B57EDC;">$</span><span style="color: #98C379;"> crontab</span><span style="color: #56B6C2;"> -e</span><span style="color: #5F6672;font-style: italic;"> # edit user&#39;s crontab</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #B57EDC;">$</span><span style="color: #98C379;"> crontab</span><span style="color: #56B6C2;"> -l</span><span style="color: #5F6672;font-style: italic;"> # list cronjobs</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">0</span><span style="color: #56B6C2;"> 0</span><span style="color: #E06C75;"> * *</span><span style="color: #56B6C2;"> 0</span><span style="color: #98C379;"> /backups/YouTube/fetch.sh</span></span></code></pre>
+<p>This cronjob will run <a rel="external" href="https://crontab.guru/#0_0_*_*_0">weekly</a> and download the playlists.</p>
+<p>Here is what <code>git log</code> will look like after you let it run for a couple of weeks:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="plain"><span class="giallo-l"><span>commit 0abef26b3dbef43f15e0172190b2e802d38ed5c3</span></span>
+<span class="giallo-l"><span>Author: ytdl &lt;ytdl@git&gt;</span></span>
+<span class="giallo-l"><span>Date:   Sun May 22 02:54:50 2022 +0300</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span>    upd: v1653177290</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span>commit ef7ec0d63616d82ce3cc942e2edddf1452063208</span></span>
+<span class="giallo-l"><span>Author: ytdl &lt;ytdl@git&gt;</span></span>
+<span class="giallo-l"><span>Date:   Sun May 15 00:48:31 2022 +0300</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span>    upd: v1652564911</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span>commit 0c0af6ea38c8f07990d7954f6f69ab592ff49c38</span></span>
+<span class="giallo-l"><span>Author: ytdl &lt;ytdl@git&gt;</span></span>
+<span class="giallo-l"><span>Date:   Sun May 8 00:32:26 2022 +0300</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span>    upd: v1651959146</span></span></code></pre><h4 id="syncing-the-files">Syncing the files</h4>
+<p>I'm using <a rel="external" href="https://gitlab.com/fengshaun/syncopoli">Syncopoli</a> to <a rel="external" href="https://en.wikipedia.org/wiki/Rsync">rsync(1)</a> files over to my phone. It is a really simple yet effective application. Some parts are still WIP but you can head to the <a rel="external" href="https://gitlab.com/fengshaun/syncopoli">repository</a> and contribute if you're interested.</p>
+<p>Main screen:</p>
+<img src="/syncopoli_main_screen.jpg" style="width: 50%" alt="Syncopoli main screen"/>
+<p>Settings:</p>
+<img src="/syncopoli_settings.jpg" style="width: 50%" alt="Syncopoli settings"/>
+<p>I had a couple of issues with my settings so it is always a good idea to monitor the SSH connection attempts on your server while trying out <code>Syncopoli</code>:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #B57EDC;">$</span><span style="color: #98C379;"> journalctl</span><span style="color: #56B6C2;"> -f -u</span><span style="color: #98C379;"> sshd</span></span></code></pre>
+<p>In my case, this command greatly helped me to spot issues like the following:</p>
+<blockquote>
+<p>fatal: Timeout before authentication for 192.168.1.37 port 60044</p>
+</blockquote>
+<blockquote>
+<p>error: maximum authentication attempts exceeded for orhun from 192.168.1.37 port 60038 ssh2 [preauth]</p>
+</blockquote>
+<p>Also, you can use <a rel="external" href="https://f-droid.org/en/packages/com.dp.logcatapp/">Logcat Reader</a> to see which <code>rsync</code> commands are being run and what has failed.</p>
+<img src="/syncopoli_logcat_reader.jpg" style="width: 60%" alt="Logcat Reader"/>
+<p>For me, the biggest challenge was to use my private key for the SSH connection. To do that, you <a rel="external" href="https://gitlab.com/fengshaun/syncopoli#ssh-key">need to</a> convert your key to <a rel="external" href="https://en.wikipedia.org/wiki/Dropbear_(software)">dropbear</a> format:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #B57EDC;">$</span><span style="color: #98C379;"> dropbearconvert openssh dropbear</span><span style="color: #E06C75;"> &lt;</span><span style="color: #98C379;">openssh_private_ke</span><span>y</span><span style="color: #E06C75;">&gt; &lt;</span><span style="color: #98C379;">dropbear_output_fil</span><span>e</span><span style="color: #E06C75;">&gt;</span></span></code></pre>
+<p>But even though I did this, I still couldn't connect:</p>
+<blockquote>
+<p>userauth_pubkey: signature algorithm ssh-rsa not in PubkeyAcceptedAlgorithms [preauth]</p>
+</blockquote>
+<p>I solved this issue by adding the following line to my <code>/etc/ssh/sshd_config</code> and restarting <code>sshd</code>:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="plain"><span class="giallo-l"><span>PubkeyAcceptedKeyTypes=+ssh-rsa</span></span></code></pre>
+<p>Then everything worked perfectly and I managed to transfer files to my phone.</p>
+<p><img src="/syncopoli_transfer.jpg" style="width: 50%" alt="Syncopoli transfer"/><br></p>
+<p>Here is what my sync profile looks like:</p>
+<p><img src="/syncopoli_profile.jpg" style="width: 50%" alt="Syncopoli profile"/><br></p>
+<p>JSON export:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="json"><span class="giallo-l"><span>{</span></span>
+<span class="giallo-l"><span>  &quot;</span><span style="color: #C6CCD7;">version</span><span>&quot;:</span><span style="color: #56B6C2;"> 2</span><span>,</span></span>
+<span class="giallo-l"><span>  &quot;</span><span style="color: #C6CCD7;">globals</span><span>&quot;: {</span></span>
+<span class="giallo-l"><span>    &quot;</span><span style="color: #C6CCD7;">pref_key_server_address</span><span>&quot;: &quot;</span><span style="color: #98C379;">&lt;server&gt;</span><span>&quot;,</span></span>
+<span class="giallo-l"><span>    &quot;</span><span style="color: #C6CCD7;">pref_key_protocol</span><span>&quot;: &quot;</span><span style="color: #98C379;">SSH</span><span>&quot;,</span></span>
+<span class="giallo-l"><span>    &quot;</span><span style="color: #C6CCD7;">pref_key_username</span><span>&quot;: &quot;</span><span style="color: #98C379;">orhun</span><span>&quot;,</span></span>
+<span class="giallo-l"><span>    &quot;</span><span style="color: #C6CCD7;">pref_key_rsync_password</span><span>&quot;: &quot;&quot;,</span></span>
+<span class="giallo-l"><span>    &quot;</span><span style="color: #C6CCD7;">pref_key_options</span><span>&quot;: &quot;</span><span style="color: #98C379;">-vrlt --no-perms</span><span>&quot;,</span></span>
+<span class="giallo-l"><span>    &quot;</span><span style="color: #C6CCD7;">pref_key_private_key</span><span>&quot;: &quot;</span><span style="color: #98C379;">/sdcard/alarm_dropbear.sec</span><span>&quot;,</span></span>
+<span class="giallo-l"><span>    &quot;</span><span style="color: #C6CCD7;">pref_key_port</span><span>&quot;: &quot;</span><span style="color: #98C379;">&lt;port&gt;</span><span>&quot;,</span></span>
+<span class="giallo-l"><span>    &quot;</span><span style="color: #C6CCD7;">pref_key_frequency</span><span>&quot;: &quot;</span><span style="color: #98C379;">12</span><span>&quot;,</span></span>
+<span class="giallo-l"><span>    &quot;</span><span style="color: #C6CCD7;">pref_key_ssh_password</span><span>&quot;: &quot;&quot;,</span></span>
+<span class="giallo-l"><span>    &quot;</span><span style="color: #C6CCD7;">pref_key_wifi_only</span><span>&quot;:</span><span style="color: #56B6C2;"> true</span><span>,</span></span>
+<span class="giallo-l"><span>    &quot;</span><span style="color: #C6CCD7;">pref_key_wifi_name</span><span>&quot;: &quot;&quot;,</span></span>
+<span class="giallo-l"><span>    &quot;</span><span style="color: #C6CCD7;">pref_key_as_root</span><span>&quot;: &quot;&quot;</span></span>
+<span class="giallo-l"><span>  },</span></span>
+<span class="giallo-l"><span>  &quot;</span><span style="color: #C6CCD7;">profiles</span><span>&quot;: [</span></span>
+<span class="giallo-l"><span>    {</span></span>
+<span class="giallo-l"><span>      &quot;</span><span style="color: #C6CCD7;">name</span><span>&quot;: &quot;</span><span style="color: #98C379;">Sync Music</span><span>&quot;,</span></span>
+<span class="giallo-l"><span>      &quot;</span><span style="color: #C6CCD7;">sources</span><span>&quot;: [&quot;</span><span style="color: #98C379;">../../backups/YouTube/</span><span>&quot;],</span></span>
+<span class="giallo-l"><span>      &quot;</span><span style="color: #C6CCD7;">destination</span><span>&quot;: &quot;</span><span style="color: #98C379;">/sdcard/Music/YouTube/</span><span>&quot;,</span></span>
+<span class="giallo-l"><span>      &quot;</span><span style="color: #C6CCD7;">rsync_options</span><span>&quot;: &quot;</span><span style="color: #98C379;">-zhPu --exclude </span><span style="color: #56B6C2;">\&quot;</span><span style="color: #98C379;">.git*</span><span style="color: #56B6C2;">\&quot;</span><span style="color: #98C379;"> --exclude </span><span style="color: #56B6C2;">\&quot;</span><span style="color: #98C379;">.archive</span><span style="color: #56B6C2;">\&quot;</span><span style="color: #98C379;"> --exclude </span><span style="color: #56B6C2;">\&quot;</span><span style="color: #98C379;">*.sh</span><span style="color: #56B6C2;">\&quot;</span><span>&quot;,</span></span>
+<span class="giallo-l"><span>      &quot;</span><span style="color: #C6CCD7;">direction</span><span>&quot;: &quot;</span><span style="color: #98C379;">INCOMING</span><span>&quot;</span></span>
+<span class="giallo-l"><span>    }</span></span>
+<span class="giallo-l"><span>  ]</span></span>
+<span class="giallo-l"><span>}</span></span></code></pre>
+<p>I had to use <code>../../</code> for the origin directory since <code>rsync</code> is launched from <code>$HOME</code> as default. Maybe there is another way to achieve this but this worked well so I didn't look into other options. If you know a better way, let me know!</p>
+<h4 id="tweaking-rsync-settings">Tweaking rsync settings</h4>
+<p>The default arguments that are passed to <code>rsync</code> are the following:</p>
+<ul>
+<li><code>--verbose, -v</code>: increase verbosity</li>
+<li><code>--recursive, -r</code>: recurse into directories</li>
+<li><code>--links, -l</code>: copy symlinks as symlinks</li>
+<li><code>-times, -t</code>: preserve modification times</li>
+<li><code>--no-perms</code>: do not preserve permissions</li>
+</ul>
+<p>Additionally, I'm using the following flags/arguments:</p>
+<ul>
+<li><code>--compress, -z</code>: compress file data during the transfer</li>
+<li><code>--human-readable, -h</code>: output numbers in a human-readable format</li>
+<li><code>-P</code>: equivalent to <code>--partial --progress</code>. Its purpose is to make it much easier to specify these two options for a long transfer that may be interrupted.</li>
+<li><code>--update, -u</code>: skip files that are newer on the receiver</li>
+<li><code>--exclude=PATTERN</code>: exclude files matching PATTERN</li>
+</ul>
+<p>Keep in mind that you can use <code>--dry-run, -n</code> flag to perform a trial run. It is also a good idea to create another profile on <code>Syncopoli</code> for dry-run.</p>
+<p>I also suggest having albums and long mixes in a separate playlist so that you can <code>--exclude</code> them with <code>rsync</code> to avoid long download times.</p>
+<h4 id="listening-to-music-notes">Listening to music 🎶</h4>
+<p>After going through all these steps and automating the download/sync process, there is one simple thing left to do: feed your soul with music via <a rel="external" href="https://github.com/enricocid/Music-Player-GO">Music Player GO</a>!</p>
+<p><img src="/music-player-go.jpg" style="width: 90%" alt="Music Player GO"/><br></p>
+<p>And there you have it, an alternative approach to how you can enjoy listening to music offline while actually owning <em>the data</em>.</p>
+<p>Consider supporting me on <a rel="external" href="https://github.com/sponsors/orhun">GitHub Sponsors</a> or <a rel="external" href="https://www.patreon.com/orhunp">Patreon</a> :3</p>
+<p>Take care!</p>
+
+    </div>
+
+    
+        <footer>
+            <hr>
+            <p>
+                
+                    Published by Orhun Parmaksız
+                
+                
+                    
+                    in <a href="https://blog.orhun.dev/categories/projects/">Projects</a>
+                
+                
+            </p>
+            
+            
+            <div style="display: flex; justify-content: space-between; align-items: center">
+              <div>
+                <iframe
+                  src="https://github.com/sponsors/orhun/button"
+                  title="Sponsor @orhun"
+                  height="35"
+                  width="116"
+                  style="border: 0"
+                ></iframe>
+                <a href="https://www.buymeacoffee.com/orhun" target="_blank"
+                  ><img
+                    src="https://cdn.buymeacoffee.com/buttons/v2/default-white.png"
+                    alt="Buy Me A Coffee"
+                    style="height: 40px !important; width: 150px !important"
+                /></a>
+              </div>
+              <div>
+                <applause-button
+                  style="width: 50px; height: 50px"
+                  url="https://blog.orhun.dev&#x2F;take-your-music-offline&#x2F;"
+                  color="white"
+                  multiclap="true"
+                />
+              </div>
+              <div>
+                <div style="width: auto; height: 39px">
+                  <p style="margin: 0; color: #fff; font-style: italic">✨ Sponsored by:</p>
+                </div>
+                <a href="https://www.jetbrains.com/" target="_blank"
+                  ><img
+                    src="/sponsors/jetbrains.png"
+                    alt="JetBrains"
+                    style="height: 45px; width: auto"
+                /></a>
+                <a href="https://terminaltrove.com/" target="_blank"
+                  ><img
+                    src="/sponsors/terminal_trove.png"
+                    alt="Terminal Trove"
+                    style="height: 40px; width: auto"
+                /></a>
+              </div>
+            </div>
+            <script src="https://utteranc.es/client.js"
+                    repo="orhun/personal-blog"
+                    issue-term="url"
+                    label="comments"
+                    theme="github-dark"
+                    crossorigin="anonymous"
+                    async>
+            </script>
+        </footer>
+    
+</article>
+
+
+    </body>
+
+    <script type="text/javascript" src="https://blog.orhun.dev/elasticlunr.min.js"></script>
+    <script type="text/javascript" src="https://blog.orhun.dev/js/search.js"></script>
+
+</html>

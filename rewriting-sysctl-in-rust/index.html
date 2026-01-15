@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <meta http-equiv="content-type" content="text/html; charset=utf-8">
+      <meta property="og:type" content="website" />
+      <meta property="og:url" content="https://blog.orhun.dev"/>
+      
+      <meta property="og:title" content="Rewriting sysctl(8) in Rust: systeroid - Orhun&#x27;s Blog" />
+      
+      <meta property="og:image" content="https://blog.orhun.dev/crow.png" />
+      
+      <meta name="description" content="FOSS • Linux • Programming" />
+      <meta property="og:description" content="FOSS • Linux • Programming"/>
+      
+
+      <!-- Enable responsiveness on mobile devices-->
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+      <link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png">
+      <link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png">
+      <link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png">
+      <link rel="manifest" href="/favicon/site.webmanifest">
+
+      <script async src="https://umami.orhun.dev/script.js" data-website-id="56ca5ca7-ba9f-416e-8bee-a132c155d56b"></script>
+
+      <link rel="stylesheet" href="https://unpkg.com/applause-button/dist/applause-button.css" />
+      <script src="https://unpkg.com/applause-button/dist/applause-button.js"></script>
+
+      
+      <title>Rewriting sysctl(8) in Rust: systeroid - Orhun&#x27;s Blog</title>
+      
+      <link rel="alternate" type="application/rss+xml" title="Orhun&#x27;s Blog RSS Feed" href="https://blog.orhun.dev/rss.xml" />
+
+      
+          <link rel="stylesheet" href="https://blog.orhun.dev/site.css">
+      
+
+      
+      
+    </head>
+
+    <body class="hack dark main container">
+        
+    
+        
+                
+                    <header>
+                    <nav itemscope itemtype="http://schema.org/SiteNavigationElement" class="nav-flex">
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://blog.orhun.dev">
+                                <span itemprop="name">Home</span>
+                            </a>
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://blog.orhun.dev/categories">
+                                <span itemprop="name">Categories</span>
+                            </a>
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://github.com/orhun/personal-blog">
+                                <span itemprop="name">Source</span>
+                            </a>
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://github.com/orhun">
+                                <span itemprop="name">GitHub</span>
+                            </a>
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://donate.orhun.dev">
+                                <span itemprop="name">Donate</span>
+                            </a>
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://blog.orhun.dev/rss.xml">
+                                <span itemprop="name">RSS</span>
+                            </a>
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://orhun.dev">
+                                <span itemprop="name">About</span>
+                            </a>
+                        
+                        <div class="search-container">
+                            <input type="text" id="search" placeholder="Search...">
+                            <div class="search-results">
+                                <div class="search-results__items"></div>
+                            </div>
+                        </div>
+                    </nav>
+                    </header>
+                
+            
+    
+
+<article itemscope itemtype="http://schema.org/BlogPosting">
+    <header>
+        <h1 itemprop="headline">Rewriting sysctl(8) in Rust: systeroid</h1>
+        <span class="muted">
+    <svg style="margin-bottom:-3px" class="i-clock" viewBox="0 0 32 32"
+         width="16" height="16" fill="none" stroke="currentcolor"
+         stroke-linecap="round" stroke-linejoin="round" stroke-width="6.25%">
+        <circle cx="16" cy="16" r="14"/>
+        <path d="M16 8 L16 16 20 20"/>
+    </svg>
+    <span>5 minute read</span>
+    <svg style="margin-bottom: -3px" class="i-edit" viewBox="0 0 32 32"
+         width="16" height="16" fill="none" stroke="currentcolor"
+         stroke-linecap="round" stroke-linejoin="round" stroke-width="6.25%">
+        <path d="M30 7 L25 2 5 22 3 29 10 27 Z M21 6 L26 11 Z M5 22 L10 27 Z"/>
+    </svg>
+
+    Published: 2022-04-17
+</span>
+    </header>
+    <div itemprop="articleBody">
+      <p><a rel="external" href="https://en.wikipedia.org/wiki/Sysctl">sysctl</a> is a simple and great tool for modifying the kernel parameters. It does its job very well by providing an easy-to-use interface for <code>/proc/sys</code>. It is maintained as a part of <a rel="external" href="https://gitlab.com/procps-ng/procps">procps</a> toolkit for years and it can easily be considered a legacy tool today. So why not push it to its limits and turn it into a more user-friendly and even more useful tool with the power of Rust?</p>
+<span id="continue-reading"></span><h3 id="sysctl">sysctl</h3>
+<p>sysctl depends on <a rel="external" href="https://en.wikipedia.org/wiki/Procfs">procfs</a> and works by accessing/modifying the kernel parameters that reside in <code>/proc/sys</code> directory. The basic functionalities of sysctl are the following:</p>
+<ul>
+<li>List parameter values: <code>sysctl -A</code></li>
+<li>Set a parameter value: <code>sysctl -w parameter=1</code></li>
+</ul>
+<p>A more concrete example would be:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #B57EDC;">sysctl</span><span style="color: #56B6C2;"> -w</span><span style="color: #98C379;"> vm.swappiness=</span><span style="color: #56B6C2;">60</span></span></code></pre>
+<p>Considering this simple example, how different use cases could you have, and what role does <strong>systeroid</strong> play?</p>
+<h3 id="systeroid">systeroid</h3>
+<p><a rel="external" href="https://github.com/orhun/systeroid"><strong>https://github.com/orhun/systeroid</strong></a></p>
+<p><strong>systeroid</strong> is "sysctl on steroids". Similar to sysctl, it is implemented using procfs and the primary goal is to manage the kernel parameters. It has a bunch of features to ease the process of reading and modifying the values and even retrieving information about them from the official Linux kernel documentation. It also has a text-based user interface to visualize the state of the kernel parameters and interactively perform these management operations.</p>
+<p><img src="https://github.com/orhun/systeroid/raw/main/assets/systeroid-demo.gif" alt="demo" /></p>
+<h4 id="comparison">Comparison</h4>
+<p>If you compare the <code>--help</code> output of systeroid with sysctl, you will see that they are compatible with each other, also meaning that systeroid encapsulates the functionality. There are some additional arguments/flags which is the actual thing that gives systeroid its power:</p>
+<ul>
+<li><code>-T, --tree</code>: display the variables in a tree-like format</li>
+<li><code>-J, --json</code>: display the variables in JSON format</li>
+<li><code>-E, --explain</code>: provide a detailed explanation for variable</li>
+<li><code>-D, --docs &lt;path&gt;</code>: set the path of the kernel documentation</li>
+<li><code>-P, --no-pager</code>: do not pipe output into a pager</li>
+<li><code>-v, --verbose</code>: enable verbose logging</li>
+<li><code>--tui</code>: show terminal user interface</li>
+</ul>
+<p>systeroid can also be used as a drop-in replacement for sysctl.</p>
+<h4 id="output-formats">Output formats</h4>
+<p><code>systeroid -A</code> is the simplest way of listing the kernel parameters. In addition, there is also <code>-T, --tree</code> flag which will output a tree:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #B57EDC;">$</span><span style="color: #98C379;"> systeroid</span><span style="color: #56B6C2;"> --names --pattern</span><span> &#39;</span><span style="color: #98C379;">kernel.*_max$</span><span>&#39;</span><span style="color: #56B6C2;"> --tree</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #B57EDC;">kernel</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">├──</span><span style="color: #98C379;"> ngroups_max</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">├──</span><span style="color: #98C379;"> pid_max</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">└──</span><span style="color: #98C379;"> sched_util_clamp_max</span></span></code></pre>
+<p>You can also <code>-J, --json</code> to get the output as JSON:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #B57EDC;">$</span><span style="color: #98C379;"> systeroid</span><span style="color: #56B6C2;"> --pattern</span><span> &#39;</span><span style="color: #98C379;">^net.*</span><span>&#39;</span><span style="color: #56B6C2;"> --json</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span>[</span></span>
+<span class="giallo-l"><span>  {</span></span>
+<span class="giallo-l"><span>    &quot;</span><span style="color: #98C379;">name</span><span>&quot;: &quot;</span><span style="color: #98C379;">net.unix.max_dgram_qlen</span><span>&quot;,</span></span>
+<span class="giallo-l"><span>    &quot;</span><span style="color: #98C379;">section</span><span>&quot;: &quot;</span><span style="color: #98C379;">net</span><span>&quot;,</span></span>
+<span class="giallo-l"><span>    &quot;</span><span style="color: #98C379;">value</span><span>&quot;: &quot;</span><span style="color: #98C379;">512</span><span>&quot;</span></span>
+<span class="giallo-l"><span>  }</span></span>
+<span class="giallo-l"><span>]</span></span></code></pre><h4 id="explain">Explain</h4>
+<p>Let's assume that you have faced a particular problem and someone on Stack Overflow recommended using the following command:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #B57EDC;">sysctl</span><span style="color: #56B6C2;"> -w</span><span style="color: #98C379;"> kernel.oops_all_cpu_backtrace=</span><span style="color: #56B6C2;">0</span></span></code></pre>
+<p>In this case, you might ask what is "kernel.oops_all_cpu_backtrace" and what does setting it to 0 do?</p>
+<p>This is where systeroid comes in to help:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #B57EDC;">systeroid</span><span style="color: #56B6C2;"> --explain</span><span style="color: #98C379;"> kernel.oops_all_cpu_backtrace</span></span></code></pre>
+<p>The command above will fetch the corresponding information from the Linux kernel documentation and yield the results to stdout via <code>less</code>. Similarly, you can run systeroid with <code>-E, --explain</code> argument to retrieve information about any other parameter (as long as they are present in the kernel documentation).</p>
+<p>So how does this work?</p>
+<p>As you might have guessed, you need to have the kernel documentation "installed" or cloned somewhere. Distro packages solve this by having the kernel documentation as a separate package and in that case, all you have to do is install that package. (e.g. <a rel="external" href="https://archlinux.org/packages/core/x86_64/linux-docs/">linux-docs</a> in Arch Linux) In case this is not applicable, you need to clone the kernel repository and specify a path via <code>-D, --docs</code> argument. There is a <a rel="external" href="https://github.com/orhun/systeroid/blob/main/scripts/clone-linux-docs.sh">convenience script</a> in the repository.</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #5F6672;font-style: italic;"># specify the kernel documentation path explicitly</span></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;"># (not needed if you have the kernel documentation installed as a package)</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">systeroid</span><span style="color: #56B6C2;"> -E</span><span style="color: #98C379;"> user.max_user_namespaces</span><span style="color: #56B6C2;"> -D</span><span style="color: #98C379;"> /usr/share/doc/linux</span></span></code></pre>
+<p>After the kernel documentation is supplied to systeroid, it parses the corresponding sysctl files (using <a rel="external" href="https://github.com/orhun/parseit">parseit</a> crate) and caches them for the next run. This way, documentation about each parameter can be shown to the user.</p>
+<p>For more information, see the <a rel="external" href="https://github.com/orhun/systeroid#showing-information-about-parameters">README.md#showing-information-about-parameters</a>.</p>
+<h4 id="tui">TUI</h4>
+<p>systeroid has a terminal interface that can be launched via <code>systeroid-tui</code> (binary) or <code>systeroid --tui</code> (alias).</p>
+<p><img src="https://raw.githubusercontent.com/orhun/systeroid/main/assets/systeroid-tui-set-value.gif" alt="systeroid-tui" /></p>
+<p>Currently, the following actions are supported:</p>
+<ul>
+<li><a rel="external" href="https://github.com/orhun/systeroid#scrolling">Browse the available parameters</a></li>
+<li><a rel="external" href="https://github.com/orhun/systeroid#viewing-the-parameter-documentation">View the documentation</a></li>
+<li><a rel="external" href="https://github.com/orhun/systeroid#searching">Search for parameters</a></li>
+<li><a rel="external" href="https://github.com/orhun/systeroid#setting-values-1">Update the value of a parameter</a></li>
+<li><a rel="external" href="https://github.com/orhun/systeroid#copying-to-clipboard">Copy to clipboard</a></li>
+<li><a rel="external" href="https://github.com/orhun/systeroid#running-commands">And more!</a></li>
+</ul>
+<p>The colors are also <a rel="external" href="https://github.com/orhun/systeroid#changing-the-colors">customizable</a> and I'm thinking of adding a <a rel="external" href="https://github.com/orhun/systeroid/issues/12">configuration file</a> to customize the TUI in the future.</p>
+<h3 id="endnote">Endnote</h3>
+<p>My primary goal for the future of the project is simply adding more ways to conveniently manage the kernel parameters. I also plan to work on the <a rel="external" href="https://github.com/orhun/systeroid/issues">existing issues</a>. I hope systeroid will help you out in ways that will improve your workflow and the security of your kernel :)</p>
+<p>If you liked <strong>systeroid</strong> and/or my other projects on my GitHub, please consider supporting me on <a rel="external" href="https://github.com/sponsors/orhun">GitHub Sponsors</a> or <a rel="external" href="https://www.patreon.com/orhunp">Patreon</a>! 🐻</p>
+<p><em>Görüşmek üzere!</em></p>
+
+    </div>
+
+    
+        <footer>
+            <hr>
+            <p>
+                
+                    Published by Orhun Parmaksız
+                
+                
+                    
+                    in <a href="https://blog.orhun.dev/categories/projects/">Projects</a>
+                
+                
+            </p>
+            
+            
+            <div style="display: flex; justify-content: space-between; align-items: center">
+              <div>
+                <iframe
+                  src="https://github.com/sponsors/orhun/button"
+                  title="Sponsor @orhun"
+                  height="35"
+                  width="116"
+                  style="border: 0"
+                ></iframe>
+                <a href="https://www.buymeacoffee.com/orhun" target="_blank"
+                  ><img
+                    src="https://cdn.buymeacoffee.com/buttons/v2/default-white.png"
+                    alt="Buy Me A Coffee"
+                    style="height: 40px !important; width: 150px !important"
+                /></a>
+              </div>
+              <div>
+                <applause-button
+                  style="width: 50px; height: 50px"
+                  url="https://blog.orhun.dev&#x2F;rewriting-sysctl-in-rust&#x2F;"
+                  color="white"
+                  multiclap="true"
+                />
+              </div>
+              <div>
+                <div style="width: auto; height: 39px">
+                  <p style="margin: 0; color: #fff; font-style: italic">✨ Sponsored by:</p>
+                </div>
+                <a href="https://www.jetbrains.com/" target="_blank"
+                  ><img
+                    src="/sponsors/jetbrains.png"
+                    alt="JetBrains"
+                    style="height: 45px; width: auto"
+                /></a>
+                <a href="https://terminaltrove.com/" target="_blank"
+                  ><img
+                    src="/sponsors/terminal_trove.png"
+                    alt="Terminal Trove"
+                    style="height: 40px; width: auto"
+                /></a>
+              </div>
+            </div>
+            <script src="https://utteranc.es/client.js"
+                    repo="orhun/personal-blog"
+                    issue-term="url"
+                    label="comments"
+                    theme="github-dark"
+                    crossorigin="anonymous"
+                    async>
+            </script>
+        </footer>
+    
+</article>
+
+
+    </body>
+
+    <script type="text/javascript" src="https://blog.orhun.dev/elasticlunr.min.js"></script>
+    <script type="text/javascript" src="https://blog.orhun.dev/js/search.js"></script>
+
+</html>

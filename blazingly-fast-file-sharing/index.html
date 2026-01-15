@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <meta http-equiv="content-type" content="text/html; charset=utf-8">
+      <meta property="og:type" content="website" />
+      <meta property="og:url" content="https://blog.orhun.dev"/>
+      
+      <meta property="og:title" content="Taking Rust to the Cloud: Blazingly Fast File Sharing - Orhun&#x27;s Blog" />
+      
+      <meta property="og:image" content="https://blog.orhun.dev/crow.png" />
+      
+      <meta name="description" content="FOSS • Linux • Programming" />
+      <meta property="og:description" content="FOSS • Linux • Programming"/>
+      
+
+      <!-- Enable responsiveness on mobile devices-->
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+      <link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png">
+      <link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png">
+      <link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png">
+      <link rel="manifest" href="/favicon/site.webmanifest">
+
+      <script async src="https://umami.orhun.dev/script.js" data-website-id="56ca5ca7-ba9f-416e-8bee-a132c155d56b"></script>
+
+      <link rel="stylesheet" href="https://unpkg.com/applause-button/dist/applause-button.css" />
+      <script src="https://unpkg.com/applause-button/dist/applause-button.js"></script>
+
+      
+      <title>Taking Rust to the Cloud: Blazingly Fast File Sharing - Orhun&#x27;s Blog</title>
+      
+      <link rel="alternate" type="application/rss+xml" title="Orhun&#x27;s Blog RSS Feed" href="https://blog.orhun.dev/rss.xml" />
+
+      
+          <link rel="stylesheet" href="https://blog.orhun.dev/site.css">
+      
+
+      
+      
+    </head>
+
+    <body class="hack dark main container">
+        
+    
+        
+                
+                    <header>
+                    <nav itemscope itemtype="http://schema.org/SiteNavigationElement" class="nav-flex">
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://blog.orhun.dev">
+                                <span itemprop="name">Home</span>
+                            </a>
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://blog.orhun.dev/categories">
+                                <span itemprop="name">Categories</span>
+                            </a>
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://github.com/orhun/personal-blog">
+                                <span itemprop="name">Source</span>
+                            </a>
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://github.com/orhun">
+                                <span itemprop="name">GitHub</span>
+                            </a>
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://donate.orhun.dev">
+                                <span itemprop="name">Donate</span>
+                            </a>
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://blog.orhun.dev/rss.xml">
+                                <span itemprop="name">RSS</span>
+                            </a>
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://orhun.dev">
+                                <span itemprop="name">About</span>
+                            </a>
+                        
+                        <div class="search-container">
+                            <input type="text" id="search" placeholder="Search...">
+                            <div class="search-results">
+                                <div class="search-results__items"></div>
+                            </div>
+                        </div>
+                    </nav>
+                    </header>
+                
+            
+    
+
+<article itemscope itemtype="http://schema.org/BlogPosting">
+    <header>
+        <h1 itemprop="headline">Taking Rust to the Cloud: Blazingly Fast File Sharing</h1>
+        <span class="muted">
+    <svg style="margin-bottom:-3px" class="i-clock" viewBox="0 0 32 32"
+         width="16" height="16" fill="none" stroke="currentcolor"
+         stroke-linecap="round" stroke-linejoin="round" stroke-width="6.25%">
+        <circle cx="16" cy="16" r="14"/>
+        <path d="M16 8 L16 16 20 20"/>
+    </svg>
+    <span>12 minute read</span>
+    <svg style="margin-bottom: -3px" class="i-edit" viewBox="0 0 32 32"
+         width="16" height="16" fill="none" stroke="currentcolor"
+         stroke-linecap="round" stroke-linejoin="round" stroke-width="6.25%">
+        <path d="M30 7 L25 2 5 22 3 29 10 27 Z M21 6 L26 11 Z M5 22 L10 27 Z"/>
+    </svg>
+
+    Published: 2023-05-17
+</span>
+    </header>
+    <div itemprop="articleBody">
+      <p>"<a rel="external" href="https://github.com/orhun/rustypaste"><strong>rustypaste</strong></a>" is a self-hosted and minimal file upload/pastebin service written in Rust. In this post, I will be talking about its features and telling the story behind how I deployed it to <a rel="external" href="https://www.shuttle.rs">shuttle.rs</a> to make it publicly available for free use.</p>
+<span id="continue-reading"></span><center>
+<img alt="https://blog.xkcd.com/2019/08/26/how-to-send-a-file/" src="/xkcd-sendfile.png" width="50%"/>
+<p><i>If the Sun is warm, the winds are favorable, and it’s the right time of year, you could use butterflies to send someone the entire internet.</i><a href="https://blog.xkcd.com/2019/08/26/how-to-send-a-file/">*</a></p>
+</center>
+<p>If you have chatted with me on the internet before and if I wanted to share an image/link with you, it is highly likely that I might have sent you a message like this:</p>
+<center>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #B57EDC;">https://p.orhun.dev/enzkJQ.png</span></span></code></pre></center>
+<p>The first time people get this, they either find it interesting and ask about or they just roll with it and click the link. Most of the time, it is the latter.</p>
+<p>If you have ever wondered why I prefer sending links instead of directly sending the image/file and what's behind that, you are lucky. Today is the day that I will finally reveal this mystery.</p>
+<p>Buckle up!</p>
+<hr />
+<h3 id="the-story-of-file-sharing">The Story of File Sharing</h3>
+<p>To properly convey the idea behind file sharing, I need to tell you a story.</p>
+<p>In the early days of the internet (not that I lived through them), communication was simpler and naturally less secure. One of the things people have used was the almighty <a rel="external" href="https://en.wikipedia.org/wiki/Internet_Relay_Chat">Internet Relay Chat</a> (IRC), the famous chat system that is being used even today by some projects. Back in the day, people were creating channels there and enjoying the non-secure, less-censored, and kind-of-anonymous communication. Today, those times are considered the golden era of the internet by some people including me. Everything was so peaceful and you could smell the dusty air which is coming from an old PC fan that is hardly running Windows XP with an Intel Pentium 4 processor. *sigh* Happy times.</p>
+<p>Well, no.</p>
+<p>You couldn't share images on IRC. At least it wasn't that easy since IRC clients were heavily text-based and designed to be run on a terminal (the author is talking about <a rel="external" href="https://en.wikipedia.org/wiki/BitchX">BitchX</a> here). Surely, it wasn't as easy and as convenient as today's chatting applications and we can't expect it to be. But I think it is still Cheff's <a rel="external" href="https://en.wikipedia.org/wiki/KISS_principle">KISS</a>, what even is file-sharing support anyways? It requires storing the files somewhere and serving them to the recipient. There are so many things to consider such as upload limits, nude detection (if you care about it), privacy, persistence of the files, additional server costs, disk spaces, etc. Long story short, file sharing is <em>BLOAT</em>! Describing to my friends how to craft a chainmail armor in Minecraft with purely plain-text messages instead of sending a screenshot is much BETTER. Or wait, we can use ASCII art, oh yeah, that's also a thing. Right?</p>
+<p>*ahem* I guess I went a bit off-track there. But you see where I'm getting, on IRC, there was no <em>easy</em> file sharing support so people had to come up with their own solutions, in other words, their own upload servers. In my time in IRC, I came across a lot of users who use links like the below, just to share files/images:</p>
+<ul>
+<li>https://paste.xinu.at/jHKy</li>
+<li>https://0x0.st/H8hSa.png</li>
+</ul>
+<p>In a sense, in today's world, doing this seems redundant and actually more difficult than just clicking 3 buttons on an interface. While I agree with that, I approach this situation from a different angle.</p>
+<p>Technology is all about <em>having control</em>. I believe it is especially true today since every corner of the human brain is easily conquerable by technology. We are deeply integrated with this world and in the situation where we don't control it, it controls us. Cliché but true.</p>
+<p>In the case of file sharing, having your own (self-hosted) service for uploading your own files is simply having control over what you have provided to this virtual world. The thing that you want to share is there if you want it, and it is there under the circumstances that you have chosen. Maybe the files will be served from an external drive from your homeserver. Maybe they will be expiring after 2 hours. Maybe you want to see who has clicked the link. It is all about owning your data.</p>
+<p>When you consider these points, you see that the insufficient conditions from the IRC times revealed a perfect solution for file sharing which compliments the idea that centralization is bad. It is kind of ironic that IRC's limitations gave birth to self-hosted file sharing.</p>
+<p>Although I joined IRC pretty late (3 years ago), I got the hang of it pretty fast. At first, I used a couple of public services for sharing files but then I really warmed up to the self-hosting idea and decided to host my own upload server. That is why I wrote the "<a rel="external" href="https://blog.orhun.dev/no-bullshit-file-hosting/">Spin Up Your Own No-Bullshit File Hosting Service with 0x0</a>" post 2 years ago. I used <a rel="external" href="https://github.com/mia-0/0x0/">0x0</a> for a while but then I had to migrate to another server and I was too lazy to set it up again. Plus it was written in Python x_x.</p>
+<p>That day I decided to write my own pastebin service. And of course, I was going to write it in Rust.</p>
+<hr />
+<h3 id="blazingly-fast-file-sharing-rustypaste-crab">Blazingly Fast File Sharing: <a rel="external" href="https://github.com/orhun/rustypaste"><strong>rustypaste</strong></a> 🦀</h3>
+<img src="/rustypaste-shuttleapp.png" style="width: 80%"/>
+<p>⭐ <strong>GitHub</strong>: <a rel="external" href="https://github.com/orhun/rustypaste">https://github.com/orhun/rustypaste</a><br />
+🚀 <strong>Public instance</strong>: <a rel="external" href="https://rustypaste.shuttleapp.rs">https://rustypaste.shuttleapp.rs</a></p>
+<p><code>rustypaste</code> is a minimal and simple upload service written in Rust and implemented using the <a rel="external" href="https://actix.rs">Actix Web</a> framework. I chose Actix back then since it was the most suitable framework from the safety, performance, and simplicity standpoint. As a regular user of <code>rustypaste</code> for almost 2 years, I can say that it is in a stable state and have a bunch of features that support extensive configuration.</p>
+<p>The easiest way to interact with a <code>rustypaste</code> server is using <code>curl</code> but you can also use the command line tool called <a rel="external" href="https://github.com/orhun/rustypaste-cli"><code>rpaste</code></a> which is written in Rust.</p>
+<p>⭐ <strong>CLI tool</strong>: <a rel="external" href="https://github.com/orhun/rustypaste-cli">https://github.com/orhun/rustypaste-cli</a></p>
+<p><img src="/rpaste.gif" alt="rpaste" /></p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #B57EDC;">Usage:</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">    rpaste</span><span> [options] </span><span style="color: #E06C75;">&lt;</span><span>file(</span><span style="color: #B57EDC;">s</span><span>)</span><span style="color: #E06C75;">&gt;</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #B57EDC;">Options:</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">    -h,</span><span style="color: #56B6C2;"> --help</span><span style="color: #98C379;">          prints help information</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">    -v,</span><span style="color: #56B6C2;"> --version</span><span style="color: #98C379;">       prints version information</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">    -V,</span><span style="color: #56B6C2;"> --server-version</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">                        retrieves</span><span style="color: #98C379;"> the server version</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">    -o,</span><span style="color: #56B6C2;"> --oneshot</span><span style="color: #98C379;">       generates one shot links</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">    -p,</span><span style="color: #56B6C2;"> --pretty</span><span style="color: #98C379;">        prettifies the output</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">    -c,</span><span style="color: #56B6C2;"> --config</span><span style="color: #98C379;"> CONFIG sets the configuration file</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">    -s,</span><span style="color: #56B6C2;"> --server</span><span style="color: #98C379;"> SERVER sets the address of the rustypaste server</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">    -a,</span><span style="color: #56B6C2;"> --auth</span><span style="color: #98C379;"> TOKEN    sets the authentication token</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">    -u,</span><span style="color: #56B6C2;"> --url</span><span style="color: #98C379;"> URL       sets the URL to shorten</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">    -r,</span><span style="color: #56B6C2;"> --remote</span><span style="color: #98C379;"> URL    sets the remote URL for uploading</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">    -e,</span><span style="color: #56B6C2;"> --expire</span><span style="color: #98C379;"> TIME   sets the expiration time for the link</span></span></code></pre>
+<p>Here is a list of features along with examples:</p>
+<table><thead><tr><th><strong>Upload a file</strong></th></tr></thead><tbody>
+<tr><td><code>curl -F "file=@ferris.txt" https://rustypaste.shuttleapp.rs</code></td></tr>
+<tr><td><code>rpaste ferris.txt</code></td></tr>
+</tbody></table>
+<table><thead><tr><th><strong>Shorten an URL</strong></th></tr></thead><tbody>
+<tr><td><code>curl -F "url=https://example.com/some/long/url" https://rustypaste.shuttleapp.rs</code></td></tr>
+<tr><td><code>rpaste -u https://example.com/some/long/url</code></td></tr>
+</tbody></table>
+<table><thead><tr><th><strong>Upload a file from URL</strong></th></tr></thead><tbody>
+<tr><td><code>curl -F "remote=https://example.com/file.png" https://rustypaste.shuttleapp.rs</code></td></tr>
+<tr><td><code>rpaste -r https://example.com/file.png</code></td></tr>
+</tbody></table>
+<table><thead><tr><th><strong>Expire the file after 10 minutes (also works for URLs)</strong></th></tr></thead><tbody>
+<tr><td><code>curl -F "file=@ferris.txt" -H "expire:10min" https://rustypaste.shuttleapp.rs</code></td></tr>
+<tr><td><code>rpaste -e 10min ferris.txt</code></td></tr>
+</tbody></table>
+<table><thead><tr><th><strong>Delete the file after viewed once</strong></th></tr></thead><tbody>
+<tr><td><code>curl -F "oneshot=@ferris.txt" https://rustypaste.shuttleapp.rs</code></td></tr>
+<tr><td><code>rpaste -o ferris.txt</code></td></tr>
+</tbody></table>
+<table><thead><tr><th><strong>Authenticate with the server</strong></th></tr></thead><tbody>
+<tr><td><code>curl -F "file=@ferris.txt" -H "Authorization: &lt;auth_token&gt;" https://rustypaste.shuttleapp.rs</code></td></tr>
+<tr><td><code>rpaste -a "&lt;auth_token&gt;" ferris.txt</code> (you can also use a configuration file)</td></tr>
+</tbody></table>
+<p>To configure <code>rustypaste</code>, you only need a single configuration file. The default one can be viewed from the <a rel="external" href="https://github.com/orhun/rustypaste/blob/master/config.toml">GitHub repository (<code>config.toml</code>)</a>.</p>
+<p>Here are some things that you can tweak and change:</p>
+<ul>
+<li><strong>Random file names</strong>
+<ul>
+<li>Pet name (<code>capital-mosquito.txt</code>)</li>
+<li>Alphanumeric string (<code>yB84D2Dv.txt</code>)</li>
+</ul>
+</li>
+<li><strong>MIME types</strong>
+<ul>
+<li>Supports overriding and blacklisting</li>
+<li>Supports forcing to download via <code>?download=true</code></li>
+</ul>
+</li>
+<li><strong>Support disabling duplicate uploads</strong></li>
+<li><strong>Auto-expiration + auto-deletion of files</strong></li>
+</ul>
+<p>If you want to host your own <code>rustypaste</code> server, there are a couple of ways of doing it:</p>
+<ul>
+<li>Run the single binary (preferably installed from your distribution's package manager).
+<ul>
+<li><code>rustypaste</code> is available in the <a rel="external" href="https://archlinux.org/packages/?sort=&amp;q=rustypaste">Arch Linux repositories</a>.</li>
+</ul>
+</li>
+<li>Use the lightweight Docker image.
+<ul>
+<li><a rel="external" href="https://hub.docker.com/r/orhunp/rustypaste">https://hub.docker.com/r/orhunp/rustypaste</a></li>
+<li><a rel="external" href="https://github.com/orhun/rustypaste/blob/master/docker-compose.yml">docker-compose.yml</a> (example)</li>
+<li><a rel="external" href="https://github.com/orhun/rustypaste#nginx">Nginx configuration</a> (example)</li>
+</ul>
+</li>
+</ul>
+<p>Or you can deploy it to the cloud! ☁️</p>
+<hr />
+<h3 id="deploying-rust-services-via-shuttle-rocket">Deploying Rust Services via <a rel="external" href="https://www.shuttle.rs"><strong>Shuttle</strong></a> 🚀</h3>
+<blockquote>
+<p><a rel="external" href="https://www.shuttle.rs">Shuttle</a> is a Rust-native cloud development platform that lets you deploy your app while also taking care of all of your infrastructure.</p>
+</blockquote>
+<p>Shuttle derives the infrastructure definitions from the Rust code itself via <em>function signatures</em> and <em>annotations</em>. It is an awesome service that makes cloud deployment super easy and supports a couple of Rust frameworks including Actix. Also, you can control everything (deployment, monitoring, resource management, etc.) with a single cargo subcommand by running <a rel="external" href="https://github.com/shuttle-hq/shuttle/tree/main/cargo-shuttle"><code>cargo shuttle</code></a> from the command line. When you consider all of this, there is no wonder that they are backed by <a rel="external" href="https://www.ycombinator.com">YC</a> :o</p>
+<p>Currently, they support a <em>hobby plan</em> which is basically free and you can reach out to them if the following features are not suitable/enough for you:</p>
+<ul>
+<li>Unlimited deployment</li>
+<li>150k requests per month</li>
+<li>500MB database storage</li>
+</ul>
+<p>That is pretty much enough for <code>rustypaste</code> so I decided to go with Shuttle. 🚀</p>
+<p>However, there was one question that came up to my mind about the storage space. So I asked a question on their <a rel="external" href="https://discord.gg/shuttle">Discord</a>:</p>
+<p><strong>orhun</strong>: How does Shuttle deployment store files? Internally, are they uploaded inside an isolated container? If so, is there any disk/memory/CPU limits?</p>
+<p><strong>jonaro00</strong>: Your project runs in a docker container, but writing to the file system is not recommended, since the container is wiped when you do <code>cargo shuttle project restart</code> (which you do when upgrading shuttle version, or when things break). For persistent storage, you want to use some form of database. You can check the supported ones on the docs, but there are also more of them in the works.</p>
+<p><strong>orhun</strong>: I'm planning to auto-expire the files after one hour or so would you recommend using the filesystem in this case?</p>
+<p><strong>jonaro00</strong>: Yeah, for that use case it works fine then I guess.</p>
+<p>Still, I'm not sure if there are any disk space limits for a Shuttle deployment and we couldn't figure it out on Discord so let me know if you know anything about this.</p>
+<p>Now that we have enough information about Shuttle, let's deploy a Rust project!</p>
+<p>Start by installing <code>cargo-shuttle</code> and logging in:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #B57EDC;">$</span><span style="color: #98C379;"> cargo install cargo-shuttle</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #B57EDC;">$</span><span style="color: #98C379;"> cargo shuttle login</span></span></code></pre>
+<p>After this step, you can simply create a Rust project ready for deployment. For creating an Actix template, we can run:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #B57EDC;">$</span><span style="color: #98C379;"> cargo shuttle init</span><span style="color: #56B6C2;"> -t</span><span style="color: #98C379;"> actix-web</span></span></code></pre>
+<p>As of now, <code>cargo-shuttle</code> supports the following templates: <code>actix-web</code>, <code>axum</code>, <code>poem</code>, <code>poise</code>, <code>rocket</code>, <code>salvo</code>, <code>serenity</code>, <code>tide</code>, <code>thruster</code>, <code>tower</code>, <code>warp</code></p>
+<p>After the creation, the project looks roughly like this:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="rust"><span class="giallo-l"><span>#</span><span style="color: #E06C75;">!/</span><span style="color: #C6CCD7;">usr</span><span style="color: #E06C75;">/</span><span style="color: #C6CCD7;">bin</span><span style="color: #E06C75;">/</span><span style="color: #C6CCD7;">env rust</span><span style="color: #E06C75;">-</span><span style="color: #C6CCD7;">script</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;">//! [dependencies]</span></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;">//! shuttle-runtime = &quot;0.16.0&quot;</span></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;">//! actix-web = &quot;4.3.1&quot;</span></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;">//! shuttle-actix-web = &quot;0.16.0&quot;</span></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;">//! tokio = &quot;1.28.1&quot;</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #E06C75;">use</span><span style="color: #61AFEF;"> actix_web</span><span style="color: #E06C75;">::</span><span>{get,</span><span style="color: #61AFEF;"> web</span><span style="color: #E06C75;">::</span><span style="color: #E5C07B;">ServiceConfig</span><span>};</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">use</span><span style="color: #61AFEF;"> shuttle_actix_web</span><span style="color: #E06C75;">::</span><span style="color: #E5C07B;">ShuttleActixWeb</span><span>;</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;">// Define a route for the root path (&quot;/&quot;) that returns a string &quot;Hello World!&quot;</span></span>
+<span class="giallo-l"><span>#[get(&quot;</span><span style="color: #98C379;">/</span><span>&quot;)]</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">async fn</span><span style="color: #B57EDC;"> hello_world</span><span>()</span><span style="color: #E06C75;"> -&gt; &amp;</span><span>&#39;</span><span style="color: #E5C07B;">static str</span><span> {</span></span>
+<span class="giallo-l"><span>    &quot;</span><span style="color: #98C379;">Hello World!</span><span>&quot;</span></span>
+<span class="giallo-l"><span>}</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;">// The main entry point for the Shuttle runtime.</span></span>
+<span class="giallo-l"><span>#[shuttle_runtime</span><span style="color: #E06C75;">::</span><span>main]</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">async fn</span><span style="color: #B57EDC;"> actix_web</span><span>(</span></span>
+<span class="giallo-l"><span>)</span><span style="color: #E06C75;"> -&gt;</span><span style="color: #E5C07B;"> ShuttleActixWeb</span><span>&lt;</span><span style="color: #E06C75;">impl</span><span style="color: #E5C07B;"> FnOnce</span><span>(</span><span style="color: #E06C75;">&amp;</span><span style="color: #61AFEF;">mut</span><span style="color: #E5C07B;"> ServiceConfig</span><span>)</span><span style="color: #E06C75;"> +</span><span style="color: #E5C07B;"> Send</span><span style="color: #E06C75;"> +</span><span style="color: #E5C07B;"> Clone</span><span style="color: #E06C75;"> +</span><span> &#39;</span><span style="color: #E5C07B;">static</span><span>&gt; {</span></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;">    // Define a closure to configure the ServiceConfig of the HttpServer.</span></span>
+<span class="giallo-l"><span style="color: #61AFEF;">    let</span><span style="color: #C6CCD7;"> config</span><span style="color: #E06C75;"> = move |</span><span style="color: #C6CCD7;">cfg</span><span style="color: #E06C75;">: &amp;</span><span style="color: #61AFEF;">mut</span><span style="color: #E5C07B;"> ServiceConfig</span><span style="color: #E06C75;">|</span><span> {</span></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;">        // Register the hello_world function as a service at the root path.</span></span>
+<span class="giallo-l"><span style="color: #C6CCD7;">        cfg</span><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">service</span><span>(</span><span style="color: #C6CCD7;">hello_world</span><span>);</span></span>
+<span class="giallo-l"><span>    };</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;">    // Wrap the closure in a ShuttleActixWeb object and return it.</span></span>
+<span class="giallo-l"><span style="color: #E5C07B;">    Ok</span><span>(</span><span style="color: #C6CCD7;">config</span><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">into</span><span>())</span></span>
+<span class="giallo-l"><span>}</span></span></code></pre>
+<p>To test it locally:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #B57EDC;">$</span><span style="color: #98C379;"> cargo shuttle run</span></span></code></pre>
+<p>For deployment, it is just easy as running the following command:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #B57EDC;">$</span><span style="color: #98C379;"> cargo shuttle deploy</span></span></code></pre>
+<p>Then you can view the deployment at <code>&lt;app&gt;.shuttleapp.rs</code> and view the logs via <code>cargo shuttle logs</code>.</p>
+<p>In the case of <code>rustypaste</code>, I already have an Actix application so I need to tweak things a little bit for deployment. Mainly, I needed to change the main entry point of the application. I decided to have a feature flag called "shuttle" for wrapping the additional dependencies of Shuttle and enabling another entry point. I didn't touch the rest of the code and it feels absolutely awesome when there is less effort.</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="toml"><span class="giallo-l"><span>[</span><span style="color: #E5C07B;">features</span><span>]</span></span>
+<span class="giallo-l"><span style="color: #C6CCD7;">default</span><span> = []</span></span>
+<span class="giallo-l"><span style="color: #C6CCD7;">shuttle</span><span> = [</span></span>
+<span class="giallo-l"><span>  &quot;</span><span style="color: #98C379;">dep:shuttle-actix-web</span><span>&quot;,</span></span>
+<span class="giallo-l"><span>  &quot;</span><span style="color: #98C379;">dep:shuttle-runtime</span><span>&quot;,</span></span>
+<span class="giallo-l"><span>  &quot;</span><span style="color: #98C379;">dep:shuttle-static-folder</span><span>&quot;,</span></span>
+<span class="giallo-l"><span>  &quot;</span><span style="color: #98C379;">dep:tokio</span><span>&quot;,</span></span>
+<span class="giallo-l"><span>]</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span>[</span><span style="color: #E5C07B;">dependencies</span><span>]</span></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;"># other dependencies</span></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;"># ...</span></span>
+<span class="giallo-l"><span style="color: #C6CCD7;">shuttle-actix-web</span><span> = {</span><span style="color: #C6CCD7;"> version</span><span> = &quot;</span><span style="color: #98C379;">0.16.0</span><span>&quot;,</span><span style="color: #C6CCD7;"> optional</span><span> =</span><span style="color: #56B6C2;"> true</span><span> }</span></span>
+<span class="giallo-l"><span style="color: #C6CCD7;">shuttle-runtime</span><span> = {</span><span style="color: #C6CCD7;"> version</span><span> = &quot;</span><span style="color: #98C379;">0.16.0</span><span>&quot;,</span><span style="color: #C6CCD7;"> optional</span><span> =</span><span style="color: #56B6C2;"> true</span><span> }</span></span>
+<span class="giallo-l"><span style="color: #C6CCD7;">shuttle-static-folder</span><span> = {</span><span style="color: #C6CCD7;"> version</span><span> = &quot;</span><span style="color: #98C379;">0.16.0</span><span>&quot;,</span><span style="color: #C6CCD7;"> optional</span><span> =</span><span style="color: #56B6C2;"> true</span><span> }</span></span>
+<span class="giallo-l"><span style="color: #C6CCD7;">tokio</span><span> = {</span><span style="color: #C6CCD7;"> version</span><span> = &quot;</span><span style="color: #98C379;">1.28.1</span><span>&quot;,</span><span style="color: #C6CCD7;"> optional</span><span> =</span><span style="color: #56B6C2;"> true</span><span> }</span></span></code></pre>
+<p>Shuttle can be activated via <code>--features shuttle</code> now.</p>
+<p>Then I hit another road block.</p>
+<p>You see, <code>rustypaste</code> needs a <code>config.toml</code> file to be present to run. And when we deploy it as a single binary, there won't be a configuration file next to it. To solve this problem, I used a static folder for my Shuttle deployment and edited the entry point of the application as follows:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="rust"><span class="giallo-l"><span>#[cfg(feature </span><span style="color: #E06C75;">=</span><span> &quot;</span><span style="color: #98C379;">shuttle</span><span>&quot;)]</span></span>
+<span class="giallo-l"><span>#[shuttle_runtime</span><span style="color: #E06C75;">::</span><span>main]</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">async fn</span><span style="color: #B57EDC;"> actix_web</span><span>(</span></span>
+<span class="giallo-l"><span>    #[</span><span style="color: #61AFEF;">shuttle_static_folder</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">StaticFolder</span><span>(</span><span style="color: #C6CCD7;">folder</span><span style="color: #E06C75;"> =</span><span> &quot;</span><span style="color: #98C379;">shuttle</span><span>&quot;)]</span><span style="color: #C6CCD7;"> static_folder</span><span style="color: #E06C75;">:</span><span style="color: #E5C07B;"> PathBuf</span><span>,</span></span>
+<span class="giallo-l"><span>)</span><span style="color: #E06C75;"> -&gt;</span><span style="color: #E5C07B;"> ShuttleActixWeb</span><span>&lt;</span><span style="color: #E06C75;">impl</span><span style="color: #E5C07B;"> FnOnce</span><span>(</span><span style="color: #E06C75;">&amp;</span><span style="color: #61AFEF;">mut</span><span style="color: #E5C07B;"> ServiceConfig</span><span>)</span><span style="color: #E06C75;"> +</span><span style="color: #E5C07B;"> Send</span><span style="color: #E06C75;"> +</span><span style="color: #E5C07B;"> Clone</span><span style="color: #E06C75;"> +</span><span> &#39;</span><span style="color: #E5C07B;">static</span><span>&gt;</span></span></code></pre>
+<p>So if I put the configuration file in "shuttle/config.toml", it will be the part of the deployment. Nice.</p>
+<p>All seems good now. Let's deploy it!</p>
+<p><strong>Q</strong>: Wait, how do you enable the custom "shuttle" feature via <code>cargo shuttle</code>? In other words, can you pass <code>--features shuttle</code> to it?</p>
+<p><strong>A</strong>: At the time of writing this blog post, it is not possible. So I created this issue: <a rel="external" href="https://github.com/shuttle-hq/shuttle/issues/913">https://github.com/shuttle-hq/shuttle/issues/913</a></p>
+<p><strong>Q</strong>: Oh cool, is there a workaround?</p>
+<p><strong>A</strong>: Yeah, I decided to enable "shuttle" feature as default in Cargo.toml temporarily when I want to deploy.</p>
+<p><strong>Q</strong>: Nice. Does it work like that?</p>
+<p><strong>A</strong>: You bet!</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #5F6672;font-style: italic;"># make &quot;shuttle&quot; feature default</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">$</span><span style="color: #98C379;"> sed</span><span style="color: #56B6C2;"> -i</span><span> &#39;</span><span style="color: #98C379;">s|default = \[\]|default = \[&quot;shuttle&quot;\]|g</span><span>&#39;</span><span style="color: #98C379;"> Cargo.toml</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;"># deploy without running tests</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">$</span><span style="color: #98C379;"> cargo shuttle deploy</span><span style="color: #56B6C2;"> --no-test</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #B57EDC;">2023-05-16T13:56:37.027724537Z</span><span style="color: #98C379;">  INFO Entering queued state</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">2023-05-16T13:56:37.036643575Z</span><span style="color: #98C379;"> DEBUG hyper::client::connect::http: connecting to 10.99.82.119:8001</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">2023-05-16T13:56:37.039322882Z</span><span style="color: #98C379;"> DEBUG hyper::client::connect::http: connected to 10.99.82.119:8001</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">2023-05-16T13:56:37.041805834Z</span><span style="color: #98C379;"> DEBUG hyper::client::pool: pooling idle connection for</span><span> (&quot;</span><span style="color: #98C379;">http</span><span>&quot;,</span><span style="color: #98C379;"> gateway:8001</span><span>)</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #B57EDC;">2023-05-16T13:56:37.046562562Z</span><span style="color: #98C379;">  INFO Entering building state</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">2023-05-16T13:57:08.734972530Z</span><span style="color: #98C379;">  INFO     Finished release</span><span> [optimized] target(</span><span style="color: #B57EDC;">s</span><span>) in 31.63s</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #B57EDC;">2023-05-16T13:57:08.924988890Z</span><span style="color: #98C379;">  INFO Entering built state</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #B57EDC;">2023-05-16T13:57:08.925183822Z</span><span style="color: #98C379;">  INFO Entering loading state</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">2023-05-16T13:57:08.933992618Z</span><span style="color: #98C379;"> DEBUG shuttle_deployer::runtime_manager: Starting alpha runtime at: /opt/shuttle/shuttle-executables/abe6d63d-8a0f-4d59-9545-8979261889e4</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">2023-05-16T13:57:10.937504021Z</span><span style="color: #98C379;">  INFO shuttle_proto::runtime: connecting runtime client</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">2023-05-16T13:57:10.937602528Z</span><span style="color: #98C379;"> DEBUG hyper::client::connect::http: connecting to 127.0.0.1:18369</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">2023-05-16T13:57:10.940519024Z</span><span style="color: #98C379;"> DEBUG hyper::client::connect::http: connected to 127.0.0.1:18369</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">2023-05-16T13:57:10.942760924Z</span><span style="color: #98C379;"> DEBUG {service.ready=</span><span style="color: #56B6C2;">true</span><span style="color: #98C379;">} tower::buffer::worker: processing request</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">2023-05-16T13:57:10.949727188Z</span><span style="color: #98C379;"> DEBUG {service.ready=</span><span style="color: #56B6C2;">true</span><span style="color: #98C379;">} tower::buffer::worker: processing request</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">2023-05-16T13:57:10.954448150Z</span><span style="color: #98C379;">  INFO shuttle_deployer::deployment::run: loading project from: /opt/shuttle/shuttle-executables/abe6d63d-8a0f-4d59-9545-8979261889e4</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">2023-05-16T13:57:10.956904512Z</span><span style="color: #98C379;"> DEBUG shuttle_deployer::deployment::run: loading service</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">2023-05-16T13:57:10.961554512Z</span><span style="color: #98C379;"> DEBUG {service.ready=</span><span style="color: #56B6C2;">true</span><span style="color: #98C379;">} tower::buffer::worker: processing request</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">2023-05-16T13:57:10.978349558Z</span><span style="color: #98C379;">  INFO {success=</span><span>&quot;</span><span style="color: #98C379;">true</span><span>&quot;</span><span style="color: #98C379;">} shuttle_deployer::deployment::run: loading response</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">These</span><span style="color: #98C379;"> static folders can be accessed by rustypaste</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">╭─────────╮</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">│</span><span style="color: #98C379;"> Folders │</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">╞═════════╡</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">│</span><span style="color: #98C379;"> shuttle │</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">╰─────────╯</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #B57EDC;">Service</span><span style="color: #98C379;"> Name:  rustypaste</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">Deployment</span><span style="color: #98C379;"> ID: abe6d63d-8a0f-4d59-9545-8979261889e4</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">Status:</span><span style="color: #98C379;">        running</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">Last</span><span style="color: #98C379;"> Updated:  2023-05-16T10:57:10Z</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">URI:</span><span style="color: #98C379;">           https://rustypaste.shuttleapp.rs</span></span></code></pre>
+<p>Yay, the service is live at <a rel="external" href="https://rustypaste.shuttleapp.rs">https://rustypaste.shuttleapp.rs</a>! 🚀</p>
+<p>As a bonus, I wanted to deploy this service when I push a new tag to the repository so I created the following GitHub Actions workflow:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="yaml"><span class="giallo-l"><span style="color: #E5C07B;">name</span><span>:</span><span style="color: #98C379;"> Deploy on Shuttle</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #56B6C2;">on</span><span>:</span></span>
+<span class="giallo-l"><span style="color: #E5C07B;">  push</span><span>:</span></span>
+<span class="giallo-l"><span style="color: #E5C07B;">    branches</span><span>:</span></span>
+<span class="giallo-l"><span>      -</span><span style="color: #98C379;"> master</span></span>
+<span class="giallo-l"><span style="color: #E5C07B;">    tags</span><span>:</span></span>
+<span class="giallo-l"><span>      - &quot;</span><span style="color: #98C379;">v*.*.*</span><span>&quot;</span></span>
+<span class="giallo-l"><span style="color: #E5C07B;">  pull_request</span><span>:</span></span>
+<span class="giallo-l"><span style="color: #E5C07B;">    branches</span><span>:</span></span>
+<span class="giallo-l"><span>      -</span><span style="color: #98C379;"> master</span></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;">  # allows you to run this workflow manually from the Actions tab</span></span>
+<span class="giallo-l"><span style="color: #E5C07B;">  workflow_dispatch</span><span>:</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #E5C07B;">jobs</span><span>:</span></span>
+<span class="giallo-l"><span style="color: #E5C07B;">  build</span><span>:</span></span>
+<span class="giallo-l"><span style="color: #E5C07B;">    name</span><span>:</span><span style="color: #98C379;"> Build / Deploy</span></span>
+<span class="giallo-l"><span style="color: #E5C07B;">    runs-on</span><span>:</span><span style="color: #98C379;"> ubuntu-22.04</span></span>
+<span class="giallo-l"><span style="color: #E5C07B;">    steps</span><span>:</span></span>
+<span class="giallo-l"><span>      -</span><span style="color: #E5C07B;"> name</span><span>:</span><span style="color: #98C379;"> Checkout the repository</span></span>
+<span class="giallo-l"><span style="color: #E5C07B;">        uses</span><span>:</span><span style="color: #98C379;"> actions/checkout@v3</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span>      -</span><span style="color: #E5C07B;"> name</span><span>:</span><span style="color: #98C379;"> Install Rust</span></span>
+<span class="giallo-l"><span style="color: #E5C07B;">        uses</span><span>:</span><span style="color: #98C379;"> actions-rs/toolchain@v1</span></span>
+<span class="giallo-l"><span style="color: #E5C07B;">        with</span><span>:</span></span>
+<span class="giallo-l"><span style="color: #E5C07B;">          toolchain</span><span>:</span><span style="color: #98C379;"> stable</span></span>
+<span class="giallo-l"><span style="color: #E5C07B;">          profile</span><span>:</span><span style="color: #98C379;"> minimal</span></span>
+<span class="giallo-l"><span style="color: #E5C07B;">          override</span><span>:</span><span style="color: #56B6C2;"> true</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span>      -</span><span style="color: #E5C07B;"> name</span><span>:</span><span style="color: #98C379;"> Install cargo-binstall</span></span>
+<span class="giallo-l"><span style="color: #E5C07B;">        uses</span><span>:</span><span style="color: #98C379;"> taiki-e/install-action@cargo-binstall</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span>      -</span><span style="color: #E5C07B;"> name</span><span>:</span><span style="color: #98C379;"> Install cargo-shuttle</span></span>
+<span class="giallo-l"><span style="color: #E5C07B;">        run</span><span>:</span><span style="color: #98C379;"> cargo binstall -y cargo-shuttle</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span>      -</span><span style="color: #E5C07B;"> name</span><span>:</span><span style="color: #98C379;"> Prepare for deployment</span></span>
+<span class="giallo-l"><span style="color: #E5C07B;">        shell</span><span>:</span><span style="color: #98C379;"> bash</span></span>
+<span class="giallo-l"><span style="color: #E5C07B;">        run</span><span>:</span><span style="color: #98C379;"> sed -i &#39;s|default = \[\]|default = \[&quot;shuttle&quot;\]|g&#39; Cargo.toml</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span>      -</span><span style="color: #E5C07B;"> name</span><span>:</span><span style="color: #98C379;"> Build</span></span>
+<span class="giallo-l"><span style="color: #E5C07B;">        run</span><span>:</span><span style="color: #98C379;"> cargo build --locked --verbose</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span>      -</span><span style="color: #E5C07B;"> name</span><span>:</span><span style="color: #98C379;"> Deploy</span></span>
+<span class="giallo-l"><span style="color: #E5C07B;">        if</span><span>:</span><span style="color: #98C379;"> ${{ startsWith(github.event.ref, &#39;refs/tags/v&#39;) || github.event_name == &#39;workflow_dispatch&#39; }}</span></span>
+<span class="giallo-l"><span style="color: #E5C07B;">        run</span><span>:</span><span style="color: #E06C75;"> |</span></span>
+<span class="giallo-l"><span style="color: #98C379;">          cargo shuttle login --api-key ${{ secrets.SHUTTLE_TOKEN }}</span></span>
+<span class="giallo-l"><span style="color: #98C379;">          cargo shuttle project restart</span></span>
+<span class="giallo-l"><span style="color: #98C379;">          cargo shuttle deploy --allow-dirty --no-test</span></span></code></pre>
+<p>One thing to note, I thought it would be nicer to install <code>cargo-shuttle</code> via <a rel="external" href="https://github.com/cargo-bins/cargo-binstall"><code>cargo-binstall</code></a> since it is faster to download pre-built binaries.</p>
+<p>And finally here is how I put together everything:</p>
+<p><a rel="external" href="https://github.com/orhun/rustypaste/commit/29ddef8df0bb38ec4bd77281836105b7c7797d71">https://github.com/orhun/rustypaste/commit/29ddef8</a></p>
+<hr />
+<h3 id="conclusion">Conclusion</h3>
+<p>There are a lot of ways to share a file on the internet and I'm on the "you should host your own files" side. At first, it seems like a hassle to host your own server and configure everything but I believe it is really worth it at the end of the day. I mean heck, with <code>rustypaste</code> you can even share a very secret document as a oneshot URL so they disappear from the surface of the web after being viewed once.</p>
+<p>And also, who can deny that using your own domain to share an image/file is super cool?</p>
+<p>Long story short, I believe there are many benefits to self-hosting an upload server and owning the things you share with the rest of the world.</p>
+<p>On a side note, feel free to use the public instance of <code>rustypaste</code> and let me know if you liked it, there isn't a stability guarantee for Shuttle deployments but it is worth a try!</p>
+<p>Happy uploading! ☁️ 🦀 🚀</p>
+<p><em>arrivederci!</em></p>
+
+    </div>
+
+    
+        <footer>
+            <hr>
+            <p>
+                
+                    Published by Orhun Parmaksız
+                
+                
+                    
+                    in <a href="https://blog.orhun.dev/categories/rust/">Rust</a>
+                
+                
+            </p>
+            
+            
+            <div style="display: flex; justify-content: space-between; align-items: center">
+              <div>
+                <iframe
+                  src="https://github.com/sponsors/orhun/button"
+                  title="Sponsor @orhun"
+                  height="35"
+                  width="116"
+                  style="border: 0"
+                ></iframe>
+                <a href="https://www.buymeacoffee.com/orhun" target="_blank"
+                  ><img
+                    src="https://cdn.buymeacoffee.com/buttons/v2/default-white.png"
+                    alt="Buy Me A Coffee"
+                    style="height: 40px !important; width: 150px !important"
+                /></a>
+              </div>
+              <div>
+                <applause-button
+                  style="width: 50px; height: 50px"
+                  url="https://blog.orhun.dev&#x2F;blazingly-fast-file-sharing&#x2F;"
+                  color="white"
+                  multiclap="true"
+                />
+              </div>
+              <div>
+                <div style="width: auto; height: 39px">
+                  <p style="margin: 0; color: #fff; font-style: italic">✨ Sponsored by:</p>
+                </div>
+                <a href="https://www.jetbrains.com/" target="_blank"
+                  ><img
+                    src="/sponsors/jetbrains.png"
+                    alt="JetBrains"
+                    style="height: 45px; width: auto"
+                /></a>
+                <a href="https://terminaltrove.com/" target="_blank"
+                  ><img
+                    src="/sponsors/terminal_trove.png"
+                    alt="Terminal Trove"
+                    style="height: 40px; width: auto"
+                /></a>
+              </div>
+            </div>
+            <script src="https://utteranc.es/client.js"
+                    repo="orhun/personal-blog"
+                    issue-term="url"
+                    label="comments"
+                    theme="github-dark"
+                    crossorigin="anonymous"
+                    async>
+            </script>
+        </footer>
+    
+</article>
+
+
+    </body>
+
+    <script type="text/javascript" src="https://blog.orhun.dev/elasticlunr.min.js"></script>
+    <script type="text/javascript" src="https://blog.orhun.dev/js/search.js"></script>
+
+</html>

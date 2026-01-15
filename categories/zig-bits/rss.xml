@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+    <channel>
+      <title>Orhun&#x27;s Blog - Zig Bits</title>
+      <link>https://blog.orhun.dev</link>
+      <description>FOSS • Linux • Programming</description>
+      <generator>Zola</generator>
+      <language>en</language>
+      <atom:link href="https://blog.orhun.dev/categories/zig-bits/rss.xml" rel="self" type="application/rss+xml"/>
+      <lastBuildDate>Tue, 11 Jul 2023 00:00:00 +0000</lastBuildDate>
+      <item>
+          <title>Zig Bits 0x4: Building an HTTP client&#x2F;server from scratch</title>
+          <pubDate>Tue, 11 Jul 2023 00:00:00 +0000</pubDate>
+          <author>Unknown</author>
+          <link>https://blog.orhun.dev/zig-bits-04/</link>
+          <guid>https://blog.orhun.dev/zig-bits-04/</guid>
+          <description xml:base="https://blog.orhun.dev/zig-bits-04/">&lt;p&gt;Let&#x27;s experiment with the &lt;a rel=&quot;external&quot; href=&quot;https:&#x2F;&#x2F;ziglang.org&#x2F;documentation&#x2F;master&#x2F;std&#x2F;#A;std:http&quot;&gt;&lt;code&gt;std.http&lt;&#x2F;code&gt;&lt;&#x2F;a&gt; module of Zig &lt;code&gt;&amp;gt;=0.11&lt;&#x2F;code&gt; and create an HTTP server&#x2F;client from scratch (along with some benchmarks)!&lt;&#x2F;p&gt;</description>
+      </item>
+      <item>
+          <title>Zig Bits 0x3: Mastering project management in Zig</title>
+          <pubDate>Wed, 19 Apr 2023 00:00:00 +0000</pubDate>
+          <author>Unknown</author>
+          <link>https://blog.orhun.dev/zig-bits-03/</link>
+          <guid>https://blog.orhun.dev/zig-bits-03/</guid>
+          <description xml:base="https://blog.orhun.dev/zig-bits-03/">&lt;p&gt;In this post, I&#x27;m sharing tips &amp;amp; tricks about managing&#x2F;maintaining an open-source Zig project and mentioning the commonly used practices. I&#x27;m also giving a brief introduction to my first-ever Zig project &quot;&lt;a rel=&quot;external&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;orhun&#x2F;linuxwave&quot;&gt;&lt;strong&gt;linuxwave&lt;&#x2F;strong&gt;&lt;&#x2F;a&gt;&quot; which led to the writing of this series.&lt;&#x2F;p&gt;</description>
+      </item>
+      <item>
+          <title>Zig Bits 0x2: Using defer to defeat memory leaks</title>
+          <pubDate>Tue, 21 Mar 2023 00:00:00 +0000</pubDate>
+          <author>Unknown</author>
+          <link>https://blog.orhun.dev/zig-bits-02/</link>
+          <guid>https://blog.orhun.dev/zig-bits-02/</guid>
+          <description xml:base="https://blog.orhun.dev/zig-bits-02/">&lt;p&gt;Let&#x27;s talk about how to detect memory leaks in Zig and avoid them by using the &lt;code&gt;defer&lt;&#x2F;code&gt; statement.&lt;&#x2F;p&gt;</description>
+      </item>
+      <item>
+          <title>Zig Bits 0x1: Returning slices from functions</title>
+          <pubDate>Fri, 17 Feb 2023 00:00:00 +0000</pubDate>
+          <author>Unknown</author>
+          <link>https://blog.orhun.dev/zig-bits-01/</link>
+          <guid>https://blog.orhun.dev/zig-bits-01/</guid>
+          <description xml:base="https://blog.orhun.dev/zig-bits-01/">&lt;p&gt;I decided to start a new blog series called &quot;Zig Bits&quot; where I share interesting bits of information about the &lt;a rel=&quot;external&quot; href=&quot;https:&#x2F;&#x2F;ziglang.org&#x2F;&quot;&gt;Zig programming language&lt;&#x2F;a&gt;. This series will be especially for beginners because I&#x27;m also a beginner.&lt;&#x2F;p&gt;</description>
+      </item>
+    </channel>
+</rss>

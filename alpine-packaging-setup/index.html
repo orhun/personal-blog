@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <meta http-equiv="content-type" content="text/html; charset=utf-8">
+      <meta property="og:type" content="website" />
+      <meta property="og:url" content="https://blog.orhun.dev"/>
+      
+      <meta property="og:title" content="Setting up a packaging environment for Alpine Linux (introducing alpkg) - Orhun&#x27;s Blog" />
+      
+      <meta property="og:image" content="https://blog.orhun.dev/crow.png" />
+      
+      <meta name="description" content="FOSS • Linux • Programming" />
+      <meta property="og:description" content="FOSS • Linux • Programming"/>
+      
+
+      <!-- Enable responsiveness on mobile devices-->
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+      <link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png">
+      <link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png">
+      <link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png">
+      <link rel="manifest" href="/favicon/site.webmanifest">
+
+      <script async src="https://umami.orhun.dev/script.js" data-website-id="56ca5ca7-ba9f-416e-8bee-a132c155d56b"></script>
+
+      <link rel="stylesheet" href="https://unpkg.com/applause-button/dist/applause-button.css" />
+      <script src="https://unpkg.com/applause-button/dist/applause-button.js"></script>
+
+      
+      <title>Setting up a packaging environment for Alpine Linux (introducing alpkg) - Orhun&#x27;s Blog</title>
+      
+      <link rel="alternate" type="application/rss+xml" title="Orhun&#x27;s Blog RSS Feed" href="https://blog.orhun.dev/rss.xml" />
+
+      
+          <link rel="stylesheet" href="https://blog.orhun.dev/site.css">
+      
+
+      
+      
+    </head>
+
+    <body class="hack dark main container">
+        
+    
+        
+                
+                    <header>
+                    <nav itemscope itemtype="http://schema.org/SiteNavigationElement" class="nav-flex">
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://blog.orhun.dev">
+                                <span itemprop="name">Home</span>
+                            </a>
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://blog.orhun.dev/categories">
+                                <span itemprop="name">Categories</span>
+                            </a>
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://github.com/orhun/personal-blog">
+                                <span itemprop="name">Source</span>
+                            </a>
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://github.com/orhun">
+                                <span itemprop="name">GitHub</span>
+                            </a>
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://donate.orhun.dev">
+                                <span itemprop="name">Donate</span>
+                            </a>
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://blog.orhun.dev/rss.xml">
+                                <span itemprop="name">RSS</span>
+                            </a>
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://orhun.dev">
+                                <span itemprop="name">About</span>
+                            </a>
+                        
+                        <div class="search-container">
+                            <input type="text" id="search" placeholder="Search...">
+                            <div class="search-results">
+                                <div class="search-results__items"></div>
+                            </div>
+                        </div>
+                    </nav>
+                    </header>
+                
+            
+    
+
+<article itemscope itemtype="http://schema.org/BlogPosting">
+    <header>
+        <h1 itemprop="headline">Setting up a packaging environment for Alpine Linux (introducing alpkg)</h1>
+        <span class="muted">
+    <svg style="margin-bottom:-3px" class="i-clock" viewBox="0 0 32 32"
+         width="16" height="16" fill="none" stroke="currentcolor"
+         stroke-linecap="round" stroke-linejoin="round" stroke-width="6.25%">
+        <circle cx="16" cy="16" r="14"/>
+        <path d="M16 8 L16 16 20 20"/>
+    </svg>
+    <span>9 minute read</span>
+    <svg style="margin-bottom: -3px" class="i-edit" viewBox="0 0 32 32"
+         width="16" height="16" fill="none" stroke="currentcolor"
+         stroke-linecap="round" stroke-linejoin="round" stroke-width="6.25%">
+        <path d="M30 7 L25 2 5 22 3 29 10 27 Z M21 6 L26 11 Z M5 22 L10 27 Z"/>
+    </svg>
+
+    Published: 2023-03-27
+</span>
+    </header>
+    <div itemprop="articleBody">
+      <p>Recently I have been interested in <a rel="external" href="https://www.alpinelinux.org">Alpine Linux</a> and thought it would be nice to maintain some Rust packages in their repositories. In this post, I will share my notes/adventures on setting up a packaging environment and a tool called "<strong>alpkg</strong>" for automating this process.</p>
+<span id="continue-reading"></span>
+<p><img src="/mountain-view.jpg" alt="mountain view" /></p>
+<p>My first interest in Alpine Linux began when I first started to containerize my open source projects using lightweight Alpine containers. I especially like to follow this approach for Rust applications because the sizes of traditional (<a rel="external" href="https://en.wikipedia.org/wiki/Glibc"><code>glibc</code></a>) distro containers like Debian/Ubuntu can go up to 200-300MB due to <em>bloat</em> whereas Alpine (<a rel="external" href="https://www.musl-libc.org"><code>musl</code></a>) containers can stay so minimal such as only 3 MB!</p>
+<p>Here is an example Dockerfile from <a rel="external" href="https://github.com/orhun/rustypaste">rustypaste</a> that results in a <a rel="external" href="https://hub.docker.com/r/orhunp/rustypaste">3MB image</a> when built/compressed:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="docker"><span class="giallo-l"><span style="color: #E06C75;">FROM</span><span> rust:1.67.0-alpine3.17 </span><span style="color: #E06C75;">as</span><span> builder</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">WORKDIR</span><span> /app</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">RUN</span><span> apk update</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">RUN</span><span> apk add --no-cache musl-dev</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">COPY</span><span> . .</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">RUN</span><span> cargo build --locked --release</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">RUN</span><span> mkdir -p build-out/</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">RUN</span><span> cp target/release/rustypaste build-out/</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #E06C75;">FROM</span><span> scratch</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">WORKDIR</span><span> /app</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">COPY</span><span> --from=builder /app/build-out/rustypaste .</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">ENV</span><span> SERVER__ADDRESS=0.0.0.0:8000</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">EXPOSE</span><span> 8000</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">USER</span><span> 1000:1000</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">CMD</span><span> [</span><span style="color: #98C379;">&quot;./rustypaste&quot;</span><span>]</span></span></code></pre>
+<p>One thing to note here, I especially choose <a rel="external" href="https://hub.docker.com/_/scratch"><code>scratch</code></a> image as the runner since it is super minimal. You can get similar results with images like <a rel="external" href="https://github.com/GoogleContainerTools/distroless"><code>distroless</code></a> as well.</p>
+<p>Although you need to deal with compiling with <code>musl</code> sometimes, it is worth the hassle when the result is that satisfying. Other things that are different in Alpine are the following:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #B57EDC;">glibc</span><span style="color: #98C379;">               ➔  musl</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">systemd</span><span style="color: #98C379;">             ➔  OpenRC</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">GNU</span><span style="color: #98C379;"> Core Utilities  ➔  BusyBox</span></span></code></pre>
+<p>For more information about Alpine, check out <a rel="external" href="https://blog.brixit.nl/alpine-linux-is-pretty-neat/">this post</a> which goes into detail about why it's neat.</p>
+<p>Now, let's talk about how to set up a packaging environment for Alpine Linux.</p>
+<hr />
+<h3 id="overview">Overview</h3>
+<p>In my specific case, I would like to keep using my Arch Linux system and also package for Alpine Linux. There are a couple of options for doing that:</p>
+<ul>
+<li>Run Alpine Linux on a <a rel="external" href="https://wiki.alpinelinux.org/wiki/Installing_Alpine_in_a_virtual_machine">virtual machine</a></li>
+<li>Run Alpine Linux in a <a rel="external" href="https://en.wikipedia.org/wiki/Chroot">chroot</a></li>
+<li>Use a Docker/Podman container with persistent storage</li>
+</ul>
+<p>I immediately eliminated the first option since I didn't want to deal with VM software and thought it would add extra complexity to my setup.</p>
+<p>Then I spun up a Docker container that runs Alpine and tried to make the storage persistent. After coming across <a rel="external" href="https://stackoverflow.com/questions/67546583/creating-persistent-durable-worker-box-docker-container">this StackOverflow post</a>, it turned out to be something harder than I expected and I started to feel like I was re-inventing VMs due to all those mount-binds and permissions. Unsurprisingly enough, I ditched that idea as well.</p>
+<p>Later on, I came across <a rel="external" href="https://wiki.alpinelinux.org/wiki/Alpine_Linux_in_a_chroot">this great article</a> on Alpine Wiki about creating a chroot:</p>
+<blockquote>
+<p>Inside the chroot environment, you can build, debug, and run Alpine packages or develop things. It's the most known way to do so without replacing your system or using a Virtual Machine.</p>
+</blockquote>
+<p>This is exactly what I needed!</p>
+<p>After settling on what to use, I had a plan in mind and came up with this diagram:</p>
+<center>
+<img src="/alpine-packaging-diagram.png" width="80%"/>
+</center>
+<p>Let's break it down:</p>
+<ul>
+<li>Everything is running inside Arch Linux.</li>
+<li>There is a chroot container that holds the package sources and Alpine SDK tools needed.
+<ul>
+<li>In Alpine, packages are <a rel="external" href="https://wiki.alpinelinux.org/wiki/APKBUILD_Reference">APKBUILD</a> scripts that contain the build instructions for <a rel="external" href="https://wiki.alpinelinux.org/wiki/Include:Abuild">abuild</a> tool.</li>
+</ul>
+</li>
+<li>There is a Git repository set up <em>outside</em> the chroot for adding/updating/deleting packages.
+<ul>
+<li>For interacting with the repositories, we can simply send a patch (i.e. merge request) to <code>aports</code> repositories which reside in <a rel="external" href="https://gitlab.alpinelinux.org/alpine/aports">gitlab.alpinelinux.org/alpine/aports</a>.</li>
+<li>We only need to create a GitLab account and fork the repository, no special role is needed!</li>
+</ul>
+</li>
+</ul>
+<hr />
+<h3 id="setting-up-the-chroot">Setting up the chroot</h3>
+<p><a rel="external" href="https://github.com/alpinelinux/alpine-chroot-install">alpine-chroot-install</a> is a tool that automates the manual steps of creating a chroot. We can use it as follows:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #B57EDC;">$</span><span style="color: #98C379;"> alpine-chroot-install</span><span style="color: #56B6C2;"> \</span></span>
+<span class="giallo-l"><span style="color: #56B6C2;">	-a</span><span style="color: #98C379;"> x86_64</span><span style="color: #56B6C2;"> \ </span><span style="color: #5F6672;font-style: italic;">     # architecture</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">	-d</span><span style="color: #98C379;"> alpine</span><span style="color: #56B6C2;"> \ </span><span style="color: #5F6672;font-style: italic;">     # directory</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">	-p</span><span style="color: #98C379;"> build-base</span><span style="color: #56B6C2;"> \ </span><span style="color: #5F6672;font-style: italic;"> # install build-base</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">	-p</span><span style="color: #98C379;"> alpine-sdk</span><span style="color: #5F6672;font-style: italic;">    # install alpine-sdk</span></span></code></pre>
+<p>In a couple of seconds, it will create a chroot and we can easily switch to it with the following script:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #B57EDC;">$</span><span style="color: #98C379;"> alpine/enter-chroot</span><span style="color: #56B6C2;"> -u</span><span> &quot;</span><span style="color: #C6CCD7;">$USER</span><span>&quot;</span><span style="color: #E06C75;"> &lt;</span><span style="color: #98C379;">CM</span><span>D</span><span style="color: #E06C75;">&gt;</span></span></code></pre><center>
+<p><img src="/alpine-chroot.gif" alt="alpine chroot" /></p>
+<p>And here we have Alpine Linux running inside Arch Linux!</p>
+</center>
+<hr />
+<h4 id="story-time">Story Time</h4>
+<p>After I created the Alpine chroot, I played around a bit and tried out different features of <code>apk</code> package manager. I installed some of my favorite Rust tools and everything was working smoothly.</p>
+<p>Then I got an idea: I should try installing those tools during the chroot installation. Luckily, <code>alpine-chroot-install</code> has an option for it and you can simply use <code>-p &lt;pkg&gt;</code> for installing packages.</p>
+<p>Of course, I wanted to remove the chroot directory I just created before creating another chroot. For a second I thought chroot was just a simple directory and tried to delete it with <code>rm -rf</code>.</p>
+<p>Ouch.</p>
+<p>However, chroot was not a regular directory. It has a bunch of things mounted to it:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #B57EDC;">$</span><span style="color: #98C379;"> alpine-chroot-install</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;"># ...</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">&gt;</span><span> Binding filesystems into chroot</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">mount:</span><span style="color: #98C379;"> none mounted on /alpine/proc.</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">mount:</span><span style="color: #98C379;"> /sys bound on /alpine/sys.</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">mount:</span><span style="color: #98C379;"> /dev bound on /alpine/dev.</span></span></code></pre>
+<p>So when I deleted chroot, I also deleted <code>/dev</code> x_x</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #B57EDC;">$</span><span style="color: #98C379;"> rm</span><span style="color: #56B6C2;"> -rf</span><span style="color: #98C379;"> /chroot</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #B57EDC;">rm:</span><span style="color: #98C379;"> WARNING: Circular directory structure.</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">This</span><span style="color: #98C379;"> almost certainly means that you have a corrupted file system.</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">NOTIFY</span><span style="color: #98C379;"> YOUR SYSTEM MANAGER.</span></span></code></pre>
+<p>Then everything started to fail:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #B57EDC;">$</span><span style="color: #98C379;"> ls</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #B57EDC;">Failed</span><span style="color: #98C379;"> to open file to remap file descriptor</span><span> (No</span><span style="color: #98C379;"> such file or directory</span><span>)</span></span></code></pre>
+<p><code>/dev/null</code> was also gone and I got errors like "permission denied: /dev/null" as well. Fun.</p>
+<p>Luckily a simple reboot fixes this issue. The scariest part was when everything started to throw errors left and right, I panicked and realized what I did. I was afraid I <code>rm -rf</code>'d my whole system but luckily it was just the mount points.</p>
+<p>Lesson learned, I used the removal script for deleting the chroot next time: <code>/chroot/destroy --remove</code>.</p>
+<hr />
+<h3 id="setting-up-the-packaging-environment">Setting up the packaging environment</h3>
+<p>Let's install the necessary packages for packaging/development on Alpine:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #B57EDC;">$</span><span style="color: #98C379;"> apk add alpine-sdk atools</span></span></code></pre>
+<p>After that, we need to configure the build defaults in <code>/etc/abuild.conf</code>, especially the packager information:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #5F6672;font-style: italic;"># PACKAGER and MAINTAINER are used by newapkbuild when creating new aports for</span></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;"># the APKBUILD&#39;s &quot;Contributor:&quot; and &quot;Maintainer:&quot; comments, respectively.</span></span>
+<span class="giallo-l"><span style="color: #C6CCD7;">PACKAGER</span><span style="color: #E06C75;">=</span><span>&quot;</span><span style="color: #98C379;">Your Name &lt;your@email.address&gt;</span><span>&quot;</span></span>
+<span class="giallo-l"><span style="color: #C6CCD7;">MAINTAINER</span><span style="color: #E06C75;">=</span><span>&quot;</span><span style="color: #C6CCD7;">$PACKAGER</span><span>&quot;</span></span></code></pre>
+<p>Next, we can configure the security keys:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #B57EDC;">$</span><span style="color: #98C379;"> abuild-keygen</span><span style="color: #56B6C2;"> --append --install</span></span></code></pre>
+<p>After this step, we are now ready for preparing <code>APKBUILDs</code> according to <a rel="external" href="https://wiki.alpinelinux.org/wiki/Creating_an_Alpine_package">this guide</a> and build them via <code>abuild -r</code>.</p>
+<hr />
+<h3 id="setting-up-the-repository">Setting up the repository</h3>
+<p>After forking the <a rel="external" href="https://gitlab.alpinelinux.org/alpine/aports">aports</a> repository on GitLab, we can clone it somewhere on our main system and configure Git according to the packager information we have provided earlier in <code>/etc/abuild.conf</code>:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #B57EDC;">$</span><span style="color: #98C379;"> git clone https://gitlab.alpinelinux.org/</span><span style="color: #E06C75;">&lt;</span><span style="color: #98C379;">use</span><span>r</span><span style="color: #E06C75;">&gt;</span><span style="color: #98C379;">/aports</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">$</span><span style="color: #98C379;"> git config</span><span style="color: #56B6C2;"> --global</span><span style="color: #98C379;"> user.name</span><span> &quot;</span><span style="color: #98C379;">Your Name</span><span>&quot;</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">$</span><span style="color: #98C379;"> git config</span><span style="color: #56B6C2;"> --global</span><span style="color: #98C379;"> user.email</span><span> &quot;</span><span style="color: #98C379;">your@email.address</span><span>&quot;</span></span></code></pre>
+<p>Official documentation <a rel="external" href="https://wiki.alpinelinux.org/wiki/Creating_an_Alpine_package#Commit_your_work">recommends</a> adding the following Git hook for automatically generating the commit message based on the package that is being committed:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #B57EDC;">$</span><span style="color: #98C379;"> cat</span><span style="color: #E06C75;"> &lt;&lt;-</span><span>&#39;_EOF_&#39;</span><span style="color: #E06C75;"> &gt;</span><span style="color: #B57EDC;">&quot;.git/hooks/prepare-commit-msg&quot;</span></span>
+<span class="giallo-l"><span style="color: #98C379;">  #!/bin/sh</span></span>
+<span class="giallo-l"><span style="color: #98C379;">  case &quot;$2,$3&quot; in</span></span>
+<span class="giallo-l"><span style="color: #98C379;">    ,|template,)</span></span>
+<span class="giallo-l"><span style="color: #98C379;">      if git diff-index --diff-filter=A --name-only --cached HEAD \</span></span>
+<span class="giallo-l"><span style="color: #98C379;">          | grep -q &#39;/APKBUILD$&#39;; then</span></span>
+<span class="giallo-l"><span style="color: #98C379;">        meta() { git diff --staged | grep &quot;^+$1&quot; | sed &#39;s/.*=&quot;\?//;s/&quot;$//&#39;;}</span></span>
+<span class="giallo-l"><span style="color: #98C379;">        printf &#39;testing/%s: new aport\n\n%s\n%s\n&#39; &quot;$(meta pkgname)&quot; \</span></span>
+<span class="giallo-l"><span style="color: #98C379;">          &quot;$(meta url)&quot; &quot;$(meta pkgdesc)&quot; &quot;$(cat $1)&quot; &gt; &quot;$1&quot;</span></span>
+<span class="giallo-l"><span style="color: #98C379;">      else</span></span>
+<span class="giallo-l"><span style="color: #98C379;">        printf &#39;%s\n\n%s&#39; `git diff-index --name-only --cached HEAD \</span></span>
+<span class="giallo-l"><span style="color: #98C379;">          | sed -n &#39;s/\/APKBUILD$//p;q&#39;` &quot;$(cat $1)&quot; &gt; &quot;$1&quot;</span></span>
+<span class="giallo-l"><span style="color: #98C379;">      fi;;</span></span>
+<span class="giallo-l"><span style="color: #98C379;">  esac</span></span>
+<span class="giallo-l"><span>_EOF_</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">chmod</span><span style="color: #98C379;"> +x</span><span> &quot;</span><span style="color: #98C379;">.git/hooks/prepare-commit-msg</span><span>&quot;</span></span></code></pre>
+<p>This hook will result in generating commit messages such as:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #B57EDC;">testing/git-cliff:</span><span style="color: #98C379;"> new aport</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #B57EDC;">https://github.com/orhun/git-cliff</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">A</span><span style="color: #98C379;"> highly customizable changelog generator</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">testing/</span></span></code></pre>
+<p>Nice.</p>
+<hr />
+<h3 id="creating-packages">Creating packages</h3>
+<p>Alpine Linux has a convenient tool called <code>newapkbuild</code> for generating <code>APKBUILD</code> prototypes based on the given parameters:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #B57EDC;">$</span><span style="color: #98C379;"> newapkbuild</span><span style="color: #56B6C2;"> -h</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #B57EDC;">newapkbuild</span><span style="color: #98C379;"> 3.10.0-r0 - generate a new APKBUILD</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">Usage:</span><span style="color: #98C379;"> newapkbuild</span><span> [-n</span><span style="color: #98C379;"> PKGNAME]</span><span> [-d</span><span style="color: #98C379;"> PKGDESC]</span><span> [-l</span><span style="color: #98C379;"> LICENSE]</span><span> [-u</span><span style="color: #98C379;"> URL]</span></span>
+<span class="giallo-l"><span>       [-a </span><span style="color: #E06C75;">|</span><span> -C </span><span style="color: #E06C75;">|</span><span> -m </span><span style="color: #E06C75;">| -p |</span><span> -y </span><span style="color: #E06C75;">| -r</span><span>] [-s] [-c] [-f] [-h]</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">       PKGNAME[-PKGVER]</span><span style="color: #E06C75;"> |</span><span style="color: #B57EDC;"> SRCURL</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">Options:</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">  -n</span><span style="color: #98C379;">  Set package name to PKGNAME</span><span> (only</span><span style="color: #98C379;"> use with SRCURL</span><span>)</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">  -d</span><span style="color: #98C379;">  Set package description to PKGDESC</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">  -l</span><span style="color: #98C379;">  Set package license to LICENSE, use identifiers from:</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">      &lt;</span><span style="color: #B57EDC;">https://spdx.org/licenses/</span><span>&gt;</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">  -u</span><span style="color: #98C379;">  Set package URL</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">  -a</span><span style="color: #98C379;">  Create autotools package</span><span> (use</span><span style="color: #98C379;"> ./configure ...</span><span>)</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">  -C</span><span style="color: #98C379;">  Create CMake package</span><span> (Assume</span><span style="color: #98C379;"> cmake/ is there</span><span>)</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">  -m</span><span style="color: #98C379;">  Create meson package</span><span> (Assume</span><span style="color: #98C379;"> meson.build is there</span><span>)</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">  -p</span><span style="color: #98C379;">  Create perl package</span><span> (Assume</span><span style="color: #98C379;"> Makefile.PL is there</span><span>)</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">  -y</span><span style="color: #98C379;">  Create python package</span><span> (Assume</span><span style="color: #98C379;"> setup.py is there</span><span>)</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">  -r</span><span style="color: #98C379;">  Create rust package</span><span> (Assume</span><span style="color: #98C379;"> Cargo.toml is there</span><span>)</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">  -s</span><span style="color: #98C379;">  Use sourceforge source URL</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">  -c</span><span style="color: #98C379;">  Copy a sample init.d, conf.d, and install script</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">  -f</span><span style="color: #98C379;">  Force even if directory already exists</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">  -h</span><span style="color: #98C379;">  Show this help</span></span></code></pre>
+<p>It is especially useful if you don't want to write the same boilerplate functions over and over again.</p>
+<p>It can be used for Rust packages as follows:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #B57EDC;">$</span><span style="color: #98C379;"> newapkbuild</span><span style="color: #56B6C2;"> -r \</span></span>
+<span class="giallo-l"><span style="color: #56B6C2;">              -u</span><span> &quot;</span><span style="color: #98C379;">https://github.com/orhun/git-cliff</span><span>&quot;</span><span style="color: #56B6C2;"> \</span></span>
+<span class="giallo-l"><span style="color: #56B6C2;">              -d</span><span> &quot;</span><span style="color: #98C379;">A highly customizable changelog generator</span><span>&quot;</span><span style="color: #56B6C2;"> \</span></span>
+<span class="giallo-l"><span style="color: #56B6C2;">              -l</span><span> &quot;</span><span style="color: #98C379;">GPL-3.0-only</span><span>&quot;</span><span style="color: #56B6C2;"> \</span></span>
+<span class="giallo-l"><span>              &quot;</span><span style="color: #98C379;">git-cliff</span><span>&quot;</span></span></code></pre>
+<p>This will generate the following <code>APKBUILD</code> in <code>git-cliff</code> directory:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #5F6672;font-style: italic;"># Contributor: Your Name &lt;your@email.address&gt;</span></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;"># Maintainer: Your Name &lt;your@email.address&gt;</span></span>
+<span class="giallo-l"><span style="color: #C6CCD7;">pkgname</span><span style="color: #E06C75;">=</span><span style="color: #98C379;">git-cliff</span></span>
+<span class="giallo-l"><span style="color: #C6CCD7;">pkgver</span><span style="color: #E06C75;">=</span></span>
+<span class="giallo-l"><span style="color: #C6CCD7;">pkgrel</span><span style="color: #E06C75;">=</span><span style="color: #98C379;">0</span></span>
+<span class="giallo-l"><span style="color: #C6CCD7;">pkgdesc</span><span style="color: #E06C75;">=</span><span>&quot;</span><span style="color: #98C379;">A highly customizable changelog generator</span><span>&quot;</span></span>
+<span class="giallo-l"><span style="color: #C6CCD7;">url</span><span style="color: #E06C75;">=</span><span>&quot;</span><span style="color: #98C379;">https://github.com/orhun/git-cliff</span><span>&quot;</span></span>
+<span class="giallo-l"><span style="color: #C6CCD7;">arch</span><span style="color: #E06C75;">=</span><span>&quot;</span><span style="color: #98C379;">all</span><span>&quot;</span></span>
+<span class="giallo-l"><span style="color: #C6CCD7;">license</span><span style="color: #E06C75;">=</span><span>&quot;</span><span style="color: #98C379;">GPL-3.0-only</span><span>&quot;</span></span>
+<span class="giallo-l"><span style="color: #C6CCD7;">depends</span><span style="color: #E06C75;">=</span><span>&quot;&quot;</span></span>
+<span class="giallo-l"><span style="color: #C6CCD7;">makedepends</span><span style="color: #E06C75;">=</span><span>&quot;</span><span style="color: #98C379;">cargo</span><span>&quot;</span></span>
+<span class="giallo-l"><span style="color: #C6CCD7;">checkdepends</span><span style="color: #E06C75;">=</span><span>&quot;&quot;</span></span>
+<span class="giallo-l"><span style="color: #C6CCD7;">install</span><span style="color: #E06C75;">=</span><span>&quot;&quot;</span></span>
+<span class="giallo-l"><span style="color: #C6CCD7;">subpackages</span><span style="color: #E06C75;">=</span><span>&quot;</span><span style="color: #C6CCD7;">$pkgname</span><span style="color: #98C379;">-dev </span><span style="color: #C6CCD7;">$pkgname</span><span style="color: #98C379;">-doc</span><span>&quot;</span></span>
+<span class="giallo-l"><span style="color: #C6CCD7;">source</span><span style="color: #E06C75;">=</span><span>&quot;&quot;</span></span>
+<span class="giallo-l"><span style="color: #C6CCD7;">builddir</span><span style="color: #E06C75;">=</span><span>&quot;</span><span style="color: #C6CCD7;">$srcdir</span><span style="color: #98C379;">/</span><span>&quot;</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #B57EDC;">prepare</span><span>() {</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">	default_prepare</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #B57EDC;">	cargo</span><span style="color: #98C379;"> fetch</span><span style="color: #56B6C2;"> --locked</span></span>
+<span class="giallo-l"><span>}</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #B57EDC;">build</span><span>() {</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">	cargo</span><span style="color: #98C379;"> build</span><span style="color: #56B6C2;"> --frozen --release</span></span>
+<span class="giallo-l"><span>}</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #B57EDC;">check</span><span>() {</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">	cargo</span><span style="color: #98C379;"> test</span><span style="color: #56B6C2;"> --frozen</span></span>
+<span class="giallo-l"><span>}</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #B57EDC;">package</span><span>() {</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">	cargo</span><span style="color: #98C379;"> install</span><span style="color: #56B6C2;"> --frozen --offline --path</span><span style="color: #98C379;"> .</span><span style="color: #56B6C2;"> --root=</span><span>&quot;</span><span style="color: #C6CCD7;">$pkgdir</span><span style="color: #98C379;">/usr</span><span>&quot;</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">	rm</span><span> &quot;</span><span style="color: #C6CCD7;">$pkgdir</span><span>&quot;</span><span style="color: #98C379;">/usr/.crates</span><span style="color: #E06C75;">*</span></span>
+<span class="giallo-l"><span>}</span></span></code></pre>
+<p>You can read more about <code>APKBUILD</code> functions/variables in the <a rel="external" href="https://wiki.alpinelinux.org/wiki/APKBUILD_Reference">official reference</a>. With some edits, we can fit our project into this template easily. Here is the final <code>APKBUILD</code>:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #5F6672;font-style: italic;"># Contributor: Orhun Parmaksız &lt;orhunparmaksiz@gmail.com&gt;</span></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;"># Maintainer: Orhun Parmaksız &lt;orhunparmaksiz@gmail.com&gt;</span></span>
+<span class="giallo-l"><span style="color: #C6CCD7;">pkgname</span><span style="color: #E06C75;">=</span><span style="color: #98C379;">git-cliff</span></span>
+<span class="giallo-l"><span style="color: #C6CCD7;">pkgver</span><span style="color: #E06C75;">=</span><span style="color: #98C379;">1.1.2</span></span>
+<span class="giallo-l"><span style="color: #C6CCD7;">pkgrel</span><span style="color: #E06C75;">=</span><span style="color: #98C379;">0</span></span>
+<span class="giallo-l"><span style="color: #C6CCD7;">pkgdesc</span><span style="color: #E06C75;">=</span><span>&quot;</span><span style="color: #98C379;">A highly customizable changelog generator</span><span>&quot;</span></span>
+<span class="giallo-l"><span style="color: #C6CCD7;">url</span><span style="color: #E06C75;">=</span><span>&quot;</span><span style="color: #98C379;">https://github.com/orhun/git-cliff</span><span>&quot;</span></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;"># s390x, ppc64le, riscv64: blocked by ring crate</span></span>
+<span class="giallo-l"><span style="color: #C6CCD7;">arch</span><span style="color: #E06C75;">=</span><span>&quot;</span><span style="color: #98C379;">all !s390x !ppc64le !riscv64</span><span>&quot;</span></span>
+<span class="giallo-l"><span style="color: #C6CCD7;">license</span><span style="color: #E06C75;">=</span><span>&quot;</span><span style="color: #98C379;">GPL-3.0-or-later</span><span>&quot;</span></span>
+<span class="giallo-l"><span style="color: #C6CCD7;">makedepends</span><span style="color: #E06C75;">=</span><span>&quot;</span></span>
+<span class="giallo-l"><span style="color: #98C379;">	cargo</span></span>
+<span class="giallo-l"><span style="color: #98C379;">	libgit2-dev</span></span>
+<span class="giallo-l"><span>	&quot;</span></span>
+<span class="giallo-l"><span style="color: #C6CCD7;">subpackages</span><span style="color: #E06C75;">=</span><span>&quot;</span></span>
+<span class="giallo-l"><span style="color: #C6CCD7;">	$pkgname</span><span style="color: #98C379;">-doc</span></span>
+<span class="giallo-l"><span style="color: #C6CCD7;">	$pkgname</span><span style="color: #98C379;">-bash-completion</span></span>
+<span class="giallo-l"><span style="color: #C6CCD7;">	$pkgname</span><span style="color: #98C379;">-zsh-completion</span></span>
+<span class="giallo-l"><span style="color: #C6CCD7;">	$pkgname</span><span style="color: #98C379;">-fish-completion</span></span>
+<span class="giallo-l"><span>	&quot;</span></span>
+<span class="giallo-l"><span style="color: #C6CCD7;">options</span><span style="color: #E06C75;">=</span><span>&quot;</span><span style="color: #98C379;">net</span><span>&quot;</span></span>
+<span class="giallo-l"><span style="color: #C6CCD7;">source</span><span style="color: #E06C75;">=</span><span>&quot;</span><span style="color: #C6CCD7;">$pkgname</span><span style="color: #98C379;">-</span><span style="color: #C6CCD7;">$pkgver</span><span style="color: #98C379;">.tar.gz::https://github.com/orhun/git-cliff/archive/v</span><span style="color: #C6CCD7;">$pkgver</span><span style="color: #98C379;">.tar.gz</span><span>&quot;</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #B57EDC;">prepare</span><span>() {</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">	default_prepare</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #B57EDC;">	cargo</span><span style="color: #98C379;"> fetch</span><span style="color: #56B6C2;"> --target=</span><span>&quot;</span><span style="color: #C6CCD7;">$CTARGET</span><span>&quot;</span><span style="color: #56B6C2;"> --locked</span></span>
+<span class="giallo-l"><span>}</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #B57EDC;">build</span><span>() {</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">	cargo</span><span style="color: #98C379;"> build</span><span style="color: #56B6C2;"> --frozen --release</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">	mkdir</span><span style="color: #56B6C2;"> -p</span><span style="color: #98C379;"> man</span></span>
+<span class="giallo-l"><span style="color: #C6CCD7;">	OUT_DIR</span><span style="color: #E06C75;">=</span><span style="color: #98C379;">man/</span><span> &quot;</span><span style="color: #98C379;">./target/release/</span><span style="color: #C6CCD7;">$pkgname</span><span style="color: #98C379;">-mangen</span><span>&quot;</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">	mkdir</span><span style="color: #56B6C2;"> -p</span><span style="color: #98C379;"> completions</span></span>
+<span class="giallo-l"><span style="color: #C6CCD7;">	OUT_DIR</span><span style="color: #E06C75;">=</span><span style="color: #98C379;">completions/</span><span> &quot;</span><span style="color: #98C379;">./target/release/</span><span style="color: #C6CCD7;">$pkgname</span><span style="color: #98C379;">-completions</span><span>&quot;</span></span>
+<span class="giallo-l"><span>}</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #B57EDC;">check</span><span>() {</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">	cargo</span><span style="color: #98C379;"> test</span><span style="color: #56B6C2;"> --frozen -- --skip</span><span> &quot;</span><span style="color: #98C379;">git_log</span><span>&quot;</span></span>
+<span class="giallo-l"><span>}</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #B57EDC;">package</span><span>() {</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">	install</span><span style="color: #56B6C2;"> -Dm 755</span><span> &quot;</span><span style="color: #98C379;">target/release/</span><span style="color: #C6CCD7;">$pkgname</span><span>&quot;</span><span style="color: #56B6C2;"> -t</span><span> &quot;</span><span style="color: #C6CCD7;">$pkgdir</span><span style="color: #98C379;">/usr/bin</span><span>&quot;</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">	install</span><span style="color: #56B6C2;"> -Dm 644</span><span style="color: #98C379;"> README.md</span><span style="color: #56B6C2;"> -t</span><span> &quot;</span><span style="color: #C6CCD7;">$pkgdir</span><span style="color: #98C379;">/usr/share/doc/</span><span style="color: #C6CCD7;">$pkgname</span><span>&quot;</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">	install</span><span style="color: #56B6C2;"> -Dm 644</span><span> &quot;</span><span style="color: #98C379;">man/</span><span style="color: #C6CCD7;">$pkgname</span><span style="color: #98C379;">.1</span><span>&quot;</span><span style="color: #56B6C2;"> -t</span><span> &quot;</span><span style="color: #C6CCD7;">$pkgdir</span><span style="color: #98C379;">/usr/share/man/man1</span><span>&quot;</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">	install</span><span style="color: #56B6C2;"> -Dm 644</span><span> &quot;</span><span style="color: #98C379;">completions/</span><span style="color: #C6CCD7;">$pkgname</span><span style="color: #98C379;">.bash</span><span>&quot; &quot;</span><span style="color: #C6CCD7;">$pkgdir</span><span style="color: #98C379;">/usr/share/bash-completion/completions/</span><span style="color: #C6CCD7;">$pkgname</span><span>&quot;</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">	install</span><span style="color: #56B6C2;"> -Dm 644</span><span> &quot;</span><span style="color: #98C379;">completions/</span><span style="color: #C6CCD7;">$pkgname</span><span style="color: #98C379;">.fish</span><span>&quot;</span><span style="color: #56B6C2;"> -t</span><span> &quot;</span><span style="color: #C6CCD7;">$pkgdir</span><span style="color: #98C379;">/usr/share/fish/completions</span><span>&quot;</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">	install</span><span style="color: #56B6C2;"> -Dm 644</span><span> &quot;</span><span style="color: #98C379;">completions/_</span><span style="color: #C6CCD7;">$pkgname</span><span>&quot;</span><span style="color: #56B6C2;"> -t</span><span> &quot;</span><span style="color: #C6CCD7;">$pkgdir</span><span style="color: #98C379;">/usr/share/zsh/site-functions</span><span>&quot;</span></span>
+<span class="giallo-l"><span>}</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #C6CCD7;">sha512sums</span><span style="color: #E06C75;">=</span><span>&quot;</span></span>
+<span class="giallo-l"><span style="color: #98C379;">f5564f1d6d492ea6527f2ac10eaa1dc90aa1846fb9b090224ff7a2c1cad78d8850a13364c5e4beae987c4ebf65891e804e0677fd9ab193e56d9565292d6cf2ba  git-cliff-1.1.2.tar.gz</span></span>
+<span class="giallo-l"><span>&quot;</span></span></code></pre>
+<p>After we have the <code>APKBUILD</code>, we can use the following commands.</p>
+<p>To generate checksums:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #B57EDC;">$</span><span style="color: #98C379;"> abuild checksum</span></span></code></pre>
+<p>To build:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #B57EDC;">$</span><span style="color: #98C379;"> abuild</span><span style="color: #56B6C2;"> -r</span></span></code></pre>
+<p>To lint:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #B57EDC;">$</span><span style="color: #98C379;"> apkbuild-lint APKBUILD</span></span></code></pre>
+<p>After the package is successfully built, there will be an <code>apk</code> file in the <code>$HOME/packages</code> directory. It is possible to list the <code>apk</code> contents with the following command:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #B57EDC;">$</span><span style="color: #98C379;"> tar tvvf git-cliff-1.1.2-r0.apk</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">-rw-r--r--</span><span style="color: #98C379;"> 0/0</span><span style="color: #56B6C2;">             512</span><span style="color: #98C379;"> 2023-03-22 19:08 .SIGN.RSA.orhunparmaksiz@gmail.com-641b3a67.rsa.pub</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">-rw-r--r--</span><span style="color: #98C379;"> root/root</span><span style="color: #56B6C2;">       754</span><span style="color: #98C379;"> 2023-03-22 19:08 .PKGINFO</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">drwxr-xr-x</span><span style="color: #98C379;"> root/root</span><span style="color: #56B6C2;">         0</span><span style="color: #98C379;"> 2023-03-22 19:08 usr/</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">drwxr-xr-x</span><span style="color: #98C379;"> root/root</span><span style="color: #56B6C2;">         0</span><span style="color: #98C379;"> 2023-03-22 19:08 usr/bin/</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">-rwxr-xr-x</span><span style="color: #98C379;"> root/root</span><span style="color: #56B6C2;">   7064056</span><span style="color: #98C379;"> 2023-03-22 19:08 usr/bin/git-cliff</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">-rwxr-xr-x</span><span style="color: #98C379;"> root/root</span><span style="color: #56B6C2;">    469160</span><span style="color: #98C379;"> 2023-03-22 19:08 usr/bin/git-cliff-completions</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">-rwxr-xr-x</span><span style="color: #98C379;"> root/root</span><span style="color: #56B6C2;">    440488</span><span style="color: #98C379;"> 2023-03-22 19:08 usr/bin/git-cliff-mangen</span></span></code></pre>
+<p>To install the locally built package, we can update the repository index (<code>/etc/apk/repositories</code>) to point to the local directory and install it via <code>apk</code>:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #B57EDC;">$</span><span style="color: #98C379;"> cat /etc/apk/repositories</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #B57EDC;">/home/orhun/packages/orhun/</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">http://dl-cdn.alpinelinux.org/alpine/latest-stable/main</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">http://dl-cdn.alpinelinux.org/alpine/latest-stable/community</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #B57EDC;">$</span><span style="color: #98C379;"> apk add git-cliff</span></span></code></pre>
+<p>If everything works fine, then congratulations, you just built your first Alpine package!</p>
+<hr />
+<h3 id="submitting-patches">Submitting patches</h3>
+<p>Alpine Linux has 3 repositories:</p>
+<ol>
+<li><code>main</code>: Directly supported official packages which are maintained by the Alpine core team.</li>
+</ol>
+<ul>
+<li>Similar to <code>core</code>/<code>extra</code> repositories in Arch Linux.</li>
+</ul>
+<ol start="2">
+<li><code>community</code>: Packages that are created by the contributors and developers. Not fully supported, maintenance is dependent on the contributor activity.</li>
+</ol>
+<ul>
+<li>Same as <code>community</code> repository on Arch Linux.</li>
+</ul>
+<ol start="3">
+<li><code>testing</code>: New packages that are added by contributors. Packages from this repository are accepted into the <code>community</code> repository. This repository is only available on <a rel="external" href="https://wiki.alpinelinux.org/wiki/Edge">edge</a> (development) branch of Alpine.</li>
+</ol>
+<ul>
+<li>Similar to the AUR / <code>testing</code> repositories on Arch Linux.</li>
+</ul>
+<p>Since we have just created a <em>new</em> package, it will go to the <code>testing</code> repository. We can simply commit <code>testing/&lt;package&gt;/APKBUILD</code> and then create a merge request on GitLab.</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #B57EDC;">$</span><span style="color: #98C379;"> cd aports/</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">$</span><span style="color: #98C379;"> git pull</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">$</span><span style="color: #98C379;"> git checkout</span><span style="color: #56B6C2;"> -b</span><span style="color: #98C379;"> aport/git-cliff</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">$</span><span style="color: #98C379;"> mkdir</span><span style="color: #56B6C2;"> -p</span><span style="color: #98C379;"> testing/git-cliff</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">$</span><span style="color: #98C379;"> cp /chroot/home/orhun/git-cliff/APKBUILD testing/git-cliff/</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">$</span><span style="color: #98C379;"> git add testing/git-cliff</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">$</span><span style="color: #98C379;"> git commit</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">$</span><span style="color: #98C379;"> git push</span></span></code></pre>
+<p>And there we go: <a rel="external" href="https://gitlab.alpinelinux.org/alpine/aports/-/merge_requests/45319"><strong>https://gitlab.alpinelinux.org/alpine/aports/-/merge_requests/45319</strong></a></p>
+<p>After the merge request is approved/merged, our package will show up on <a rel="external" href="https://pkgs.alpinelinux.org">https://pkgs.alpinelinux.org</a>:</p>
+<p><img src="/alpine-pkg.png" alt="alpine package" /></p>
+<center>
+<p>Yay! <a rel="external" href="https://github.com/orhun/git-cliff"><code>git-cliff</code></a> is now available for Alpine Linux!</p>
+</center>
+<hr />
+<h3 id="automating-mostly-everything-with-alpkg-mountain-snow">Automating (mostly) everything with <a rel="external" href="https://github.com/orhun/alpkg"><strong>alpkg</strong></a> 🏔️</h3>
+<p>⭐ GitHub: <a rel="external" href="https://github.com/orhun/alpkg"><strong>https://github.com/orhun/alpkg</strong></a></p>
+<blockquote>
+<p><code>alpkg</code> can create a chroot with preinstalled tools in a matter of seconds, set up <a rel="external" href="https://gitlab.alpinelinux.org/alpine/aports">aports repository</a>, and fetch/update packages. Most importantly, it provides a split layout via <a rel="external" href="https://github.com/zellij-org/zellij">Zellij</a> for easy editing/building <a rel="external" href="https://wiki.alpinelinux.org/wiki/APKBUILD_Reference"><code>APKBUILD</code></a> files.</p>
+</blockquote>
+<p><img src="https://raw.githubusercontent.com/orhun/alpkg/main/assets/demo.gif" alt="alpkg demo" /></p>
+<p><code>alpkg</code> does everything that is mentioned earlier in this post and more. For example, in the GIF above:</p>
+<ul>
+<li>an Alpine chroot is created. (<code>alpkg init</code>)</li>
+<li>an existing <code>APKBUILD</code> is fetched. (<code>alpkg fetch</code>)</li>
+<li><code>APKBUILD</code> is edited and built. (<code>alpkg edit</code>)</li>
+<li>changes are committed to <code>aports</code>. (<code>alpkg update</code>)</li>
+</ul>
+<p>Let's go over these features.</p>
+<p>Creating a chroot is as easy as running <code>alpkg init</code>. It also installs the SDK tools that we need and sets up the <code>aports</code> repository for us.</p>
+<p><img src="https://raw.githubusercontent.com/orhun/alpkg/main/assets/init.gif" alt="alpkg init" /></p>
+<p>We can fetch and edit a <code>APKBUILD</code> via <code>alpkg fetch</code>. It will provide a split layout for both editing and other operations such as running <code>abuild -r</code>.</p>
+<p><img src="https://raw.githubusercontent.com/orhun/alpkg/main/assets/fetch.gif" alt="alpkg fetch" /></p>
+<p>To create a new <code>APKBUILD</code>, we can simply use <code>alpkg edit</code>.</p>
+<p><img src="https://raw.githubusercontent.com/orhun/alpkg/main/assets/edit-1.gif" alt="alpkg edit" /></p>
+<p>Lastly, if we want to commit the changes to <code>aports</code>, we can run <code>alpkg update</code>.</p>
+<p><img src="https://raw.githubusercontent.com/orhun/alpkg/main/assets/update.gif" alt="alpkg update" /></p>
+<p>You can get more information about the tool and see detailed usage examples in the <a rel="external" href="https://github.com/orhun/alpkg">repository</a>.</p>
+<hr />
+<h3 id="endnote">Endnote</h3>
+<p>Alpine Linux is neat. I'm really looking forward to oxidizing it (add more Rust packages to their repositories) and learning more about their implementation choices to eventually do more development. I'm glad how <code>alpkg</code> turned out and I'm planning to improve it based on my needs and the feedback from the Alpine community. I like automating things.</p>
+<p>Hope you enjoyed reading and see you in the next one!</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #B57EDC;">$</span><span style="color: #98C379;"> docker run alpine echo</span><span> &quot;</span><span style="color: #98C379;">안녕히 가세요</span><span>&quot;</span></span></code></pre>
+    </div>
+
+    
+        <footer>
+            <hr>
+            <p>
+                
+                    Published by Orhun Parmaksız
+                
+                
+                    
+                    in <a href="https://blog.orhun.dev/categories/projects/">Projects</a>
+                
+                
+            </p>
+            
+            
+            <div style="display: flex; justify-content: space-between; align-items: center">
+              <div>
+                <iframe
+                  src="https://github.com/sponsors/orhun/button"
+                  title="Sponsor @orhun"
+                  height="35"
+                  width="116"
+                  style="border: 0"
+                ></iframe>
+                <a href="https://www.buymeacoffee.com/orhun" target="_blank"
+                  ><img
+                    src="https://cdn.buymeacoffee.com/buttons/v2/default-white.png"
+                    alt="Buy Me A Coffee"
+                    style="height: 40px !important; width: 150px !important"
+                /></a>
+              </div>
+              <div>
+                <applause-button
+                  style="width: 50px; height: 50px"
+                  url="https://blog.orhun.dev&#x2F;alpine-packaging-setup&#x2F;"
+                  color="white"
+                  multiclap="true"
+                />
+              </div>
+              <div>
+                <div style="width: auto; height: 39px">
+                  <p style="margin: 0; color: #fff; font-style: italic">✨ Sponsored by:</p>
+                </div>
+                <a href="https://www.jetbrains.com/" target="_blank"
+                  ><img
+                    src="/sponsors/jetbrains.png"
+                    alt="JetBrains"
+                    style="height: 45px; width: auto"
+                /></a>
+                <a href="https://terminaltrove.com/" target="_blank"
+                  ><img
+                    src="/sponsors/terminal_trove.png"
+                    alt="Terminal Trove"
+                    style="height: 40px; width: auto"
+                /></a>
+              </div>
+            </div>
+            <script src="https://utteranc.es/client.js"
+                    repo="orhun/personal-blog"
+                    issue-term="url"
+                    label="comments"
+                    theme="github-dark"
+                    crossorigin="anonymous"
+                    async>
+            </script>
+        </footer>
+    
+</article>
+
+
+    </body>
+
+    <script type="text/javascript" src="https://blog.orhun.dev/elasticlunr.min.js"></script>
+    <script type="text/javascript" src="https://blog.orhun.dev/js/search.js"></script>
+
+</html>

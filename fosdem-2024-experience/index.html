@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <meta http-equiv="content-type" content="text/html; charset=utf-8">
+      <meta property="og:type" content="website" />
+      <meta property="og:url" content="https://blog.orhun.dev"/>
+      
+      <meta property="og:title" content="My FOSDEM 2024 Experience - Orhun&#x27;s Blog" />
+      
+      <meta property="og:image" content="https://blog.orhun.dev/crow.png" />
+      
+      <meta name="description" content="FOSS • Linux • Programming" />
+      <meta property="og:description" content="FOSS • Linux • Programming"/>
+      
+
+      <!-- Enable responsiveness on mobile devices-->
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+      <link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png">
+      <link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png">
+      <link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png">
+      <link rel="manifest" href="/favicon/site.webmanifest">
+
+      <script async src="https://umami.orhun.dev/script.js" data-website-id="56ca5ca7-ba9f-416e-8bee-a132c155d56b"></script>
+
+      <link rel="stylesheet" href="https://unpkg.com/applause-button/dist/applause-button.css" />
+      <script src="https://unpkg.com/applause-button/dist/applause-button.js"></script>
+
+      
+      <title>My FOSDEM 2024 Experience - Orhun&#x27;s Blog</title>
+      
+      <link rel="alternate" type="application/rss+xml" title="Orhun&#x27;s Blog RSS Feed" href="https://blog.orhun.dev/rss.xml" />
+
+      
+          <link rel="stylesheet" href="https://blog.orhun.dev/site.css">
+      
+
+      
+      
+    </head>
+
+    <body class="hack dark main container">
+        
+    
+        
+                
+                    <header>
+                    <nav itemscope itemtype="http://schema.org/SiteNavigationElement" class="nav-flex">
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://blog.orhun.dev">
+                                <span itemprop="name">Home</span>
+                            </a>
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://blog.orhun.dev/categories">
+                                <span itemprop="name">Categories</span>
+                            </a>
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://github.com/orhun/personal-blog">
+                                <span itemprop="name">Source</span>
+                            </a>
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://github.com/orhun">
+                                <span itemprop="name">GitHub</span>
+                            </a>
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://donate.orhun.dev">
+                                <span itemprop="name">Donate</span>
+                            </a>
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://blog.orhun.dev/rss.xml">
+                                <span itemprop="name">RSS</span>
+                            </a>
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://orhun.dev">
+                                <span itemprop="name">About</span>
+                            </a>
+                        
+                        <div class="search-container">
+                            <input type="text" id="search" placeholder="Search...">
+                            <div class="search-results">
+                                <div class="search-results__items"></div>
+                            </div>
+                        </div>
+                    </nav>
+                    </header>
+                
+            
+    
+
+<article itemscope itemtype="http://schema.org/BlogPosting">
+    <header>
+        <h1 itemprop="headline">My FOSDEM 2024 Experience</h1>
+        <span class="muted">
+    <svg style="margin-bottom:-3px" class="i-clock" viewBox="0 0 32 32"
+         width="16" height="16" fill="none" stroke="currentcolor"
+         stroke-linecap="round" stroke-linejoin="round" stroke-width="6.25%">
+        <circle cx="16" cy="16" r="14"/>
+        <path d="M16 8 L16 16 20 20"/>
+    </svg>
+    <span>4 minute read</span>
+    <svg style="margin-bottom: -3px" class="i-edit" viewBox="0 0 32 32"
+         width="16" height="16" fill="none" stroke="currentcolor"
+         stroke-linecap="round" stroke-linejoin="round" stroke-width="6.25%">
+        <path d="M30 7 L25 2 5 22 3 29 10 27 Z M21 6 L26 11 Z M5 22 L10 27 Z"/>
+    </svg>
+
+    Published: 2024-02-05
+</span>
+    </header>
+    <div itemprop="articleBody">
+      <p>Sharing my experience after giving a talk at FOSDEM 2024!</p>
+<span id="continue-reading"></span><h2 id="the-venue-classical-building"><strong>The Venue</strong> 🏛️</h2>
+<center>
+<img class="glowing-border" src="venue.jpg" width="80%"/>
+</center>
+<p>FOSDEM takes place in <a rel="external" href="https://en.wikipedia.org/wiki/Brussels">Brussels, Belgium</a> in the ULB Solbosch Campus. This was my second visit to Brussels (after <a rel="external" href="https://eurorust.eu/">EuroRust</a>) so I was already familiar with the city. This time the weather was a bit rainy and gloomy so the vibes were not that uplifting from the start. But it was fine.</p>
+<p>Also, this was my first FOSDEM! I remember hearing one of the following things about this event from the people I know:</p>
+<ul>
+<li>It is crowded! (good and bad thing!)</li>
+<li>Too many tracks/talks (good and bad thing!)</li>
+<li>Small rooms (bad thing! Someone even said you gotta fist fight for your seat lol)</li>
+</ul>
+<p>And I experienced all of these at first hand and... it was awesome!</p>
+<ul>
+<li>
+<p>I met with a lot of people!</p>
+<ul>
+<li>Finally met some people that I know from the internet in person. (shoutout to <a rel="external" href="https://github.com/ellie">Ellie Huxtable</a> and <a rel="external" href="https://github.com/obi1kenobi">Predrag Gruevski</a>)</li>
+<li>Had the chance to hang out with fellow Rust developers such as <a rel="external" href="https://github.com/mre">Matthias Endler</a> and <a rel="external" href="https://github.com/nvzqz">Nikolai Vazquez</a></li>
+<li>Had a great time with people from Arch Linux (<a rel="external" href="https://github.com/kpcyrd">kpcyrd</a>, <a rel="external" href="https://github.com/anthraxx">Levente Polyak</a>, <a rel="external" href="https://github.com/dvzrv">David Runge</a>)</li>
+</ul>
+</li>
+<li>
+<p>Listened great talks about all kinds of topics.</p>
+<ul>
+<li>Also missed some great talks due to overlapping.</li>
+</ul>
+</li>
+<li>
+<p>Camped in the GCC devroom for the whole day to not lose my seat.</p>
+<ul>
+<li>It was worth it.</li>
+</ul>
+</li>
+</ul>
+<h2 id="my-talk-mouse"><strong>My Talk</strong> 🐭</h2>
+<p>Watch my talk here: <a rel="external" href="https://www.youtube.com/watch?v=NU0q6NOLJ20"><strong>https://www.youtube.com/watch?v=NU0q6NOLJ20</strong></a></p>
+<p>I gave a talk about <a rel="external" href="https://ratatui.rs"><strong>Ratatui</strong></a> - a Rust library that is all about cooking up terminal user interfaces.</p>
+<center>
+<img src="ratatui-talk.jpg" width="90%"/>
+</center>
+<p>At the end of the day, I had many positive feedback about my talk and it was an amazing feeling to see people getting excited about terminal user interfaces and Ratatui!</p>
+<blockquote>
+<p>"Loving this presentation. You have given a really fun short walk through the history of tuis.
+Excited to see how developing with ratatui is like."</p>
+</blockquote>
+<blockquote>
+<p>"I like all the animated pixel art rats :D"</p>
+</blockquote>
+<center>
+<img src="ratatui-talk2.jpg" width="90%"/>
+<p>Thanks to <a rel="external" href="https://fosstodon.org/@mo8it/111868064467831193">@mo8it@fosstodon.org</a> for the picture!</p>
+</center>
+<p>I gave away Ratatui stickers to a bunch people and afterwards I spotted them on some laptops.</p>
+<p>My good friend <a rel="external" href="https://github.com/dpecos">Daniel Pecos Martínez</a> was also wearing this LED thingy during the conference and I think it was pretty <em>cool</em>!</p>
+<img src="ratatui-sticker.jpg" width="50%" align="left"/>
+<p align="right">
+<center>
+<video controls width="38%">
+  <source src="ratatui-is-cool.mp4" type="video/mp4">
+  Your browser does not support the video tag.
+</video>
+</center>
+</p>
+<p>I would like to thank to fellow Ratatui maintainers (shoutout to <a rel="external" href="https://github.com/kdheepak">Dheepak Krishnamurthy</a>!) and my friends such as <a rel="external" href="https://github.com/MarcoIeni">Marco Ieni</a> who gave me feedback to improve my talk during my practices.</p>
+<p>Also, I want to personally thank the Rust devroom organizers (<a rel="external" href="https://github.com/ehiggs">Ewan Higgs</a>, <a rel="external" href="https://github.com/knutwalker">Paul Horn</a>, ...) for doing an excellent job. They really help with growing the community for Rust projects like Ratatui and many others. Kudos!</p>
+<h2 id="talks-microphone"><strong>Talks</strong> 🎙️</h2>
+<p>I listened to a number of talks in Rust and GCC devroom, notably:</p>
+<ul>
+<li><a rel="external" href="https://fosdem.org/2024/schedule/event/fosdem-2024-2682-semver-in-the-rust-ecosystem-breakage-tooling-and-edge-cases/">SemVer in the Rust ecosystem: breakage, tooling, and edge cases</a></li>
+<li><a rel="external" href="https://fosdem.org/2024/schedule/event/fosdem-2024-2434-the-four-horsemen-of-bad-rust-code/">The Four Horsemen of Bad Rust Code</a></li>
+<li><a rel="external" href="https://fosdem.org/2024/schedule/event/fosdem-2024-2606-can-the-mold-linker-be-usr-bin-ld-/">Can the mold linker be /usr/bin/ld?</a></li>
+<li><a rel="external" href="https://fosdem.org/2024/schedule/event/fosdem-2024-2634-sega-dreamcast-homebrew-with-gcc/">Sega Dreamcast Homebrew with GCC</a></li>
+</ul>
+<center>
+<img src="dreamcast-talk.jpg" width="70%"/>
+<p>This talk was especially interesting because apparently you can run Rust on Dreamcast 🤯</p>
+</center>
+<h2 id="food-stew"><strong>Food</strong> 🍲</h2>
+<p>The most important aspect: food!</p>
+<ul>
+<li>I attended the speaker dinner with the Rust devroom speakers &amp; organizers and we discussed all kinds of things including floating islands.</li>
+<li>I had lunch with fellow Arch Linux maintainers and did some pentesting in the restaurant.</li>
+</ul>
+<p>I also enjoyed drinking lots of <a rel="external" href="https://en.wikipedia.org/wiki/Club-Mate">Club Mate</a> which became my favorite drink at this point. 🍺</p>
+<h2 id="looking-forward-sparkles"><strong>Looking Forward</strong> ✨</h2>
+<p>I learned a lot of new things at FOSDEM 2024 and I'm really looking forward to FOSDEM 2025. It was definitely one of my most unique conference experiences ever.</p>
+<center>
+<p>Thanks to everyone who participated in it!</p>
+<img src="brussels.jpg" width="70%"/>
+<p>See you next year!</p>
+<p>- orhun</p>
+</center>
+
+    </div>
+
+    
+        <footer>
+            <hr>
+            <p>
+                
+                    Published by Orhun Parmaksız
+                
+                
+                    
+                    in <a href="https://blog.orhun.dev/categories/thoughts/">Thoughts</a>
+                
+                
+            </p>
+            
+            
+            <div style="display: flex; justify-content: space-between; align-items: center">
+              <div>
+                <iframe
+                  src="https://github.com/sponsors/orhun/button"
+                  title="Sponsor @orhun"
+                  height="35"
+                  width="116"
+                  style="border: 0"
+                ></iframe>
+                <a href="https://www.buymeacoffee.com/orhun" target="_blank"
+                  ><img
+                    src="https://cdn.buymeacoffee.com/buttons/v2/default-white.png"
+                    alt="Buy Me A Coffee"
+                    style="height: 40px !important; width: 150px !important"
+                /></a>
+              </div>
+              <div>
+                <applause-button
+                  style="width: 50px; height: 50px"
+                  url="https://blog.orhun.dev&#x2F;fosdem-2024-experience&#x2F;"
+                  color="white"
+                  multiclap="true"
+                />
+              </div>
+              <div>
+                <div style="width: auto; height: 39px">
+                  <p style="margin: 0; color: #fff; font-style: italic">✨ Sponsored by:</p>
+                </div>
+                <a href="https://www.jetbrains.com/" target="_blank"
+                  ><img
+                    src="/sponsors/jetbrains.png"
+                    alt="JetBrains"
+                    style="height: 45px; width: auto"
+                /></a>
+                <a href="https://terminaltrove.com/" target="_blank"
+                  ><img
+                    src="/sponsors/terminal_trove.png"
+                    alt="Terminal Trove"
+                    style="height: 40px; width: auto"
+                /></a>
+              </div>
+            </div>
+            <script src="https://utteranc.es/client.js"
+                    repo="orhun/personal-blog"
+                    issue-term="url"
+                    label="comments"
+                    theme="github-dark"
+                    crossorigin="anonymous"
+                    async>
+            </script>
+        </footer>
+    
+</article>
+
+
+    </body>
+
+    <script type="text/javascript" src="https://blog.orhun.dev/elasticlunr.min.js"></script>
+    <script type="text/javascript" src="https://blog.orhun.dev/js/search.js"></script>
+
+</html>

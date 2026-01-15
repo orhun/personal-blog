@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <meta http-equiv="content-type" content="text/html; charset=utf-8">
+      <meta property="og:type" content="website" />
+      <meta property="og:url" content="https://blog.orhun.dev"/>
+      
+      <meta property="og:title" content="Zig Bits 0x1: Returning slices from functions - Orhun&#x27;s Blog" />
+      
+      <meta property="og:image" content="https://blog.orhun.dev/crow.png" />
+      
+      <meta name="description" content="FOSS • Linux • Programming" />
+      <meta property="og:description" content="FOSS • Linux • Programming"/>
+      
+
+      <!-- Enable responsiveness on mobile devices-->
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+      <link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png">
+      <link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png">
+      <link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png">
+      <link rel="manifest" href="/favicon/site.webmanifest">
+
+      <script async src="https://umami.orhun.dev/script.js" data-website-id="56ca5ca7-ba9f-416e-8bee-a132c155d56b"></script>
+
+      <link rel="stylesheet" href="https://unpkg.com/applause-button/dist/applause-button.css" />
+      <script src="https://unpkg.com/applause-button/dist/applause-button.js"></script>
+
+      
+      <title>Zig Bits 0x1: Returning slices from functions - Orhun&#x27;s Blog</title>
+      
+      <link rel="alternate" type="application/rss+xml" title="Orhun&#x27;s Blog RSS Feed" href="https://blog.orhun.dev/rss.xml" />
+
+      
+          <link rel="stylesheet" href="https://blog.orhun.dev/site.css">
+      
+
+      
+      
+    </head>
+
+    <body class="hack dark main container">
+        
+    
+        
+                
+                    <header>
+                    <nav itemscope itemtype="http://schema.org/SiteNavigationElement" class="nav-flex">
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://blog.orhun.dev">
+                                <span itemprop="name">Home</span>
+                            </a>
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://blog.orhun.dev/categories">
+                                <span itemprop="name">Categories</span>
+                            </a>
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://github.com/orhun/personal-blog">
+                                <span itemprop="name">Source</span>
+                            </a>
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://github.com/orhun">
+                                <span itemprop="name">GitHub</span>
+                            </a>
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://donate.orhun.dev">
+                                <span itemprop="name">Donate</span>
+                            </a>
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://blog.orhun.dev/rss.xml">
+                                <span itemprop="name">RSS</span>
+                            </a>
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://orhun.dev">
+                                <span itemprop="name">About</span>
+                            </a>
+                        
+                        <div class="search-container">
+                            <input type="text" id="search" placeholder="Search...">
+                            <div class="search-results">
+                                <div class="search-results__items"></div>
+                            </div>
+                        </div>
+                    </nav>
+                    </header>
+                
+            
+    
+
+<article itemscope itemtype="http://schema.org/BlogPosting">
+    <header>
+        <h1 itemprop="headline">Zig Bits 0x1: Returning slices from functions</h1>
+        <span class="muted">
+    <svg style="margin-bottom:-3px" class="i-clock" viewBox="0 0 32 32"
+         width="16" height="16" fill="none" stroke="currentcolor"
+         stroke-linecap="round" stroke-linejoin="round" stroke-width="6.25%">
+        <circle cx="16" cy="16" r="14"/>
+        <path d="M16 8 L16 16 20 20"/>
+    </svg>
+    <span>6 minute read</span>
+    <svg style="margin-bottom: -3px" class="i-edit" viewBox="0 0 32 32"
+         width="16" height="16" fill="none" stroke="currentcolor"
+         stroke-linecap="round" stroke-linejoin="round" stroke-width="6.25%">
+        <path d="M30 7 L25 2 5 22 3 29 10 27 Z M21 6 L26 11 Z M5 22 L10 27 Z"/>
+    </svg>
+
+    Published: 2023-02-17
+</span>
+    </header>
+    <div itemprop="articleBody">
+      <p>I decided to start a new blog series called "Zig Bits" where I share interesting bits of information about the <a rel="external" href="https://ziglang.org/">Zig programming language</a>. This series will be especially for beginners because I'm also a beginner.</p>
+<span id="continue-reading"></span><center>
+<img src="/ziggy_fly.svg" style="width: 25%"/>
+</center>
+<p>Since it's the first part of the series, let me start by giving some information about Zig and my background.</p>
+<p><code>Zig</code> is an imperative, general-purpose, statically typed, compiled system programming language and toolchain for maintaining robust, optimal, and reusable software.</p>
+<ul>
+<li><em>Robust</em>: Behavior is correct even for edge cases such as out of memory.</li>
+<li><em>Optimal</em>: Write programs the best way they can behave and perform.</li>
+<li><em>Reusable</em>: The same code works in many environments which have different constraints.</li>
+<li><em>Maintainable</em>: Precisely communicate intent to the compiler and other programmers. The language imposes a low overhead to reading code and is resilient to changing requirements and environments.</li>
+</ul>
+<p>It supports compile-time generics, reflection and evaluation, cross-compilation, and manual memory management. A major goal of Zig is to improve upon the <a rel="external" href="https://en.wikipedia.org/wiki/C_(programming_language)">C language</a>, while also taking inspiration from <a rel="external" href="https://www.rust-lang.org/">Rust</a>, among others.</p>
+<p>There are a lot of resources to learn Zig, primarily:</p>
+<ul>
+<li><a rel="external" href="https://ziglang.org/documentation/master/">Zig Documentation</a></li>
+<li><a rel="external" href="https://ziglang.org/documentation/master/std/#A;std">Zig <code>std</code> Reference</a></li>
+<li><a rel="external" href="https://ziglearn.org/">Ziglearn.org</a></li>
+<li><a rel="external" href="https://ikrima.dev/dev-notes/zig/zig-crash-course/">Zig Crash Course</a></li>
+<li><a rel="external" href="https://www.huy.rocks/everyday/01-04-2022-zig-strings-in-5-minutes">Zig Strings in 5 minutes</a></li>
+</ul>
+<p>I usually develop in <code>Rust</code> and I decided to learn Zig because the low-levelness of the language piqued my interest. I always liked writing C and learning something more robust is something that I would definitely consider. I'm already writing my first Zig project in my spare time (from other open source projects) and I really enjoy it!</p>
+<p>Alright, it's time for the main event.</p>
+<h3 id="returning-a-slice-in-zig">Returning a slice in Zig</h3>
+<img src="/ziggy_fix.svg" style="width: 25%"/>
+<p>Here's the code snippet for demonstrating what we're trying to do:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="zig"><span class="giallo-l"><span style="color: #5F6672;font-style: italic;">// Zig version: 0.10.1</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;">// Import the standard library.</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">const</span><span style="color: #C6CCD7;"> std</span><span style="color: #E06C75;"> =</span><span style="color: #B57EDC;"> @import</span><span>(</span><span style="color: #98C379;">&quot;std&quot;</span><span>);</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;">/// Returns a slice.</span></span>
+<span class="giallo-l"><span style="color: #61AFEF;">fn</span><span style="color: #B57EDC;"> zigBits</span><span>() []</span><span style="color: #E06C75;">u8</span><span> {</span></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;">    // Create an array literal.</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">    var</span><span style="color: #C6CCD7;"> message</span><span style="color: #E06C75;"> =</span><span> [</span><span style="color: #C6CCD7;">_</span><span>]</span><span style="color: #E06C75;">u8</span><span>{ </span><span style="color: #98C379;">&#39;z&#39;</span><span>,</span><span style="color: #98C379;"> &#39;i&#39;</span><span>,</span><span style="color: #98C379;"> &#39;g&#39;</span><span>,</span><span style="color: #98C379;"> &#39;b&#39;</span><span>,</span><span style="color: #98C379;"> &#39;i&#39;</span><span>,</span><span style="color: #98C379;"> &#39;t&#39;</span><span>,</span><span style="color: #98C379;"> &#39;s&#39;</span><span> };</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;">    // Print the array as string.</span></span>
+<span class="giallo-l"><span style="color: #C6CCD7;">    std</span><span>.</span><span style="color: #C6CCD7;">log</span><span>.</span><span style="color: #B57EDC;">debug</span><span>(</span><span style="color: #98C379;">&quot;{s}&quot;</span><span>, .{</span><span style="color: #C6CCD7;">message</span><span>});</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;">    // We need to use address-of operator (&amp;) to coerce to slice type &#39;[]u8&#39;.</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">    return &amp;</span><span style="color: #C6CCD7;">message</span><span>;</span></span>
+<span class="giallo-l"><span>}</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;">/// Entrypoint of the program.</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">pub</span><span style="color: #61AFEF;"> fn</span><span style="color: #B57EDC;"> main</span><span>() </span><span style="color: #E06C75;">void</span><span> {</span></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;">    // Get the message.</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">    const</span><span style="color: #C6CCD7;"> message</span><span style="color: #E06C75;"> =</span><span style="color: #B57EDC;"> zigBits</span><span>();</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;">    // Print the message.</span></span>
+<span class="giallo-l"><span style="color: #C6CCD7;">    std</span><span>.</span><span style="color: #C6CCD7;">log</span><span>.</span><span style="color: #B57EDC;">debug</span><span>(</span><span style="color: #98C379;">&quot;{s}&quot;</span><span>, .{</span><span style="color: #C6CCD7;">message</span><span>});</span></span>
+<span class="giallo-l"><span>}</span></span></code></pre>
+<p><strong>Q</strong>: Cool! So we're just returning a slice from a function and printing its value?</p>
+<p>Yes! We're expecting to see <code>zigbits</code> two times. One from inside the function and one from the <code>main</code>.</p>
+<p>Let's run it:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #B57EDC;">$</span><span style="color: #98C379;"> zig build run</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #B57EDC;">debug:</span><span style="color: #98C379;"> zigbits</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">debug:</span><span style="color: #98C379;"> �,�</span><span>$</span></span></code></pre>
+<p>Uhm... What? That's not what we expected. Maybe run it again?</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #B57EDC;">$</span><span style="color: #98C379;"> zig build run</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #B57EDC;">debug:</span><span style="color: #98C379;"> zigbits</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">debug:</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">       �</span><span>;</span><span style="color: #B57EDC;">�</span></span></code></pre>
+<p>WTH?! Maybe print the <code>u8</code> array instead?</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="diff"><span class="giallo-l"><span style="color: #E06C75;">- std.log.debug(&quot;{s}&quot;, .{message});</span></span>
+<span class="giallo-l"><span style="color: #98C379;">+ std.log.debug(&quot;{d}&quot;, .{message});</span></span></code></pre><pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #B57EDC;">$</span><span style="color: #98C379;"> zig build run</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #B57EDC;">debug:</span><span style="color: #98C379;"> { 122, 105, 103, 98, 105, 116,</span><span style="color: #56B6C2;"> 115</span><span style="color: #98C379;"> }</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">debug:</span><span style="color: #98C379;"> { 80, 129, 179, 51, 255, 127,</span><span style="color: #56B6C2;"> 0</span><span style="color: #98C379;"> }</span></span></code></pre>
+<p>That's not the same array! What is going on here?</p>
+<h3 id="explanation">Explanation</h3>
+<img src="/ziggy_think.svg" style="width: 25%"/>
+<p>Let's look at this line:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="zig"><span class="giallo-l"><span style="color: #E06C75;">return &amp;</span><span style="color: #C6CCD7;">message</span><span>;</span></span></code></pre>
+<p>Here, we're actually returning a slice of a <strong>stack-allocated</strong> array.</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="zig"><span class="giallo-l"><span style="color: #E06C75;">try</span><span style="color: #C6CCD7;"> std</span><span>.</span><span style="color: #C6CCD7;">testing</span><span>.</span><span style="color: #B57EDC;">expect</span><span>(</span><span style="color: #B57EDC;">@TypeOf</span><span>(</span><span style="color: #E06C75;">&amp;</span><span style="color: #C6CCD7;">message</span><span>) </span><span style="color: #E06C75;">== *</span><span>[</span><span style="color: #56B6C2;">7</span><span>]</span><span style="color: #E06C75;">u8</span><span>);</span></span></code></pre>
+<p>Since the array is allocated on the <em>stack</em>, it could be corrupted when it's released i.e. when we return from the function. This is explained in the <a rel="external" href="https://ziglang.org/documentation/master/#Lifetime-and-Ownership">Lifetime and Ownership</a> part of the documentation:</p>
+<blockquote>
+<p>It is the Zig programmer's responsibility to ensure that a pointer is not accessed when the memory pointed to is no longer available. Note that a slice is a form of pointer, in that it references other memory.</p>
+</blockquote>
+<p>This is the reason why we get random gibberish when we try to print the array contents after returning from the function.</p>
+<p>Also, there is an issue in the <a rel="external" href="https://github.com/ziglang/zig"><code>ziglang/zig</code></a> repository about this which states that this situation should lead to a compile error: <a rel="external" href="https://github.com/ziglang/zig/issues/5725">https://github.com/ziglang/zig/issues/5725</a></p>
+<h3 id="solution">Solution</h3>
+<img src="/ziggy_cool.svg" style="width: 20%"/>
+<p>We can work around this in a couple of ways:</p>
+<ul>
+<li>Passing the slice in as a parameter to the function</li>
+<li>Making the array global</li>
+<li>Allocating the slice (returning an allocated <em>copy</em> of the slice) [most common]</li>
+</ul>
+<p>Let's see how it works with each solution.</p>
+<h4 id="passing-the-slice-as-a-parameter">Passing the slice as a parameter</h4>
+<p>The number of bytes written is unknown to main, and thus without the len, the debug log at the end will print the entire buffer, and not just the actual message part.</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="zig"><span class="giallo-l"><span style="color: #5F6672;font-style: italic;">// Zig version: 0.10.1</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;">// Import the standard library.</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">const</span><span style="color: #C6CCD7;"> std</span><span style="color: #E06C75;"> =</span><span style="color: #B57EDC;"> @import</span><span>(</span><span style="color: #98C379;">&quot;std&quot;</span><span>);</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;">/// Takes a slice as a parameter and fills it with a message.</span></span>
+<span class="giallo-l"><span style="color: #61AFEF;">fn</span><span style="color: #B57EDC;"> zigBits</span><span>(</span><span style="color: #C6CCD7;">slice</span><span>: []</span><span style="color: #E06C75;">u8</span><span>) </span><span style="color: #E06C75;">usize</span><span> {</span></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;">    // Create an array literal.</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">    var</span><span style="color: #C6CCD7;"> message</span><span style="color: #E06C75;"> =</span><span> [</span><span style="color: #C6CCD7;">_</span><span>]</span><span style="color: #E06C75;">u8</span><span>{ </span><span style="color: #98C379;">&#39;z&#39;</span><span>,</span><span style="color: #98C379;"> &#39;i&#39;</span><span>,</span><span style="color: #98C379;"> &#39;g&#39;</span><span>,</span><span style="color: #98C379;"> &#39;b&#39;</span><span>,</span><span style="color: #98C379;"> &#39;i&#39;</span><span>,</span><span style="color: #98C379;"> &#39;t&#39;</span><span>,</span><span style="color: #98C379;"> &#39;s&#39;</span><span> };</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;">    // Print the array as string.</span></span>
+<span class="giallo-l"><span style="color: #C6CCD7;">    std</span><span>.</span><span style="color: #C6CCD7;">log</span><span>.</span><span style="color: #B57EDC;">debug</span><span>(</span><span style="color: #98C379;">&quot;{s}&quot;</span><span>, .{</span><span style="color: #C6CCD7;">message</span><span>});</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;">    // Update the slice.</span></span>
+<span class="giallo-l"><span style="color: #C6CCD7;">    std</span><span>.</span><span style="color: #C6CCD7;">mem</span><span>.</span><span style="color: #B57EDC;">copy</span><span>(</span><span style="color: #E06C75;">u8</span><span>,</span><span style="color: #C6CCD7;"> slice</span><span>,</span><span style="color: #E06C75;"> &amp;</span><span style="color: #C6CCD7;">message</span><span>);</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;">    // len used in main to print the actual message part, not the entire buffer</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">    return</span><span style="color: #C6CCD7;"> message</span><span>.</span><span style="color: #C6CCD7;">len</span><span>;</span></span>
+<span class="giallo-l"><span>}</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;">/// Entrypoint of the program.</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">pub</span><span style="color: #61AFEF;"> fn</span><span style="color: #B57EDC;"> main</span><span>() </span><span style="color: #E06C75;">void</span><span> {</span></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;">    // Define the message buffer.</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">    var</span><span style="color: #C6CCD7;"> message</span><span>: [</span><span style="color: #56B6C2;">9</span><span>]</span><span style="color: #E06C75;">u8 = undefined</span><span>;</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;">    // Get the message and save the length.</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">    const</span><span style="color: #C6CCD7;"> len</span><span style="color: #E06C75;"> =</span><span style="color: #B57EDC;"> zigBits</span><span>(</span><span style="color: #E06C75;">&amp;</span><span style="color: #C6CCD7;">message</span><span>);</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;">    // Print the message.</span></span>
+<span class="giallo-l"><span style="color: #C6CCD7;">    std</span><span>.</span><span style="color: #C6CCD7;">log</span><span>.</span><span style="color: #B57EDC;">debug</span><span>(</span><span style="color: #98C379;">&quot;{s}&quot;</span><span>, .{</span><span style="color: #C6CCD7;">message</span><span>[</span><span style="color: #56B6C2;">0</span><span>..</span><span style="color: #C6CCD7;">len</span><span>]});</span></span>
+<span class="giallo-l"><span style="color: #C6CCD7;">    std</span><span>.</span><span style="color: #C6CCD7;">log</span><span>.</span><span style="color: #B57EDC;">debug</span><span>(</span><span style="color: #98C379;">&quot;{s}&quot;</span><span>, .{</span><span style="color: #C6CCD7;">message</span><span>});</span></span>
+<span class="giallo-l"><span>}</span></span></code></pre>
+<p>As you can see, we have updated the return value of the function to <code>void</code> and make it accept a slice parameter. Instead of <code>return</code>, we update the slice with <a rel="external" href="https://ziglang.org/documentation/master/std/#A;std:mem.copy"><code>std.mem.cpy</code></a> method in the function and return length of the message. This length will be used in <code>main</code> to print the actual message part, not the entire buffer which may contain some garbage.</p>
+<p>(This approach is similar to passing a mutable reference (<code>&amp;mut</code>) to a function in Rust.)</p>
+<p>Let's run it:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #B57EDC;">$</span><span style="color: #98C379;"> zig build run</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #B57EDC;">debug:</span><span style="color: #98C379;"> zigbits</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">debug:</span><span style="color: #98C379;"> zigbits</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">debug:</span><span style="color: #98C379;"> zigbits�,�</span><span>$</span></span></code></pre>
+<p>Yay!</p>
+<h4 id="using-a-global-array">Using a global array</h4>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="zig"><span class="giallo-l"><span style="color: #5F6672;font-style: italic;">// Zig version: 0.10.1</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;">// Import the standard library.</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">const</span><span style="color: #C6CCD7;"> std</span><span style="color: #E06C75;"> =</span><span style="color: #B57EDC;"> @import</span><span>(</span><span style="color: #98C379;">&quot;std&quot;</span><span>);</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;">// Create a global array literal.</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">var</span><span style="color: #C6CCD7;"> message</span><span style="color: #E06C75;"> =</span><span> [</span><span style="color: #C6CCD7;">_</span><span>]</span><span style="color: #E06C75;">u8</span><span>{ </span><span style="color: #98C379;">&#39;z&#39;</span><span>,</span><span style="color: #98C379;"> &#39;i&#39;</span><span>,</span><span style="color: #98C379;"> &#39;g&#39;</span><span>,</span><span style="color: #98C379;"> &#39;b&#39;</span><span>,</span><span style="color: #98C379;"> &#39;i&#39;</span><span>,</span><span style="color: #98C379;"> &#39;t&#39;</span><span>,</span><span style="color: #98C379;"> &#39;s&#39;</span><span> };</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;">/// Returns a slice.</span></span>
+<span class="giallo-l"><span style="color: #61AFEF;">fn</span><span style="color: #B57EDC;"> zigBits</span><span>() []</span><span style="color: #E06C75;">u8</span><span> {</span></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;">    // Print the array as string.</span></span>
+<span class="giallo-l"><span style="color: #C6CCD7;">    std</span><span>.</span><span style="color: #C6CCD7;">log</span><span>.</span><span style="color: #B57EDC;">debug</span><span>(</span><span style="color: #98C379;">&quot;{s}&quot;</span><span>, .{</span><span style="color: #C6CCD7;">message</span><span>});</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;">    // We need to use address-of operator (&amp;) to coerce to slice type &#39;[]u8&#39;.</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">    return &amp;</span><span style="color: #C6CCD7;">message</span><span>;</span></span>
+<span class="giallo-l"><span>}</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;">/// Entrypoint of the program.</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">pub</span><span style="color: #61AFEF;"> fn</span><span style="color: #B57EDC;"> main</span><span>() </span><span style="color: #E06C75;">void</span><span> {</span></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;">    // Get the message.</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">    const</span><span style="color: #C6CCD7;"> msg</span><span style="color: #E06C75;"> =</span><span style="color: #B57EDC;"> zigBits</span><span>();</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;">    // Print the message.</span></span>
+<span class="giallo-l"><span style="color: #C6CCD7;">    std</span><span>.</span><span style="color: #C6CCD7;">log</span><span>.</span><span style="color: #B57EDC;">debug</span><span>(</span><span style="color: #98C379;">&quot;{s}&quot;</span><span>, .{</span><span style="color: #C6CCD7;">msg</span><span>});</span></span>
+<span class="giallo-l"><span>}</span></span></code></pre>
+<p>We have declared the array literal as top-level so it is lazily analyzed and accessible from the inner scopes.</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #B57EDC;">$</span><span style="color: #98C379;"> zig build run</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #B57EDC;">debug:</span><span style="color: #98C379;"> zigbits</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">debug:</span><span style="color: #98C379;"> zigbits</span></span></code></pre><h3 id="allocating-the-slice">Allocating the slice</h3>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="zig"><span class="giallo-l"><span style="color: #5F6672;font-style: italic;">// Zig version: 0.10.1</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;">// Import the standard library.</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">const</span><span style="color: #C6CCD7;"> std</span><span style="color: #E06C75;"> =</span><span style="color: #B57EDC;"> @import</span><span>(</span><span style="color: #98C379;">&quot;std&quot;</span><span>);</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;">/// Returns a slice.</span></span>
+<span class="giallo-l"><span style="color: #61AFEF;">fn</span><span style="color: #B57EDC;"> zigBits</span><span>() </span><span style="color: #E06C75;">!</span><span>[]</span><span style="color: #E06C75;">u8</span><span> {</span></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;">    // Create an array literal.</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">    var</span><span style="color: #C6CCD7;"> message</span><span style="color: #E06C75;"> =</span><span> [</span><span style="color: #C6CCD7;">_</span><span>]</span><span style="color: #E06C75;">u8</span><span>{ </span><span style="color: #98C379;">&#39;z&#39;</span><span>,</span><span style="color: #98C379;"> &#39;i&#39;</span><span>,</span><span style="color: #98C379;"> &#39;g&#39;</span><span>,</span><span style="color: #98C379;"> &#39;b&#39;</span><span>,</span><span style="color: #98C379;"> &#39;i&#39;</span><span>,</span><span style="color: #98C379;"> &#39;t&#39;</span><span>,</span><span style="color: #98C379;"> &#39;s&#39;</span><span> };</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;">    // Print the array as string.</span></span>
+<span class="giallo-l"><span style="color: #C6CCD7;">    std</span><span>.</span><span style="color: #C6CCD7;">log</span><span>.</span><span style="color: #B57EDC;">debug</span><span>(</span><span style="color: #98C379;">&quot;{s}&quot;</span><span>, .{</span><span style="color: #C6CCD7;">message</span><span>});</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;">    // Allocate the slice on the heap and return.</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">    var</span><span style="color: #C6CCD7;"> message_copy</span><span style="color: #E06C75;"> = try</span><span style="color: #C6CCD7;"> std</span><span>.</span><span style="color: #C6CCD7;">heap</span><span>.</span><span style="color: #C6CCD7;">page_allocator</span><span>.</span><span style="color: #B57EDC;">dupe</span><span>(</span><span style="color: #E06C75;">u8</span><span>,</span><span style="color: #E06C75;"> &amp;</span><span style="color: #C6CCD7;">message</span><span>);</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">    return</span><span style="color: #C6CCD7;"> message_copy</span><span>;</span></span>
+<span class="giallo-l"><span>}</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;">/// Entrypoint of the program.</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">pub</span><span style="color: #61AFEF;"> fn</span><span style="color: #B57EDC;"> main</span><span>() </span><span style="color: #E06C75;">!void</span><span> {</span></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;">    // Get the message.</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">    const</span><span style="color: #C6CCD7;"> message</span><span style="color: #E06C75;"> = try</span><span style="color: #B57EDC;"> zigBits</span><span>();</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;">    // Print the message.</span></span>
+<span class="giallo-l"><span style="color: #C6CCD7;">    std</span><span>.</span><span style="color: #C6CCD7;">log</span><span>.</span><span style="color: #B57EDC;">debug</span><span>(</span><span style="color: #98C379;">&quot;{s}&quot;</span><span>, .{</span><span style="color: #C6CCD7;">message</span><span>});</span></span>
+<span class="giallo-l"><span>}</span></span></code></pre>
+<p>We're making a copy of the slice on the heap on this line:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="zig"><span class="giallo-l"><span style="color: #E06C75;">var</span><span style="color: #C6CCD7;"> message_copy</span><span style="color: #E06C75;"> = try</span><span style="color: #C6CCD7;"> std</span><span>.</span><span style="color: #C6CCD7;">heap</span><span>.</span><span style="color: #C6CCD7;">page_allocator</span><span>.</span><span style="color: #B57EDC;">dupe</span><span>(</span><span style="color: #E06C75;">u8</span><span>,</span><span style="color: #E06C75;"> &amp;</span><span style="color: #C6CCD7;">message</span><span>);</span></span></code></pre>
+<p>This makes the slice available outside the function since it's now allocated on the heap:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #B57EDC;">$</span><span style="color: #98C379;"> zig build run</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #B57EDC;">debug:</span><span style="color: #98C379;"> zigbits</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">debug:</span><span style="color: #98C379;"> zigbits</span></span></code></pre>
+<p>More common and idiomatic way of handling such case would be passing a <a rel="external" href="https://ziglang.org/documentation/master/std/#A;std:mem.Allocator"><code>std.mem.Allocator</code></a> to the function that allocates memory. This way, we can allow the caller to decide which allocator to use.</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="zig"><span class="giallo-l"><span style="color: #5F6672;font-style: italic;">// Zig version: 0.10.1</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;">// Import the standard library.</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">const</span><span style="color: #C6CCD7;"> std</span><span style="color: #E06C75;"> =</span><span style="color: #B57EDC;"> @import</span><span>(</span><span style="color: #98C379;">&quot;std&quot;</span><span>);</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;">/// Returns a slice.</span></span>
+<span class="giallo-l"><span style="color: #61AFEF;">fn</span><span style="color: #B57EDC;"> zigBits</span><span>(</span><span style="color: #C6CCD7;">allocator</span><span>:</span><span style="color: #C6CCD7;"> std</span><span>.</span><span style="color: #C6CCD7;">mem</span><span>.</span><span style="color: #C6CCD7;">Allocator</span><span>) </span><span style="color: #E06C75;">!</span><span>[]</span><span style="color: #E06C75;">u8</span><span> {</span></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;">    // Create an array literal.</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">    var</span><span style="color: #C6CCD7;"> message</span><span style="color: #E06C75;"> =</span><span> [</span><span style="color: #C6CCD7;">_</span><span>]</span><span style="color: #E06C75;">u8</span><span>{ </span><span style="color: #98C379;">&#39;z&#39;</span><span>,</span><span style="color: #98C379;"> &#39;i&#39;</span><span>,</span><span style="color: #98C379;"> &#39;g&#39;</span><span>,</span><span style="color: #98C379;"> &#39;b&#39;</span><span>,</span><span style="color: #98C379;"> &#39;i&#39;</span><span>,</span><span style="color: #98C379;"> &#39;t&#39;</span><span>,</span><span style="color: #98C379;"> &#39;s&#39;</span><span> };</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;">    // Print the array as string.</span></span>
+<span class="giallo-l"><span style="color: #C6CCD7;">    std</span><span>.</span><span style="color: #C6CCD7;">log</span><span>.</span><span style="color: #B57EDC;">debug</span><span>(</span><span style="color: #98C379;">&quot;{s}&quot;</span><span>, .{</span><span style="color: #C6CCD7;">message</span><span>});</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;">    // Allocate the slice on the heap and return.</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">    var</span><span style="color: #C6CCD7;"> message_copy</span><span style="color: #E06C75;"> = try</span><span style="color: #C6CCD7;"> allocator</span><span>.</span><span style="color: #B57EDC;">dupe</span><span>(</span><span style="color: #E06C75;">u8</span><span>,</span><span style="color: #E06C75;"> &amp;</span><span style="color: #C6CCD7;">message</span><span>);</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">    return</span><span style="color: #C6CCD7;"> message_copy</span><span>;</span></span>
+<span class="giallo-l"><span>}</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;">/// Entrypoint of the program.</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">pub</span><span style="color: #61AFEF;"> fn</span><span style="color: #B57EDC;"> main</span><span>() </span><span style="color: #E06C75;">!void</span><span> {</span></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;">    // Use an allocator.</span></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;">    // https://ziglang.org/documentation/master/#Choosing-an-Allocator</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">    const</span><span style="color: #C6CCD7;"> allocator</span><span style="color: #E06C75;"> =</span><span style="color: #C6CCD7;"> std</span><span>.</span><span style="color: #C6CCD7;">heap</span><span>.</span><span style="color: #C6CCD7;">page_allocator</span><span>;</span></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;">    // Get the message.</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">    const</span><span style="color: #C6CCD7;"> message</span><span style="color: #E06C75;"> = try</span><span style="color: #B57EDC;"> zigBits</span><span>(</span><span style="color: #C6CCD7;">allocator</span><span>);</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;">    // Print the message.</span></span>
+<span class="giallo-l"><span style="color: #C6CCD7;">    std</span><span>.</span><span style="color: #C6CCD7;">log</span><span>.</span><span style="color: #B57EDC;">debug</span><span>(</span><span style="color: #98C379;">&quot;{s}&quot;</span><span>, .{</span><span style="color: #C6CCD7;">message</span><span>});</span></span>
+<span class="giallo-l"><span>}</span></span></code></pre><h4 id="bonus">Bonus</h4>
+<p>Let's improve our program to return a slice with a designated length instead of stack allocated array.</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="zig"><span class="giallo-l"><span style="color: #5F6672;font-style: italic;">// Zig version: 0.10.1</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;">// Import the standard library.</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">const</span><span style="color: #C6CCD7;"> std</span><span style="color: #E06C75;"> =</span><span style="color: #B57EDC;"> @import</span><span>(</span><span style="color: #98C379;">&quot;std&quot;</span><span>);</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;">/// Returns a slice with the length of `len`.</span></span>
+<span class="giallo-l"><span style="color: #61AFEF;">fn</span><span style="color: #B57EDC;"> zigBits</span><span>(</span><span style="color: #C6CCD7;">len</span><span>:</span><span style="color: #E06C75;"> usize</span><span>) </span><span style="color: #E06C75;">!</span><span>[]</span><span style="color: #E06C75;">u8</span><span> {</span></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;">    // Create an array literal.</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">    var</span><span style="color: #C6CCD7;"> message</span><span style="color: #E06C75;"> =</span><span> [</span><span style="color: #C6CCD7;">_</span><span>]</span><span style="color: #E06C75;">u8</span><span>{ </span><span style="color: #98C379;">&#39;z&#39;</span><span>,</span><span style="color: #98C379;"> &#39;i&#39;</span><span>,</span><span style="color: #98C379;"> &#39;g&#39;</span><span>,</span><span style="color: #98C379;"> &#39;b&#39;</span><span>,</span><span style="color: #98C379;"> &#39;i&#39;</span><span>,</span><span style="color: #98C379;"> &#39;t&#39;</span><span>,</span><span style="color: #98C379;"> &#39;s&#39;</span><span> };</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;">    // Print the array as string.</span></span>
+<span class="giallo-l"><span style="color: #C6CCD7;">    std</span><span>.</span><span style="color: #C6CCD7;">log</span><span>.</span><span style="color: #B57EDC;">debug</span><span>(</span><span style="color: #98C379;">&quot;{s}&quot;</span><span>, .{</span><span style="color: #C6CCD7;">message</span><span>});</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;">    // A slice is a pointer and a length. The difference between an array and</span></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;">    // a slice is that the array&#39;s length is part of the type and known at</span></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;">    // compile-time, whereas the slice&#39;s length is known at runtime.</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">    try</span><span style="color: #C6CCD7;"> std</span><span>.</span><span style="color: #C6CCD7;">testing</span><span>.</span><span style="color: #B57EDC;">expect</span><span>(</span><span style="color: #B57EDC;">@TypeOf</span><span>(</span><span style="color: #C6CCD7;">message</span><span>[</span><span style="color: #56B6C2;">0</span><span>..</span><span style="color: #C6CCD7;">len</span><span>]) </span><span style="color: #E06C75;">==</span><span> []</span><span style="color: #E06C75;">u8</span><span>);</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;">    // We&#39;re using `len` parameter to slice with a runtime-known value.</span></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;">    // If `len` was declared as `comptime len`, then this value would be &#39;*[N]u8&#39;</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">    return</span><span style="color: #C6CCD7;"> message</span><span>[</span><span style="color: #56B6C2;">0</span><span>..</span><span style="color: #C6CCD7;">len</span><span>];</span></span>
+<span class="giallo-l"><span>}</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;">/// Entrypoint of the program.</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">pub</span><span style="color: #61AFEF;"> fn</span><span style="color: #B57EDC;"> main</span><span>() </span><span style="color: #E06C75;">!void</span><span> {</span></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;">    // Get the message.</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">    const</span><span style="color: #C6CCD7;"> message</span><span style="color: #E06C75;"> = try</span><span style="color: #B57EDC;"> zigBits</span><span>(</span><span style="color: #56B6C2;">7</span><span>);</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;">    // Print the message.</span></span>
+<span class="giallo-l"><span style="color: #C6CCD7;">    std</span><span>.</span><span style="color: #C6CCD7;">log</span><span>.</span><span style="color: #B57EDC;">debug</span><span>(</span><span style="color: #98C379;">&quot;{s}&quot;</span><span>, .{</span><span style="color: #C6CCD7;">message</span><span>});</span></span>
+<span class="giallo-l"><span>}</span></span></code></pre>
+<p>This will <s>also work since we're not returning the address of the array:</s> not work too! (Thanks for the correction everyone!)</p>
+<p>It's the same dangling pointer problem as in the first example. Both <code>&amp;message</code> and <code>message[0..]</code> in Zig will return the same slice.</p>
+<p><a rel="external" href="https://www.reddit.com/user/zenith391/">@zenith391</a> explained really well why this example might have worked during my tests but it's still an undefined behavior:</p>
+<p>In the first example, the problem was that it was allocated on the stack and then freed. Now <em>suppose</em> calling <code>std.log.debug</code> takes 8 bytes of stack space. But then calling <code>std.log.debug</code> causes more stack to be allocated, so it happily reuses and overwrites the bytes used for "zigbits".</p>
+<p>The reason why it doesn't do that when the return type is <code>![]u8</code> is because an error union type like <code>![]u8</code> takes more stack bytes than <code>[]u8</code> which means our "zigbits" bytes are allocated farther in the stack.
+The result is that when <code>std.log.debug</code> consumes its (hypothetical) 8 bytes of stack, it doesn't take enough to overwrite "zigbits".</p>
+<p>You can check this behavior with <a rel="external" href="https://godbolt.org/z/cPWjajYxb">https://godbolt.org/z/cPWjajYxb</a> which shows that "zigbits" is placed <em>40</em> bytes into the stack when using <code>![]u8</code> but only <em>16</em> bytes into the stack when using <code>[]u8</code>.</p>
+<p>Of course if you allocate more stack bytes (by making variables or calling more functions) it will eventually overwrite "zigbits". This also means this bonus snippet suffers from the same problem.</p>
+<p>TLDR: Because <code>![]u8</code> is bigger, you have to use more of the stack in order to overwrite "zigbits"</p>
+<h3 id="conclusion">Conclusion</h3>
+<img src="/ziggy_pizza.svg" style="width: 25%"/>
+<p>I'm fairly new to Zig and I really enjoy learning these concepts. Let me know via the comments below if I missed something or if there is an easier way.</p>
+<p>Any feedback is welcome!</p>
+<p><a rel="external" href="https://blog.orhun.dev/zig-bits-02/">Here</a> is the next post of the Zig Bits series! ("Using defer to defeat memory leaks")</p>
+<p>P.S. <a rel="external" href="https://bryce.fisher-fleig.org/strategies-for-returning-references-in-rust/">Here</a> you can find the Rust version of this post.</p>
+<p><em>¡cuidarse!</em></p>
+
+    </div>
+
+    
+        <footer>
+            <hr>
+            <p>
+                
+                    Published by Orhun Parmaksız
+                
+                
+                    
+                    in <a href="https://blog.orhun.dev/categories/zig-bits/">Zig Bits</a>
+                
+                
+            </p>
+            
+            
+            <div style="display: flex; justify-content: space-between; align-items: center">
+              <div>
+                <iframe
+                  src="https://github.com/sponsors/orhun/button"
+                  title="Sponsor @orhun"
+                  height="35"
+                  width="116"
+                  style="border: 0"
+                ></iframe>
+                <a href="https://www.buymeacoffee.com/orhun" target="_blank"
+                  ><img
+                    src="https://cdn.buymeacoffee.com/buttons/v2/default-white.png"
+                    alt="Buy Me A Coffee"
+                    style="height: 40px !important; width: 150px !important"
+                /></a>
+              </div>
+              <div>
+                <applause-button
+                  style="width: 50px; height: 50px"
+                  url="https://blog.orhun.dev&#x2F;zig-bits-01&#x2F;"
+                  color="white"
+                  multiclap="true"
+                />
+              </div>
+              <div>
+                <div style="width: auto; height: 39px">
+                  <p style="margin: 0; color: #fff; font-style: italic">✨ Sponsored by:</p>
+                </div>
+                <a href="https://www.jetbrains.com/" target="_blank"
+                  ><img
+                    src="/sponsors/jetbrains.png"
+                    alt="JetBrains"
+                    style="height: 45px; width: auto"
+                /></a>
+                <a href="https://terminaltrove.com/" target="_blank"
+                  ><img
+                    src="/sponsors/terminal_trove.png"
+                    alt="Terminal Trove"
+                    style="height: 40px; width: auto"
+                /></a>
+              </div>
+            </div>
+            <script src="https://utteranc.es/client.js"
+                    repo="orhun/personal-blog"
+                    issue-term="url"
+                    label="comments"
+                    theme="github-dark"
+                    crossorigin="anonymous"
+                    async>
+            </script>
+        </footer>
+    
+</article>
+
+
+    </body>
+
+    <script type="text/javascript" src="https://blog.orhun.dev/elasticlunr.min.js"></script>
+    <script type="text/javascript" src="https://blog.orhun.dev/js/search.js"></script>
+
+</html>

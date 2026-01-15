@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <meta http-equiv="content-type" content="text/html; charset=utf-8">
+      <meta property="og:type" content="website" />
+      <meta property="og:url" content="https://blog.orhun.dev"/>
+      
+      <meta property="og:title" content="How I set up this blog - Orhun&#x27;s Blog" />
+      
+      <meta property="og:image" content="https://blog.orhun.dev/crow.png" />
+      
+      <meta name="description" content="FOSS • Linux • Programming" />
+      <meta property="og:description" content="FOSS • Linux • Programming"/>
+      
+
+      <!-- Enable responsiveness on mobile devices-->
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+      <link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png">
+      <link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png">
+      <link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png">
+      <link rel="manifest" href="/favicon/site.webmanifest">
+
+      <script async src="https://umami.orhun.dev/script.js" data-website-id="56ca5ca7-ba9f-416e-8bee-a132c155d56b"></script>
+
+      <link rel="stylesheet" href="https://unpkg.com/applause-button/dist/applause-button.css" />
+      <script src="https://unpkg.com/applause-button/dist/applause-button.js"></script>
+
+      
+      <title>How I set up this blog - Orhun&#x27;s Blog</title>
+      
+      <link rel="alternate" type="application/rss+xml" title="Orhun&#x27;s Blog RSS Feed" href="https://blog.orhun.dev/rss.xml" />
+
+      
+          <link rel="stylesheet" href="https://blog.orhun.dev/site.css">
+      
+
+      
+      
+    </head>
+
+    <body class="hack dark main container">
+        
+    
+        
+                
+                    <header>
+                    <nav itemscope itemtype="http://schema.org/SiteNavigationElement" class="nav-flex">
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://blog.orhun.dev">
+                                <span itemprop="name">Home</span>
+                            </a>
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://blog.orhun.dev/categories">
+                                <span itemprop="name">Categories</span>
+                            </a>
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://github.com/orhun/personal-blog">
+                                <span itemprop="name">Source</span>
+                            </a>
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://github.com/orhun">
+                                <span itemprop="name">GitHub</span>
+                            </a>
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://donate.orhun.dev">
+                                <span itemprop="name">Donate</span>
+                            </a>
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://blog.orhun.dev/rss.xml">
+                                <span itemprop="name">RSS</span>
+                            </a>
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://orhun.dev">
+                                <span itemprop="name">About</span>
+                            </a>
+                        
+                        <div class="search-container">
+                            <input type="text" id="search" placeholder="Search...">
+                            <div class="search-results">
+                                <div class="search-results__items"></div>
+                            </div>
+                        </div>
+                    </nav>
+                    </header>
+                
+            
+    
+
+<article itemscope itemtype="http://schema.org/BlogPosting">
+    <header>
+        <h1 itemprop="headline">How I set up this blog</h1>
+        <span class="muted">
+    <svg style="margin-bottom:-3px" class="i-clock" viewBox="0 0 32 32"
+         width="16" height="16" fill="none" stroke="currentcolor"
+         stroke-linecap="round" stroke-linejoin="round" stroke-width="6.25%">
+        <circle cx="16" cy="16" r="14"/>
+        <path d="M16 8 L16 16 20 20"/>
+    </svg>
+    <span>8 minute read</span>
+    <svg style="margin-bottom: -3px" class="i-edit" viewBox="0 0 32 32"
+         width="16" height="16" fill="none" stroke="currentcolor"
+         stroke-linecap="round" stroke-linejoin="round" stroke-width="6.25%">
+        <path d="M30 7 L25 2 5 22 3 29 10 27 Z M21 6 L26 11 Z M5 22 L10 27 Z"/>
+    </svg>
+
+    Published: 2024-12-23
+</span>
+    </header>
+    <div itemprop="articleBody">
+      <p>Like my blog? Here is how I set it up.</p>
+<span id="continue-reading"></span>
+<p>As my <a rel="external" href="https://fosdem.org/2025/schedule/event/fosdem-2025-5496-bringing-terminal-aesthetics-to-the-web-with-rust-and-vice-versa-/">FOSDEM 2025 talk</a> ("Bringing terminal aesthetics to the Web") is approaching, I thought it would be a good idea to take a step back and think about minimal web design. And I believe my blog is a good example for taking apart to the pieces and understand what makes a minimal website minimal.</p>
+<p>Also, <a rel="external" href="https://github.com/orhun/personal-blog/issues/31#issuecomment-2097420000">some people</a> requested me to share which tool/language/kit I'm using for writing these posts.</p>
+<p>So, ladies and gentlemen, here it is.</p>
+<p>P.S. The source of this blog is available <a rel="external" href="https://github.com/orhun/personal-blog/">here</a>.</p>
+<hr />
+<h3 id="engine-gear"><strong>Engine</strong> ⚙️</h3>
+<p>My blog is proudly powered by <a rel="external" href="https://www.getzola.org/">Zola</a>, a static site generator written in Rust. I chose Zola because it's fast, simple, and has many features.</p>
+<p>All you need is a single binary installed in your system, and you can start building your blog by running:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #B57EDC;">zola</span><span style="color: #98C379;"> init frogblog</span></span></code></pre>
+<p>This command will give you a simple directory structure with a <a rel="external" href="https://www.getzola.org/documentation/getting-started/configuration/">configuration file</a>, where you can tweak many settings including title, description, RSS feed etc.</p>
+<p>In a nutshell, you simply add your posts in the <code>content</code> directory in markdown format, and run <code>zola build</code> to generate the static HTML files. Easy peasy.</p>
+<p>See the <a rel="external" href="https://www.getzola.org/documentation/getting-started/overview/">overview</a> for more information.</p>
+<hr />
+<h3 id="theme-art"><strong>Theme</strong> 🎨</h3>
+<p><q> The colors, fonts, styles... <em>ugh</em>... the hardest part when it comes to making something appealing. </q></p>
+<p>Luckily, Zola has <a rel="external" href="https://www.getzola.org/themes/">many themes</a> that you can pick from. All you need to do is download the theme and put it in the <code>themes</code> directory, either by adding it as a <a rel="external" href="https://git-scm.com/book/en/v2/Git-Tools-Submodules">submodule</a> or old-the school way (i.e. cloning the repository). Also, don't forget to set the <code>theme</code> field in the configuration file!</p>
+<p>I'm no designer, but I know what I want. Some find it unappealing, but I really like the terminal-like simplicity and markdown rendering of the <a rel="external" href="https://www.getzola.org/themes/after-dark/">after-dark theme</a>.</p>
+<p>So the next step for me was to clone that theme and start making tweaks in the CSS (and yes it was a bit painful but whatever).</p>
+<hr />
+<h3 id="comments-speech-balloon"><strong>Comments</strong> 💬</h3>
+<p><q>Ah, right. The comments section is very important, otherwise where would people leave their hate comments?</q></p>
+<p>It is important for feedback and discussions too!</p>
+<p><a rel="external" href="https://utteranc.es/">utteranc.es</a> is a great widget for adding comments to your Zola blog. The catch is, it is built on top of GitHub issues. So each comment on these posts are stored in the respective GitHub issue. You can check them out <a rel="external" href="https://github.com/orhun/personal-blog/issues">here</a>.</p>
+<p>➡️ Try it out, leave a comment below and go check the issue on GitHub. I'd appreciate genuine feedback too!</p>
+<p>To set this up, follow the instructions on the <a rel="external" href="https://utteranc.es/">website</a>. For me, it's a matter of adding this snippet to the footer of <code>page.html</code>:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="html"><span class="giallo-l"><span>&lt;</span><span style="color: #E5C07B;">script</span></span>
+<span class="giallo-l"><span style="color: #D19A66;">  src</span><span>=&quot;</span><span style="color: #98C379;">https://utteranc.es/client.js</span><span>&quot;</span></span>
+<span class="giallo-l"><span style="color: #D19A66;">  repo</span><span>=&quot;</span><span style="color: #98C379;">orhun/personal-blog</span><span>&quot;</span></span>
+<span class="giallo-l"><span style="color: #D19A66;">  issue-term</span><span>=&quot;</span><span style="color: #98C379;">url</span><span>&quot;</span></span>
+<span class="giallo-l"><span style="color: #D19A66;">  label</span><span>=&quot;</span><span style="color: #98C379;">utterances</span><span>&quot;</span></span>
+<span class="giallo-l"><span style="color: #D19A66;">  theme</span><span>=&quot;</span><span style="color: #98C379;">github-dark</span><span>&quot;</span></span>
+<span class="giallo-l"><span style="color: #D19A66;">  crossorigin</span><span>=&quot;</span><span style="color: #98C379;">anonymous</span><span>&quot;</span></span>
+<span class="giallo-l"><span style="color: #D19A66;">  async</span></span>
+<span class="giallo-l"><span>&gt;&lt;/</span><span style="color: #E5C07B;">script</span><span>&gt;</span></span></code></pre>
+<hr />
+<h3 id="like-button-sparkling-heart"><strong>Like Button</strong> 💖</h3>
+<p>I don't like Medium for its paywall and tracking, but I like their "claps" feature. So people can show their appreciation without leaving a comment.</p>
+<p>Luckily, I found about the <a rel="external" href="https://applause-button.com/">applause-button</a> project which is exactly what I wanted. A zero-config button for applause/claps/kudos to blog posts.</p>
+<p>Adding it was also simple:</p>
+<p>1. Add the script to <code>index.html</code>:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="html"><span class="giallo-l"><span>&lt;</span><span style="color: #E5C07B;">link</span></span>
+<span class="giallo-l"><span style="color: #D19A66;">  rel</span><span>=&quot;</span><span style="color: #98C379;">stylesheet</span><span>&quot;</span></span>
+<span class="giallo-l"><span style="color: #D19A66;">  href</span><span>=&quot;</span><span style="color: #98C379;">https://unpkg.com/applause-button/dist/applause-button.css</span><span>&quot;</span></span>
+<span class="giallo-l"><span>/&gt;</span></span>
+<span class="giallo-l"><span>&lt;</span><span style="color: #E5C07B;">script</span><span style="color: #D19A66;"> src</span><span>=&quot;</span><span style="color: #98C379;">https://unpkg.com/applause-button/dist/applause-button.js</span><span>&quot;&gt;&lt;/</span><span style="color: #E5C07B;">script</span><span>&gt;</span></span></code></pre>
+<p>2. Add the button to <code>page.html</code>:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="html"><span class="giallo-l"><span>&lt;</span><span style="color: #E5C07B;">applause-button</span></span>
+<span class="giallo-l"><span style="color: #D19A66;">  style</span><span>=&quot;</span><span style="color: #98C379;">width: 50px; height: 50px</span><span>&quot;</span></span>
+<span class="giallo-l"><span style="color: #D19A66;">  url</span><span>=&quot;</span><span style="color: #98C379;">{{ config.base_url | safe }}{{ page.path }}</span><span>&quot;</span></span>
+<span class="giallo-l"><span style="color: #D19A66;">  color</span><span>=&quot;</span><span style="color: #98C379;">white</span><span>&quot;</span></span>
+<span class="giallo-l"><span style="color: #D19A66;">  multiclap</span><span>=&quot;</span><span style="color: #98C379;">true</span><span>&quot;</span></span>
+<span class="giallo-l"><span>/&gt;</span></span></code></pre>
+<p>However, this button no longer works :(<br />
+See <a rel="external" href="https://github.com/ColinEberhardt/applause-button/issues/101">this issue</a>:</p>
+<blockquote>
+<p>Apologies all, I've had to retire the hosted service. For the first ~4 years the donations I was receiving from OpenCollective were just about covering the running costs. However, in the past 6 months usage increased significantly, with millions of requests each day, and the costs simply went out of control. If you want to keep using applause button I'm afraid you're going to have to host it yourself.</p>
+</blockquote>
+<p><q>Suffering from success, huh?</q></p>
+<p>For now this button is dysfunctional, but I might self-host it in the future or switch to something else. Let me know if you know any alternatives!</p>
+<hr />
+<h3 id="search-mag"><strong>Search</strong> 🔍</h3>
+<p>This is my latest addition to the blog and I'm surprisingly satisfied with it. See the search box on the top right corner.</p>
+<p>Unfortunately the <a rel="external" href="https://www.getzola.org/documentation/content/search/">instructions</a> on the Zola website were not very clear to me, so I followed <a rel="external" href="https://adrianstobbe.com/posts/zola-searchbar/">this blog post</a> for setting this up.</p>
+<p>In a nutshell, what you need to do is:</p>
+<ol>
+<li>Enable building the search index (<code>build_search_index=true</code>) and set JSON as the index format (<code>[search].index_format="elasticlunr_json"</code>).</li>
+<li>Adopt the <a rel="external" href="https://github.com/getzola/zola/blob/master/docs/static/search.js">search script</a> from the Zola repository along with other HTML and CSS rigmarole.</li>
+</ol>
+<p>See <a rel="external" href="https://github.com/orhun/personal-blog/commit/e4a155a6c737474318faed22b087dd301ede74fb">this commit</a> for my implementation. (it's not the best, you have been warned)</p>
+<hr />
+<h3 id="analytics-chart-with-upwards-trend"><strong>Analytics</strong> 📈</h3>
+<p>Needless to say, I don't like Google Analytics. I don't want to be tracked by them, and most importantly I don't want <em>you</em> to be tracked by them.</p>
+<p>So I set up an instance of <a rel="external" href="https://umami.is/">Umami</a>, an open source analytics service. I'm running it on a Digital Ocean droplet that I'm funding via <a rel="external" href="https://github.com/sponsors/orhun">GitHub Sponsors</a>.</p>
+<p>My analytics are also public, you can check them out <a rel="external" href="https://umami.orhun.dev/share/erNH2HJd/Blog">here</a>.</p>
+<p>For the tech savvy out there, I'm using this <code>docker-compose.yml</code> to run the <a rel="external" href="https://umami.is/">Umami</a> service:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="yaml"><span class="giallo-l"><span style="color: #D19A66;">---</span></span>
+<span class="giallo-l"><span style="color: #E5C07B;">version</span><span>: &quot;</span><span style="color: #98C379;">3</span><span>&quot;</span></span>
+<span class="giallo-l"><span style="color: #E5C07B;">services</span><span>:</span></span>
+<span class="giallo-l"><span style="color: #E5C07B;">  umami</span><span>:</span></span>
+<span class="giallo-l"><span style="color: #E5C07B;">    image</span><span>:</span><span style="color: #98C379;"> ghcr.io/umami-software/umami:postgresql-v2.10.2</span></span>
+<span class="giallo-l"><span style="color: #E5C07B;">    container_name</span><span>:</span><span style="color: #98C379;"> umami</span></span>
+<span class="giallo-l"><span style="color: #E5C07B;">    ports</span><span>:</span></span>
+<span class="giallo-l"><span>      - &quot;</span><span style="color: #98C379;">3000:3000</span><span>&quot;</span></span>
+<span class="giallo-l"><span style="color: #E5C07B;">    environment</span><span>:</span></span>
+<span class="giallo-l"><span style="color: #E5C07B;">      DATABASE_URL</span><span>:</span><span style="color: #98C379;"> postgresql://umami:umami@db:5432/umami</span></span>
+<span class="giallo-l"><span style="color: #E5C07B;">      DATABASE_TYPE</span><span>:</span><span style="color: #98C379;"> postgresql</span></span>
+<span class="giallo-l"><span style="color: #E5C07B;">      APP_SECRET</span><span>: [</span><span style="color: #98C379;">redacted</span><span>]</span></span>
+<span class="giallo-l"><span style="color: #E5C07B;">    depends_on</span><span>:</span></span>
+<span class="giallo-l"><span style="color: #E5C07B;">      db</span><span>:</span></span>
+<span class="giallo-l"><span style="color: #E5C07B;">        condition</span><span>:</span><span style="color: #98C379;"> service_healthy</span></span>
+<span class="giallo-l"><span style="color: #E5C07B;">    restart</span><span>:</span><span style="color: #98C379;"> always</span></span>
+<span class="giallo-l"><span style="color: #E5C07B;">  db</span><span>:</span></span>
+<span class="giallo-l"><span style="color: #E5C07B;">    image</span><span>:</span><span style="color: #98C379;"> postgres:12-alpine</span></span>
+<span class="giallo-l"><span style="color: #E5C07B;">    container_name</span><span>:</span><span style="color: #98C379;"> umami_db</span></span>
+<span class="giallo-l"><span style="color: #E5C07B;">    environment</span><span>:</span></span>
+<span class="giallo-l"><span style="color: #E5C07B;">      POSTGRES_DB</span><span>:</span><span style="color: #98C379;"> umami</span></span>
+<span class="giallo-l"><span style="color: #E5C07B;">      POSTGRES_USER</span><span>:</span><span style="color: #98C379;"> umami</span></span>
+<span class="giallo-l"><span style="color: #E5C07B;">      POSTGRES_PASSWORD</span><span>:</span><span style="color: #98C379;"> umami</span></span>
+<span class="giallo-l"><span style="color: #E5C07B;">    volumes</span><span>:</span></span>
+<span class="giallo-l"><span>      -</span><span style="color: #98C379;"> ./umami-db-data:/var/lib/postgresql/data</span></span>
+<span class="giallo-l"><span style="color: #E5C07B;">    restart</span><span>:</span><span style="color: #98C379;"> always</span></span>
+<span class="giallo-l"><span style="color: #E5C07B;">    healthcheck</span><span>:</span></span>
+<span class="giallo-l"><span style="color: #E5C07B;">      test</span><span>: [&quot;</span><span style="color: #98C379;">CMD-SHELL</span><span>&quot;, &quot;</span><span style="color: #98C379;">pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}</span><span>&quot;]</span></span>
+<span class="giallo-l"><span style="color: #E5C07B;">      interval</span><span>:</span><span style="color: #98C379;"> 5s</span></span>
+<span class="giallo-l"><span style="color: #E5C07B;">      timeout</span><span>:</span><span style="color: #98C379;"> 5s</span></span>
+<span class="giallo-l"><span style="color: #E5C07B;">      retries</span><span>:</span><span style="color: #56B6C2;"> 5</span></span></code></pre>
+<p>⚠️ If you host it like this, make sure to follow the releases and do the required database migrations before updating the image version. Otherwise, you might <a rel="external" href="https://github.com/umami-software/umami/issues/2310">break stuff</a> and lose data. Speaking from <a rel="external" href="https://github.com/umami-software/umami/issues/2645">experience</a>.</p>
+<hr />
+<h3 id="automation-robot"><strong>Automation</strong> 🤖</h3>
+<p>I'm using <a rel="external" href="https://github.com/features/actions">GitHub Actions</a> for automating the deployment and checking the content.</p>
+<p>1. <a rel="external" href="https://github.com/orhun/personal-blog/blob/main/.github/workflows/deploy.yml"><code>deploy.yml</code></a>: This workflow runs for pushes to the <code>main</code> branch and pull requests. It uses the following actions:</p>
+<p>⭐ <a rel="external" href="https://github.com/shalzz/zola-deploy-action"><code>shalzz/zola-deploy-action</code></a>: Builds and deploys the blog.</p>
+<p>⭐ <a rel="external" href="https://github.com/rossjrw/pr-preview-action"><code>rossjrw/pr-preview-action</code></a>: Creates a preview of the blog from pull requests.</p>
+<p>The second action that I'm using is pretty useful for checking if everything is good before publishing your blog posts. Just an aside, it can be used with other static site generators too, not just Zola.</p>
+<p>2. <a rel="external" href="https://github.com/orhun/personal-blog/blob/main/.github/workflows/ci.yml"><code>ci.yml</code></a>: This workflow runs for pushes to the <code>main</code> branch, pull requests and every week on Sunday (<code>0 0 * * 0</code>). It checks the content with the following actions:</p>
+<p>⭐ <a rel="external" href="https://github.com/lycheeverse/lychee-action"><code>lycheeverse/lychee-action</code></a>: Checks the markdown files for broken links. Uses <a rel="external" href="https://lychee.cli.rs/"><code>lychee</code></a> under the hood.</p>
+<p>⭐ <a rel="external" href="https://github.com/codespell-project/actions-codespell"><code>codespell-project/actions-codespell</code></a>: Checks the markdown files for spelling mistakes. Uses <a rel="external" href="https://github.com/codespell-project/codespell"><code>codespell</code></a> under the hood.</p>
+<p>Recently I have been thinking of switching to <a rel="external" href="https://github.com/crate-ci/typos"><code>typos</code></a> for spell checking.</p>
+<p>Let me know if you have any suggestions for other tools that I can use for linting!</p>
+<hr />
+<h3 id="static-content-ice-cube"><strong>Static Content</strong> 🧊</h3>
+<p><q>Git is not a storage server!</q></p>
+<p>If you want to host large images, I recommend that you use a separate service for that, instead of bloating your repository.</p>
+<p>For that, I'm hosting my images on a simple Nginx server on the same droplet where Umami is running. I needed this setup specifically for my <a rel="external" href="https://blog.orhun.dev/mongolia-trip/">Mongolia post</a> since it contains a lot of images.</p>
+<hr />
+<h2 id="conclusion-sparkles"><strong>Conclusion</strong> ✨</h2>
+<p>My blog is not that impressive (yet), it's just a static site. What I want to achieve is to make it fully browsable on the terminal. Also vice-versa, I want to make a terminal UI for my blog that is fully browsable on the web. The latter has been already achieved by <a rel="external" href="https://github.com/TylerBloom/avid-rustacean">this blog</a> which is built with <a rel="external" href="https://ratatui.rs/">Ratatui</a>, the project that I'm working on. We will see where this <em>rat hole</em> will lead me.</p>
+<p>Anyhoo, I hope this post was helpful for you. If you have any questions or feedback, feel free to leave a comment below!</p>
+<p>I'm out, see you in the next post! 🐸</p>
+
+    </div>
+
+    
+        <footer>
+            <hr>
+            <p>
+                
+                    Published by Orhun Parmaksız
+                
+                
+                    
+                    in <a href="https://blog.orhun.dev/categories/projects/">Projects</a>
+                
+                
+            </p>
+            
+            
+            <div style="display: flex; justify-content: space-between; align-items: center">
+              <div>
+                <iframe
+                  src="https://github.com/sponsors/orhun/button"
+                  title="Sponsor @orhun"
+                  height="35"
+                  width="116"
+                  style="border: 0"
+                ></iframe>
+                <a href="https://www.buymeacoffee.com/orhun" target="_blank"
+                  ><img
+                    src="https://cdn.buymeacoffee.com/buttons/v2/default-white.png"
+                    alt="Buy Me A Coffee"
+                    style="height: 40px !important; width: 150px !important"
+                /></a>
+              </div>
+              <div>
+                <applause-button
+                  style="width: 50px; height: 50px"
+                  url="https://blog.orhun.dev&#x2F;setting-up-this-blog&#x2F;"
+                  color="white"
+                  multiclap="true"
+                />
+              </div>
+              <div>
+                <div style="width: auto; height: 39px">
+                  <p style="margin: 0; color: #fff; font-style: italic">✨ Sponsored by:</p>
+                </div>
+                <a href="https://www.jetbrains.com/" target="_blank"
+                  ><img
+                    src="/sponsors/jetbrains.png"
+                    alt="JetBrains"
+                    style="height: 45px; width: auto"
+                /></a>
+                <a href="https://terminaltrove.com/" target="_blank"
+                  ><img
+                    src="/sponsors/terminal_trove.png"
+                    alt="Terminal Trove"
+                    style="height: 40px; width: auto"
+                /></a>
+              </div>
+            </div>
+            <script src="https://utteranc.es/client.js"
+                    repo="orhun/personal-blog"
+                    issue-term="url"
+                    label="comments"
+                    theme="github-dark"
+                    crossorigin="anonymous"
+                    async>
+            </script>
+        </footer>
+    
+</article>
+
+
+    </body>
+
+    <script type="text/javascript" src="https://blog.orhun.dev/elasticlunr.min.js"></script>
+    <script type="text/javascript" src="https://blog.orhun.dev/js/search.js"></script>
+
+</html>

@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <meta http-equiv="content-type" content="text/html; charset=utf-8">
+      <meta property="og:type" content="website" />
+      <meta property="og:url" content="https://blog.orhun.dev"/>
+      
+      <meta property="og:title" content="Can't trust any VPN these days - Orhun&#x27;s Blog" />
+      
+      <meta property="og:image" content="https://blog.orhun.dev/crow.png" />
+      
+      <meta name="description" content="FOSS • Linux • Programming" />
+      <meta property="og:description" content="FOSS • Linux • Programming"/>
+      
+
+      <!-- Enable responsiveness on mobile devices-->
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+      <link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png">
+      <link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png">
+      <link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png">
+      <link rel="manifest" href="/favicon/site.webmanifest">
+
+      <script async src="https://umami.orhun.dev/script.js" data-website-id="56ca5ca7-ba9f-416e-8bee-a132c155d56b"></script>
+
+      <link rel="stylesheet" href="https://unpkg.com/applause-button/dist/applause-button.css" />
+      <script src="https://unpkg.com/applause-button/dist/applause-button.js"></script>
+
+      
+      <title>Can&#x27;t trust any VPN these days - Orhun&#x27;s Blog</title>
+      
+      <link rel="alternate" type="application/rss+xml" title="Orhun&#x27;s Blog RSS Feed" href="https://blog.orhun.dev/rss.xml" />
+
+      
+          <link rel="stylesheet" href="https://blog.orhun.dev/site.css">
+      
+
+      
+      
+    </head>
+
+    <body class="hack dark main container">
+        
+    
+        
+                
+                    <header>
+                    <nav itemscope itemtype="http://schema.org/SiteNavigationElement" class="nav-flex">
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://blog.orhun.dev">
+                                <span itemprop="name">Home</span>
+                            </a>
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://blog.orhun.dev/categories">
+                                <span itemprop="name">Categories</span>
+                            </a>
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://github.com/orhun/personal-blog">
+                                <span itemprop="name">Source</span>
+                            </a>
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://github.com/orhun">
+                                <span itemprop="name">GitHub</span>
+                            </a>
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://donate.orhun.dev">
+                                <span itemprop="name">Donate</span>
+                            </a>
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://blog.orhun.dev/rss.xml">
+                                <span itemprop="name">RSS</span>
+                            </a>
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://orhun.dev">
+                                <span itemprop="name">About</span>
+                            </a>
+                        
+                        <div class="search-container">
+                            <input type="text" id="search" placeholder="Search...">
+                            <div class="search-results">
+                                <div class="search-results__items"></div>
+                            </div>
+                        </div>
+                    </nav>
+                    </header>
+                
+            
+    
+
+<article itemscope itemtype="http://schema.org/BlogPosting">
+    <header>
+        <h1 itemprop="headline">Can&#x27;t trust any VPN these days</h1>
+        <span class="muted">
+    <svg style="margin-bottom:-3px" class="i-clock" viewBox="0 0 32 32"
+         width="16" height="16" fill="none" stroke="currentcolor"
+         stroke-linecap="round" stroke-linejoin="round" stroke-width="6.25%">
+        <circle cx="16" cy="16" r="14"/>
+        <path d="M16 8 L16 16 20 20"/>
+    </svg>
+    <span>7 minute read</span>
+    <svg style="margin-bottom: -3px" class="i-edit" viewBox="0 0 32 32"
+         width="16" height="16" fill="none" stroke="currentcolor"
+         stroke-linecap="round" stroke-linejoin="round" stroke-width="6.25%">
+        <path d="M30 7 L25 2 5 22 3 29 10 27 Z M21 6 L26 11 Z M5 22 L10 27 Z"/>
+    </svg>
+
+    Published: 2024-10-16
+</span>
+    </header>
+    <div itemprop="articleBody">
+      <p>After Turkey banned Discord, I had to jump through some hoops, fix my VPN, and learn a bit about how DNS works.</p>
+<span id="continue-reading"></span><q>
+On October 9th 2024, Discord was banned in Turkey due to various criminal allegations.<br>
+This was an ongoing issue and Discord apparently refused to share user data (IP addresses and content) thus the government decided to block the whole thing altogether. I'm not here to talk about if this was the right thing to do or not or to drag you into politics, so feel free to <a href="https://www.reuters.com/technology/turkey-blocks-instant-messaging-platform-discord-2024-10-09/">read</a> around the internet if you're interested.
+</q>
+<p>Today I'm here to share what I have learned while trying to... you know. Find a way to use Discord again. Surprisingly, this ban ended up being a positive experience for me.</p>
+<p><small>I hope the officials are ̶n̶o̶t̶ reading this.</small></p>
+<hr />
+<h3 id="timeline"><strong>Timeline</strong></h3>
+<p>In the early morning hours of the day that our beloved platform, Discord, got its ass whooped, I was actually at the airport heading to Vienna for the <a rel="external" href="https://eurorust.eu">EuroRust</a> conference. Before my flight, I tried checking my messages to see if there was anything new - to my surprise, I was greeted with this:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="plain"><span class="giallo-l"><span>----- Certificate i=0 (emailAddress=root@localhost.localdomain,</span></span>
+<span class="giallo-l"><span>CN=localhost.localdomain,OU=IT,O=MyCompany,L=Seattle,ST=WA,C=US) -----</span></span>
+<span class="giallo-l"><span>ERROR: No matching issuer found</span></span>
+<span class="giallo-l"><span>Error downloading with electron net: net::ERR_CERT_AUTHORITY_INVALID</span></span></code></pre>
+<p>In other words:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="plain"><span class="giallo-l"><span>discord.com uses an invalid security certificate.</span></span>
+<span class="giallo-l"><span>The certificate is not trusted because it is self-signed.</span></span>
+<span class="giallo-l"><span>Error code: MOZILLA_PKIX_ERROR_SELF_SIGNED_CERT</span></span></code></pre>
+<p>I thought:</p>
+<blockquote>
+<p>Ah, maybe the airport Wi-Fi is acting up. But wait... I'm already connected to the VPN. 🤔</p>
+</blockquote>
+<p>So I tried using the Discord app on my phone and it worked as usual. Later on, I saw the news when I did a quick research but I didn't think much about it because I had a flight and a conference ahead. I could always look into it when I'm back home, right? After all, I had a VPN, so it should be fine, <em>right???</em></p>
+<p>Well, I came home last night and realized I can't use Discord at all, even with a VPN.</p>
+<p>That's why I'm writing this blog post in the morning.</p>
+<p>Pain.</p>
+<hr />
+<h3 id="vpn-setup"><strong>VPN Setup</strong></h3>
+<p><small>Not sponsored!</small></p>
+<p>You might be asking, "Hey Orhun, VPNs should work out of the box, what kind of a shitty setup do you have?" and you are absolutely right.</p>
+<p>I have my own VPN (😎) - in other uncool words, I set up <a rel="external" href="https://github.com/OpenVPN/openvpn">OpenVPN</a> on a VPS and I have been using it for a while without any issues.</p>
+<p><q>Wow, setting that up must be a lot of work!</q></p>
+<p>No. In fact, I just ran the <a rel="external" href="https://github.com/angristan/openvpn-install"><code>openvpn-install</code></a> script to set everything up:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #B57EDC;">curl</span><span style="color: #56B6C2;"> -O</span><span style="color: #98C379;"> https://raw.githubusercontent.com/angristan/openvpn-install/master/openvpn-install.sh</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">chmod</span><span style="color: #98C379;"> +x openvpn-install.sh</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">./openvpn-install.sh</span></span></code></pre>
+<p>This gives you a configuration file such as <code>client.ovpn</code> which contains your server address, port and certificates and you can simply run this command to connect to the VPN on Linux:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #B57EDC;">openvpn</span><span style="color: #56B6C2;"> --config</span><span style="color: #C6CCD7;"> $HOME</span><span style="color: #98C379;">/.openvpn/client.ovpn</span></span></code></pre>
+<p>I use the <a rel="external" href="https://play.google.com/store/apps/details?id=de.blinkt.openvpn&amp;hl=en&amp;pli=1">Android app</a> as well and everything works like a charm! At least that's what I thought until this blog post...</p>
+<p>Here is the relevant part of my VPN configuration:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="ini"><span class="giallo-l"><span>client</span></span>
+<span class="giallo-l"><span>proto udp</span></span>
+<span class="giallo-l"><span>explicit-exit-notify</span></span>
+<span class="giallo-l"><span>remote &lt;ip&gt; 1194</span></span>
+<span class="giallo-l"><span>dev tun</span></span>
+<span class="giallo-l"><span>resolv-retry infinite</span></span>
+<span class="giallo-l"><span>nobind</span></span>
+<span class="giallo-l"><span>persist-key</span></span>
+<span class="giallo-l"><span>persist-tun</span></span>
+<span class="giallo-l"><span>remote-cert-tls server</span></span>
+<span class="giallo-l"><span>verify-x509-name server name</span></span>
+<span class="giallo-l"><span>auth SHA256</span></span>
+<span class="giallo-l"><span>auth-nocache</span></span>
+<span class="giallo-l"><span>cipher AES-128-GCM</span></span>
+<span class="giallo-l"><span>tls-client</span></span>
+<span class="giallo-l"><span>tls-version-min 1.2</span></span>
+<span class="giallo-l"><span>tls-cipher TLS-ECDHE-ECDSA-WITH-AES-128-GCM-SHA256</span></span>
+<span class="giallo-l"><span>ignore-unknown-option block-outside-dns</span></span>
+<span class="giallo-l"><span>setenv opt block-outside-dns </span><span style="color: #5F6672;font-style: italic;"># Prevent Windows 10 DNS leak</span></span>
+<span class="giallo-l"><span>verb 3</span></span></code></pre>
+<p>This is a vanilla configuration so I'm mostly using the defaults. See the <a rel="external" href="https://openvpn.net/community-resources/reference-manual-for-openvpn-2-6/">reference manual</a> for detailed information about these values.</p>
+<hr />
+<h3 id="debugging"><strong>Debugging</strong></h3>
+<p>The most mind-boggling part of the problem for me was that I was able to use Discord via OpenVPN on my phone but not on my computer. Whenever I try to launch the desktop app, it gets stuck at the loading screen with the error message I shared above. To limit the scope of the problem, I also tried the website app directly, which resulted in the certificate error.</p>
+<p><q>How does Discord know that I'm still in Turkey!?</q></p>
+<p>I searched around the internet and found out that nearly all the website restrictions in Turkey are done on the DNS level. I quickly brought out <a rel="external" href="https://github.com/fujiapple852/trippy"><code>trippy</code></a> from my terminal toolbox to check the network hops that are happening while I'm connecting to Discord:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #B57EDC;">trip</span><span style="color: #98C379;"> discord.com</span></span></code></pre>
+<p><img src="/trippy.jpg" alt="trippy" /></p>
+<p><small>I hope I'm not doxxing myself with that image. Maybe I'm just *tripping*... </small></p>
+<p>So from 9th hop to 11th, I can see that I am connecting to my OpenVPN server in Frankfurt. But after the 12th hop, it goes back to the Turkey DNS.</p>
+<p><q>What? What's the point of the VPN then lmao</q></p>
+<p>Okay, at that point I was clueless. I tried changing the DNS settings of OpenVPN (i.e. <code>dhcp-option DNS 1.1.1.1</code>) but it didn't work. After a couple of iterations with ChatGPT, it finally led me to the correct path.</p>
+<p>It turns out, <strong>my DNS was leaking</strong>.</p>
+<blockquote>
+<p>The DNS leak is a security flaw that allows your DNS requests to be revealed to your ISP, and anyone else who might be snooping on the network.</p>
+</blockquote>
+<p>I discovered a website called <a rel="external" href="https://www.dnsleaktest.com/">DNSLeakTest</a> which you can use to check that:</p>
+<p><img src="/dns-leak-test.png" alt="DNSLeakTest" /></p>
+<p><q>Sheesh dats indeed leakin'</q></p>
+<p>So I was using my ISP's DNS instead of the VPN's DNS the whole time.</p>
+<p>Using this VPN was just pointless. 💀</p>
+<hr />
+<h3 id="solution"><strong>Solution</strong></h3>
+<p>Remember these lines from my config above?</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="ini"><span class="giallo-l"><span>ignore-unknown-option block-outside-dns</span></span>
+<span class="giallo-l"><span>setenv opt block-outside-dns </span><span style="color: #5F6672;font-style: italic;"># Prevent Windows 10 DNS leak</span></span></code></pre>
+<p>Using <code>block-outside-dns</code> is also suggested by DNSLeakTest and it sounds like the correct option:</p>
+<blockquote>
+<p>Block DNS servers on other network adapters to prevent DNS leaks.<br />
+This option prevents any application from accessing TCP or UDP port 53 except one inside the tunnel.</p>
+</blockquote>
+<p><q>Well then, what's the problem?</q></p>
+<blockquote>
+<p>It uses Windows Filtering Platform (WFP) and works on Windows Vista or later.</p>
+</blockquote>
+<p><q>Bruh... Windows Vista mentioned tho o7</q></p>
+<p>I'm on <a rel="external" href="https://archlinux.org/">Arch Linux</a> btw - and it has a very detailed wiki about OpenVPN, as always. It wasn't very hard to find the exact thing I needed, it's right there under the <a rel="external" href="https://wiki.archlinux.org/title/OpenVPN#DNS">DNS section</a>.</p>
+<p>In a nutshell:</p>
+<ul>
+<li>The DNS changes are not automatically applied by the OpenVPN client on Linux.</li>
+<li>You need to configure <code>up</code> and <code>down</code> scripts for managing the DNS updates.</li>
+<li>The recommended script is <a rel="external" href="https://github.com/alfredopalhares/openvpn-update-resolv-conf"><code>update-resolv-conf</code></a>, which modifies DNS settings when the VPN connects and restores them upon disconnection.</li>
+<li>That script consists of a bunch of arcane bash commands that I don't understand.</li>
+</ul>
+<p><q>So how is any of that relevant to DNS leaking?</q></p>
+<p>When the DNS changes aren't automatically applied when connecting to the VPN, the system will continue to use the default DNS settings thus your ISP's DNS. 💀</p>
+<p>So the solution for me was to firstly install the following packages:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #5F6672;font-style: italic;"># install Openresolv for managing DNS settings</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">pacman</span><span style="color: #56B6C2;"> -S</span><span style="color: #98C379;"> openresolv</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;"># install the script for updating DNS with OpenVPN</span></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;"># (use your favorite AUR helper)</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">paru</span><span style="color: #56B6C2;"> -S</span><span style="color: #98C379;"> openvpn-update-resolv-conf-git</span></span></code></pre>
+<p>Then add the following lines to the OpenVPN configuration:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="ini"><span class="giallo-l"><span>script-security 2 </span><span style="color: #5F6672;font-style: italic;"># Allow script execution</span></span>
+<span class="giallo-l"><span>up /etc/openvpn/update-resolv-conf</span></span>
+<span class="giallo-l"><span>down /etc/openvpn/update-resolv-conf</span></span></code></pre>
+<p>And run the VPN as usual:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #B57EDC;">openvpn</span><span style="color: #56B6C2;"> --config</span><span style="color: #C6CCD7;"> $HOME</span><span style="color: #98C379;">/.openvpn/client.ovpn</span></span></code></pre>
+<p>Boom, no more leaks!</p>
+<p><img src="/dns-leak-test2.png" alt="DNSLeakTest" /></p>
+<p><img src="/trippy2.jpg" alt="trippy" /></p>
+<p>It goes through Frankfurt as expected!</p>
+<p>And I can use Discord again! 🎉</p>
+<hr />
+<h3 id="extras"><strong>Extras</strong></h3>
+<h4 id="dnsleaktest-tui"><code>dnsleaktest-tui</code></h4>
+<p>Since I'm a big fan of terminal tools, I wrote a small proof-of-concept TUI using <a rel="external" href="https://www.rust-lang.org/">Rust</a>/<a rel="external" href="https://ratatui.rs/">Ratatui</a> to check if my DNS is leaking. I also added a small traceroute feature to see the network hops.</p>
+<p>Here is how it looks like without VPN:</p>
+<p><img src="/dns-leak-test-poc.jpg" alt="PoC" /></p>
+<p>And most importantly, I can observe that my DNS is leaking while I'm connected to the VPN:</p>
+<p><img src="/dns-leak-test-poc2.jpg" alt="PoC" /></p>
+<p>The code is based on <a rel="external" href="https://github.com/macvk/dnsleaktest">dnsleaktest</a> and I used <a rel="external" href="https://github.com/fujiapple852/trippy"><code>trippy</code></a> as a library.</p>
+<p>⭐ Here is the repository: <a rel="external" href="https://github.com/orhun/dnsleaktest-tui">https://github.com/orhun/dnsleaktest-tui</a></p>
+<h4 id="i3-integration"><strong>i3 integration</strong></h4>
+<p>I don't like running this command every time I want to connect to the VPN:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #B57EDC;">openvpn</span><span style="color: #56B6C2;"> --config</span><span style="color: #C6CCD7;"> $HOME</span><span style="color: #98C379;">/.openvpn/client.ovpn</span></span></code></pre>
+<p>So I wanted to add a keybinding to my <a rel="external" href="https://i3wm.org/">i3</a> configuration to enable/disable the VPN and show a notification on the status bar when it's connected/disconnected.</p>
+<p>So...</p>
+<ul>
+<li>I switched to <a rel="external" href="https://community.openvpn.net/openvpn/wiki/Systemd">a systemd service</a> to manage the VPN.</li>
+<li>I created a simple script to start/stop the service.</li>
+<li>I added a keybinding to my <code>i3</code> configuration to run the script via <code>pkexec</code> (since it requires root privileges).</li>
+<li>I installed <code>lxsession-gtk3</code> package as the authentication agent.</li>
+<li>I updated my <code>i3status</code> configuration to show the VPN status.</li>
+</ul>
+<p>⭐ <a rel="external" href="https://github.com/orhun/dotfiles/commit/1d3cacc54342311d347d1b06a768311d81e5ec7f">Here</a> is how I implemented it.</p>
+<p>At the end of the day, I just press <code>Super + Shift + V</code> to connect/disconnect:</p>
+<p><img src="/lxpolkit.png" alt="lxpolkit" /></p>
+<p>And I can see the status ("V: UP")</p>
+<p><img src="/i3status.png" alt="i3status" /></p>
+<p>Cheers!</p>
+
+    </div>
+
+    
+        <footer>
+            <hr>
+            <p>
+                
+                    Published by Orhun Parmaksız
+                
+                
+                    
+                    in <a href="https://blog.orhun.dev/categories/projects/">Projects</a>
+                
+                
+            </p>
+            
+            
+            <div style="display: flex; justify-content: space-between; align-items: center">
+              <div>
+                <iframe
+                  src="https://github.com/sponsors/orhun/button"
+                  title="Sponsor @orhun"
+                  height="35"
+                  width="116"
+                  style="border: 0"
+                ></iframe>
+                <a href="https://www.buymeacoffee.com/orhun" target="_blank"
+                  ><img
+                    src="https://cdn.buymeacoffee.com/buttons/v2/default-white.png"
+                    alt="Buy Me A Coffee"
+                    style="height: 40px !important; width: 150px !important"
+                /></a>
+              </div>
+              <div>
+                <applause-button
+                  style="width: 50px; height: 50px"
+                  url="https://blog.orhun.dev&#x2F;cant-trust-any-vpn&#x2F;"
+                  color="white"
+                  multiclap="true"
+                />
+              </div>
+              <div>
+                <div style="width: auto; height: 39px">
+                  <p style="margin: 0; color: #fff; font-style: italic">✨ Sponsored by:</p>
+                </div>
+                <a href="https://www.jetbrains.com/" target="_blank"
+                  ><img
+                    src="/sponsors/jetbrains.png"
+                    alt="JetBrains"
+                    style="height: 45px; width: auto"
+                /></a>
+                <a href="https://terminaltrove.com/" target="_blank"
+                  ><img
+                    src="/sponsors/terminal_trove.png"
+                    alt="Terminal Trove"
+                    style="height: 40px; width: auto"
+                /></a>
+              </div>
+            </div>
+            <script src="https://utteranc.es/client.js"
+                    repo="orhun/personal-blog"
+                    issue-term="url"
+                    label="comments"
+                    theme="github-dark"
+                    crossorigin="anonymous"
+                    async>
+            </script>
+        </footer>
+    
+</article>
+
+
+    </body>
+
+    <script type="text/javascript" src="https://blog.orhun.dev/elasticlunr.min.js"></script>
+    <script type="text/javascript" src="https://blog.orhun.dev/js/search.js"></script>
+
+</html>

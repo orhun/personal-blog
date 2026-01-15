@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <meta http-equiv="content-type" content="text/html; charset=utf-8">
+      <meta property="og:type" content="website" />
+      <meta property="og:url" content="https://blog.orhun.dev"/>
+      
+      <meta property="og:title" content="Open Source Grindset Explained - Orhun&#x27;s Blog" />
+      
+      <meta property="og:image" content="https://blog.orhun.dev/crow.png" />
+      
+      <meta name="description" content="FOSS • Linux • Programming" />
+      <meta property="og:description" content="FOSS • Linux • Programming"/>
+      
+
+      <!-- Enable responsiveness on mobile devices-->
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+      <link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png">
+      <link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png">
+      <link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png">
+      <link rel="manifest" href="/favicon/site.webmanifest">
+
+      <script async src="https://umami.orhun.dev/script.js" data-website-id="56ca5ca7-ba9f-416e-8bee-a132c155d56b"></script>
+
+      <link rel="stylesheet" href="https://unpkg.com/applause-button/dist/applause-button.css" />
+      <script src="https://unpkg.com/applause-button/dist/applause-button.js"></script>
+
+      
+      <title>Open Source Grindset Explained - Orhun&#x27;s Blog</title>
+      
+      <link rel="alternate" type="application/rss+xml" title="Orhun&#x27;s Blog RSS Feed" href="https://blog.orhun.dev/rss.xml" />
+
+      
+          <link rel="stylesheet" href="https://blog.orhun.dev/site.css">
+      
+
+      
+      
+    </head>
+
+    <body class="hack dark main container">
+        
+    
+        
+                
+                    <header>
+                    <nav itemscope itemtype="http://schema.org/SiteNavigationElement" class="nav-flex">
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://blog.orhun.dev">
+                                <span itemprop="name">Home</span>
+                            </a>
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://blog.orhun.dev/categories">
+                                <span itemprop="name">Categories</span>
+                            </a>
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://github.com/orhun/personal-blog">
+                                <span itemprop="name">Source</span>
+                            </a>
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://github.com/orhun">
+                                <span itemprop="name">GitHub</span>
+                            </a>
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://donate.orhun.dev">
+                                <span itemprop="name">Donate</span>
+                            </a>
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://blog.orhun.dev/rss.xml">
+                                <span itemprop="name">RSS</span>
+                            </a>
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://orhun.dev">
+                                <span itemprop="name">About</span>
+                            </a>
+                        
+                        <div class="search-container">
+                            <input type="text" id="search" placeholder="Search...">
+                            <div class="search-results">
+                                <div class="search-results__items"></div>
+                            </div>
+                        </div>
+                    </nav>
+                    </header>
+                
+            
+    
+
+<article itemscope itemtype="http://schema.org/BlogPosting">
+    <header>
+        <h1 itemprop="headline">Open Source Grindset Explained</h1>
+        <span class="muted">
+    <svg style="margin-bottom:-3px" class="i-clock" viewBox="0 0 32 32"
+         width="16" height="16" fill="none" stroke="currentcolor"
+         stroke-linecap="round" stroke-linejoin="round" stroke-width="6.25%">
+        <circle cx="16" cy="16" r="14"/>
+        <path d="M16 8 L16 16 20 20"/>
+    </svg>
+    <span>11 minute read</span>
+    <svg style="margin-bottom: -3px" class="i-edit" viewBox="0 0 32 32"
+         width="16" height="16" fill="none" stroke="currentcolor"
+         stroke-linecap="round" stroke-linejoin="round" stroke-width="6.25%">
+        <path d="M30 7 L25 2 5 22 3 29 10 27 Z M21 6 L26 11 Z M5 22 L10 27 Z"/>
+    </svg>
+
+    Published: 2022-12-25
+</span>
+    </header>
+    <div itemprop="articleBody">
+      <p>Let's talk about how to develop an open sourcerer mindset.</p>
+<span id="continue-reading"></span><center>
+<img src="/open-sourcerer.png"/>
+</center>
+<p>Very much like any other open source developer who has a great passion, I have been dreaming about doing open source full-time to make a living. Ever since I started to see the impact of open source and the spirit behind contributing I always wanted to keep doing it. And for a long time, I actually did it without thinking about it too much. It was just fun to share projects, contribute to others, and simply apply the open source philosophy to every part of my life. Well, even though you might say "just keep doing it if you like it that much", I think it is time for me to take things more seriously to get close to the <em>dream</em> I initially mentioned.</p>
+<p>There are a lot of good developers out there who contribute to open source in great magnitudes. Since I'm mainly interested in <a rel="external" href="https://www.rust-lang.org/">Rust</a>, I would give <a rel="external" href="https://github.com/dtolnay">@dtolnay</a>, author of <a rel="external" href="https://crates.io/crates/serde">serde</a>, as an example. There is also <a rel="external" href="https://github.com/epage">@epage</a> who maintains <a rel="external" href="https://crates.io/crates/clap">clap</a>. Another example would be <a rel="external" href="https://github.com/BurntSushi/">@burntsushi</a>, who made the blazingly fast <a rel="external" href="https://crates.io/crates/ripgrep">ripgrep</a>. The point where I'm getting is, there are many people with small/big open source projects who are also contributing to many other small/big open source projects that we use every day. After all, open source got to a point where its importance is now very apparent and non-negligible.</p>
+<p>Among all of those people, <a rel="external" href="https://github.com/fasterthanlime">@fasterthanlime</a> got my attention in the last few months. He is already crushing it with <a rel="external" href="https://fasterthanli.me/articles">very detailed articles</a> (I mean, 60 minutes read time?!) and one of his articles about <a rel="external" href="https://fasterthanli.me/articles/becoming-fasterthanlime-full-time">going full-time open sourcerer</a> opened my third eye, so to speak. Ever since then, I always kept this move in mind as an example of how my <em>little dream</em> is actually achievable.</p>
+<p>So why am I talking about all of these? Well, I might have finally put together a <em>strategy</em> for being a more successful open source developer and it is time to share it. I hope something will come out at the end of these crazy ramblings.
+(fingers crossed)</p>
+<h3 id="open-source-grindset">Open Source Grindset</h3>
+<p>Before I talk about how I do/plan to do open source, I should clarify what "<strong>grindset</strong>" means. It is the new hip word that all the cool kids use and it simply means "grind mindset". Here are a few definitions:</p>
+<p>From <a rel="external" href="https://www.urbandictionary.com/define.php?term=grindset">Urban Dictionary</a>:</p>
+<blockquote>
+<p>The state of mind one puts oneself in, in order to outperform fears, insecurities, doubts, and anxieties, to achieve the seemingly impossible and step into their greatness.</p>
+</blockquote>
+<p>And <a rel="external" href="https://en.wiktionary.org/wiki/grindset">Wiktionary</a> says:</p>
+<blockquote>
+<p>A hypothetical collection of thoughts and actions one may undertake to improve one's financial and social life and to stay on the 'grind'.</p>
+</blockquote>
+<p>So, where does that leave us?</p>
+<hr />
+<span style="color:white">
+<p><b><font color="#845faa">Open Source Grindset</font></b> is the state of mind that maximizes one's effort to contribute to open source and increase self-improvement to deepen the technical knowledge in every possible endeavor. It is the act of contributing to open source regardless of the circumstances and ignoring the demotivating outside factors until eventually making a living from it.</p>
+</span>
+<hr />
+<p>Let's break it down.</p>
+<h4 id="how-to-develop-the-open-source-grindset">How to develop the Open Source Grindset?</h4>
+<p>There are not a lot of people that you can argue about "open source is being good." So of course, if you think that way, you would want to keep contributing since it keeps your motivation going and you feel that you can use your creativity without constraints. So in this case, we should talk about motivation first.</p>
+<p>It is surely not easy to always keep your motivation high but there are surely some tricks. They would be out of the scope of this blog post so I would like to link <a rel="external" href="https://youtube.com/watch?v=fBayRA8o3yQ">@ThePrimeagen's video</a> which summarizes it very well.</p>
+<p>To approach this motivation issue from a different perspective, I would like to talk about how you can benefit from contributing to open source and how might having Open Source Grindset affect your gain in that regard. For this, I will first give a hypothetical example. Afterward, I will be trying to back up this story with a real-world example. Hopefully, these examples will guide you to a realization.</p>
+<h5 id="example-i">Example I</h5>
+<p>Let's say that there is a frontend developer looking for a job and they have a mild interest in open source. Let's also assume that they have a couple of projects lying around on GitHub that they don't care about too much and the projects are collecting dust. One day, our innocent developer receives an email regarding one of their repositories having a dependency update. They immediately think "Damn you <a rel="external" href="https://github.com/dependabot">dependabot</a>!" but there is certainly a curiosity about this email. So they click the link and this page pops up:</p>
+<p><img src="/dependabot-ssri.png" alt="Dependabot update" /></p>
+<p>"Well, interesting." they thought. "What even is <code>ssri</code> and why/where am I using it?"</p>
+<p>(Our protagonist turned out to be a junior developer and was not yet aware that JavaScript projects might have dependency trees that go up to the moon so let's ignore the second question for now.)</p>
+<p>They finally click the link in the repository and it leads to <a rel="external" href="https://github.com/npm/ssri">another</a> repository:</p>
+<p><img src="/ssri-npm-github.png" alt="https://github.com/npm/ssri" /></p>
+<p>Looking around cluelessly, they saw this piece of code:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="javascript"><span class="giallo-l"><span style="color: #61AFEF;">const</span><span style="color: #C6CCD7;"> ssri</span><span style="color: #E06C75;"> =</span><span style="color: #B57EDC;"> require</span><span>(&quot;</span><span style="color: #98C379;">ssri</span><span>&quot;);</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #61AFEF;">const</span><span style="color: #C6CCD7;"> integrity</span><span style="color: #E06C75;"> =</span></span>
+<span class="giallo-l"><span>  &quot;</span><span style="color: #98C379;">sha512-9KhgCRIx/AmzC8xqYJTZRrnO8OW2Pxyl2DIMZSBOr0oDvtEFyht3xpp71j/r/pAe1DM+JI/A+line3jUBgzQ7A==?foo</span><span>&quot;;</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;">// Parsing and serializing</span></span>
+<span class="giallo-l"><span style="color: #61AFEF;">const</span><span style="color: #C6CCD7;"> parsed</span><span style="color: #E06C75;"> =</span><span style="color: #C6CCD7;"> ssri</span><span>.</span><span style="color: #B57EDC;">parse</span><span>(</span><span style="color: #C6CCD7;">integrity</span><span>);</span></span>
+<span class="giallo-l"><span style="color: #C6CCD7;">ssri</span><span>.</span><span style="color: #B57EDC;">stringify</span><span>(</span><span style="color: #C6CCD7;">parsed</span><span>);</span><span style="color: #5F6672;font-style: italic;"> // === integrity (works on non-Integrity objects)</span></span>
+<span class="giallo-l"><span style="color: #C6CCD7;">parsed</span><span>.</span><span style="color: #B57EDC;">toString</span><span>();</span><span style="color: #5F6672;font-style: italic;"> // === integrity</span></span></code></pre>
+<p>"So <code>ssri</code> should be some kind of a validation technique, hmmm. But what is that <code>integrity</code> string? What is going on here?"</p>
+<p>Finally, they decide to ask the daddy (Google) about this and it redirects them to <a rel="external" href="https://w3c.github.io/webappsec-subresource-integrity">this document</a>:</p>
+<blockquote>
+<p>This specification defines a mechanism by which user agents may verify that a fetched resource has been delivered without unexpected manipulation.</p>
+<p>This document specifies such a validation scheme, extending two HTML elements with an <code>integrity</code> attribute that contains a cryptographic hash of the representation of the resource the author expects to load. For instance, an author may wish to load some framework from a shared server rather than hosting it on their own origin. Specifying that the expected SHA-384 hash of <code>https://example.com/example-framework.js</code> is <code>Li9vy3DqF8tnTXuiaAJuML3ky+er10rcgNR/VqsVpcw+ThHmYcwiB1pbOxEbzJr7</code> means that the user agent can verify that the data it loads from that URL matches that expected hash before executing the JavaScript it contains. This integrity verification significantly reduces the risk that an attacker can substitute malicious content.</p>
+</blockquote>
+<p>"Hmm, okay. Let's see an example."</p>
+<blockquote>
+<p>An author wishes to use a content delivery network to improve performance for globally-distributed users. It is important, however, to ensure that the CDN’s servers deliver only the code the author expects them to deliver. To mitigate the risk that a CDN compromise (or unexpectedly malicious behavior) would change that site in unfortunate ways, the following integrity metadata is added to the link element included on the page:</p>
+</blockquote>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="html"><span class="giallo-l"><span>&lt;</span><span style="color: #E5C07B;">link</span></span>
+<span class="giallo-l"><span style="color: #D19A66;">  rel</span><span>=&quot;</span><span style="color: #98C379;">stylesheet</span><span>&quot;</span></span>
+<span class="giallo-l"><span style="color: #D19A66;">  href</span><span>=&quot;</span><span style="color: #98C379;">https://site53.example.net/style.css</span><span>&quot;</span></span>
+<span class="giallo-l"><span style="color: #D19A66;">  integrity</span><span>=&quot;</span><span style="color: #98C379;">sha384-+/M6kredJcxdsqkczBUjMLvqyHb1K/JThDXWsBVxMEeZHEaMKEOEct339VItX1zB</span><span>&quot;</span></span>
+<span class="giallo-l"><span style="color: #D19A66;">  crossorigin</span><span>=&quot;</span><span style="color: #98C379;">anonymous</span><span>&quot;</span></span>
+<span class="giallo-l"><span>/&gt;</span></span></code></pre>
+<p>"Woah. So that <code>integrity</code> attribute along with the hash is called '<a rel="external" href="https://developer.mozilla.org/en-US/docs/Web/Security/Subresource_Integrity">Standard Subresource Integrity</a>'. Interesting."</p>
+<p>With this sudden enlightenment, our junior developer remembers that they have a project where they use an external JavaScript resource without any subresource integrity. "Wouldn't it be nice to add this <code>integrity</code> attribute?" they say.</p>
+<p>But how? Luckily, they found a website that generates an SRI hash from a resource URL:</p>
+<blockquote>
+<p>https://www.srihash.org</p>
+</blockquote>
+<p><img src="/sri-hash-org.png" alt="https://www.srihash.org" /></p>
+<p>"Great! But wait, can I do this from the terminal?"</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #B57EDC;">$</span><span style="color: #98C379;"> shasum</span><span style="color: #56B6C2;"> -b -a 384</span><span style="color: #98C379;"> jquery-3.6.3.slim.min.js</span><span style="color: #E06C75;">  |</span><span style="color: #B57EDC;"> awk</span><span> &#39;</span><span style="color: #98C379;">{ print $1 }</span><span>&#39;</span><span style="color: #E06C75;"> |</span><span style="color: #B57EDC;"> xxd</span><span style="color: #56B6C2;"> -r -p</span><span style="color: #E06C75;"> |</span><span style="color: #B57EDC;"> base64</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">bX7tuwViPEjy88JZEAaUe+FHOLZ9a9syCt8Z8UJ1sDbfwEIKdcFyHhW3yVPdFhd1</span></span></code></pre>
+<p>"Nice. That was even easier."</p>
+<hr />
+<p>Fast forward to the future, 2 weeks later, our junior developer is having a job interview with a big tech company and the interviewer asks the following question:</p>
+<blockquote>
+<p>Resources that we use such as JavaScript and CSS files are capable of performing dangerous actions such as password stealing. And usually, compromised third-party servers are used for this type of attack.
+However, these servers can provide invaluable services that we can’t simply go without, such as CDNs that reduce the total bandwidth usage of a site and serve files to the end-user much faster due to location-based caching.
+So it’s established that we need to sometimes rely on a host that we have no control over, but we also need to ensure that the content we receive from it is safe. What can we do?</p>
+</blockquote>
+<p>Our fellow developer starts to get psyched as the interviewer finishes the question. They immediately remember the research they did 2 weeks ago, thanks to that Dependabot PR. Says with an excited voice:</p>
+<p>"Oh, we can use <code>SRI</code> for that. It is a security policy that prevents the loading of resources that don’t match an expected hash. By doing this, if an attacker were to gain access to a file and modify its contents to contain malicious code, it wouldn’t match the hash we were expecting and not execute at all."</p>
+<p>And there, they would not be able to answer this question if they just yolo-merged the Dependabot PR and did not take time to actually look through it.</p>
+<p>The moral of the story is, <code>rabbit holes</code> are crucial to gain the <strong>Open Source Grindset</strong>. Even though we don't have a character who is excessively doing open source in this hypothetical example, they still hugely benefited from it. Imagine what you can achieve by being more interested/motivated toward open source.</p>
+<hr />
+<h5 id="example-ii">Example II</h5>
+<p>Just recently I was working on closing the issues (implementing new features &amp; fixing bugs) on my project <a rel="external" href="https://github.com/orhun/git-cliff">git-cliff</a>. One of the issues was the following:</p>
+<p><img src="/git-cliff-issue-113.png" alt="https://github.com/orhun/git-cliff/issues/113" /></p>
+<p>Simply put, OP wanted to easily download the Debian package of <code>git-cliff</code> from GitHub releases. For this, I needed to somehow package <code>git-cliff</code> and provide it via releases.</p>
+<p>Well, I decided to give <a rel="external" href="https://github.com/kornelski/cargo-deb">cargo-deb</a> a try. It was supposed to generate a Debian package from the information in <code>Cargo.toml</code>. Unfortunately, when I tried the <code>cargo-deb</code> command locally, I got the following error:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #B57EDC;">$</span><span style="color: #98C379;"> cargo-deb</span><span style="color: #56B6C2;"> --strip --manifest-path</span><span style="color: #98C379;"> git-cliff/Cargo.toml</span><span style="color: #56B6C2;"> -v</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">cargo-deb:</span><span style="color: #98C379;"> unable to read extended description from file: ../README.md</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">  because:</span><span style="color: #98C379;"> No such file or directory</span><span> (os</span><span style="color: #98C379;"> error</span><span style="color: #56B6C2;"> 2</span><span>)</span></span></code></pre>
+<p>This was due to <code>git-cliff</code> using a readme file in the parent directory:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="shellscript"><span class="giallo-l"><span>[package]</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">readme</span><span style="color: #98C379;"> =</span><span> &quot;</span><span style="color: #98C379;">../README.md</span><span>&quot;</span></span></code></pre>
+<p>Well, that's a bummer. My next step was blindly diving into the code of <code>cargo-deb</code> and actually fixing the issue:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="diff"><span class="giallo-l"><span style="color: #5F6672;">From f4ec6f6f6ee50bc86042e0abbc52d80c5ac34c21 Mon Sep 17 00:00:00 2001</span></span>
+<span class="giallo-l"><span style="color: #5F6672;">From: =?UTF-8?q?Orhun=20Parmaks=C4=B1z?= &lt;orhunparmaksiz@gmail.com&gt;</span></span>
+<span class="giallo-l"><span style="color: #5F6672;">Date: Thu, 22 Dec 2022 21:35:48 +0300</span></span>
+<span class="giallo-l"><span style="color: #5F6672;">Subject: [PATCH] Use absolute path for package readme</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span>---</span></span>
+<span class="giallo-l"><span style="color: #5F6672;"> src/manifest.rs | 8 ++++++--</span></span>
+<span class="giallo-l"><span style="color: #5F6672;"> 1 file changed, 6 insertions(+), 2 deletions(-)</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #61AFEF;">diff --git a/src/manifest.rs b/src/manifest.rs</span></span>
+<span class="giallo-l"><span style="color: #5F6672;">index bcc9da5d..5a7aba6d 100644</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">--- a/src/manifest.rs</span></span>
+<span class="giallo-l"><span style="color: #98C379;">+++ b/src/manifest.rs</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">@@ -498,7 +498,11 @@</span><span style="color: #5F6672;"> impl Config {</span></span>
+<span class="giallo-l"><span style="color: #5F6672;">         manifest_check_config(package, package_manifest_dir, &amp;deb, listener);</span></span>
+<span class="giallo-l"><span style="color: #5F6672;">         let extended_description = manifest_extended_description(</span></span>
+<span class="giallo-l"><span style="color: #5F6672;">             deb.extended_description.take(),</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">-            deb.extended_description_file.as_ref().map(Path::new).or(package.readme().as_path()),</span></span>
+<span class="giallo-l"><span style="color: #98C379;">+            deb.extended_description_file.as_ref().map(Path::new).or(package</span></span>
+<span class="giallo-l"><span style="color: #98C379;">+                .readme()</span></span>
+<span class="giallo-l"><span style="color: #98C379;">+                .as_path()</span></span>
+<span class="giallo-l"><span style="color: #98C379;">+                .and_then(|v| package_manifest_dir.join(v).canonicalize().ok())</span></span>
+<span class="giallo-l"><span style="color: #98C379;">+                .as_deref()),</span></span>
+<span class="giallo-l"><span style="color: #5F6672;">         )?;</span></span>
+<span class="giallo-l"><span style="color: #5F6672;">         let mut config = Config {</span></span>
+<span class="giallo-l"><span style="color: #5F6672;">             default_timestamp,</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">@@ -987,7 +991,7 @@</span><span style="color: #5F6672;"> This will be hard error in a future release of cargo-deb.&quot;, source_path.display(</span></span>
+<span class="giallo-l"><span style="color: #5F6672;">             })</span></span>
+<span class="giallo-l"><span style="color: #5F6672;">             .collect();</span></span>
+<span class="giallo-l"><span style="color: #5F6672;">         if let OptionalFile::Path(readme) = package.readme() {</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">-            let path = PathBuf::from(readme);</span></span>
+<span class="giallo-l"><span style="color: #98C379;">+            let path = self.pacakge_manifest_dir.join(PathBuf::from(readme)).canonicalize()?;</span></span>
+<span class="giallo-l"><span style="color: #5F6672;">             let target_path = Path::new(&quot;usr/share/doc&quot;)</span></span>
+<span class="giallo-l"><span style="color: #5F6672;">                 .join(&amp;package.name)</span></span>
+<span class="giallo-l"><span style="color: #5F6672;">                 .join(path.file_name().ok_or(&quot;bad README path&quot;)?);</span></span></code></pre>
+<p>After fixing the issue, I integrated <code>cargo-deb</code> into my release workflow (via this <a rel="external" href="https://github.com/orhun/git-cliff/commit/efd827f59f8394dd894ebd35a5d630ff558a3ebe">commit</a>) and I was happy. It was time to share my fix with the upstream:</p>
+<blockquote>
+<p><a rel="external" href="https://github.com/kornelski/cargo-deb/pull/62">https://github.com/kornelski/cargo-deb/pull/62</a></p>
+</blockquote>
+<p>And it got rejected. Apparently, <code>cargo</code> was also suffering from this issue and thankfully the author of <code>cargo-deb</code> redirected me to <a rel="external" href="https://github.com/rust-lang/cargo/issues/5911">this</a> issue:</p>
+<p><img src="/cargo-issue-5911.png" alt="https://github.com/rust-lang/cargo/issues/5911" /></p>
+<p>It was submitted in 2018 and is still open. Do you see where I'm getting at with this?</p>
+<p>Even though I put some time into fixing this issue and my changes were rejected, it paved the way for another (and also a bigger) contribution opportunity. In the following days, I'm planning to focus on this <code>cargo</code> issue and see what I can do about it.</p>
+<p>If I never dove into the code of <code>cargo-deb</code>, I would never know such a thing would exist for <code>cargo</code> as well. That is why it is important to take your time while you are contributing to open source, I believe.</p>
+<hr />
+<p>In summary, the rules of developing an <strong>Open Source Grindset</strong> are:</p>
+<ul>
+<li>Take your time.</li>
+<li>Follow the rabbit holes.</li>
+<li>Read and learn as much as you can.</li>
+<li>Every contribution is a contribution regardless of its size.</li>
+</ul>
+<h3 id="conclusion">Conclusion</h3>
+<p>In this post, I tried to lay out the mindset that I developed over the years toward open source development. I think of this as a concretization of years of thinking/coding and an early-stage plan for success. We'll see!</p>
+<p>If I get nice feedback about this post, I might write a sequel about dealing with burnout. So let me know what you think!</p>
+<p>How can you support me? Well, I have <a rel="external" href="https://github.com/sponsors/orhun">GitHub Sponsors</a> and <a rel="external" href="https://www.patreon.com/join/orhunp">Patreon</a> 🐻</p>
+<p><em>bye!</em></p>
+
+    </div>
+
+    
+        <footer>
+            <hr>
+            <p>
+                
+                    Published by Orhun Parmaksız
+                
+                
+                    
+                    in <a href="https://blog.orhun.dev/categories/thoughts/">Thoughts</a>
+                
+                
+            </p>
+            
+            
+            <div style="display: flex; justify-content: space-between; align-items: center">
+              <div>
+                <iframe
+                  src="https://github.com/sponsors/orhun/button"
+                  title="Sponsor @orhun"
+                  height="35"
+                  width="116"
+                  style="border: 0"
+                ></iframe>
+                <a href="https://www.buymeacoffee.com/orhun" target="_blank"
+                  ><img
+                    src="https://cdn.buymeacoffee.com/buttons/v2/default-white.png"
+                    alt="Buy Me A Coffee"
+                    style="height: 40px !important; width: 150px !important"
+                /></a>
+              </div>
+              <div>
+                <applause-button
+                  style="width: 50px; height: 50px"
+                  url="https://blog.orhun.dev&#x2F;open-source-grindset&#x2F;"
+                  color="white"
+                  multiclap="true"
+                />
+              </div>
+              <div>
+                <div style="width: auto; height: 39px">
+                  <p style="margin: 0; color: #fff; font-style: italic">✨ Sponsored by:</p>
+                </div>
+                <a href="https://www.jetbrains.com/" target="_blank"
+                  ><img
+                    src="/sponsors/jetbrains.png"
+                    alt="JetBrains"
+                    style="height: 45px; width: auto"
+                /></a>
+                <a href="https://terminaltrove.com/" target="_blank"
+                  ><img
+                    src="/sponsors/terminal_trove.png"
+                    alt="Terminal Trove"
+                    style="height: 40px; width: auto"
+                /></a>
+              </div>
+            </div>
+            <script src="https://utteranc.es/client.js"
+                    repo="orhun/personal-blog"
+                    issue-term="url"
+                    label="comments"
+                    theme="github-dark"
+                    crossorigin="anonymous"
+                    async>
+            </script>
+        </footer>
+    
+</article>
+
+
+    </body>
+
+    <script type="text/javascript" src="https://blog.orhun.dev/elasticlunr.min.js"></script>
+    <script type="text/javascript" src="https://blog.orhun.dev/js/search.js"></script>
+
+</html>

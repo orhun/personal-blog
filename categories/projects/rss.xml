@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+    <channel>
+      <title>Orhun&#x27;s Blog - Projects</title>
+      <link>https://blog.orhun.dev</link>
+      <description>FOSS • Linux • Programming</description>
+      <generator>Zola</generator>
+      <language>en</language>
+      <atom:link href="https://blog.orhun.dev/categories/projects/rss.xml" rel="self" type="application/rss+xml"/>
+      <lastBuildDate>Mon, 23 Dec 2024 00:00:00 +0000</lastBuildDate>
+      <item>
+          <title>How I set up this blog</title>
+          <pubDate>Mon, 23 Dec 2024 00:00:00 +0000</pubDate>
+          <author>Unknown</author>
+          <link>https://blog.orhun.dev/setting-up-this-blog/</link>
+          <guid>https://blog.orhun.dev/setting-up-this-blog/</guid>
+          <description xml:base="https://blog.orhun.dev/setting-up-this-blog/">&lt;p&gt;Like my blog? Here is how I set it up.&lt;&#x2F;p&gt;</description>
+      </item>
+      <item>
+          <title>Can&#x27;t trust any VPN these days</title>
+          <pubDate>Wed, 16 Oct 2024 00:00:00 +0000</pubDate>
+          <author>Unknown</author>
+          <link>https://blog.orhun.dev/cant-trust-any-vpn/</link>
+          <guid>https://blog.orhun.dev/cant-trust-any-vpn/</guid>
+          <description xml:base="https://blog.orhun.dev/cant-trust-any-vpn/">&lt;p&gt;After Turkey banned Discord, I had to jump through some hoops, fix my VPN, and learn a bit about how DNS works.&lt;&#x2F;p&gt;</description>
+      </item>
+      <item>
+          <title>Setting up a packaging environment for Alpine Linux (introducing alpkg)</title>
+          <pubDate>Mon, 27 Mar 2023 00:00:00 +0000</pubDate>
+          <author>Unknown</author>
+          <link>https://blog.orhun.dev/alpine-packaging-setup/</link>
+          <guid>https://blog.orhun.dev/alpine-packaging-setup/</guid>
+          <description xml:base="https://blog.orhun.dev/alpine-packaging-setup/">&lt;p&gt;Recently I have been interested in &lt;a rel=&quot;external&quot; href=&quot;https:&#x2F;&#x2F;www.alpinelinux.org&quot;&gt;Alpine Linux&lt;&#x2F;a&gt; and thought it would be nice to maintain some Rust packages in their repositories. In this post, I will share my notes&#x2F;adventures on setting up a packaging environment and a tool called &quot;&lt;strong&gt;alpkg&lt;&#x2F;strong&gt;&quot; for automating this process.&lt;&#x2F;p&gt;</description>
+      </item>
+      <item>
+          <title>Introducing runst: Handle desktop notifications neatly on Linux!</title>
+          <pubDate>Sun, 05 Mar 2023 00:00:00 +0000</pubDate>
+          <author>Unknown</author>
+          <link>https://blog.orhun.dev/introducing-runst/</link>
+          <guid>https://blog.orhun.dev/introducing-runst/</guid>
+          <description xml:base="https://blog.orhun.dev/introducing-runst/">&lt;p&gt;&lt;code&gt;runst&lt;&#x2F;code&gt; is a dead simple notification daemon 🦡 In this post, I&#x27;m introducing the project and giving different usage examples that will improve your Linux desktop experience.&lt;&#x2F;p&gt;</description>
+      </item>
+      <item>
+          <title>Move away from streaming platforms &amp; take your music offline</title>
+          <pubDate>Fri, 03 Jun 2022 00:00:00 +0000</pubDate>
+          <author>Unknown</author>
+          <link>https://blog.orhun.dev/take-your-music-offline/</link>
+          <guid>https://blog.orhun.dev/take-your-music-offline/</guid>
+          <description xml:base="https://blog.orhun.dev/take-your-music-offline/">&lt;p&gt;I don&#x27;t use &lt;a rel=&quot;external&quot; href=&quot;https:&#x2F;&#x2F;en.wikipedia.org&#x2F;wiki&#x2F;Spotify&quot;&gt;Spotify&lt;&#x2F;a&gt; or any other streaming platform for listening to music. Some call it old habits, some call it needless effort, but I&#x27;m very used to downloading &lt;a rel=&quot;external&quot; href=&quot;https:&#x2F;&#x2F;en.wikipedia.org&#x2F;wiki&#x2F;MP3&quot;&gt;MP3&lt;&#x2F;a&gt; files over the internet and putting them in a folder on my phone then using the whatever default media player I have installed. However, for a couple of years, I have been following a better and automated approach for taking my music offline and feeling a bit less like I&#x27;m in a &lt;a rel=&quot;external&quot; href=&quot;https:&#x2F;&#x2F;en.wikipedia.org&#x2F;wiki&#x2F;Consumerism&quot;&gt;consumerism&lt;&#x2F;a&gt; bubble.&lt;&#x2F;p&gt;</description>
+      </item>
+      <item>
+          <title>Rewriting sysctl(8) in Rust: systeroid</title>
+          <pubDate>Sun, 17 Apr 2022 00:00:00 +0000</pubDate>
+          <author>Unknown</author>
+          <link>https://blog.orhun.dev/rewriting-sysctl-in-rust/</link>
+          <guid>https://blog.orhun.dev/rewriting-sysctl-in-rust/</guid>
+          <description xml:base="https://blog.orhun.dev/rewriting-sysctl-in-rust/">&lt;p&gt;&lt;a rel=&quot;external&quot; href=&quot;https:&#x2F;&#x2F;en.wikipedia.org&#x2F;wiki&#x2F;Sysctl&quot;&gt;sysctl&lt;&#x2F;a&gt; is a simple and great tool for modifying the kernel parameters. It does its job very well by providing an easy-to-use interface for &lt;code&gt;&#x2F;proc&#x2F;sys&lt;&#x2F;code&gt;. It is maintained as a part of &lt;a rel=&quot;external&quot; href=&quot;https:&#x2F;&#x2F;gitlab.com&#x2F;procps-ng&#x2F;procps&quot;&gt;procps&lt;&#x2F;a&gt; toolkit for years and it can easily be considered a legacy tool today. So why not push it to its limits and turn it into a more user-friendly and even more useful tool with the power of Rust?&lt;&#x2F;p&gt;</description>
+      </item>
+      <item>
+          <title>git-cliff 0.5.0</title>
+          <pubDate>Wed, 15 Dec 2021 00:00:00 +0000</pubDate>
+          <author>Unknown</author>
+          <link>https://blog.orhun.dev/git-cliff-0-5-0/</link>
+          <guid>https://blog.orhun.dev/git-cliff-0-5-0/</guid>
+          <description xml:base="https://blog.orhun.dev/git-cliff-0-5-0/">&lt;p&gt;git-cliff is a highly customizable changelog generator that follows conventional commit specifications ⛰️ In this post, I&#x27;m explaining the new features in the 0.5.0 release while giving insight into the different use-cases.&lt;&#x2F;p&gt;</description>
+      </item>
+      <item>
+          <title>Introducing gpg-tui, a Terminal User Interface for GnuPG</title>
+          <pubDate>Sat, 29 May 2021 00:00:00 +0000</pubDate>
+          <author>Unknown</author>
+          <link>https://blog.orhun.dev/introducing-gpg-tui/</link>
+          <guid>https://blog.orhun.dev/introducing-gpg-tui/</guid>
+          <description xml:base="https://blog.orhun.dev/introducing-gpg-tui/">&lt;p&gt;gpg-tui is a TUI for managing the GnuPG keys 🔐 In this post, I&#x27;m giving a brief introduction to the project as well as describing the thought process and main development challenges behind it.&lt;&#x2F;p&gt;</description>
+      </item>
+      <item>
+          <title>Spin Up Your Own No-Bullshit File Hosting Service</title>
+          <pubDate>Sun, 14 Feb 2021 00:00:00 +0000</pubDate>
+          <author>Unknown</author>
+          <link>https://blog.orhun.dev/no-bullshit-file-hosting/</link>
+          <guid>https://blog.orhun.dev/no-bullshit-file-hosting/</guid>
+          <description xml:base="https://blog.orhun.dev/no-bullshit-file-hosting/">&lt;p&gt;A guide for spinning up your own instance of 0x0, a no-bullshit file hosting and URL shortening service.&lt;&#x2F;p&gt;</description>
+      </item>
+      <item>
+          <title>Kmon! Let&#x27;s manage the Linux kernel modules!</title>
+          <pubDate>Thu, 02 Apr 2020 00:00:00 +0000</pubDate>
+          <author>Unknown</author>
+          <link>https://blog.orhun.dev/introducing-kmon/</link>
+          <guid>https://blog.orhun.dev/introducing-kmon/</guid>
+          <description xml:base="https://blog.orhun.dev/introducing-kmon/">&lt;p&gt;Introducing kmon, a Linux kernel manager and activity monitor 🐧💻&lt;&#x2F;p&gt;</description>
+      </item>
+    </channel>
+</rss>

@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <meta http-equiv="content-type" content="text/html; charset=utf-8">
+      <meta property="og:type" content="website" />
+      <meta property="og:url" content="https://blog.orhun.dev"/>
+      
+      <meta property="og:title" content="My First Month as an Arch Linux Trusted User - Orhun&#x27;s Blog" />
+      
+      <meta property="og:image" content="https://blog.orhun.dev/crow.png" />
+      
+      <meta name="description" content="FOSS • Linux • Programming" />
+      <meta property="og:description" content="FOSS • Linux • Programming"/>
+      
+
+      <!-- Enable responsiveness on mobile devices-->
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+      <link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png">
+      <link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png">
+      <link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png">
+      <link rel="manifest" href="/favicon/site.webmanifest">
+
+      <script async src="https://umami.orhun.dev/script.js" data-website-id="56ca5ca7-ba9f-416e-8bee-a132c155d56b"></script>
+
+      <link rel="stylesheet" href="https://unpkg.com/applause-button/dist/applause-button.css" />
+      <script src="https://unpkg.com/applause-button/dist/applause-button.js"></script>
+
+      
+      <title>My First Month as an Arch Linux Trusted User - Orhun&#x27;s Blog</title>
+      
+      <link rel="alternate" type="application/rss+xml" title="Orhun&#x27;s Blog RSS Feed" href="https://blog.orhun.dev/rss.xml" />
+
+      
+          <link rel="stylesheet" href="https://blog.orhun.dev/site.css">
+      
+
+      
+      
+    </head>
+
+    <body class="hack dark main container">
+        
+    
+        
+                
+                    <header>
+                    <nav itemscope itemtype="http://schema.org/SiteNavigationElement" class="nav-flex">
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://blog.orhun.dev">
+                                <span itemprop="name">Home</span>
+                            </a>
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://blog.orhun.dev/categories">
+                                <span itemprop="name">Categories</span>
+                            </a>
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://github.com/orhun/personal-blog">
+                                <span itemprop="name">Source</span>
+                            </a>
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://github.com/orhun">
+                                <span itemprop="name">GitHub</span>
+                            </a>
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://donate.orhun.dev">
+                                <span itemprop="name">Donate</span>
+                            </a>
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://blog.orhun.dev/rss.xml">
+                                <span itemprop="name">RSS</span>
+                            </a>
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://orhun.dev">
+                                <span itemprop="name">About</span>
+                            </a>
+                        
+                        <div class="search-container">
+                            <input type="text" id="search" placeholder="Search...">
+                            <div class="search-results">
+                                <div class="search-results__items"></div>
+                            </div>
+                        </div>
+                    </nav>
+                    </header>
+                
+            
+    
+
+<article itemscope itemtype="http://schema.org/BlogPosting">
+    <header>
+        <h1 itemprop="headline">My First Month as an Arch Linux Trusted User</h1>
+        <span class="muted">
+    <svg style="margin-bottom:-3px" class="i-clock" viewBox="0 0 32 32"
+         width="16" height="16" fill="none" stroke="currentcolor"
+         stroke-linecap="round" stroke-linejoin="round" stroke-width="6.25%">
+        <circle cx="16" cy="16" r="14"/>
+        <path d="M16 8 L16 16 20 20"/>
+    </svg>
+    <span>3 minute read</span>
+    <svg style="margin-bottom: -3px" class="i-edit" viewBox="0 0 32 32"
+         width="16" height="16" fill="none" stroke="currentcolor"
+         stroke-linecap="round" stroke-linejoin="round" stroke-width="6.25%">
+        <path d="M30 7 L25 2 5 22 3 29 10 27 Z M21 6 L26 11 Z M5 22 L10 27 Z"/>
+    </svg>
+
+    Published: 2021-02-06
+</span>
+    </header>
+    <div itemprop="articleBody">
+      <p>There's a start for everything. A new blog... New responsibilities... Maybe a new role in a Linux distribution that is for advanced users...</p>
+<span id="continue-reading"></span>
+<p>There's a start for everything.</p>
+<p>A new blog... New responsibilities... Maybe a new role in a Linux distribution that is for advanced users...</p>
+<p>No, this is not a blog post about how did I join <a rel="external" href="https://archlinux.org/">Arch Linux</a> as a <a rel="external" href="https://wiki.archlinux.org/index.php/Trusted_Users">Trusted User</a> in January 2021. You can read my <a rel="external" href="https://lists.archlinux.org/pipermail/aur-general/2020-December/036036.html">TU application</a> if you came for that. This is more like the aftermath...</p>
+<p>So right after I've been onboarded, I immediately tried to adapt to my new role and do everything I can in order to be more helpful to this awesome distribution. Well, everything comes with a cost apparently. My agility caused some (tiny?) problems (for me and others) but I also got the chance to do/learn awesome stuff. Here in this very blog post, I'd like to tell what happened in my first month at Arch Linux... for future packagers and for those who wonder what I've been doing in the meantime. Buckle up!</p>
+<h2 id="the-good-stuff">The Good Stuff</h2>
+<h3 id="package-additions-to-the-community">Package additions to the [community]</h3>
+<p>If you know me, you probably know that I like the most <em>memetastic</em> programming language <a rel="external" href="https://www.rust-lang.org/">Rust</a>. So I moved a fair amount of tools that are written in Rust along with some other nice projects from <a rel="external" href="https://aur.archlinux.org/">AUR</a> to the <a rel="external" href="https://wiki.archlinux.org/index.php/Official_repositories#community">community</a> repository.</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="plain"><span class="giallo-l"><span>addpkg: menyoki 1.2.0-2</span></span>
+<span class="giallo-l"><span>addpkg: lychee-link-checker 0.5.0-1</span></span>
+<span class="giallo-l"><span>addpkg: viu 1.3.0-3</span></span>
+<span class="giallo-l"><span>addpkg: onefetch 2.9.0-2</span></span>
+<span class="giallo-l"><span>addpkg: ali 0.5.4-3</span></span>
+<span class="giallo-l"><span>addpkg: gping 1.2.0-2</span></span>
+<span class="giallo-l"><span>addpkg: zps 1.2.4-1</span></span>
+<span class="giallo-l"><span>addpkg: cargo-spellcheck 0.6.0-1</span></span>
+<span class="giallo-l"><span>addpkg: shy 0.1.10-3</span></span>
+<span class="giallo-l"><span>addpkg: hex 0.4.0-1</span></span>
+<span class="giallo-l"><span>addpkg: procs 0.11.3-1</span></span>
+<span class="giallo-l"><span>addpkg: cargo-bloat 0.10.0-2</span></span>
+<span class="giallo-l"><span>addpkg: cargo-depgraph 1.2.2-2</span></span>
+<span class="giallo-l"><span>addpkg: cargo-udeps 0.1.17-2</span></span>
+<span class="giallo-l"><span>addpkg: taskwarrior-tui 0.9.8-1</span></span></code></pre><h3 id="package-adoptions-in-community">Package adoptions in [community]</h3>
+<p>I adopted the following packages to help {co-,}maintain them:</p>
+<ul>
+<li><a rel="external" href="https://www.archlinux.org/packages/extra/x86_64/cargo-edit/">cargo-edit</a></li>
+<li><a rel="external" href="https://www.archlinux.org/packages/extra/x86_64/cargo-outdated/">cargo-outdated</a></li>
+<li><a rel="external" href="https://www.archlinux.org/packages/extra/x86_64/cargo-tarpaulin/">cargo-tarpaulin</a></li>
+<li><a rel="external" href="https://www.archlinux.org/packages/extra/x86_64/dog/">dog</a></li>
+<li><a rel="external" href="https://www.archlinux.org/packages/extra/x86_64/dumb/">dumb</a></li>
+<li><a rel="external" href="https://www.archlinux.org/packages/extra/x86_64/hexyl/">hexyl</a></li>
+<li><a rel="external" href="https://www.archlinux.org/packages/extra/x86_64/intellij-idea-community-edition/">intellij-idea-community-edition</a></li>
+<li><a rel="external" href="https://www.archlinux.org/packages/extra/x86_64/kmon/">kmon</a></li>
+<li><a rel="external" href="https://www.archlinux.org/packages/extra/x86_64/lsd/">lsd</a></li>
+<li><a rel="external" href="https://www.archlinux.org/packages/extra/x86_64/mari0/">mari0</a></li>
+<li><a rel="external" href="https://www.archlinux.org/packages/extra/x86_64/mdbook/">mdbook</a></li>
+<li><a rel="external" href="https://www.archlinux.org/packages/extra/x86_64/mdp/">mdp</a></li>
+<li><a rel="external" href="https://www.archlinux.org/packages/extra/x86_64/pycharm-community-edition/">pycharm-community-edition</a></li>
+<li><a rel="external" href="https://www.archlinux.org/packages/extra/x86_64/scrot/">scrot</a></li>
+<li><a rel="external" href="https://www.archlinux.org/packages/extra/x86_64/task/">task</a></li>
+<li><a rel="external" href="https://www.archlinux.org/packages/extra/x86_64/tokei/">tokei</a></li>
+<li><a rel="external" href="https://www.archlinux.org/packages/extra/x86_64/xdo/">xdo</a></li>
+</ul>
+<h2 id="mistakes">Mistakes</h2>
+<p>At first, I couldn't think of asking AUR maintainers and TUs for permission to move their packages to the [community]. (silly me!) At least no one complained and everyone seemed to be happy about it. I'll remember to be more <em>courteous</em> about this from now on :)</p>
+<p>But the biggest mistake I ever made happened during I was trying to fix <a rel="external" href="https://bugs.archlinux.org/task/69291">FS#69291</a>... I somehow overlooked the latest <em>stable</em> version of <code>IntelliJ IDEA</code> and built/released the 2021 version which is unstable and not "intended for production". However, someone realized my mistake and filled a bug report quickly enough to avert the crisis. (<a rel="external" href="https://bugs.archlinux.org/task/69461">FS#69461</a>) (oof!)</p>
+<h2 id="conclusion">Conclusion</h2>
+<p>Apart from those, I also helped to handle the AUR requests, fixed some bugs, and contributed to <a rel="external" href="https://gitlab.archlinux.org/archlinux/arch-rebuild-order/">arch-rebuild-order</a>.</p>
+<p>I hope I'll be more useful for the distribution in the future. Arch Linux is such a nice project that I'm glad I'm a part of it :)</p>
+
+    </div>
+
+    
+        <footer>
+            <hr>
+            <p>
+                
+                    Published by Orhun Parmaksız
+                
+                
+                    
+                    in <a href="https://blog.orhun.dev/categories/thoughts/">Thoughts</a>
+                
+                
+            </p>
+            
+            
+            <div style="display: flex; justify-content: space-between; align-items: center">
+              <div>
+                <iframe
+                  src="https://github.com/sponsors/orhun/button"
+                  title="Sponsor @orhun"
+                  height="35"
+                  width="116"
+                  style="border: 0"
+                ></iframe>
+                <a href="https://www.buymeacoffee.com/orhun" target="_blank"
+                  ><img
+                    src="https://cdn.buymeacoffee.com/buttons/v2/default-white.png"
+                    alt="Buy Me A Coffee"
+                    style="height: 40px !important; width: 150px !important"
+                /></a>
+              </div>
+              <div>
+                <applause-button
+                  style="width: 50px; height: 50px"
+                  url="https://blog.orhun.dev&#x2F;my-first-month-as-tu&#x2F;"
+                  color="white"
+                  multiclap="true"
+                />
+              </div>
+              <div>
+                <div style="width: auto; height: 39px">
+                  <p style="margin: 0; color: #fff; font-style: italic">✨ Sponsored by:</p>
+                </div>
+                <a href="https://www.jetbrains.com/" target="_blank"
+                  ><img
+                    src="/sponsors/jetbrains.png"
+                    alt="JetBrains"
+                    style="height: 45px; width: auto"
+                /></a>
+                <a href="https://terminaltrove.com/" target="_blank"
+                  ><img
+                    src="/sponsors/terminal_trove.png"
+                    alt="Terminal Trove"
+                    style="height: 40px; width: auto"
+                /></a>
+              </div>
+            </div>
+            <script src="https://utteranc.es/client.js"
+                    repo="orhun/personal-blog"
+                    issue-term="url"
+                    label="comments"
+                    theme="github-dark"
+                    crossorigin="anonymous"
+                    async>
+            </script>
+        </footer>
+    
+</article>
+
+
+    </body>
+
+    <script type="text/javascript" src="https://blog.orhun.dev/elasticlunr.min.js"></script>
+    <script type="text/javascript" src="https://blog.orhun.dev/js/search.js"></script>
+
+</html>

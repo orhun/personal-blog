@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+    <channel>
+      <title>Orhun&#x27;s Blog - Rust</title>
+      <link>https://blog.orhun.dev</link>
+      <description>FOSS • Linux • Programming</description>
+      <generator>Zola</generator>
+      <language>en</language>
+      <atom:link href="https://blog.orhun.dev/categories/rust/rss.xml" rel="self" type="application/rss+xml"/>
+      <lastBuildDate>Wed, 10 Jan 2024 00:00:00 +0000</lastBuildDate>
+      <item>
+          <title>Why stdout is faster than stderr?</title>
+          <pubDate>Wed, 10 Jan 2024 00:00:00 +0000</pubDate>
+          <author>Unknown</author>
+          <link>https://blog.orhun.dev/stdout-vs-stderr/</link>
+          <guid>https://blog.orhun.dev/stdout-vs-stderr/</guid>
+          <description xml:base="https://blog.orhun.dev/stdout-vs-stderr/">&lt;p&gt;I recently realized stdout is much faster than stderr for Rust. Here are my findings after diving deep into this rabbit hole.&lt;&#x2F;p&gt;</description>
+      </item>
+      <item>
+          <title>Fully Automated Releases for Rust Projects</title>
+          <pubDate>Tue, 24 Oct 2023 00:00:00 +0000</pubDate>
+          <author>Unknown</author>
+          <link>https://blog.orhun.dev/automated-rust-releases/</link>
+          <guid>https://blog.orhun.dev/automated-rust-releases/</guid>
+          <description xml:base="https://blog.orhun.dev/automated-rust-releases/">&lt;p&gt;Here is how you can publish a Rust project with a single click of a button and automate &lt;em&gt;everything&lt;&#x2F;em&gt;.&lt;&#x2F;p&gt;</description>
+      </item>
+      <item>
+          <title>Taking Rust to the Cloud: Blazingly Fast File Sharing</title>
+          <pubDate>Wed, 17 May 2023 00:00:00 +0000</pubDate>
+          <author>Unknown</author>
+          <link>https://blog.orhun.dev/blazingly-fast-file-sharing/</link>
+          <guid>https://blog.orhun.dev/blazingly-fast-file-sharing/</guid>
+          <description xml:base="https://blog.orhun.dev/blazingly-fast-file-sharing/">&lt;p&gt;&quot;&lt;a rel=&quot;external&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;orhun&#x2F;rustypaste&quot;&gt;&lt;strong&gt;rustypaste&lt;&#x2F;strong&gt;&lt;&#x2F;a&gt;&quot; is a self-hosted and minimal file upload&#x2F;pastebin service written in Rust. In this post, I will be talking about its features and telling the story behind how I deployed it to &lt;a rel=&quot;external&quot; href=&quot;https:&#x2F;&#x2F;www.shuttle.rs&quot;&gt;shuttle.rs&lt;&#x2F;a&gt; to make it publicly available for free use.&lt;&#x2F;p&gt;</description>
+      </item>
+      <item>
+          <title>Packaging Rust Applications for the NPM Registry</title>
+          <pubDate>Tue, 24 Jan 2023 00:00:00 +0000</pubDate>
+          <author>Unknown</author>
+          <link>https://blog.orhun.dev/packaging-rust-for-npm/</link>
+          <guid>https://blog.orhun.dev/packaging-rust-for-npm/</guid>
+          <description xml:base="https://blog.orhun.dev/packaging-rust-for-npm/">&lt;p&gt;Recently I packaged my project &lt;a rel=&quot;external&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;orhun&#x2F;git-cliff&quot;&gt;git-cliff&lt;&#x2F;a&gt; (changelog generator written in &lt;a rel=&quot;external&quot; href=&quot;https:&#x2F;&#x2F;www.rust-lang.org&#x2F;&quot;&gt;Rust&lt;&#x2F;a&gt;) for &lt;a rel=&quot;external&quot; href=&quot;https:&#x2F;&#x2F;www.npmjs.com&#x2F;&quot;&gt;NPM&lt;&#x2F;a&gt; with the help of my friend &lt;a rel=&quot;external&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;atlj&quot;&gt;@atlj&lt;&#x2F;a&gt;. I thought this would be an interesting topic for a blog post since it has a certain technical depth about distributing binaries and frankly it still amazes me how the whole thing works so smoothly. So let&#x27;s create a simple Rust project, package it for NPM and fully automate the release process via &lt;a rel=&quot;external&quot; href=&quot;https:&#x2F;&#x2F;docs.github.com&#x2F;en&#x2F;actions&quot;&gt;GitHub Actions&lt;&#x2F;a&gt;.&lt;&#x2F;p&gt;</description>
+      </item>
+      <item>
+          <title>Zero-dependency random number generation in Rust</title>
+          <pubDate>Tue, 03 Jan 2023 00:00:00 +0000</pubDate>
+          <author>Unknown</author>
+          <link>https://blog.orhun.dev/zero-deps-random-in-rust/</link>
+          <guid>https://blog.orhun.dev/zero-deps-random-in-rust/</guid>
+          <description xml:base="https://blog.orhun.dev/zero-deps-random-in-rust/">&lt;p&gt;Let&#x27;s investigate how to generate random numbers without external dependencies in Rust.&lt;&#x2F;p&gt;</description>
+      </item>
+      <item>
+          <title>How hard upgrading a Rust JWT library could be?</title>
+          <pubDate>Fri, 22 Apr 2022 00:00:00 +0000</pubDate>
+          <author>Unknown</author>
+          <link>https://blog.orhun.dev/upgrading-rust-jwt/</link>
+          <guid>https://blog.orhun.dev/upgrading-rust-jwt/</guid>
+          <description xml:base="https://blog.orhun.dev/upgrading-rust-jwt/">&lt;p&gt;Recently one of my clients requested me to maintain their Rust project. It is a web server that is built with &lt;a rel=&quot;external&quot; href=&quot;https:&#x2F;&#x2F;rocket.rs&#x2F;&quot;&gt;Rocket&lt;&#x2F;a&gt; + &lt;a rel=&quot;external&quot; href=&quot;http:&#x2F;&#x2F;diesel.rs&#x2F;&quot;&gt;Diesel&lt;&#x2F;a&gt; and running stable for a couple of years now. Like any other Rust developer would do, the first thing that I checked was the outdated dependencies via &lt;code&gt;cargo-outdated&lt;&#x2F;code&gt;. The result was close to what I expected: most of the dependencies were out-of-date. However, among all those crates, &lt;a rel=&quot;external&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;mikkyang&#x2F;rust-jwt&quot;&gt;rust-jwt&lt;&#x2F;a&gt; caught my eye. It was 12 minor versions behind!&lt;&#x2F;p&gt;</description>
+      </item>
+    </channel>
+</rss>

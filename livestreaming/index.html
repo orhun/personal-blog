@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <meta http-equiv="content-type" content="text/html; charset=utf-8">
+      <meta property="og:type" content="website" />
+      <meta property="og:url" content="https://blog.orhun.dev"/>
+      
+      <meta property="og:title" content="Why I started livestreaming as a Rust developer? - Orhun&#x27;s Blog" />
+      
+      <meta property="og:image" content="https://blog.orhun.dev/crow.png" />
+      
+      <meta name="description" content="FOSS • Linux • Programming" />
+      <meta property="og:description" content="FOSS • Linux • Programming"/>
+      
+
+      <!-- Enable responsiveness on mobile devices-->
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+      <link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png">
+      <link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png">
+      <link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png">
+      <link rel="manifest" href="/favicon/site.webmanifest">
+
+      <script async src="https://umami.orhun.dev/script.js" data-website-id="56ca5ca7-ba9f-416e-8bee-a132c155d56b"></script>
+
+      <link rel="stylesheet" href="https://unpkg.com/applause-button/dist/applause-button.css" />
+      <script src="https://unpkg.com/applause-button/dist/applause-button.js"></script>
+
+      
+      <title>Why I started livestreaming as a Rust developer? - Orhun&#x27;s Blog</title>
+      
+      <link rel="alternate" type="application/rss+xml" title="Orhun&#x27;s Blog RSS Feed" href="https://blog.orhun.dev/rss.xml" />
+
+      
+          <link rel="stylesheet" href="https://blog.orhun.dev/site.css">
+      
+
+      
+      
+    </head>
+
+    <body class="hack dark main container">
+        
+    
+        
+                
+                    <header>
+                    <nav itemscope itemtype="http://schema.org/SiteNavigationElement" class="nav-flex">
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://blog.orhun.dev">
+                                <span itemprop="name">Home</span>
+                            </a>
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://blog.orhun.dev/categories">
+                                <span itemprop="name">Categories</span>
+                            </a>
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://github.com/orhun/personal-blog">
+                                <span itemprop="name">Source</span>
+                            </a>
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://github.com/orhun">
+                                <span itemprop="name">GitHub</span>
+                            </a>
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://donate.orhun.dev">
+                                <span itemprop="name">Donate</span>
+                            </a>
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://blog.orhun.dev/rss.xml">
+                                <span itemprop="name">RSS</span>
+                            </a>
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://orhun.dev">
+                                <span itemprop="name">About</span>
+                            </a>
+                        
+                        <div class="search-container">
+                            <input type="text" id="search" placeholder="Search...">
+                            <div class="search-results">
+                                <div class="search-results__items"></div>
+                            </div>
+                        </div>
+                    </nav>
+                    </header>
+                
+            
+    
+
+<article itemscope itemtype="http://schema.org/BlogPosting">
+    <header>
+        <h1 itemprop="headline">Why I started livestreaming as a Rust developer?</h1>
+        <span class="muted">
+    <svg style="margin-bottom:-3px" class="i-clock" viewBox="0 0 32 32"
+         width="16" height="16" fill="none" stroke="currentcolor"
+         stroke-linecap="round" stroke-linejoin="round" stroke-width="6.25%">
+        <circle cx="16" cy="16" r="14"/>
+        <path d="M16 8 L16 16 20 20"/>
+    </svg>
+    <span>6 minute read</span>
+    <svg style="margin-bottom: -3px" class="i-edit" viewBox="0 0 32 32"
+         width="16" height="16" fill="none" stroke="currentcolor"
+         stroke-linecap="round" stroke-linejoin="round" stroke-width="6.25%">
+        <path d="M30 7 L25 2 5 22 3 29 10 27 Z M21 6 L26 11 Z M5 22 L10 27 Z"/>
+    </svg>
+
+    Published: 2024-09-06
+</span>
+    </header>
+    <div itemprop="articleBody">
+      <p>Some thoughts on why I started livestreaming my open-source development sessions and my future plans.</p>
+<span id="continue-reading"></span><center>
+<img alt="https://xkcd.com/1836/" src="/xkcd1836.png"/>
+</center>
+<br>
+<hr />
+<p>🦀 <strong>TL;DR</strong>: Follow me on <g><a rel="external" href="https://www.youtube.com/@orhundev">https://www.youtube.com/@orhundev</a></g>, where I regularly live-code in Rust, dive into open source, packaging stuff, share tips, and overall have some good ol' techy time.</p>
+<p>▶️ See my past live streams <a rel="external" href="https://www.youtube.com/@orhundev/streams">here</a>.</p>
+<img src="/livestreams.png"/>
+<hr />
+<p>This might be one of the unavoidable side quests if you are trying to tenaciously make a living from working on (and only on) open source. More than a year ago I wrote <a rel="external" href="https://blog.orhun.dev/open-source-grindset/">a blog post</a> detailing my motivation for the things I have been doing and having a "grindset".</p>
+<p>Today, things have changed a bit, due to the fact that I eventually realized that writing code in a dark room is not enough if you want to make a name for yourself. You should also make sure that people know you and your work. This is where that you need to switch to an influencer-like mindset and do things like be active in communities, write blog posts, give talks, and so on.</p>
+<p>And as you might have guessed, I recently added <g>livestreaming</g> to this list.</p>
+<hr />
+<h3 id="how-it-all-started-seedling"><strong>How it all started?</strong> 🌱</h3>
+<p>It was a mildly warm summer evening, I was sitting in front of my computer (as I always do) and doomscrolling through social media hoping not to max out my brainrot levels. Sometimes I don't feel like working on anything so unfortunately at times like these I find myself taking part in this highly unproductive activity. It happens way less than it used to be but still, it happens.</p>
+<p>Then I started thinking, I actually <em>enjoy</em> working on open source projects and write Rust code. Where does this boredom come from? Maybe I'm just burnt out? Everyone needs a break, right? ...right?</p>
+<p>No, the grind <em>MUST</em> continue. I needed to somehow make programming fun for myself again. And then it hit me, "for myself"? Maybe I was too self-centric. I was sure that I shouldn't be the only one who feels this way from time to time. There must be a way to collectively enjoy programming and open source again while giving back to the community while sharing insights in an interactive way. And that's when I decided to start livestreaming.</p>
+<p>Taking the first step was a bit intimidating. After all, there are a lot of questions, like "how should I talk to the camera?", "what if no one watches?", "what if my router catches on fire and I lose connection?" and so on.</p>
+<p>But then on a Sunday evening, I pretty much said 🇫 it and went live. And got hooked!</p>
+<hr />
+<h3 id="how-is-it-going-fast-forward"><strong>How is it going?</strong> ⏩</h3>
+<p>Once you got the hang of it, it feels like you are coding with a friend.</p>
+<p><q> Or you feel this way because not a lot of people are watching heh- </q></p>
+<p>My friends always watch my streams.</p>
+<p><q>You have friends?</q></p>
+<p>Shut up, you goddamn rabbit!</p>
+<p>The best part of livestreaming for me is the interactivity, it's like you are pair programming with some people. This means that you might need to walk through your thought process and explain what you are doing. And there are moments where you catch yourself doing something wrong because of it. It's a great way to learn and teach at the same time.</p>
+<p>Also, for the longest time I remember, I had moments where I do something cool and wished that somebody was watching.</p>
+<blockquote>
+<p>"finally, I got this working!" \o/</p>
+<p><em>2 seconds later</em></p>
+<p>"aight back to work"</p>
+</blockquote>
+<p>Now I capture those moments during live and there are at least some people who also share the excitement. Feels great!</p>
+<p>Another aspect of it is you are simply sharing the behind-the-scenes content for people which I think is very useful in terms of sharing knowledge otherwise would be impossible to obtain. Doing this helps the people who would like to contribute to open source but do not know where to start. Or maybe they have an impostor syndrome and they think we are doing something magical whereas it just pressing keys on a keyboard and hoping for the best.</p>
+<p>At the end of the day, it all boils down to engaging more with your community, and boy, it's fun.</p>
+<hr />
+<h3 id="what-s-next-sparkles"><strong>What's next?</strong> ✨</h3>
+<p>As a next step I'm planning to do more of this, and also try to make it more structured. I don't want to lose the <em>hey guys so we're just freestyling today</em> spirit but having a plan is always good. As of now, I'm planning to run the following series:</p>
+<p>1️⃣ <g>Live Coding in Rust</g>: This is the series where I simply work on a Rust project and explain what I'm doing. It can be my own project, something that I maintain or something entirely new that I want to dive into.</p>
+<ul>
+<li>Building TUIs with <a rel="external" href="https://ratatui.rs">Ratatui</a> might be really interesting.</li>
+<li>I also want to pick a project and try to contribute to it live.</li>
+<li>And maybe we pick something from the chat sometimes and just go with it together.</li>
+</ul>
+<p>2️⃣ <g>Open Source Maintenance</g>: As you may or may not know, I also do packaging for Linux distributions (such as Alpine and Arch Linux btw). In this series, I want to show how I maintain packages, how I update them, how I deal with issues, and so on.</p>
+<ul>
+<li>I can show how I package Rust tools for Arch Linux and how the build system works.</li>
+<li>If there is any other maintenance work that I need to do (such as reviewing PRs, triaging issues), I will also do it in this series.</li>
+</ul>
+<p>3️⃣ <g>Random</g>: This is the series where I do whatever I want. It can be a Q&amp;A session, a review of a project, or maybe just a chill session where I code something that I want to code.</p>
+<ul>
+<li>I can have a guest on the stream and we can talk about a specific topic. (hint: podcast soon?)</li>
+</ul>
+<hr />
+<h3 id="conclusion-checkered-flag"><strong>Conclusion</strong> 🏁</h3>
+<p>I have learned many things during my short career of livestreaming and I'm still pretty new to this. I would appreciate any feedback, suggestions, or ideas that you might have.</p>
+<p>Here are some things that I wanted to pinpoint from my experience:</p>
+<ul>
+<li>
+<p>It's better to have a few people watching and engaging rather than having a lot of people watching and not engaging.</p>
+</li>
+<li>
+<p>It's okay to make mistakes, it's okay to not know something. You are not a robot.</p>
+</li>
+<li>
+<p>Always remember to stop the stream on YouTube interface when you are done. Otherwise people might think you are writing Rust for 12 hours straight... which is a rookie level.</p>
+</li>
+</ul>
+<p>Livestreaming is essentially a gateway to producing more video content, and I have many ideas. We will see what the future will bring :)</p>
+<hr />
+<p>⬇️ <strong>Links:</strong></p>
+<ul>
+<li>🔗 <a rel="external" href="https://www.youtube.com/@orhundev">YouTube Channel</a></li>
+<li>🔗 <a rel="external" href="https://www.youtube.com/@orhundev/streams">Past Live Streams</a></li>
+<li>🔗 <a rel="external" href="https://github.com/orhun">GitHub</a></li>
+<li>🔗 <a rel="external" href="https://twitter.com/orhundev">Follow me on Twitter</a> (to stay updated on announcements)</li>
+<li>🔗 <a rel="external" href="https://fosstodon.org/@orhun">Follow me on Mastodon</a> (to stay updated on announcements)</li>
+</ul>
+
+    </div>
+
+    
+        <footer>
+            <hr>
+            <p>
+                
+                    Published by Orhun Parmaksız
+                
+                
+                    
+                    in <a href="https://blog.orhun.dev/categories/thoughts/">Thoughts</a>
+                
+                
+            </p>
+            
+            
+            <div style="display: flex; justify-content: space-between; align-items: center">
+              <div>
+                <iframe
+                  src="https://github.com/sponsors/orhun/button"
+                  title="Sponsor @orhun"
+                  height="35"
+                  width="116"
+                  style="border: 0"
+                ></iframe>
+                <a href="https://www.buymeacoffee.com/orhun" target="_blank"
+                  ><img
+                    src="https://cdn.buymeacoffee.com/buttons/v2/default-white.png"
+                    alt="Buy Me A Coffee"
+                    style="height: 40px !important; width: 150px !important"
+                /></a>
+              </div>
+              <div>
+                <applause-button
+                  style="width: 50px; height: 50px"
+                  url="https://blog.orhun.dev&#x2F;livestreaming&#x2F;"
+                  color="white"
+                  multiclap="true"
+                />
+              </div>
+              <div>
+                <div style="width: auto; height: 39px">
+                  <p style="margin: 0; color: #fff; font-style: italic">✨ Sponsored by:</p>
+                </div>
+                <a href="https://www.jetbrains.com/" target="_blank"
+                  ><img
+                    src="/sponsors/jetbrains.png"
+                    alt="JetBrains"
+                    style="height: 45px; width: auto"
+                /></a>
+                <a href="https://terminaltrove.com/" target="_blank"
+                  ><img
+                    src="/sponsors/terminal_trove.png"
+                    alt="Terminal Trove"
+                    style="height: 40px; width: auto"
+                /></a>
+              </div>
+            </div>
+            <script src="https://utteranc.es/client.js"
+                    repo="orhun/personal-blog"
+                    issue-term="url"
+                    label="comments"
+                    theme="github-dark"
+                    crossorigin="anonymous"
+                    async>
+            </script>
+        </footer>
+    
+</article>
+
+
+    </body>
+
+    <script type="text/javascript" src="https://blog.orhun.dev/elasticlunr.min.js"></script>
+    <script type="text/javascript" src="https://blog.orhun.dev/js/search.js"></script>
+
+</html>

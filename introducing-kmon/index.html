@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <meta http-equiv="content-type" content="text/html; charset=utf-8">
+      <meta property="og:type" content="website" />
+      <meta property="og:url" content="https://blog.orhun.dev"/>
+      
+      <meta property="og:title" content="Kmon! Let's manage the Linux kernel modules! - Orhun&#x27;s Blog" />
+      
+      <meta property="og:image" content="https://blog.orhun.dev/crow.png" />
+      
+      <meta name="description" content="FOSS • Linux • Programming" />
+      <meta property="og:description" content="FOSS • Linux • Programming"/>
+      
+
+      <!-- Enable responsiveness on mobile devices-->
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+      <link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png">
+      <link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png">
+      <link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png">
+      <link rel="manifest" href="/favicon/site.webmanifest">
+
+      <script async src="https://umami.orhun.dev/script.js" data-website-id="56ca5ca7-ba9f-416e-8bee-a132c155d56b"></script>
+
+      <link rel="stylesheet" href="https://unpkg.com/applause-button/dist/applause-button.css" />
+      <script src="https://unpkg.com/applause-button/dist/applause-button.js"></script>
+
+      
+      <title>Kmon! Let&#x27;s manage the Linux kernel modules! - Orhun&#x27;s Blog</title>
+      
+      <link rel="alternate" type="application/rss+xml" title="Orhun&#x27;s Blog RSS Feed" href="https://blog.orhun.dev/rss.xml" />
+
+      
+          <link rel="stylesheet" href="https://blog.orhun.dev/site.css">
+      
+
+      
+      
+    </head>
+
+    <body class="hack dark main container">
+        
+    
+        
+                
+                    <header>
+                    <nav itemscope itemtype="http://schema.org/SiteNavigationElement" class="nav-flex">
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://blog.orhun.dev">
+                                <span itemprop="name">Home</span>
+                            </a>
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://blog.orhun.dev/categories">
+                                <span itemprop="name">Categories</span>
+                            </a>
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://github.com/orhun/personal-blog">
+                                <span itemprop="name">Source</span>
+                            </a>
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://github.com/orhun">
+                                <span itemprop="name">GitHub</span>
+                            </a>
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://donate.orhun.dev">
+                                <span itemprop="name">Donate</span>
+                            </a>
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://blog.orhun.dev/rss.xml">
+                                <span itemprop="name">RSS</span>
+                            </a>
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://orhun.dev">
+                                <span itemprop="name">About</span>
+                            </a>
+                        
+                        <div class="search-container">
+                            <input type="text" id="search" placeholder="Search...">
+                            <div class="search-results">
+                                <div class="search-results__items"></div>
+                            </div>
+                        </div>
+                    </nav>
+                    </header>
+                
+            
+    
+
+<article itemscope itemtype="http://schema.org/BlogPosting">
+    <header>
+        <h1 itemprop="headline">Kmon! Let&#x27;s manage the Linux kernel modules!</h1>
+        <span class="muted">
+    <svg style="margin-bottom:-3px" class="i-clock" viewBox="0 0 32 32"
+         width="16" height="16" fill="none" stroke="currentcolor"
+         stroke-linecap="round" stroke-linejoin="round" stroke-width="6.25%">
+        <circle cx="16" cy="16" r="14"/>
+        <path d="M16 8 L16 16 20 20"/>
+    </svg>
+    <span>5 minute read</span>
+    <svg style="margin-bottom: -3px" class="i-edit" viewBox="0 0 32 32"
+         width="16" height="16" fill="none" stroke="currentcolor"
+         stroke-linecap="round" stroke-linejoin="round" stroke-width="6.25%">
+        <path d="M30 7 L25 2 5 22 3 29 10 27 Z M21 6 L26 11 Z M5 22 L10 27 Z"/>
+    </svg>
+
+    Published: 2020-04-02
+</span>
+    </header>
+    <div itemprop="articleBody">
+      <p>Introducing kmon, a Linux kernel manager and activity monitor 🐧💻</p>
+<span id="continue-reading"></span>
+<p>Unfortunately, it's common to use a technology without knowing the inner workings of it. However, having a good grasp on the specific details of it might help with various situations like fixing a bug or adding new features to it. Especially if you're a developer/engineer.</p>
+<p>I've been using <strong>GNU/Linux</strong> for years and I really love the uniqueness and simplicity that some distributions provide. It also provides a close to perfect development environment in my opinion, if you customize it.
+But one of the things, probably the most important thing, that I neglected to learn its details was the <strong>Linux kernel</strong>. I was using various tools for adding a module to the Linux kernel to make a program work (<em>like VirtualBox</em>) or I was disabling modules to change the purpose of a hardware. But I've never into the Linux kernel really. It was just being updated regularly and sitting there, waiting to be explored.</p>
+<p>My previous experiences taught me that the best way of learning something is <strong>creating a project that solves a problem</strong> depending on your needs. Also adding some flavors (like using a tech stack that you've not used before) will increase the chance of drowning inside the "<em>ocean of the new stuff</em>". Which is a good thing because it will force you to swim back to the surface. In the context of the project, it will force you to make the project as perfect as possible and finish it. Because as everyone knows, it's always easier to abandon a project.</p>
+<p>So I've decided to learn the basics of the Linux kernel including kernel types and its history. It was surely a good idea in order to understand the "core" element of the systems we're using today. And then I created my first Linux kernel module that only prints a message when it's loaded and unloaded. It looked like legacy tools like <strong>dmesg</strong>, <strong>kmod</strong> and <strong>modprobe</strong> are preferred most of the time for Linux kernel management on command line. So I've loaded my example kernel module with modprobe and retrieved the log messages with dmesg. Even though I've checked for other alternative tools, I didn't come across a tool that you can do these operations together at the same time.</p>
+<p>Therefore I thought that I should write that tool in a memory-efficient and fast programming language. <strong>Rust!</strong></p>
+<p><a rel="external" href="https://github.com/fdehau/tui-rs">tui-rs</a> is a Rust library for creating <strong>text-based user interfaces</strong> with different backend options. I've chosen <a rel="external" href="https://github.com/redox-os/termion">termion</a> for the tool that I'm going to write. But still, one thing was missing. I should find a name for it to keep myself motivated while writing it.</p>
+<p>It should be called... Hm... Kernel top? <em>ktop...</em> Nah, it's taken. How about kernel monitor? <em><strong>kmon...</strong></em> A-ha! Come on!</p>
+<p>Actually, I've never written something in Rust before kmon. So it was an adventurous journey about the Linux kernel and Rust. I have to say that Rust has a nice development environment and efficient tools like <strong>rustfmt</strong> and <strong>clippy</strong>. And writing a Rust application about the Linux kernel on an Arch Linux system... It's not something that you can explain with words.</p>
+<p>Oh what happened at the end of this journey? Well, let me show:</p>
+<p><img src="https://user-images.githubusercontent.com/24392180/78243975-68a5f800-74ed-11ea-89b4-d7cfcaeeb6ae.gif" alt="come on!" /></p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="plain"><span class="giallo-l"><span>cargo install kmon</span></span></code></pre>
+<p>You can:</p>
+<ul>
+<li>see the information of a module</li>
+<li>search a module</li>
+<li>load/unload a module</li>
+<li>blacklist a module</li>
+<li>and do other cool things</li>
+</ul>
+<p>in the text-based interface of kmon.</p>
+<p>Here's some examples:</p>
+<h3 id="navigating-scrolling">Navigating &amp; Scrolling</h3>
+<p><code>Arrow keys</code> are used for navigating between blocks and scrolling.</p>
+<p><img src="https://user-images.githubusercontent.com/24392180/76685750-26447600-6627-11ea-99fd-157449c9529f.gif" alt="Navigating &amp; Scrolling" /></p>
+<h3 id="searching-a-module">Searching a module</h3>
+<p>Switch to the search area with arrow keys or using one of the <code>/, s, enter</code> and provide a search query for the module name.</p>
+<p><img src="https://user-images.githubusercontent.com/24392180/76686001-23e31b80-6629-11ea-9e9a-ff92c6a05cdd.gif" alt="Searching a module" /></p>
+<h3 id="loading-a-module">Loading a module</h3>
+<p>For adding a module to the Linux kernel, switch to load mode with one of the <code>+, i, insert</code> keys and provide the name of the module to load. Then confirm/cancel the execution of the load command with <code>y/n</code>.</p>
+<p><img src="https://user-images.githubusercontent.com/24392180/76686027-64429980-6629-11ea-852f-1316ff08ec80.gif" alt="Loading a module" /></p>
+<p>The command that used for loading a module:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="plain"><span class="giallo-l"><span>modprobe &lt;module_name&gt;</span></span></code></pre><h3 id="unloading-a-module">Unloading a module</h3>
+<p>Use one of the <code>-, u, backspace</code> keys to remove the selected module from the Linux kernel.</p>
+<p><img src="https://user-images.githubusercontent.com/24392180/76686045-8b996680-6629-11ea-9d8c-c0f5b367e269.gif" alt="Unloading a module" /></p>
+<p>The command that used for removing a module:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="plain"><span class="giallo-l"><span>modprobe -r &lt;module_name&gt;</span></span></code></pre><h3 id="blacklisting-a-module">Blacklisting a module</h3>
+<p><a rel="external" href="https://wiki.archlinux.org/index.php/Kernel_module#Blacklisting">Blacklisting</a> is a mechanism to prevent the kernel module from loading. To blacklist the selected module, use one of the <code>x, b, delete</code> keys and confirm the execution.</p>
+<p><img src="https://user-images.githubusercontent.com/24392180/78243543-a5252400-74ec-11ea-932e-4a17c94d74f6.gif" alt="Blacklisting a module" /></p>
+<p>The command that used for blacklisting a module:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="plain"><span class="giallo-l"><span>if ! grep -q &lt;module_name&gt; /etc/modprobe.d/blacklist.conf; then</span></span>
+<span class="giallo-l"><span>  echo &#39;blacklist &lt;module_name&gt;&#39; &gt;&gt; /etc/modprobe.d/blacklist.conf</span></span>
+<span class="giallo-l"><span>  echo &#39;install &lt;module_name&gt; /bin/false&#39; &gt;&gt; /etc/modprobe.d/blacklist.conf</span></span>
+<span class="giallo-l"><span>fi</span></span></code></pre><h3 id="">...</h3>
+<p><strong>kmon</strong> aims to be a standard tool for <strong>Linux kernel management</strong> while supporting most of the Linux distributions. On that note, here's the distributions that kmon is tested:</p>
+<h4 id="fedora-31">Fedora 31</h4>
+<p><img src="https://user-images.githubusercontent.com/24392180/76520554-27817180-6474-11ea-9966-e564f38c8a6a.png" alt="kmon on fedora" /></p>
+<h4 id="debian-10">Debian 10</h4>
+<p><img src="https://user-images.githubusercontent.com/24392180/76514129-79bc9580-6468-11ea-9013-e32fbbdc1108.png" alt="kmon on debian" /></p>
+<h4 id="manjaro-19">Manjaro 19</h4>
+<p><img src="https://user-images.githubusercontent.com/24392180/76940351-1f5d8200-690b-11ea-8fe9-1d751fe102c5.png" alt="kmon on manjaro" /></p>
+<h4 id="ubuntu-18-04">Ubuntu 18.04</h4>
+<p><img src="https://user-images.githubusercontent.com/24392180/76690341-18571b00-6650-11ea-85c9-3f511c054194.png" alt="kmon on ubuntu" /></p>
+<h4 id="opensuse">openSUSE</h4>
+<p><img src="https://user-images.githubusercontent.com/24392180/77414512-38b27280-6dd2-11ea-888c-9bf6f7245387.png" alt="kmon on opensuse" /></p>
+<h4 id="void-linux">Void Linux</h4>
+<p><img src="https://user-images.githubusercontent.com/24392180/77417004-c9d71880-6dd5-11ea-82b2-f6c7df9a05c3.png" alt="kmon on voidlinux" /></p>
+<h3 id="closing-note">Closing Note</h3>
+<p>More information can be found at the <a rel="external" href="https://github.com/orhun/kmon">project page</a> on GitHub.</p>
+<ul>
+<li>Follow <a rel="external" href="https://twitter.com/kmonitor_">@kmonitor_</a> on Twitter</li>
+<li>Follow the <a rel="external" href="https://orhun.dev">author</a>:
+<ul>
+<li><a rel="external" href="https://github.com/orhun">@orhun</a> on GitHub</li>
+<li><a rel="external" href="https://twitter.com/orhundev">@orhundev</a> on Twitter</li>
+</ul>
+</li>
+</ul>
+<p>Stay safe.</p>
+
+    </div>
+
+    
+        <footer>
+            <hr>
+            <p>
+                
+                    Published by Orhun Parmaksız
+                
+                
+                    
+                    in <a href="https://blog.orhun.dev/categories/projects/">Projects</a>
+                
+                
+            </p>
+            
+            
+            <div style="display: flex; justify-content: space-between; align-items: center">
+              <div>
+                <iframe
+                  src="https://github.com/sponsors/orhun/button"
+                  title="Sponsor @orhun"
+                  height="35"
+                  width="116"
+                  style="border: 0"
+                ></iframe>
+                <a href="https://www.buymeacoffee.com/orhun" target="_blank"
+                  ><img
+                    src="https://cdn.buymeacoffee.com/buttons/v2/default-white.png"
+                    alt="Buy Me A Coffee"
+                    style="height: 40px !important; width: 150px !important"
+                /></a>
+              </div>
+              <div>
+                <applause-button
+                  style="width: 50px; height: 50px"
+                  url="https://blog.orhun.dev&#x2F;introducing-kmon&#x2F;"
+                  color="white"
+                  multiclap="true"
+                />
+              </div>
+              <div>
+                <div style="width: auto; height: 39px">
+                  <p style="margin: 0; color: #fff; font-style: italic">✨ Sponsored by:</p>
+                </div>
+                <a href="https://www.jetbrains.com/" target="_blank"
+                  ><img
+                    src="/sponsors/jetbrains.png"
+                    alt="JetBrains"
+                    style="height: 45px; width: auto"
+                /></a>
+                <a href="https://terminaltrove.com/" target="_blank"
+                  ><img
+                    src="/sponsors/terminal_trove.png"
+                    alt="Terminal Trove"
+                    style="height: 40px; width: auto"
+                /></a>
+              </div>
+            </div>
+            <script src="https://utteranc.es/client.js"
+                    repo="orhun/personal-blog"
+                    issue-term="url"
+                    label="comments"
+                    theme="github-dark"
+                    crossorigin="anonymous"
+                    async>
+            </script>
+        </footer>
+    
+</article>
+
+
+    </body>
+
+    <script type="text/javascript" src="https://blog.orhun.dev/elasticlunr.min.js"></script>
+    <script type="text/javascript" src="https://blog.orhun.dev/js/search.js"></script>
+
+</html>

@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <meta http-equiv="content-type" content="text/html; charset=utf-8">
+      <meta property="og:type" content="website" />
+      <meta property="og:url" content="https://blog.orhun.dev"/>
+      
+      <meta property="og:title" content="Fully Automated Releases for Rust Projects - Orhun&#x27;s Blog" />
+      
+      <meta property="og:image" content="https://blog.orhun.dev/crow.png" />
+      
+      <meta name="description" content="FOSS • Linux • Programming" />
+      <meta property="og:description" content="FOSS • Linux • Programming"/>
+      
+
+      <!-- Enable responsiveness on mobile devices-->
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+      <link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png">
+      <link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png">
+      <link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png">
+      <link rel="manifest" href="/favicon/site.webmanifest">
+
+      <script async src="https://umami.orhun.dev/script.js" data-website-id="56ca5ca7-ba9f-416e-8bee-a132c155d56b"></script>
+
+      <link rel="stylesheet" href="https://unpkg.com/applause-button/dist/applause-button.css" />
+      <script src="https://unpkg.com/applause-button/dist/applause-button.js"></script>
+
+      
+      <title>Fully Automated Releases for Rust Projects - Orhun&#x27;s Blog</title>
+      
+      <link rel="alternate" type="application/rss+xml" title="Orhun&#x27;s Blog RSS Feed" href="https://blog.orhun.dev/rss.xml" />
+
+      
+          <link rel="stylesheet" href="https://blog.orhun.dev/site.css">
+      
+
+      
+      
+    </head>
+
+    <body class="hack dark main container">
+        
+    
+        
+                
+                    <header>
+                    <nav itemscope itemtype="http://schema.org/SiteNavigationElement" class="nav-flex">
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://blog.orhun.dev">
+                                <span itemprop="name">Home</span>
+                            </a>
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://blog.orhun.dev/categories">
+                                <span itemprop="name">Categories</span>
+                            </a>
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://github.com/orhun/personal-blog">
+                                <span itemprop="name">Source</span>
+                            </a>
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://github.com/orhun">
+                                <span itemprop="name">GitHub</span>
+                            </a>
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://donate.orhun.dev">
+                                <span itemprop="name">Donate</span>
+                            </a>
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://blog.orhun.dev/rss.xml">
+                                <span itemprop="name">RSS</span>
+                            </a>
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://orhun.dev">
+                                <span itemprop="name">About</span>
+                            </a>
+                        
+                        <div class="search-container">
+                            <input type="text" id="search" placeholder="Search...">
+                            <div class="search-results">
+                                <div class="search-results__items"></div>
+                            </div>
+                        </div>
+                    </nav>
+                    </header>
+                
+            
+    
+
+<article itemscope itemtype="http://schema.org/BlogPosting">
+    <header>
+        <h1 itemprop="headline">Fully Automated Releases for Rust Projects</h1>
+        <span class="muted">
+    <svg style="margin-bottom:-3px" class="i-clock" viewBox="0 0 32 32"
+         width="16" height="16" fill="none" stroke="currentcolor"
+         stroke-linecap="round" stroke-linejoin="round" stroke-width="6.25%">
+        <circle cx="16" cy="16" r="14"/>
+        <path d="M16 8 L16 16 20 20"/>
+    </svg>
+    <span>14 minute read</span>
+    <svg style="margin-bottom: -3px" class="i-edit" viewBox="0 0 32 32"
+         width="16" height="16" fill="none" stroke="currentcolor"
+         stroke-linecap="round" stroke-linejoin="round" stroke-width="6.25%">
+        <path d="M30 7 L25 2 5 22 3 29 10 27 Z M21 6 L26 11 Z M5 22 L10 27 Z"/>
+    </svg>
+
+    Published: 2023-10-24
+</span>
+    </header>
+    <div itemprop="articleBody">
+      <p>Here is how you can publish a Rust project with a single click of a button and automate <em>everything</em>.</p>
+<span id="continue-reading"></span><center>
+<img alt="https://xkcd.com/1319/" src="/xkcd1319.png" width="60%"/>
+</center>
+<p>Imagine a developer named <em>nuhro</em>. He wrote his first ever Rust program and it is happily running on his machine. He also sent a binary/exe to a couple of trusting friends and they all loved the program after blindly executing it. Good vibes!</p>
+<p>Then one day, he decided to share this small program with the world (AKA Reddit). For that, he realized he needed to <em>release</em> the program. Otherwise, how are the residents of the internet (who might be using different OSes/platforms) going to install/run the program, right?</p>
+<blockquote>
+<p><em>No worries, there must be an easy way of releasing Rust crates and automating this stuff.</em></p>
+</blockquote>
+<p>he thought.</p>
+<p>And yeah, this was <em>me</em> back in 2019 when I published my <a rel="external" href="https://github.com/orhun/kmon">first Rust project</a> and automated the release process with a snatched-off GitHub Actions workflow from <a rel="external" href="https://github.com/BurntSushi/ripgrep/blob/master/.github/workflows/release.yml"><code>ripgrep</code></a> o_O</p>
+<p>Coming back to today, if you want to release a Rust project, it is likely that you will come across the following Rust release tools:</p>
+<ul>
+<li><a rel="external" href="https://github.com/crate-ci/cargo-release"><code>cargo-release</code></a>: everything about releasing a rust crate.</li>
+<li><a rel="external" href="https://github.com/Byron/cargo-smart-release"><code>cargo-smart-release</code></a>: release complex cargo-workspaces automatically with changelog generation.</li>
+<li><a rel="external" href="https://github.com/paritytech/cargo-unleash"><code>cargo-unleash</code></a>: release automatisation tooling for massiv mono-repos.</li>
+</ul>
+<p>We can list other tools here, but in a nutshell, all we want to do is:</p>
+<ol>
+<li>Make sure the project is in a <em>state for the release</em>. This might include updated version/changelog/dependencies.</li>
+<li>Tag the new release.</li>
+<li>Publish the new version on the various platforms (crates.io, GitHub, etc.)</li>
+</ol>
+<p><strong>Q</strong>: Okay okay, but aren't you overcomplicating things? I mean... just update the version in <code>Cargo.toml</code> and run <code>cargo publish</code>.</p>
+<p><strong>A</strong>: That's fair, but how about binary releases? As someone who has spent a good amount of time automating NPM releases, I would say this might not be <em>that easy</em> for every project.</p>
+<p><strong>Q</strong>: I still think you can just copy/paste a GitHub Actions workflow file from another project and adopt it.</p>
+<p><strong>A</strong>: It is still too much manual work + release process is still not fully automated - you need to create tags/update changelog etc. Besides, your name is "<strong>Q</strong>" but you are not really asking questions anymore and just rambling. Maybe it is time to introduce you as a new character in these blog posts.</p>
+<p><strong>Q</strong>: It do be like that sometimes.</p>
+<p>Anyhoo, it seems like we are going to end up all over the place if we were to over-plan the release process. I wish there was a more standardized way...</p>
+<p>In fact, there is!</p>
+<hr />
+<h2 id="the-potent-elixir-sparkles">The Potent Elixir ✨</h2>
+<p>Here, we are going to mix up the most powerful tools to come up with the <em>witch's concoction</em>, the ultimate way of publishing Rust crates. Some may call it the toxic brew that might poison one due to over-automation. Some may call it the one-way ticket to the automation hell. Some may--</p>
+<p>*ahem*</p>
+<p>So here is the list of tools we are going to utilize:</p>
+<table><thead><tr><th><strong>Tool</strong></th><th><strong>Description</strong></th><th><strong>Function</strong></th></tr></thead><tbody>
+<tr><td><a rel="external" href="https://git-cliff.org"><code>git-cliff</code></a></td><td>A highly customizable Changelog Generator.</td><td>Automates the changelog generation.</td></tr>
+<tr><td><a rel="external" href="https://release-plz.ieni.dev"><code>release-plz</code></a></td><td>Publish Rust crates from CI with a Release PR.</td><td>Handles dependency updates, version management, and crates.io release.</td></tr>
+<tr><td><a rel="external" href="https://opensource.axo.dev/cargo-dist/"><code>cargo-dist</code></a></td><td>Shippable application packaging for Rust.</td><td>Creates GitHub releases and packaging for various platforms.</td></tr>
+<tr><td><a rel="external" href="https://github.com/dependabot"><code>Dependabot</code></a></td><td>Automated dependency updates built into GitHub.</td><td>Updates the Rust and GitHub Actions dependencies.</td></tr>
+<tr><td><a rel="external" href="https://mergify.com/"><code>Mergify</code></a></td><td>Automated CI/CD tool for optimization.</td><td>Automatically merges the <code>Dependabot</code> pull requests.</td></tr>
+</tbody></table>
+<p>With minimal tweaks, we can make these tools work seamlessly integrated with each other and at the end of the day what we have to do is just click a button to trigger a new release. In other words, the best part about this release flow is that almost everything is handled in the CI i.e. GitHub Actions thus we don't even move a finger.</p>
+<p><img src="/automated-rust-releases.png" alt="diagram" /></p>
+<p>Now, let's get to work!</p>
+<hr />
+<h2 id="setting-things-up-gear">Setting Things Up ⚙️</h2>
+<h3 id="git-cliff"><strong>git-cliff</strong></h3>
+<p><a rel="external" href="https://github.com/orhun/git-cliff"><code>git-cliff</code></a> is one of my big projects and it is widely used in the Rust ecosystem for automating the changelog generation.</p>
+<blockquote>
+<p><a rel="external" href="https://github.com/orhun/git-cliff"><strong>git-cliff</strong></a> is a command-line tool (written in <a rel="external" href="https://www.rust-lang.org/">Rust</a>) that provides a highly customizable way to generate changelogs from git history. It supports using <a href="/docs/configuration#commit_parsers">custom regular expressions</a> to alter changelogs which are mostly based on <a href="/docs/configuration#conventional_commits">conventional commits</a>. With a single <a href="/docs/configuration">configuration file</a>, a wide variety of formats can be applied for a changelog, thanks to the Jinja2/Django-inspired <a href="/docs/category/templating">template engine</a>. More information and examples can be found in the <a rel="external" href="https://github.com/orhun/git-cliff">GitHub repository</a>.</p>
+</blockquote>
+<p>For our changelog format, we can simply go with the default configuration which outputs something like the following:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #5F6672;font-style: italic;"># Changelog</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #B57EDC;">All</span><span style="color: #98C379;"> notable changes to this project will be documented in this file.</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;">## [unreleased]</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;">### Documentation</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #B57EDC;">-</span><span style="color: #98C379;"> Add link to emacs package support git-cliff</span><span> (#307)</span></span></code></pre>
+<p>For this configuration, first, we should install <code>git-cliff</code>:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #B57EDC;">cargo</span><span style="color: #98C379;"> install git-cliff</span><span style="color: #56B6C2;"> --locked</span></span></code></pre>
+<p>Then we can initialize it as follows:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #B57EDC;">git</span><span style="color: #98C379;"> cliff</span><span style="color: #56B6C2;"> --init</span></span></code></pre>
+<p>This will create <code>cliff.toml</code> in the current directory and you can commit it in the root directory of your repo for <code>release-plz</code> to pick it up.</p>
+<p>If you want to generate a fancier changelog, you can look at the <a rel="external" href="https://git-cliff.org/docs/templating/examples">examples</a> or use the <a rel="external" href="https://github.com/orhun/git-cliff/blob/main/cliff.toml">configuration that <code>git-cliff</code> uses</a> which corresponds to the following:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #B57EDC;">$</span><span style="color: #98C379;"> git cliff</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;"># Changelog</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #B57EDC;">All</span><span style="color: #98C379;"> notable changes to this project will be documented in this file.</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;">## [unreleased]</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;">### 📚 Documentation</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #B57EDC;">-</span><span style="color: #98C379;"> _</span><span>(</span><span style="color: #B57EDC;">readme</span><span>)</span><span style="color: #98C379;">_ Add link to emacs package support git-cliff</span><span> ([#307](</span><span style="color: #B57EDC;">https://github.com/orhun/git-cliff/issues/307</span><span>)) - ([fa471c7](</span><span style="color: #B57EDC;">https://github.com/orhun/git-cliff/commit/fa471c7178dce184ca6fe5bbb24b9c2db96d68ce</span><span>))</span></span></code></pre>
+<p>Great, now we are ready to set up the actual releaser tool!</p>
+<hr />
+<h3 id="release-plz"><strong>release-plz</strong></h3>
+<blockquote>
+<p><a rel="external" href="https://release-plz.ieni.dev">release-plz</a> creates a fully automated release pipeline, allowing you to easily release changes more frequently, without the fear of doing typos or other subtle manual mistakes you can make when releasing from your terminal.</p>
+</blockquote>
+<p>Unlike <code>git-cliff</code>, we don't actually need to install <code>release-plz</code> as a command-line tool. It is because <code>release-plz</code> runs from the CI (GitHub Actions) and we are not doing anything locally for the releases. However, we still need to tweak some things regarding how we want to release our project.</p>
+<p>For configuring <code>release-plz</code>, create <code>release-plz.toml</code> with the following contents at the root of your repository:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="toml"><span class="giallo-l"><span>[</span><span style="color: #E5C07B;">workspace</span><span>]</span></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;"># path of the git-cliff configuration</span></span>
+<span class="giallo-l"><span style="color: #C6CCD7;">changelog_config</span><span> = &quot;</span><span style="color: #98C379;">cliff.toml</span><span>&quot;</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;"># enable changelog updates</span></span>
+<span class="giallo-l"><span style="color: #C6CCD7;">changelog_update</span><span> =</span><span style="color: #56B6C2;"> true</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;"># update dependencies with `cargo update`</span></span>
+<span class="giallo-l"><span style="color: #C6CCD7;">dependencies_update</span><span> =</span><span style="color: #56B6C2;"> true</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;"># create tags for the releases</span></span>
+<span class="giallo-l"><span style="color: #C6CCD7;">git_tag_enable</span><span> =</span><span style="color: #56B6C2;"> true</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;"># disable GitHub releases</span></span>
+<span class="giallo-l"><span style="color: #C6CCD7;">git_release_enable</span><span> =</span><span style="color: #56B6C2;"> false</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;"># labels for the release PR</span></span>
+<span class="giallo-l"><span style="color: #C6CCD7;">pr_labels</span><span> = [&quot;</span><span style="color: #98C379;">release</span><span>&quot;]</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;"># disallow updating repositories with uncommitted changes</span></span>
+<span class="giallo-l"><span style="color: #C6CCD7;">allow_dirty</span><span> =</span><span style="color: #56B6C2;"> false</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;"># disallow packaging with uncommitted changes</span></span>
+<span class="giallo-l"><span style="color: #C6CCD7;">publish_allow_dirty</span><span> =</span><span style="color: #56B6C2;"> false</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;"># disable running `cargo-semver-checks`</span></span>
+<span class="giallo-l"><span style="color: #C6CCD7;">semver_check</span><span> =</span><span style="color: #56B6C2;"> false</span></span></code></pre>
+<p>The important options here are:</p>
+<ul>
+<li><code>changelog_config</code>: should point out to the <code>git-cliff</code> configuration we created in the previous section.</li>
+<li><code>dependencies_update</code>: setting this to <code>true</code> means that you want to run <code>cargo update</code> before each release. Enabling this for updating the transitive dependencies wouldn't hurt since we will already be updating the main dependencies with Dependabot in future steps.</li>
+<li><code>git_tag_enable</code>: set this to <code>true</code> to create a tag for the new releases.</li>
+<li><code>git_release_enable</code>: make sure to set this to <code>false</code> since we don't want <code>release-plz</code> to create a GitHub release for us since that part will be handled by <code>cargo-dist</code>.</li>
+</ul>
+<p>As for the next step, we should create the <em>actual</em> release automation that is responsible for running <code>release-plz</code> for each commit pushed to the repository and creating a "release PR".</p>
+<p><strong>Q</strong>: A release PR?</p>
+<p><strong>A</strong>: Release PR is a pull request that represents the next release and contains the necessary changes such as version bumps and changelog updates.</p>
+<center>
+<p><img src="/release-pr.png" alt="release PR" /></p>
+<p><a rel="external" href="https://github.com/orhun/daktilo/pull/51">https://github.com/orhun/daktilo/pull/51</a></p>
+</center>
+<p>After you merge the release PR, <code>release-plz</code> detects that there is a version change in <code>Cargo.toml</code> and runs <code>cargo publish</code> to release the new version on <a rel="external" href="https://crates.io">crates.io</a>.</p>
+<p><strong>Q</strong>: Ah, so we probably need to set up secrets for the publish token, etc., right?</p>
+<p>Yes! And a few permissions, too. You can check out <a rel="external" href="https://release-plz.ieni.dev/docs/github"><code>release-plz</code> documentation</a> for more detailed information but here is a quick summary:</p>
+<p>1. Change "Workflow permissions" to allow GitHub Actions to create and approve pull requests in Repository &gt; Settings &gt; Actions &gt; General.</p>
+<center>
+<p><img src="/workflow-permissions.png" alt="workflow permissions" /></p>
+</center>
+<p>2. Create a new PAT (Personal Access Token) (either fine-grained or classic) with correct repository permissions and add it to the repository as a secret named <code>RELEASE_PLZ_TOKEN</code>.</p>
+<center>
+<p><img src="/fine-grained-token.png" alt="fine grained token" /></p>
+</center>
+<p>3. On crates.io, generate a new token with <code>publish-new</code> and <code>publish-update</code> permissions and add it to the repository as a secret named <code>CARGO_REGISTRY_TOKEN</code>.</p>
+<center>
+<p><img src="/crates-io-token.png" alt="crates.io token" /></p>
+</center>
+<p>4. We can finally create our GitHub Actions workflow in <code>.github/workflows/release-plz.yml</code></p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="yaml"><span class="giallo-l"><span style="color: #E5C07B;">name</span><span>:</span><span style="color: #98C379;"> Continuous Deployment</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #56B6C2;">on</span><span>:</span></span>
+<span class="giallo-l"><span style="color: #E5C07B;">  push</span><span>:</span></span>
+<span class="giallo-l"><span style="color: #E5C07B;">    branches</span><span>:</span></span>
+<span class="giallo-l"><span>      -</span><span style="color: #98C379;"> main</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #E5C07B;">jobs</span><span>:</span></span>
+<span class="giallo-l"><span style="color: #E5C07B;">  release-plz</span><span>:</span></span>
+<span class="giallo-l"><span style="color: #E5C07B;">    name</span><span>:</span><span style="color: #98C379;"> Release-plz</span></span>
+<span class="giallo-l"><span style="color: #E5C07B;">    runs-on</span><span>:</span><span style="color: #98C379;"> ubuntu-latest</span></span>
+<span class="giallo-l"><span style="color: #E5C07B;">    steps</span><span>:</span></span>
+<span class="giallo-l"><span>      -</span><span style="color: #E5C07B;"> name</span><span>:</span><span style="color: #98C379;"> Checkout repository</span></span>
+<span class="giallo-l"><span style="color: #E5C07B;">        uses</span><span>:</span><span style="color: #98C379;"> actions/checkout@v4</span></span>
+<span class="giallo-l"><span style="color: #E5C07B;">        with</span><span>:</span></span>
+<span class="giallo-l"><span style="color: #E5C07B;">          fetch-depth</span><span>:</span><span style="color: #56B6C2;"> 0</span></span>
+<span class="giallo-l"><span style="color: #E5C07B;">          token</span><span>:</span><span style="color: #98C379;"> ${{ secrets.RELEASE_PLZ_TOKEN }}</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span>      -</span><span style="color: #E5C07B;"> name</span><span>:</span><span style="color: #98C379;"> Install Rust toolchain</span></span>
+<span class="giallo-l"><span style="color: #E5C07B;">        uses</span><span>:</span><span style="color: #98C379;"> dtolnay/rust-toolchain@stable</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span>      -</span><span style="color: #E5C07B;"> name</span><span>:</span><span style="color: #98C379;"> Run release-plz</span></span>
+<span class="giallo-l"><span style="color: #E5C07B;">        uses</span><span>:</span><span style="color: #98C379;"> MarcoIeni/release-plz-action@v0.5</span></span>
+<span class="giallo-l"><span style="color: #E5C07B;">        env</span><span>:</span></span>
+<span class="giallo-l"><span style="color: #E5C07B;">          GITHUB_TOKEN</span><span>:</span><span style="color: #98C379;"> ${{ secrets.RELEASE_PLZ_TOKEN }}</span></span>
+<span class="giallo-l"><span style="color: #E5C07B;">          CARGO_REGISTRY_TOKEN</span><span>:</span><span style="color: #98C379;"> ${{ secrets.CARGO_REGISTRY_TOKEN }}</span></span></code></pre>
+<p>To break it down:</p>
+<ul>
+<li>We are cloning the entire git history with <code>fetch-depth: 0</code>, which is necessary to determine the next version and build the changelog.</li>
+<li>We are installing Rust stable ('cause why not?!)</li>
+<li>As the last step, we are running <code>release-plz</code>, heck yea!</li>
+</ul>
+<p><strong>Q</strong>: Whoa whoa whoa hey hey hey, what's up with <code>GITHUB_TOKEN: ${{ secrets.RELEASE_PLZ_TOKEN }}</code>? Just use <code>${{ secrets.GITHUB_TOKEN }}</code> bro, which is defined as default for each repository.</p>
+<p><strong>A</strong>: Good question! If you use <code>GITHUB_TOKEN</code> then it means that you are going to authenticate on behalf of GitHub Actions.</p>
+<p><strong>Q</strong>: So, what's wrong with that?</p>
+<p><strong>A</strong>: Well, workflows that are triggered by <code>on: push: tags</code> <em>won't run</em> if the tag is created by GitHub Actions. So we are using a personal access token which is a way of saying "Dear GitHub Actions, I am running <code>release-plz</code> and it is ME who is creating a tag so please run the further workflows". Also, this way we don't need to specify workflow permissions via <code>permissions:</code> key. You can read more about it <a rel="external" href="https://release-plz.ieni.dev/docs/github/token">here</a>.</p>
+<p>Now we are simply ready to work on our project as usual and <code>release-plz</code> will create a release PR for our changes and we can merge it to create a new release when we are ready!</p>
+<p><strong>Q</strong>: What if I want to run/test <code>release-plz</code> locally though?</p>
+<p><strong>A</strong>: You can if you want! The release PR is just the output of <code>release-plz update</code> command so you can run it locally and see what has changed in terms of changelog etc. Also, if you want to create a PR from the command-line you can simply run <code>release-plz release-pr</code>!</p>
+<hr />
+<h3 id="cargo-dist"><strong>cargo-dist</strong></h3>
+<blockquote>
+<p><a rel="external" href="https://opensource.axo.dev/cargo-dist/">cargo-dist</a> makes distributing binaries easier by breaking the process down into multiple steps such as plan, build, publish and announce.</p>
+</blockquote>
+<p>It is simply a tool for creating this beautiful release page along with binary artifacts and installers:</p>
+<center>
+<p><img src="/cargo-dist-release.png" alt="cargo-dist release" /></p>
+<p><a rel="external" href="https://github.com/orhun/daktilo/releases/tag/v0.4.0">https://github.com/orhun/daktilo/releases/tag/v0.4.0</a></p>
+</center>
+<p>Similar to <code>release-plz</code>, <code>cargo-dist</code> is a tool that we are not going to use locally but run from the CI instead. However, it is required to be installed to set up the CI (for itself) for the first time.</p>
+<p>So let's start by installing <code>cargo-dist</code>:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #B57EDC;">cargo</span><span style="color: #98C379;"> install cargo-dist</span><span style="color: #56B6C2;"> --locked</span></span></code></pre>
+<p>You can also use <code>cargo-dist-installer</code> to install <code>cargo-dist</code> (i.e. the binary installer) if you wish:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #C6CCD7;">cargo_dist_version</span><span style="color: #E06C75;">=</span><span>&quot;</span><span style="color: #98C379;">0.3.1</span><span>&quot;</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #B57EDC;">curl</span><span style="color: #56B6C2;"> --proto</span><span> &#39;</span><span style="color: #98C379;">=https</span><span>&#39;</span><span style="color: #56B6C2;"> --tlsv1.2 -LsSf</span><span style="color: #98C379;"> https://github.com/axodotdev/cargo-dist/releases/download/v{version}/cargo-dist-installer.sh</span><span style="color: #E06C75;"> |</span><span style="color: #B57EDC;"> sh</span></span></code></pre>
+<p>We will also have an installer as shown above after <code>cargo dist</code> does its magic.</p>
+<p><strong>Q</strong>: Magic?</p>
+<p><strong>A</strong>: Yeah, this:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #B57EDC;">cargo</span><span style="color: #98C379;"> dist init</span></span></code></pre><center>
+<p><img src="/cargo-dist.gif" alt="cargo-dist in action" /></p>
+</center>
+<p><strong>Q</strong>: Woah, what happened?</p>
+<p>The command above generates <code>.github/workflows/release.yml</code> file for handling the GitHub releases. Also, it adds the following section to your project's <code>Cargo.toml</code>:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="toml"><span class="giallo-l"><span style="color: #5F6672;font-style: italic;"># The profile that &#39;cargo dist&#39; will build with</span></span>
+<span class="giallo-l"><span>[</span><span style="color: #E5C07B;">profile</span><span>.</span><span style="color: #E5C07B;">dist</span><span>]</span></span>
+<span class="giallo-l"><span style="color: #C6CCD7;">inherits</span><span> = &quot;</span><span style="color: #98C379;">release</span><span>&quot;</span></span>
+<span class="giallo-l"><span style="color: #C6CCD7;">lto</span><span> = &quot;</span><span style="color: #98C379;">thin</span><span>&quot;</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;"># Config for &#39;cargo dist&#39;</span></span>
+<span class="giallo-l"><span>[</span><span style="color: #E5C07B;">workspace</span><span>.</span><span style="color: #E5C07B;">metadata</span><span>.</span><span style="color: #E5C07B;">dist</span><span>]</span></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;"># The preferred cargo-dist version to use in CI (Cargo.toml SemVer syntax)</span></span>
+<span class="giallo-l"><span style="color: #C6CCD7;">cargo-dist-version</span><span> = &quot;</span><span style="color: #98C379;">0.3.1</span><span>&quot;</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;"># CI backends to support</span></span>
+<span class="giallo-l"><span style="color: #C6CCD7;">ci</span><span> = [&quot;</span><span style="color: #98C379;">github</span><span>&quot;]</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;"># The installers to generate for each app</span></span>
+<span class="giallo-l"><span style="color: #C6CCD7;">installers</span><span> = [&quot;</span><span style="color: #98C379;">shell</span><span>&quot;, &quot;</span><span style="color: #98C379;">powershell</span><span>&quot;]</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;"># Target platforms to build apps for (Rust target-triple syntax)</span></span>
+<span class="giallo-l"><span style="color: #C6CCD7;">targets</span><span> = [</span></span>
+<span class="giallo-l"><span>  &quot;</span><span style="color: #98C379;">x86_64-unknown-linux-gnu</span><span>&quot;,</span></span>
+<span class="giallo-l"><span>  &quot;</span><span style="color: #98C379;">aarch64-apple-darwin</span><span>&quot;,</span></span>
+<span class="giallo-l"><span>  &quot;</span><span style="color: #98C379;">x86_64-apple-darwin</span><span>&quot;,</span></span>
+<span class="giallo-l"><span>  &quot;</span><span style="color: #98C379;">x86_64-pc-windows-msvc</span><span>&quot;,</span></span>
+<span class="giallo-l"><span>]</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;"># Publish jobs to run in CI</span></span>
+<span class="giallo-l"><span style="color: #C6CCD7;">pr-run-mode</span><span> = &quot;</span><span style="color: #98C379;">upload</span><span>&quot;</span></span></code></pre>
+<p>You can update this configuration to easily configure <code>cargo-dist</code> and tweak your release settings.</p>
+<p><strong>Q</strong>: What about new releases/breaking changes of <code>cargo-dist</code>? Do I need to remove the configuration and start over?</p>
+<p><strong>A</strong>: You can simply run <code>cargo dist init</code> again to re-generate the release configuration!</p>
+<p><strong>Q</strong>: Cool! Does <code>cargo-dist</code> check if the workflow file is up-to-date? What if I want to make changes to the generated GitHub Actions workflow (such as installing Linux dependencies)?</p>
+<p><strong>A</strong>: Simply set the following values in the configuration to avoid an "out of date" warning:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="toml"><span class="giallo-l"><span>[</span><span style="color: #E5C07B;">workspace</span><span>.</span><span style="color: #E5C07B;">metadata</span><span>.</span><span style="color: #E5C07B;">dist</span><span>]</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;"># Ignore out-of-date contents</span></span>
+<span class="giallo-l"><span style="color: #C6CCD7;">allow-dirty</span><span> = [&quot;</span><span style="color: #98C379;">ci</span><span>&quot;]</span></span></code></pre>
+<p><strong>Q</strong>: How can I test <code>cargo-dist</code> locally?</p>
+<p><strong>A</strong>: Easy:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #B57EDC;">$</span><span style="color: #98C379;"> cargo dist plan</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #B57EDC;">announcing</span><span style="color: #98C379;"> v0.1.0</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">  automated-rust-releases</span><span style="color: #56B6C2;"> 0.1.0</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">    automated-rust-releases-installer.sh</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">    automated-rust-releases-installer.ps1</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">    automated-rust-releases-aarch64-apple-darwin.tar.xz</span></span>
+<span class="giallo-l"><span>      [bin]</span><span style="color: #B57EDC;"> automated-rust-releases</span></span>
+<span class="giallo-l"><span>      [misc]</span><span style="color: #B57EDC;"> LICENSE-MIT</span></span>
+<span class="giallo-l"><span>      [checksum]</span><span style="color: #B57EDC;"> automated-rust-releases-aarch64-apple-darwin.tar.xz.sha256</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">    automated-rust-releases-x86_64-apple-darwin.tar.xz</span></span>
+<span class="giallo-l"><span>      [bin]</span><span style="color: #B57EDC;"> automated-rust-releases</span></span>
+<span class="giallo-l"><span>      [misc]</span><span style="color: #B57EDC;"> LICENSE-MIT</span></span>
+<span class="giallo-l"><span>      [checksum]</span><span style="color: #B57EDC;"> automated-rust-releases-x86_64-apple-darwin.tar.xz.sha256</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">    automated-rust-releases-x86_64-pc-windows-msvc.zip</span></span>
+<span class="giallo-l"><span>      [bin]</span><span style="color: #B57EDC;"> automated-rust-releases.exe</span></span>
+<span class="giallo-l"><span>      [misc]</span><span style="color: #B57EDC;"> LICENSE-MIT</span></span>
+<span class="giallo-l"><span>      [checksum]</span><span style="color: #B57EDC;"> automated-rust-releases-x86_64-pc-windows-msvc.zip.sha256</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">    automated-rust-releases-x86_64-unknown-linux-gnu.tar.xz</span></span>
+<span class="giallo-l"><span>      [bin]</span><span style="color: #B57EDC;"> automated-rust-releases</span></span>
+<span class="giallo-l"><span>      [misc]</span><span style="color: #B57EDC;"> LICENSE-MIT</span></span>
+<span class="giallo-l"><span>      [checksum]</span><span style="color: #B57EDC;"> automated-rust-releases-x86_64-unknown-linux-gnu.tar.xz.sha256</span></span></code></pre>
+<p>And run <code>cargo dist build</code> if you actually want to build the artifacts. Also, if you set <code>pr-run-mode</code> to <code>upload</code> in the configuration, then the artifacts will be built and uploaded as <code>artifacts.zip</code> to the related commit on GitHub.</p>
+<center>
+<p><img src="/cargo-dist-artifacts.png" alt="cargo-dist artifacts" /></p>
+</center>
+<p>Now we are ready to build artifacts and release them on GitHub! There are a couple of steps left until we create a release and showcase everything.</p>
+<hr />
+<h3 id="dependabot"><strong>Dependabot</strong></h3>
+<p><a rel="external" href="https://github.com/dependabot"><code>Dependabot</code></a> is a tool built into GitHub for automatically updating a project's dependencies via creating pull requests.</p>
+<p>We can simply configure it by creating <code>.github/dependabot.yml</code>:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="yaml"><span class="giallo-l"><span style="color: #E5C07B;">version</span><span>:</span><span style="color: #56B6C2;"> 2</span></span>
+<span class="giallo-l"><span style="color: #E5C07B;">updates</span><span>:</span></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;">  # Maintain dependencies for Cargo</span></span>
+<span class="giallo-l"><span>  -</span><span style="color: #E5C07B;"> package-ecosystem</span><span>:</span><span style="color: #98C379;"> cargo</span></span>
+<span class="giallo-l"><span style="color: #E5C07B;">    directory</span><span>: &quot;</span><span style="color: #98C379;">/</span><span>&quot;</span></span>
+<span class="giallo-l"><span style="color: #E5C07B;">    schedule</span><span>:</span></span>
+<span class="giallo-l"><span style="color: #E5C07B;">      interval</span><span>:</span><span style="color: #98C379;"> daily</span></span>
+<span class="giallo-l"><span style="color: #E5C07B;">    open-pull-requests-limit</span><span>:</span><span style="color: #56B6C2;"> 10</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;">  # Maintain dependencies for GitHub Actions</span></span>
+<span class="giallo-l"><span>  -</span><span style="color: #E5C07B;"> package-ecosystem</span><span>:</span><span style="color: #98C379;"> github-actions</span></span>
+<span class="giallo-l"><span style="color: #E5C07B;">    directory</span><span>: &quot;</span><span style="color: #98C379;">/</span><span>&quot;</span></span>
+<span class="giallo-l"><span style="color: #E5C07B;">    schedule</span><span>:</span></span>
+<span class="giallo-l"><span style="color: #E5C07B;">      interval</span><span>:</span><span style="color: #98C379;"> daily</span></span>
+<span class="giallo-l"><span style="color: #E5C07B;">    open-pull-requests-limit</span><span>:</span><span style="color: #56B6C2;"> 10</span></span></code></pre>
+<p>Now <code>Dependabot</code> will start creating pull requests for Rust/GitHub Actions dependencies when they become out-of-date:</p>
+<center>
+<p><img src="/dependabot-pr.png" alt="dependabot PR" /></p>
+<p><a rel="external" href="https://github.com/orhun/systeroid/pull/141">https://github.com/orhun/systeroid/pull/141</a></p>
+</center>
+<hr />
+<h3 id="mergify"><strong>Mergify</strong></h3>
+<blockquote>
+<p><a rel="external" href="https://mergify.com/"><code>Mergify</code></a> is a CI/CD pipeline optimizer that manages your pull request, automates your GitHub workflow, and optimizes your CI costs.</p>
+</blockquote>
+<p>We will be using <code>Mergify</code> to:</p>
+<ol>
+<li>Automatically merge <code>Dependabot</code> pull requests.</li>
+<li>Update to the latest <code>main</code> branch for pull requests.</li>
+</ol>
+<p>Let's create the configuration in <code>.github/mergify.yml</code>:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="yaml"><span class="giallo-l"><span style="color: #E5C07B;">pull_request_rules</span><span>:</span></span>
+<span class="giallo-l"><span>  -</span><span style="color: #E5C07B;"> name</span><span>:</span><span style="color: #98C379;"> Automatic merge for Dependabot pull requests</span></span>
+<span class="giallo-l"><span style="color: #E5C07B;">    conditions</span><span>:</span></span>
+<span class="giallo-l"><span>      -</span><span style="color: #98C379;"> author=dependabot[bot]</span></span>
+<span class="giallo-l"><span style="color: #E5C07B;">    actions</span><span>:</span></span>
+<span class="giallo-l"><span style="color: #E5C07B;">      merge</span><span>:</span></span>
+<span class="giallo-l"><span style="color: #E5C07B;">        method</span><span>:</span><span style="color: #98C379;"> squash</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span>  -</span><span style="color: #E5C07B;"> name</span><span>:</span><span style="color: #98C379;"> Automatic update to the main branch for pull requests</span></span>
+<span class="giallo-l"><span style="color: #E5C07B;">    conditions</span><span>:</span></span>
+<span class="giallo-l"><span>      -</span><span style="color: #98C379;"> -conflict</span><span style="color: #5F6672;font-style: italic;"> # skip PRs with conflicts</span></span>
+<span class="giallo-l"><span>      -</span><span style="color: #98C379;"> -draft</span><span style="color: #5F6672;font-style: italic;"> # skip GH draft PRs</span></span>
+<span class="giallo-l"><span>      -</span><span style="color: #98C379;"> -author=dependabot[bot]</span><span style="color: #5F6672;font-style: italic;"> # skip dependabot PRs</span></span>
+<span class="giallo-l"><span style="color: #E5C07B;">    actions</span><span>:</span></span>
+<span class="giallo-l"><span style="color: #E5C07B;">      update</span><span>:</span></span></code></pre>
+<p>Then, we need to create an account on https://mergify.com, setup GitHub integration (Integrations &gt; GitHub &gt; Configure) and add our repository:</p>
+<center>
+<p><img src="/mergify-dashboard.png" alt="mergify dashboard" /></p>
+</center>
+<p>Lastly, we need to enforce a GitHub repository branch protection rule by enabling <code>Require status checks to pass</code> and adding a check for <code>Mergify Merge Protections</code> (see the <a rel="external" href="https://docs.mergify.com/merge-protections/setup/">Mergify documentation</a>).</p>
+<p>Now <code>Mergify</code> will start to process the open pull requests:</p>
+<center>
+<p><img src="/mergify-event-logs.png" alt="mergify event logs" /></p>
+</center>
+<p>The <code>Dependabot</code> pull requests are now merged automatically! 🎉</p>
+<center>
+<p><img src="/mergify-merge.png" alt="mergify merge" /></p>
+</center>
+<hr />
+<h2 id="let-s-create-releases-rocket">Let's Create Releases 🚀</h2>
+<p>All the code/configuration is available here: <a rel="external" href="https://github.com/orhun/automated-rust-releases"><strong>https://github.com/orhun/automated-rust-releases</strong></a></p>
+<p><code>release-plz</code> already created a PR for us:</p>
+<center>
+<p><img src="/automated-rust-releases1.png" alt="release PR" /></p>
+<p><a rel="external" href="https://github.com/orhun/automated-rust-releases/pull/1">https://github.com/orhun/automated-rust-releases/pull/1</a></p>
+</center>
+<p><code>cargo-dist</code> checks also pass. Let's click merge and create a release:</p>
+<center>
+<p><img src="/automated-rust-releases2.png" alt="release PR status" /></p>
+</center>
+<p>After the merge, <code>release-plz</code> picks up the new version from <code>Cargo.toml</code> and pushes the new version to <code>crates.io</code>:</p>
+<center>
+<p><img src="/automated-rust-releases3.png" alt="release-plz CI" /></p>
+</center>
+<p><code>release-plz</code> also creates a new tag which triggers <code>cargo-dist</code>:</p>
+<center>
+<p><img src="/automated-rust-releases4.png" alt="cargo-dist CI" /></p>
+</center>
+<p><code>cargo-dist</code> builds the artifacts and uploads them to the GitHub release:</p>
+<center>
+<p><img src="/automated-rust-releases5.png" alt="release" /></p>
+<p><a rel="external" href="https://github.com/orhun/automated-rust-releases/releases/tag/v0.1.1">https://github.com/orhun/automated-rust-releases/releases/tag/v0.1.1</a></p>
+</center>
+<p>As you can see <code>cargo-dist</code> also parses the changelog (which is generated by <code>git-cliff</code>) and adds it to the release. (Please note that you actually need to create CHANGELOG.md file at the root of your repository for this to work.)</p>
+<p>Let's try out the installer for the heck of it:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #B57EDC;">$</span><span style="color: #98C379;"> curl</span><span style="color: #56B6C2;"> --proto</span><span> &#39;</span><span style="color: #98C379;">=https</span><span>&#39;</span><span style="color: #56B6C2;"> --tlsv1.2 -LsSf</span><span style="color: #98C379;"> https://github.com/orhun/automated-rust-releases/releases/download/v0.1.1/automated-rust-releases-installer.sh</span><span style="color: #E06C75;"> |</span><span style="color: #B57EDC;"> sh</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #B57EDC;">downloading</span><span style="color: #98C379;"> automated-rust-releases</span><span style="color: #56B6C2;"> 0.1.1</span><span style="color: #98C379;"> x86_64-unknown-linux-gnu</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">installing</span><span style="color: #98C379;"> to /home/orhun/.cargo/bin</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">  automated-rust-releases</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">everything&#39;s installed!</span></span></code></pre>
+<p>And when we run it:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #B57EDC;">$</span><span style="color: #98C379;"> automated-rust-releases</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #B57EDC;">Hello,</span><span style="color: #98C379;"> world!</span></span></code></pre>
+<p>Beautiful!</p>
+<hr />
+<h2 id="conclusion-thinking">Conclusion 🤔</h2>
+<p>I used this release automation for my latest project <a rel="external" href="https://github.com/orhun/daktilo"><strong>daktilo</strong></a> (a CLI program to turn your keyboard into a typewriter) and I'm pretty satisfied with it so far. The only thing I'm waiting for is the following improvements:</p>
+<ul>
+<li><code>git-cliff</code>: better GitHub integration (i.e. adding contributor names to the changelogs <a rel="external" href="https://github.com/orhun/git-cliff/issues/119">*</a>)</li>
+<li><code>release-plz</code>: setting the version in the release PR with a command <a rel="external" href="https://github.com/MarcoIeni/release-plz/issues/704">*</a></li>
+<li><code>cargo-dist</code>: cross compilation <a rel="external" href="https://github.com/axodotdev/cargo-dist/issues/74">*</a></li>
+</ul>
+<p>Let me know if you have suggestions and ideas!</p>
+<p>Happy releasing! 🦀</p>
+<p><em>houdoe!</em></p>
+<hr />
+<p>💖 Liked this article? Want to sponsor my blog posts and have early access? Want to add your company's badge / your logo here? Check out my <a rel="external" href="https://github.com/sponsors/orhun">GitHub sponsorship tiers</a>!</p>
+
+    </div>
+
+    
+        <footer>
+            <hr>
+            <p>
+                
+                    Published by Orhun Parmaksız
+                
+                
+                    
+                    in <a href="https://blog.orhun.dev/categories/rust/">Rust</a>
+                
+                
+            </p>
+            
+            
+            <div style="display: flex; justify-content: space-between; align-items: center">
+              <div>
+                <iframe
+                  src="https://github.com/sponsors/orhun/button"
+                  title="Sponsor @orhun"
+                  height="35"
+                  width="116"
+                  style="border: 0"
+                ></iframe>
+                <a href="https://www.buymeacoffee.com/orhun" target="_blank"
+                  ><img
+                    src="https://cdn.buymeacoffee.com/buttons/v2/default-white.png"
+                    alt="Buy Me A Coffee"
+                    style="height: 40px !important; width: 150px !important"
+                /></a>
+              </div>
+              <div>
+                <applause-button
+                  style="width: 50px; height: 50px"
+                  url="https://blog.orhun.dev&#x2F;automated-rust-releases&#x2F;"
+                  color="white"
+                  multiclap="true"
+                />
+              </div>
+              <div>
+                <div style="width: auto; height: 39px">
+                  <p style="margin: 0; color: #fff; font-style: italic">✨ Sponsored by:</p>
+                </div>
+                <a href="https://www.jetbrains.com/" target="_blank"
+                  ><img
+                    src="/sponsors/jetbrains.png"
+                    alt="JetBrains"
+                    style="height: 45px; width: auto"
+                /></a>
+                <a href="https://terminaltrove.com/" target="_blank"
+                  ><img
+                    src="/sponsors/terminal_trove.png"
+                    alt="Terminal Trove"
+                    style="height: 40px; width: auto"
+                /></a>
+              </div>
+            </div>
+            <script src="https://utteranc.es/client.js"
+                    repo="orhun/personal-blog"
+                    issue-term="url"
+                    label="comments"
+                    theme="github-dark"
+                    crossorigin="anonymous"
+                    async>
+            </script>
+        </footer>
+    
+</article>
+
+
+    </body>
+
+    <script type="text/javascript" src="https://blog.orhun.dev/elasticlunr.min.js"></script>
+    <script type="text/javascript" src="https://blog.orhun.dev/js/search.js"></script>
+
+</html>

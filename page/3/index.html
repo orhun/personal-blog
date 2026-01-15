@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <meta http-equiv="content-type" content="text/html; charset=utf-8">
+      <meta property="og:type" content="website" />
+      <meta property="og:url" content="https://blog.orhun.dev"/>
+      
+      <meta property="og:title" content="Orhun's Blog" />
+      
+      <meta property="og:image" content="https://blog.orhun.dev/crow.png" />
+      
+      <meta name="description" content="FOSS • Linux • Programming" />
+      <meta property="og:description" content="FOSS • Linux • Programming"/>
+      
+
+      <!-- Enable responsiveness on mobile devices-->
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+      <link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png">
+      <link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png">
+      <link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png">
+      <link rel="manifest" href="/favicon/site.webmanifest">
+
+      <script async src="https://umami.orhun.dev/script.js" data-website-id="56ca5ca7-ba9f-416e-8bee-a132c155d56b"></script>
+
+      <link rel="stylesheet" href="https://unpkg.com/applause-button/dist/applause-button.css" />
+      <script src="https://unpkg.com/applause-button/dist/applause-button.js"></script>
+
+      
+      <title>Orhun&#x27;s Blog</title>
+      
+      <link rel="alternate" type="application/rss+xml" title="Orhun&#x27;s Blog RSS Feed" href="https://blog.orhun.dev/rss.xml" />
+
+      
+          <link rel="stylesheet" href="https://blog.orhun.dev/site.css">
+      
+
+      
+      
+    </head>
+
+    <body class="hack dark main container">
+        
+            
+                
+                    <header>
+                    <nav itemscope itemtype="http://schema.org/SiteNavigationElement" class="nav-flex">
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://blog.orhun.dev">
+                                <span itemprop="name">Home</span>
+                            </a>
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://blog.orhun.dev/categories">
+                                <span itemprop="name">Categories</span>
+                            </a>
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://github.com/orhun/personal-blog">
+                                <span itemprop="name">Source</span>
+                            </a>
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://github.com/orhun">
+                                <span itemprop="name">GitHub</span>
+                            </a>
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://donate.orhun.dev">
+                                <span itemprop="name">Donate</span>
+                            </a>
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://blog.orhun.dev/rss.xml">
+                                <span itemprop="name">RSS</span>
+                            </a>
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://orhun.dev">
+                                <span itemprop="name">About</span>
+                            </a>
+                        
+                        <div class="search-container">
+                            <input type="text" id="search" placeholder="Search...">
+                            <div class="search-results">
+                                <div class="search-results__items"></div>
+                            </div>
+                        </div>
+                    </nav>
+                    </header>
+                
+            
+
+            <main>
+                
+                    <header>
+                        <h1>Orhun&#x27;s Blog | FOSS • Linux • Programming</h1>
+                    </header>
+                
+                
+                    
+    <article itemscope itemtype="http://schema.org/CreativeWork">
+        <header>
+            <h2 itemprop="name">
+                <a href="https://blog.orhun.dev/packaging-rust-for-npm/">Packaging Rust Applications for the NPM Registry</a>
+            </h2>
+            <span class="muted">
+    <svg style="margin-bottom:-3px" class="i-clock" viewBox="0 0 32 32"
+         width="16" height="16" fill="none" stroke="currentcolor"
+         stroke-linecap="round" stroke-linejoin="round" stroke-width="6.25%">
+        <circle cx="16" cy="16" r="14"/>
+        <path d="M16 8 L16 16 20 20"/>
+    </svg>
+    <span>10 minute read</span>
+    <svg style="margin-bottom: -3px" class="i-edit" viewBox="0 0 32 32"
+         width="16" height="16" fill="none" stroke="currentcolor"
+         stroke-linecap="round" stroke-linejoin="round" stroke-width="6.25%">
+        <path d="M30 7 L25 2 5 22 3 29 10 27 Z M21 6 L26 11 Z M5 22 L10 27 Z"/>
+    </svg>
+
+    Published: 2023-01-24
+</span>
+        </header>
+        
+            <div itemprop="summary">
+                <p>Recently I packaged my project <a rel="external" href="https://github.com/orhun/git-cliff">git-cliff</a> (changelog generator written in <a rel="external" href="https://www.rust-lang.org/">Rust</a>) for <a rel="external" href="https://www.npmjs.com/">NPM</a> with the help of my friend <a rel="external" href="https://github.com/atlj">@atlj</a>. I thought this would be an interesting topic for a blog post since it has a certain technical depth about distributing binaries and frankly it still amazes me how the whole thing works so smoothly. So let's create a simple Rust project, package it for NPM and fully automate the release process via <a rel="external" href="https://docs.github.com/en/actions">GitHub Actions</a>.</p>
+                <nav class="readmore"><a itemprop="url" href="https://blog.orhun.dev/packaging-rust-for-npm/">Read More&nbsp;&raquo;</a></nav>
+            </div>
+        
+    </article>
+    <hr>
+
+                
+                    
+    <article itemscope itemtype="http://schema.org/CreativeWork">
+        <header>
+            <h2 itemprop="name">
+                <a href="https://blog.orhun.dev/zero-deps-random-in-rust/">Zero-dependency random number generation in Rust</a>
+            </h2>
+            <span class="muted">
+    <svg style="margin-bottom:-3px" class="i-clock" viewBox="0 0 32 32"
+         width="16" height="16" fill="none" stroke="currentcolor"
+         stroke-linecap="round" stroke-linejoin="round" stroke-width="6.25%">
+        <circle cx="16" cy="16" r="14"/>
+        <path d="M16 8 L16 16 20 20"/>
+    </svg>
+    <span>12 minute read</span>
+    <svg style="margin-bottom: -3px" class="i-edit" viewBox="0 0 32 32"
+         width="16" height="16" fill="none" stroke="currentcolor"
+         stroke-linecap="round" stroke-linejoin="round" stroke-width="6.25%">
+        <path d="M30 7 L25 2 5 22 3 29 10 27 Z M21 6 L26 11 Z M5 22 L10 27 Z"/>
+    </svg>
+
+    Published: 2023-01-03
+</span>
+        </header>
+        
+            <div itemprop="summary">
+                <p>Let's investigate how to generate random numbers without external dependencies in Rust.</p>
+                <nav class="readmore"><a itemprop="url" href="https://blog.orhun.dev/zero-deps-random-in-rust/">Read More&nbsp;&raquo;</a></nav>
+            </div>
+        
+    </article>
+    <hr>
+
+                
+                    
+    <article itemscope itemtype="http://schema.org/CreativeWork">
+        <header>
+            <h2 itemprop="name">
+                <a href="https://blog.orhun.dev/open-source-grindset/">Open Source Grindset Explained</a>
+            </h2>
+            <span class="muted">
+    <svg style="margin-bottom:-3px" class="i-clock" viewBox="0 0 32 32"
+         width="16" height="16" fill="none" stroke="currentcolor"
+         stroke-linecap="round" stroke-linejoin="round" stroke-width="6.25%">
+        <circle cx="16" cy="16" r="14"/>
+        <path d="M16 8 L16 16 20 20"/>
+    </svg>
+    <span>11 minute read</span>
+    <svg style="margin-bottom: -3px" class="i-edit" viewBox="0 0 32 32"
+         width="16" height="16" fill="none" stroke="currentcolor"
+         stroke-linecap="round" stroke-linejoin="round" stroke-width="6.25%">
+        <path d="M30 7 L25 2 5 22 3 29 10 27 Z M21 6 L26 11 Z M5 22 L10 27 Z"/>
+    </svg>
+
+    Published: 2022-12-25
+</span>
+        </header>
+        
+            <div itemprop="summary">
+                <p>Let's talk about how to develop an open sourcerer mindset.</p>
+                <nav class="readmore"><a itemprop="url" href="https://blog.orhun.dev/open-source-grindset/">Read More&nbsp;&raquo;</a></nav>
+            </div>
+        
+    </article>
+    <hr>
+
+                
+                    
+    <article itemscope itemtype="http://schema.org/CreativeWork">
+        <header>
+            <h2 itemprop="name">
+                <a href="https://blog.orhun.dev/norway-depression/">I finally found out why I&#x27;m so depressed</a>
+            </h2>
+            <span class="muted">
+    <svg style="margin-bottom:-3px" class="i-clock" viewBox="0 0 32 32"
+         width="16" height="16" fill="none" stroke="currentcolor"
+         stroke-linecap="round" stroke-linejoin="round" stroke-width="6.25%">
+        <circle cx="16" cy="16" r="14"/>
+        <path d="M16 8 L16 16 20 20"/>
+    </svg>
+    <span>3 minute read</span>
+    <svg style="margin-bottom: -3px" class="i-edit" viewBox="0 0 32 32"
+         width="16" height="16" fill="none" stroke="currentcolor"
+         stroke-linecap="round" stroke-linejoin="round" stroke-width="6.25%">
+        <path d="M30 7 L25 2 5 22 3 29 10 27 Z M21 6 L26 11 Z M5 22 L10 27 Z"/>
+    </svg>
+
+    Published: 2022-07-06
+</span>
+        </header>
+        
+            <div itemprop="summary">
+                <p>I'm in Norway and depressed.</p>
+                <nav class="readmore"><a itemprop="url" href="https://blog.orhun.dev/norway-depression/">Read More&nbsp;&raquo;</a></nav>
+            </div>
+        
+    </article>
+    <hr>
+
+                
+                    
+    <article itemscope itemtype="http://schema.org/CreativeWork">
+        <header>
+            <h2 itemprop="name">
+                <a href="https://blog.orhun.dev/open-source-motivation/">My motivation towards working on open source</a>
+            </h2>
+            <span class="muted">
+    <svg style="margin-bottom:-3px" class="i-clock" viewBox="0 0 32 32"
+         width="16" height="16" fill="none" stroke="currentcolor"
+         stroke-linecap="round" stroke-linejoin="round" stroke-width="6.25%">
+        <circle cx="16" cy="16" r="14"/>
+        <path d="M16 8 L16 16 20 20"/>
+    </svg>
+    <span>4 minute read</span>
+    <svg style="margin-bottom: -3px" class="i-edit" viewBox="0 0 32 32"
+         width="16" height="16" fill="none" stroke="currentcolor"
+         stroke-linecap="round" stroke-linejoin="round" stroke-width="6.25%">
+        <path d="M30 7 L25 2 5 22 3 29 10 27 Z M21 6 L26 11 Z M5 22 L10 27 Z"/>
+    </svg>
+
+    Published: 2022-07-02
+</span>
+        </header>
+        
+            <div itemprop="summary">
+                <p>Some thoughts about open source and the software industry.</p>
+                <nav class="readmore"><a itemprop="url" href="https://blog.orhun.dev/open-source-motivation/">Read More&nbsp;&raquo;</a></nav>
+            </div>
+        
+    </article>
+    <hr>
+
+                
+                    
+    <article itemscope itemtype="http://schema.org/CreativeWork">
+        <header>
+            <h2 itemprop="name">
+                <a href="https://blog.orhun.dev/take-your-music-offline/">Move away from streaming platforms &amp; take your music offline</a>
+            </h2>
+            <span class="muted">
+    <svg style="margin-bottom:-3px" class="i-clock" viewBox="0 0 32 32"
+         width="16" height="16" fill="none" stroke="currentcolor"
+         stroke-linecap="round" stroke-linejoin="round" stroke-width="6.25%">
+        <circle cx="16" cy="16" r="14"/>
+        <path d="M16 8 L16 16 20 20"/>
+    </svg>
+    <span>8 minute read</span>
+    <svg style="margin-bottom: -3px" class="i-edit" viewBox="0 0 32 32"
+         width="16" height="16" fill="none" stroke="currentcolor"
+         stroke-linecap="round" stroke-linejoin="round" stroke-width="6.25%">
+        <path d="M30 7 L25 2 5 22 3 29 10 27 Z M21 6 L26 11 Z M5 22 L10 27 Z"/>
+    </svg>
+
+    Published: 2022-06-03
+</span>
+        </header>
+        
+            <div itemprop="summary">
+                <p>I don't use <a rel="external" href="https://en.wikipedia.org/wiki/Spotify">Spotify</a> or any other streaming platform for listening to music. Some call it old habits, some call it needless effort, but I'm very used to downloading <a rel="external" href="https://en.wikipedia.org/wiki/MP3">MP3</a> files over the internet and putting them in a folder on my phone then using the whatever default media player I have installed. However, for a couple of years, I have been following a better and automated approach for taking my music offline and feeling a bit less like I'm in a <a rel="external" href="https://en.wikipedia.org/wiki/Consumerism">consumerism</a> bubble.</p>
+                <nav class="readmore"><a itemprop="url" href="https://blog.orhun.dev/take-your-music-offline/">Read More&nbsp;&raquo;</a></nav>
+            </div>
+        
+    </article>
+    <hr>
+
+                
+                    
+    <article itemscope itemtype="http://schema.org/CreativeWork">
+        <header>
+            <h2 itemprop="name">
+                <a href="https://blog.orhun.dev/upgrading-rust-jwt/">How hard upgrading a Rust JWT library could be?</a>
+            </h2>
+            <span class="muted">
+    <svg style="margin-bottom:-3px" class="i-clock" viewBox="0 0 32 32"
+         width="16" height="16" fill="none" stroke="currentcolor"
+         stroke-linecap="round" stroke-linejoin="round" stroke-width="6.25%">
+        <circle cx="16" cy="16" r="14"/>
+        <path d="M16 8 L16 16 20 20"/>
+    </svg>
+    <span>8 minute read</span>
+    <svg style="margin-bottom: -3px" class="i-edit" viewBox="0 0 32 32"
+         width="16" height="16" fill="none" stroke="currentcolor"
+         stroke-linecap="round" stroke-linejoin="round" stroke-width="6.25%">
+        <path d="M30 7 L25 2 5 22 3 29 10 27 Z M21 6 L26 11 Z M5 22 L10 27 Z"/>
+    </svg>
+
+    Published: 2022-04-22
+</span>
+        </header>
+        
+            <div itemprop="summary">
+                <p>Recently one of my clients requested me to maintain their Rust project. It is a web server that is built with <a rel="external" href="https://rocket.rs/">Rocket</a> + <a rel="external" href="http://diesel.rs/">Diesel</a> and running stable for a couple of years now. Like any other Rust developer would do, the first thing that I checked was the outdated dependencies via <code>cargo-outdated</code>. The result was close to what I expected: most of the dependencies were out-of-date. However, among all those crates, <a rel="external" href="https://github.com/mikkyang/rust-jwt">rust-jwt</a> caught my eye. It was 12 minor versions behind!</p>
+                <nav class="readmore"><a itemprop="url" href="https://blog.orhun.dev/upgrading-rust-jwt/">Read More&nbsp;&raquo;</a></nav>
+            </div>
+        
+    </article>
+    <hr>
+
+                
+                    
+    <article itemscope itemtype="http://schema.org/CreativeWork">
+        <header>
+            <h2 itemprop="name">
+                <a href="https://blog.orhun.dev/rewriting-sysctl-in-rust/">Rewriting sysctl(8) in Rust: systeroid</a>
+            </h2>
+            <span class="muted">
+    <svg style="margin-bottom:-3px" class="i-clock" viewBox="0 0 32 32"
+         width="16" height="16" fill="none" stroke="currentcolor"
+         stroke-linecap="round" stroke-linejoin="round" stroke-width="6.25%">
+        <circle cx="16" cy="16" r="14"/>
+        <path d="M16 8 L16 16 20 20"/>
+    </svg>
+    <span>5 minute read</span>
+    <svg style="margin-bottom: -3px" class="i-edit" viewBox="0 0 32 32"
+         width="16" height="16" fill="none" stroke="currentcolor"
+         stroke-linecap="round" stroke-linejoin="round" stroke-width="6.25%">
+        <path d="M30 7 L25 2 5 22 3 29 10 27 Z M21 6 L26 11 Z M5 22 L10 27 Z"/>
+    </svg>
+
+    Published: 2022-04-17
+</span>
+        </header>
+        
+            <div itemprop="summary">
+                <p><a rel="external" href="https://en.wikipedia.org/wiki/Sysctl">sysctl</a> is a simple and great tool for modifying the kernel parameters. It does its job very well by providing an easy-to-use interface for <code>/proc/sys</code>. It is maintained as a part of <a rel="external" href="https://gitlab.com/procps-ng/procps">procps</a> toolkit for years and it can easily be considered a legacy tool today. So why not push it to its limits and turn it into a more user-friendly and even more useful tool with the power of Rust?</p>
+                <nav class="readmore"><a itemprop="url" href="https://blog.orhun.dev/rewriting-sysctl-in-rust/">Read More&nbsp;&raquo;</a></nav>
+            </div>
+        
+    </article>
+    <hr>
+
+                
+                    
+    <article itemscope itemtype="http://schema.org/CreativeWork">
+        <header>
+            <h2 itemprop="name">
+                <a href="https://blog.orhun.dev/git-cliff-0-5-0/">git-cliff 0.5.0</a>
+            </h2>
+            <span class="muted">
+    <svg style="margin-bottom:-3px" class="i-clock" viewBox="0 0 32 32"
+         width="16" height="16" fill="none" stroke="currentcolor"
+         stroke-linecap="round" stroke-linejoin="round" stroke-width="6.25%">
+        <circle cx="16" cy="16" r="14"/>
+        <path d="M16 8 L16 16 20 20"/>
+    </svg>
+    <span>1 minute read</span>
+    <svg style="margin-bottom: -3px" class="i-edit" viewBox="0 0 32 32"
+         width="16" height="16" fill="none" stroke="currentcolor"
+         stroke-linecap="round" stroke-linejoin="round" stroke-width="6.25%">
+        <path d="M30 7 L25 2 5 22 3 29 10 27 Z M21 6 L26 11 Z M5 22 L10 27 Z"/>
+    </svg>
+
+    Published: 2021-12-15
+</span>
+        </header>
+        
+            <div itemprop="summary">
+                <p>git-cliff is a highly customizable changelog generator that follows conventional commit specifications ⛰️ In this post, I'm explaining the new features in the 0.5.0 release while giving insight into the different use-cases.</p>
+                <nav class="readmore"><a itemprop="url" href="https://blog.orhun.dev/git-cliff-0-5-0/">Read More&nbsp;&raquo;</a></nav>
+            </div>
+        
+    </article>
+    <hr>
+
+                
+                    
+    <article itemscope itemtype="http://schema.org/CreativeWork">
+        <header>
+            <h2 itemprop="name">
+                <a href="https://blog.orhun.dev/introducing-gpg-tui/">Introducing gpg-tui, a Terminal User Interface for GnuPG</a>
+            </h2>
+            <span class="muted">
+    <svg style="margin-bottom:-3px" class="i-clock" viewBox="0 0 32 32"
+         width="16" height="16" fill="none" stroke="currentcolor"
+         stroke-linecap="round" stroke-linejoin="round" stroke-width="6.25%">
+        <circle cx="16" cy="16" r="14"/>
+        <path d="M16 8 L16 16 20 20"/>
+    </svg>
+    <span>6 minute read</span>
+    <svg style="margin-bottom: -3px" class="i-edit" viewBox="0 0 32 32"
+         width="16" height="16" fill="none" stroke="currentcolor"
+         stroke-linecap="round" stroke-linejoin="round" stroke-width="6.25%">
+        <path d="M30 7 L25 2 5 22 3 29 10 27 Z M21 6 L26 11 Z M5 22 L10 27 Z"/>
+    </svg>
+
+    Published: 2021-05-29
+</span>
+        </header>
+        
+            <div itemprop="summary">
+                <p>gpg-tui is a TUI for managing the GnuPG keys 🔐 In this post, I'm giving a brief introduction to the project as well as describing the thought process and main development challenges behind it.</p>
+                <nav class="readmore"><a itemprop="url" href="https://blog.orhun.dev/introducing-gpg-tui/">Read More&nbsp;&raquo;</a></nav>
+            </div>
+        
+    </article>
+    <hr>
+
+                
+
+                <nav>
+                  <p>
+                    
+                      <a href="https:&#x2F;&#x2F;blog.orhun.dev&#x2F;page&#x2F;2&#x2F;">&laquo; Previous</a> |
+                    
+                    <span>Page 3 of 4</span>
+                    
+                      | <a href="https:&#x2F;&#x2F;blog.orhun.dev&#x2F;page&#x2F;4&#x2F;">Next &raquo;</a>
+                    
+                  </p>
+                </nav>
+            </main>
+        
+    </body>
+
+    <script type="text/javascript" src="https://blog.orhun.dev/elasticlunr.min.js"></script>
+    <script type="text/javascript" src="https://blog.orhun.dev/js/search.js"></script>
+
+</html>

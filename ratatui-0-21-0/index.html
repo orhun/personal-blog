@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <meta http-equiv="content-type" content="text/html; charset=utf-8">
+      <meta property="og:type" content="website" />
+      <meta property="og:url" content="https://blog.orhun.dev"/>
+      
+      <meta property="og:title" content="Ratatui: Build rich terminal user interfaces using Rust - Orhun&#x27;s Blog" />
+      
+      <meta property="og:image" content="https://blog.orhun.dev/crow.png" />
+      
+      <meta name="description" content="FOSS • Linux • Programming" />
+      <meta property="og:description" content="FOSS • Linux • Programming"/>
+      
+
+      <!-- Enable responsiveness on mobile devices-->
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+      <link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png">
+      <link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png">
+      <link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png">
+      <link rel="manifest" href="/favicon/site.webmanifest">
+
+      <script async src="https://umami.orhun.dev/script.js" data-website-id="56ca5ca7-ba9f-416e-8bee-a132c155d56b"></script>
+
+      <link rel="stylesheet" href="https://unpkg.com/applause-button/dist/applause-button.css" />
+      <script src="https://unpkg.com/applause-button/dist/applause-button.js"></script>
+
+      
+      <title>Ratatui: Build rich terminal user interfaces using Rust - Orhun&#x27;s Blog</title>
+      
+      <link rel="alternate" type="application/rss+xml" title="Orhun&#x27;s Blog RSS Feed" href="https://blog.orhun.dev/rss.xml" />
+
+      
+          <link rel="stylesheet" href="https://blog.orhun.dev/site.css">
+      
+
+      
+      
+    </head>
+
+    <body class="hack dark main container">
+        
+    
+        
+                
+                    <header>
+                    <nav itemscope itemtype="http://schema.org/SiteNavigationElement" class="nav-flex">
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://blog.orhun.dev">
+                                <span itemprop="name">Home</span>
+                            </a>
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://blog.orhun.dev/categories">
+                                <span itemprop="name">Categories</span>
+                            </a>
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://github.com/orhun/personal-blog">
+                                <span itemprop="name">Source</span>
+                            </a>
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://github.com/orhun">
+                                <span itemprop="name">GitHub</span>
+                            </a>
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://donate.orhun.dev">
+                                <span itemprop="name">Donate</span>
+                            </a>
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://blog.orhun.dev/rss.xml">
+                                <span itemprop="name">RSS</span>
+                            </a>
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://orhun.dev">
+                                <span itemprop="name">About</span>
+                            </a>
+                        
+                        <div class="search-container">
+                            <input type="text" id="search" placeholder="Search...">
+                            <div class="search-results">
+                                <div class="search-results__items"></div>
+                            </div>
+                        </div>
+                    </nav>
+                    </header>
+                
+            
+    
+
+<article itemscope itemtype="http://schema.org/BlogPosting">
+    <header>
+        <h1 itemprop="headline">Ratatui: Build rich terminal user interfaces using Rust</h1>
+        <span class="muted">
+    <svg style="margin-bottom:-3px" class="i-clock" viewBox="0 0 32 32"
+         width="16" height="16" fill="none" stroke="currentcolor"
+         stroke-linecap="round" stroke-linejoin="round" stroke-width="6.25%">
+        <circle cx="16" cy="16" r="14"/>
+        <path d="M16 8 L16 16 20 20"/>
+    </svg>
+    <span>6 minute read</span>
+    <svg style="margin-bottom: -3px" class="i-edit" viewBox="0 0 32 32"
+         width="16" height="16" fill="none" stroke="currentcolor"
+         stroke-linecap="round" stroke-linejoin="round" stroke-width="6.25%">
+        <path d="M30 7 L25 2 5 22 3 29 10 27 Z M21 6 L26 11 Z M5 22 L10 27 Z"/>
+    </svg>
+
+    Published: 2023-05-29
+</span>
+    </header>
+    <div itemprop="articleBody">
+      <p>"<a rel="external" href="https://github.com/ratatui-org/ratatui"><strong>Ratatui</strong></a>" came a long way since its transition from the original <a rel="external" href="https://github.com/fdehau/tui-rs"><code>tui-rs</code></a> crate. In this post, let's take a look at what's new in the latest version.</p>
+<span id="continue-reading"></span><center>
+<p><img src="/ratatui-logo.png" alt="ratatui" /></p>
+</center>
+<h3 id="retrospective">Retrospective</h3>
+<p>To catch you up to speed:</p>
+<ul>
+<li><code>14-08-2022</code>: The original author of <code>tui-rs</code> created <a rel="external" href="https://github.com/fdehau/tui-rs/issues/654">an issue</a> for discussing the future of the crate.</li>
+<li><code>02-02-2023</code>: I and a couple of people who are interested in the project created a Discord server to discuss the possibility of forking the project.</li>
+<li><code>08-02-2023</code>: The author got back to us and proposed a plan for transferring the ownership to the new maintainers. This was the last time we heard from him about the project :/</li>
+<li><code>14-02-2023</code>: We created a fork to continue development.</li>
+<li><code>19-03-2023</code>: The first version of <code>ratatui</code> is released. (<a rel="external" href="https://github.com/ratatui-org/ratatui/releases/tag/v0.20.0"><code>0.20.0</code></a>)</li>
+</ul>
+<p>Ever since then, a number of people joined us for development and crates started to switch to <code>ratatui</code>. And today, we are proud the announce the new version of the project!</p>
+<p>Before everything, big thanks to <a rel="external" href="https://github.com/fdehau">Florian Dehau</a> for making this possible and creating <code>tui-rs</code> in the first place! 💖</p>
+<p>Now, let's see what's new in <code>ratatui</code>!</p>
+<p><strong>Full changelog</strong>: <a rel="external" href="https://github.com/ratatui-org/ratatui/releases/tag/v0.21.0">https://github.com/ratatui-org/ratatui/releases/tag/v0.21.0</a></p>
+<hr />
+<h3 id="new-backend-termwiz">New backend: <code>termwiz</code></h3>
+<p><code>ratatui</code> supports a new backend called <code>termwiz</code> which is a "Terminal Wizardry" crate that powers <a rel="external" href="https://github.com/wez/wezterm">wezterm</a>.</p>
+<p>To use it, enable the <code>termwiz</code> feature in <code>Cargo.toml</code>:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="toml"><span class="giallo-l"><span>[</span><span style="color: #E5C07B;">dependencies</span><span>.</span><span style="color: #E5C07B;">ratatui</span><span>]</span></span>
+<span class="giallo-l"><span style="color: #C6CCD7;">version</span><span> = &quot;</span><span style="color: #98C379;">0.21.0</span><span>&quot;</span></span>
+<span class="giallo-l"><span style="color: #C6CCD7;">features</span><span> = [&quot;</span><span style="color: #98C379;">termwiz</span><span>&quot;]</span></span>
+<span class="giallo-l"><span style="color: #C6CCD7;">default-features</span><span> =</span><span style="color: #56B6C2;"> false</span></span></code></pre>
+<p>Then you can utilize <code>TermwizBackend</code> object for creating a terminal. Here is a simple program that shows a text on the screen for 5 seconds using <code>ratatui</code> + <code>termwiz</code>:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="rust"><span class="giallo-l"><span style="color: #E06C75;">use</span><span style="color: #61AFEF;"> ratatui</span><span style="color: #E06C75;">::</span><span>{</span><span style="color: #61AFEF;">backend</span><span style="color: #E06C75;">::</span><span style="color: #E5C07B;">TermwizBackend</span><span>,</span><span style="color: #61AFEF;"> widgets</span><span style="color: #E06C75;">::</span><span style="color: #E5C07B;">Paragraph</span><span>,</span><span style="color: #E5C07B;"> Terminal</span><span>};</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">use</span><span style="color: #61AFEF;"> std</span><span style="color: #E06C75;">::</span><span>{</span></span>
+<span class="giallo-l"><span style="color: #61AFEF;">    error</span><span style="color: #E06C75;">::</span><span style="color: #E5C07B;">Error</span><span>,</span></span>
+<span class="giallo-l"><span>    thread,</span></span>
+<span class="giallo-l"><span style="color: #61AFEF;">    time</span><span style="color: #E06C75;">::</span><span>{</span><span style="color: #E5C07B;">Duration</span><span>,</span><span style="color: #E5C07B;"> Instant</span><span>},</span></span>
+<span class="giallo-l"><span>};</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #E06C75;">fn</span><span style="color: #B57EDC;"> main</span><span>()</span><span style="color: #E06C75;"> -&gt;</span><span style="color: #E5C07B;"> Result</span><span>&lt;(),</span><span style="color: #E5C07B;"> Box</span><span>&lt;</span><span style="color: #E06C75;">dyn</span><span style="color: #E5C07B;"> Error</span><span>&gt;&gt; {</span></span>
+<span class="giallo-l"><span style="color: #61AFEF;">    let</span><span style="color: #C6CCD7;"> backend</span><span style="color: #E06C75;"> =</span><span style="color: #E5C07B;"> TermwizBackend</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">new</span><span>()</span><span style="color: #E06C75;">?</span><span>;</span></span>
+<span class="giallo-l"><span style="color: #61AFEF;">    let mut</span><span style="color: #C6CCD7;"> terminal</span><span style="color: #E06C75;"> =</span><span style="color: #E5C07B;"> Terminal</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">new</span><span>(</span><span style="color: #C6CCD7;">backend</span><span>)</span><span style="color: #E06C75;">?</span><span>;</span></span>
+<span class="giallo-l"><span style="color: #C6CCD7;">    terminal</span><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">hide_cursor</span><span>()</span><span style="color: #E06C75;">?</span><span>;</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #61AFEF;">    let</span><span style="color: #C6CCD7;"> now</span><span style="color: #E06C75;"> =</span><span style="color: #E5C07B;"> Instant</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">now</span><span>();</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">    while</span><span style="color: #C6CCD7;"> now</span><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">elapsed</span><span>() &lt;</span><span style="color: #E5C07B;"> Duration</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">from_secs</span><span>(</span><span style="color: #56B6C2;">5</span><span>) {</span></span>
+<span class="giallo-l"><span style="color: #C6CCD7;">        terminal</span><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">draw</span><span>(</span><span style="color: #E06C75;">|</span><span style="color: #C6CCD7;">f</span><span style="color: #E06C75;">|</span><span style="color: #C6CCD7;"> f</span><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">render_widget</span><span>(</span><span style="color: #61AFEF;">Paragraph</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">new</span><span>(&quot;</span><span style="color: #98C379;">termwiz example</span><span>&quot;),</span><span style="color: #C6CCD7;"> f</span><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">size</span><span>()))</span><span style="color: #E06C75;">?</span><span>;</span></span>
+<span class="giallo-l"><span style="color: #61AFEF;">        thread</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">sleep</span><span>(</span><span style="color: #61AFEF;">Duration</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">from_millis</span><span>(</span><span style="color: #56B6C2;">250</span><span>));</span></span>
+<span class="giallo-l"><span>    }</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #C6CCD7;">    terminal</span><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">show_cursor</span><span>()</span><span style="color: #E06C75;">?</span><span>;</span></span>
+<span class="giallo-l"><span style="color: #C6CCD7;">    terminal</span><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">flush</span><span>()</span><span style="color: #E06C75;">?</span><span>;</span></span>
+<span class="giallo-l"><span style="color: #E5C07B;">    Ok</span><span>(())</span></span>
+<span class="giallo-l"><span>}</span></span></code></pre>
+<hr />
+<h3 id="new-widget-calendar">New widget: Calendar</h3>
+<p>A calendar widget has been added which was originally a part of the <a rel="external" href="https://github.com/sophacles/extra-widgets">extra-widgets</a> repository.</p>
+<p>Since this new widget depends on <code>time</code> crate, we gated it behind <code>widget-calendar</code> feature to avoid an extra dependency:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="toml"><span class="giallo-l"><span>[</span><span style="color: #E5C07B;">dependencies</span><span>.</span><span style="color: #E5C07B;">ratatui</span><span>]</span></span>
+<span class="giallo-l"><span style="color: #C6CCD7;">version</span><span> = &quot;</span><span style="color: #98C379;">0.21.0</span><span>&quot;</span></span>
+<span class="giallo-l"><span style="color: #C6CCD7;">features</span><span> = [&quot;</span><span style="color: #98C379;">widget-calendar</span><span>&quot;]</span></span></code></pre>
+<p>Here is the example usage:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="rust"><span class="giallo-l"><span style="color: #E5C07B;">Monthly</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">new</span><span>(</span></span>
+<span class="giallo-l"><span style="color: #61AFEF;">    time</span><span style="color: #E06C75;">::</span><span style="color: #61AFEF;">Date</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">from_calendar_date</span><span>(</span><span style="color: #56B6C2;">2023</span><span>,</span><span style="color: #61AFEF;"> time</span><span style="color: #E06C75;">::</span><span style="color: #61AFEF;">Month</span><span style="color: #E06C75;">::</span><span style="color: #E5C07B;">January</span><span>,</span><span style="color: #56B6C2;"> 1</span><span>)</span><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">unwrap</span><span>(),</span></span>
+<span class="giallo-l"><span style="color: #61AFEF;">    CalendarEventStore</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">default</span><span>(),</span></span>
+<span class="giallo-l"><span>)</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">show_weekdays_header</span><span>(</span><span style="color: #61AFEF;">Style</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">default</span><span>())</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">show_month_header</span><span>(</span><span style="color: #61AFEF;">Style</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">default</span><span>())</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">show_surrounding</span><span>(</span><span style="color: #61AFEF;">Style</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">default</span><span>()),</span></span></code></pre>
+<p>Results in:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #B57EDC;">     January</span><span style="color: #56B6C2;"> 2023</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;"> Su</span><span style="color: #98C379;"> Mo Tu We Th Fr Sa</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">  1</span><span style="color: #56B6C2;">  2  3  4  5  6  7</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">  8</span><span style="color: #56B6C2;">  9 10 11 12 13 14</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;"> 15</span><span style="color: #56B6C2;"> 16 17 18 19 20 21</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;"> 22</span><span style="color: #56B6C2;"> 23 24 25 26 27 28</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;"> 29</span><span style="color: #56B6C2;"> 30 31  1  2  3  4</span></span></code></pre>
+<hr />
+<h3 id="new-widget-circle">New widget: Circle</h3>
+<p><code>Circle</code> widget has been added with the use-case of showing an accuracy radius on the world map.</p>
+<p>Here is an example of how to use it with <code>Canvas</code>:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="rust"><span class="giallo-l"><span style="color: #E5C07B;">Canvas</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">default</span><span>()</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">    .</span><span style="color: #B57EDC;">paint</span><span>(</span><span style="color: #E06C75;">|</span><span style="color: #C6CCD7;">ctx</span><span style="color: #E06C75;">|</span><span> {</span></span>
+<span class="giallo-l"><span style="color: #C6CCD7;">        ctx</span><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">draw</span><span>(</span><span style="color: #E06C75;">&amp;</span><span style="color: #E5C07B;">Circle</span><span> {</span></span>
+<span class="giallo-l"><span style="color: #C6CCD7;">            x</span><span style="color: #E06C75;">:</span><span style="color: #56B6C2;"> 5</span><span>.</span><span style="color: #56B6C2;">0</span><span>,</span></span>
+<span class="giallo-l"><span style="color: #C6CCD7;">            y</span><span style="color: #E06C75;">:</span><span style="color: #56B6C2;"> 2</span><span>.</span><span style="color: #56B6C2;">0</span><span>,</span></span>
+<span class="giallo-l"><span style="color: #C6CCD7;">            radius</span><span style="color: #E06C75;">:</span><span style="color: #56B6C2;"> 5</span><span>.</span><span style="color: #56B6C2;">0</span><span>,</span></span>
+<span class="giallo-l"><span style="color: #C6CCD7;">            color</span><span style="color: #E06C75;">:</span><span style="color: #61AFEF;"> Color</span><span style="color: #E06C75;">::</span><span style="color: #E5C07B;">Reset</span><span>,</span></span>
+<span class="giallo-l"><span>        });</span></span>
+<span class="giallo-l"><span>    })</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">    .</span><span style="color: #B57EDC;">marker</span><span>(</span><span style="color: #61AFEF;">Marker</span><span style="color: #E06C75;">::</span><span style="color: #E5C07B;">Braille</span><span>)</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">    .</span><span style="color: #B57EDC;">x_bounds</span><span>([</span><span style="color: #E06C75;">-</span><span style="color: #56B6C2;">10</span><span>.</span><span style="color: #56B6C2;">0</span><span>,</span><span style="color: #56B6C2;"> 10</span><span>.</span><span style="color: #56B6C2;">0</span><span>])</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">    .</span><span style="color: #B57EDC;">y_bounds</span><span>([</span><span style="color: #E06C75;">-</span><span style="color: #56B6C2;">10</span><span>.</span><span style="color: #56B6C2;">0</span><span>,</span><span style="color: #56B6C2;"> 10</span><span>.</span><span style="color: #56B6C2;">0</span><span>]),</span></span></code></pre>
+<p>Results in:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #B57EDC;"> ⡠⠤⢤⡀</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">⢸⡁</span><span style="color: #98C379;">  ⡧</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;"> ⠑⠒⠚⠁</span></span></code></pre>
+<hr />
+<h3 id="inline-viewport">Inline Viewport</h3>
+<p>This was a highly requested feature and the original implementation was done by <a rel="external" href="https://github.com/fdehau">@fdehau</a> himself. Folks at <a rel="external" href="https://atuin.sh">Atuin</a> completed the implementation and we are happy to finally have this incorporated in the new release!</p>
+<p>An inline viewport refers to a rectangular section of the terminal window that is set aside for displaying content.</p>
+<p>In the repository, there is an example that simulates downloading multiple files in parallel: <a rel="external" href="https://github.com/ratatui-org/ratatui/blob/main/examples/inline.rs">https://github.com/ratatui-org/ratatui/blob/main/examples/inline.rs</a></p>
+<hr />
+<h3 id="block-title-on-bottom">Block: title on bottom</h3>
+<blockquote>
+<p>Before you could only put the title on the top row of a Block. Now you can put it on the bottom row! Revolutionary.</p>
+</blockquote>
+<p>For example, place the title on the bottom and center:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="rust"><span class="giallo-l"><span style="color: #E5C07B;">Paragraph</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">new</span><span>(&quot;</span><span style="color: #98C379;">ratatui</span><span>&quot;)</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">    .</span><span style="color: #B57EDC;">alignment</span><span>(</span><span style="color: #61AFEF;">Alignment</span><span style="color: #E06C75;">::</span><span style="color: #E5C07B;">Center</span><span>)</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">    .</span><span style="color: #B57EDC;">block</span><span>(</span></span>
+<span class="giallo-l"><span style="color: #61AFEF;">        Block</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">default</span><span>()</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">            .</span><span style="color: #B57EDC;">title</span><span>(</span><span style="color: #61AFEF;">Span</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">styled</span><span>(&quot;</span><span style="color: #98C379;">Title</span><span>&quot;,</span><span style="color: #61AFEF;"> Style</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">default</span><span>()))</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">            .</span><span style="color: #B57EDC;">title_on_bottom</span><span>()</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">            .</span><span style="color: #B57EDC;">title_alignment</span><span>(</span><span style="color: #61AFEF;">Alignment</span><span style="color: #E06C75;">::</span><span style="color: #E5C07B;">Center</span><span>)</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">            .</span><span style="color: #B57EDC;">borders</span><span>(</span><span style="color: #61AFEF;">Borders</span><span style="color: #E06C75;">::</span><span style="color: #56B6C2;">ALL</span><span>),</span></span>
+<span class="giallo-l"><span>    )</span></span></code></pre>
+<p>Results in:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #B57EDC;">┌─────────────────────┐</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">│</span><span style="color: #98C379;">       ratatui       │</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">│</span><span style="color: #98C379;">                     │</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">└────────Title────────┘</span></span></code></pre>
+<hr />
+<h3 id="block-support-adding-padding">Block: support adding padding</h3>
+<p>If we want to render a widget inside a <code>Block</code> with a certain distance from its borders, we need to create another <code>Layout</code> element based on the outer <code>Block</code>, add a margin and render the <code>Widget</code> into it. Adding a padding property on the block element skips the creation of this second Layout.</p>
+<p>This property works especially when rendering texts, as we can just create a block with padding and use it as the text wrapper:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="rust"><span class="giallo-l"><span style="color: #61AFEF;">let</span><span style="color: #C6CCD7;"> block</span><span style="color: #E06C75;"> =</span><span style="color: #E5C07B;"> Block</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">default</span><span>()</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">    .</span><span style="color: #B57EDC;">borders</span><span>(</span><span style="color: #61AFEF;">Borders</span><span style="color: #E06C75;">::</span><span style="color: #56B6C2;">ALL</span><span>)</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">    .</span><span style="color: #B57EDC;">padding</span><span>(</span><span style="color: #61AFEF;">Padding</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">new</span><span>(</span><span style="color: #56B6C2;">1</span><span>,</span><span style="color: #56B6C2;"> 1</span><span>,</span><span style="color: #56B6C2;"> 2</span><span>,</span><span style="color: #56B6C2;"> 2</span><span>));</span></span>
+<span class="giallo-l"><span style="color: #61AFEF;">let</span><span style="color: #C6CCD7;"> paragraph</span><span style="color: #E06C75;"> =</span><span style="color: #E5C07B;"> Paragraph</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">new</span><span>(&quot;</span><span style="color: #98C379;">example paragraph</span><span>&quot;)</span><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">block</span><span>(</span><span style="color: #C6CCD7;">block</span><span>);</span></span>
+<span class="giallo-l"><span style="color: #C6CCD7;">f</span><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">render_widget</span><span>(</span><span style="color: #C6CCD7;">paragraph</span><span>,</span><span style="color: #C6CCD7;"> area</span><span>);</span></span></code></pre>
+<p>Rendering another widget should be easy too, using the <code>.inner</code> method:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="rust"><span class="giallo-l"><span style="color: #61AFEF;">let</span><span style="color: #C6CCD7;"> block</span><span style="color: #E06C75;"> =</span><span style="color: #E5C07B;"> Block</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">default</span><span>()</span><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">borders</span><span>(</span><span style="color: #61AFEF;">Borders</span><span style="color: #E06C75;">::</span><span style="color: #56B6C2;">ALL</span><span>)</span><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">padding</span><span>(</span><span style="color: #E5C07B;">Padding</span><span> {</span></span>
+<span class="giallo-l"><span style="color: #C6CCD7;">    left</span><span style="color: #E06C75;">:</span><span style="color: #B57EDC;"> todo!</span><span>(),</span></span>
+<span class="giallo-l"><span style="color: #C6CCD7;">    right</span><span style="color: #E06C75;">:</span><span style="color: #B57EDC;"> todo!</span><span>(),</span></span>
+<span class="giallo-l"><span style="color: #C6CCD7;">    top</span><span style="color: #E06C75;">:</span><span style="color: #B57EDC;"> todo!</span><span>(),</span></span>
+<span class="giallo-l"><span style="color: #C6CCD7;">    bottom</span><span style="color: #E06C75;">:</span><span style="color: #B57EDC;"> todo!</span><span>(),</span></span>
+<span class="giallo-l"><span>});</span></span>
+<span class="giallo-l"><span style="color: #61AFEF;">let</span><span style="color: #C6CCD7;"> inner_block</span><span style="color: #E06C75;"> =</span><span style="color: #E5C07B;"> Block</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">default</span><span>()</span><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">borders</span><span>(</span><span style="color: #61AFEF;">Borders</span><span style="color: #E06C75;">::</span><span style="color: #56B6C2;">ALL</span><span>);</span></span>
+<span class="giallo-l"><span style="color: #61AFEF;">let</span><span style="color: #C6CCD7;"> inner_area</span><span style="color: #E06C75;"> =</span><span style="color: #C6CCD7;"> block</span><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">inner</span><span>(</span><span style="color: #C6CCD7;">area</span><span>);</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #C6CCD7;">f</span><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">render_widget</span><span>(</span><span style="color: #C6CCD7;">block</span><span>,</span><span style="color: #C6CCD7;"> area</span><span>);</span></span>
+<span class="giallo-l"><span style="color: #C6CCD7;">f</span><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">render_widget</span><span>(</span><span style="color: #C6CCD7;">inner_block</span><span>,</span><span style="color: #C6CCD7;"> inner_area</span><span>);</span></span>
+<span class="giallo-l"><span style="color: #C6CCD7;">f</span><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">render_widget</span><span>(</span><span style="color: #C6CCD7;">paragraph</span><span>,</span><span style="color: #C6CCD7;"> area</span><span>);</span></span></code></pre>
+<hr />
+<h3 id="text-display-secure-data">Text: display secure data</h3>
+<p>A new type called <code>Masked</code> is added for text-related types for masking data with a mask character. The example usage is as follows:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="rust"><span class="giallo-l"><span style="color: #E5C07B;">Line</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">from</span><span>(</span><span style="color: #B57EDC;">vec!</span><span>[</span></span>
+<span class="giallo-l"><span style="color: #61AFEF;">    Span</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">raw</span><span>(&quot;</span><span style="color: #98C379;">Masked text: </span><span>&quot;),</span></span>
+<span class="giallo-l"><span style="color: #61AFEF;">    Span</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">styled</span><span>(</span></span>
+<span class="giallo-l"><span style="color: #61AFEF;">        Masked</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">new</span><span>(&quot;</span><span style="color: #98C379;">password</span><span>&quot;, &#39;</span><span style="color: #98C379;">*</span><span>&#39;),</span></span>
+<span class="giallo-l"><span style="color: #61AFEF;">        Style</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">default</span><span>()</span><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">fg</span><span>(</span><span style="color: #61AFEF;">Color</span><span style="color: #E06C75;">::</span><span style="color: #E5C07B;">Red</span><span>),</span></span>
+<span class="giallo-l"><span>    ),</span></span>
+<span class="giallo-l"><span>])</span></span></code></pre>
+<p>Results in:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #B57EDC;">Masked</span><span style="color: #98C379;"> text:</span><span style="color: #E06C75;"> ********</span></span></code></pre>
+<hr />
+<h3 id="border-macro"><code>border!</code> macro</h3>
+<p>A <code>border!</code> macro has been added that takes <code>TOP</code>, <code>BOTTOM</code>, <code>LEFT</code>, <code>RIGHT</code>, and <code>ALL</code> and returns a <code>Borders</code> object.</p>
+<p>An empty <code>border!()</code> call returns <code>NONE</code>.</p>
+<p>For example:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="rust"><span class="giallo-l"><span style="color: #B57EDC;">border!</span><span>(</span><span style="color: #56B6C2;">ALL</span><span>)</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">border!</span><span>(</span><span style="color: #56B6C2;">LEFT</span><span>,</span><span style="color: #56B6C2;"> RIGHT</span><span>)</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">border!</span><span>()</span></span></code></pre>
+<p>This is gated behind a <code>macros</code> feature flag to ensure short build times. To enable it, update <code>Cargo.toml</code> as follows:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="toml"><span class="giallo-l"><span>[</span><span style="color: #E5C07B;">dependencies</span><span>.</span><span style="color: #E5C07B;">ratatui</span><span>]</span></span>
+<span class="giallo-l"><span style="color: #C6CCD7;">version</span><span> = &quot;</span><span style="color: #98C379;">0.21.0</span><span>&quot;</span></span>
+<span class="giallo-l"><span style="color: #C6CCD7;">features</span><span> = [&quot;</span><span style="color: #98C379;">macros</span><span>&quot;]</span></span></code></pre>
+<p>Going forward, we will most likely put the new macros behind <code>macros</code> feature as well.</p>
+<hr />
+<h3 id="color-support-conversion-from-string">Color: support conversion from <code>String</code></h3>
+<p>Have you ever needed this conversion?</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="rust"><span class="giallo-l"><span>&quot;</span><span style="color: #98C379;">black</span><span>&quot;</span><span style="color: #E06C75;"> =&gt;</span><span style="color: #E5C07B;"> Color</span><span style="color: #E06C75;">::</span><span style="color: #E5C07B;">Black</span><span>,</span></span>
+<span class="giallo-l"><span>&quot;</span><span style="color: #98C379;">red</span><span>&quot;</span><span style="color: #E06C75;"> =&gt;</span><span style="color: #E5C07B;"> Color</span><span style="color: #E06C75;">::</span><span style="color: #E5C07B;">Red</span><span>,</span></span>
+<span class="giallo-l"><span>&quot;</span><span style="color: #98C379;">green</span><span>&quot;</span><span style="color: #E06C75;"> =&gt;</span><span style="color: #E5C07B;"> Color</span><span style="color: #E06C75;">::</span><span style="color: #E5C07B;">Green</span><span>,</span></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;">// etc.</span></span></code></pre>
+<p>Don't worry, we got you covered:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="rust"><span class="giallo-l"><span style="color: #E5C07B;">Color</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">from_str</span><span>(&quot;</span><span style="color: #98C379;">lightblue</span><span>&quot;)</span><span style="color: #5F6672;font-style: italic;"> // Color::LightBlue</span></span>
+<span class="giallo-l"><span style="color: #E5C07B;">Color</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">from_str</span><span>(&quot;</span><span style="color: #98C379;">10</span><span>&quot;)</span><span style="color: #5F6672;font-style: italic;">        // Color::Indexed(10)</span></span>
+<span class="giallo-l"><span style="color: #E5C07B;">Color</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">from_str</span><span>(&quot;</span><span style="color: #98C379;">#FF0000</span><span>&quot;)</span><span style="color: #5F6672;font-style: italic;">   // Color::Rgb(255, 0, 0)</span></span></code></pre>
+<hr />
+<h3 id="spans-line"><code>Spans</code> -&gt; <code>Line</code></h3>
+<p><code>Line</code> is a significantly better name over <code>Spans</code> as the plural causes confusion and the type really is a representation of a line of text made up of spans.</p>
+<p>So, <code>Spans</code> is renamed as <code>Line</code> and a deprecation notice has been added.</p>
+<p>See <a rel="external" href="https://github.com/ratatui-org/ratatui/pull/178">https://github.com/ratatui-org/ratatui/pull/178</a> for more discussion.</p>
+<hr />
+<h3 id="other-features">Other features</h3>
+<ul>
+<li><code>List</code> now has a <code>len()</code> method for returning the number of items</li>
+<li><code>Sparkline</code> now has a <code>direction()</code> method for specifying the render direction (left to right / right to left)</li>
+<li><code>Table</code> and <code>List</code> states now have <code>offset()</code> and <code>offset_mut()</code> methods</li>
+<li>Expose the test buffer (<code>TestBackend</code>) with <code>Display</code> implementation</li>
+</ul>
+<hr />
+<h3 id="new-apps">New apps</h3>
+<p>Here is the list of applications that has been added:</p>
+<ul>
+<li><a rel="external" href="https://github.com/BrookJeynes/oxycards">oxycards</a>: quiz card application built within the terminal.</li>
+<li><a rel="external" href="https://github.com/Xithrius/twitch-tui">twitch-tui</a>: twitch chat in the terminal.</li>
+<li><a rel="external" href="https://github.com/pythops/tenere">tenere</a>: TUI interface for LLMs.</li>
+</ul>
+<p>Also, we moved <code>APPS.md</code> file to the <a rel="external" href="https://github.com/ratatui-org/ratatui/wiki/Apps-using-Ratatui">Wiki</a> so check it out for more applications built with <code>ratatui</code>!</p>
+<hr />
+<h3 id="migration-from-tui-rs">Migration from <code>tui-rs</code></h3>
+<p>We put together a migration guide at the Wiki: <a rel="external" href="https://github.com/ratatui-org/ratatui/wiki/Migrating-from-TUI">Migrating from TUI</a></p>
+<p>Also, the minimum supported Rust version is <code>1.65.0</code></p>
+<hr />
+<h2 id="contributing">Contributing</h2>
+<p>Any contribution is highly appreciated! There are <a rel="external" href="https://github.com/ratatui-org/ratatui/blob/main/CONTRIBUTING.md">contribution guidelines</a> for getting started.</p>
+<p>Feel free to <a rel="external" href="https://github.com/ratatui-org/ratatui/issues/new/choose">submit issues</a> and throw in ideas!</p>
+<p>If you are having a problem with <code>ratatui</code> or want to contribute to the project or just want to chit-chat, feel free to <a rel="external" href="https://discord.gg/pMCEU9hNEj">join our Discord server</a>!</p>
+<hr />
+<h2 id="acknowledgements">Acknowledgements</h2>
+<p>Shout out to these awesome people for their contribution to the project:</p>
+<ul>
+<li><a rel="external" href="https://github.com/joshka">@joshka</a></li>
+<li><a rel="external" href="https://github.com/sophacles">@sophacles</a></li>
+<li><a rel="external" href="https://github.com/sayanarijit">@sayanarijit</a></li>
+<li><a rel="external" href="https://github.com/mindoodoo">@mindoodoo</a></li>
+<li><a rel="external" href="https://github.com/rhysd">@rhysd</a></li>
+<li><a rel="external" href="https://github.com/a-kenji">@a-kenji</a></li>
+<li><a rel="external" href="https://github.com/karolinepauls">@karolinepauls</a></li>
+<li><a rel="external" href="https://github.com/TimonPost">@TimonPost</a></li>
+<li><a rel="external" href="https://github.com/abusch">@abusch</a></li>
+<li><a rel="external" href="https://github.com/defiori">@defiori</a></li>
+<li><a rel="external" href="https://github.com/dflemstr">@dflemstr</a></li>
+<li><a rel="external" href="https://github.com/stevensonmt">@stevensonmt</a></li>
+<li><a rel="external" href="https://github.com/TheLostLambda">@TheLostLambda</a></li>
+<li><a rel="external" href="https://github.com/cjbassi">@cjbassi</a></li>
+<li><a rel="external" href="https://github.com/sectore">@sectore</a></li>
+<li><a rel="external" href="https://github.com/JosephFKnight">@JosephFKnight</a></li>
+<li><a rel="external" href="https://github.com/man0lis">@man0lis</a></li>
+<li><a rel="external" href="https://github.com/wose">@wose</a></li>
+<li><a rel="external" href="https://github.com/svenstaro">@svenstaro</a></li>
+<li><a rel="external" href="https://github.com/scauligi">@scauligi</a></li>
+<li><a rel="external" href="https://github.com/scvalex">@scvalex</a></li>
+<li><a rel="external" href="https://github.com/eminence">@eminence</a></li>
+<li><a rel="external" href="https://github.com/imsnif">@imsnif</a></li>
+<li><a rel="external" href="https://github.com/ClementTsang">@ClementTsang</a></li>
+<li><a rel="external" href="https://github.com/deepu105">@deepu105</a></li>
+<li><a rel="external" href="https://github.com/fujiapple852">@fujiapple852</a></li>
+<li><a rel="external" href="https://github.com/jeffa5">@jeffa5</a></li>
+<li><a rel="external" href="https://github.com/z2oh">@z2oh</a></li>
+</ul>
+<p>And lastly, special thanks to <a rel="external" href="https://github.com/fdehau">@fdehau</a> once again!</p>
+<p>🥂</p>
+
+    </div>
+
+    
+        <footer>
+            <hr>
+            <p>
+                
+                    Published by Orhun Parmaksız
+                
+                
+                    
+                    in <a href="https://blog.orhun.dev/categories/ratatui/">Ratatui</a>
+                
+                
+            </p>
+            
+            
+            <div style="display: flex; justify-content: space-between; align-items: center">
+              <div>
+                <iframe
+                  src="https://github.com/sponsors/orhun/button"
+                  title="Sponsor @orhun"
+                  height="35"
+                  width="116"
+                  style="border: 0"
+                ></iframe>
+                <a href="https://www.buymeacoffee.com/orhun" target="_blank"
+                  ><img
+                    src="https://cdn.buymeacoffee.com/buttons/v2/default-white.png"
+                    alt="Buy Me A Coffee"
+                    style="height: 40px !important; width: 150px !important"
+                /></a>
+              </div>
+              <div>
+                <applause-button
+                  style="width: 50px; height: 50px"
+                  url="https://blog.orhun.dev&#x2F;ratatui-0-21-0&#x2F;"
+                  color="white"
+                  multiclap="true"
+                />
+              </div>
+              <div>
+                <div style="width: auto; height: 39px">
+                  <p style="margin: 0; color: #fff; font-style: italic">✨ Sponsored by:</p>
+                </div>
+                <a href="https://www.jetbrains.com/" target="_blank"
+                  ><img
+                    src="/sponsors/jetbrains.png"
+                    alt="JetBrains"
+                    style="height: 45px; width: auto"
+                /></a>
+                <a href="https://terminaltrove.com/" target="_blank"
+                  ><img
+                    src="/sponsors/terminal_trove.png"
+                    alt="Terminal Trove"
+                    style="height: 40px; width: auto"
+                /></a>
+              </div>
+            </div>
+            <script src="https://utteranc.es/client.js"
+                    repo="orhun/personal-blog"
+                    issue-term="url"
+                    label="comments"
+                    theme="github-dark"
+                    crossorigin="anonymous"
+                    async>
+            </script>
+        </footer>
+    
+</article>
+
+
+    </body>
+
+    <script type="text/javascript" src="https://blog.orhun.dev/elasticlunr.min.js"></script>
+    <script type="text/javascript" src="https://blog.orhun.dev/js/search.js"></script>
+
+</html>

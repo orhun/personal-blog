@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <meta http-equiv="content-type" content="text/html; charset=utf-8">
+      <meta property="og:type" content="website" />
+      <meta property="og:url" content="https://blog.orhun.dev"/>
+      
+      <meta property="og:title" content="Zero-dependency random number generation in Rust - Orhun&#x27;s Blog" />
+      
+      <meta property="og:image" content="https://blog.orhun.dev/crow.png" />
+      
+      <meta name="description" content="FOSS • Linux • Programming" />
+      <meta property="og:description" content="FOSS • Linux • Programming"/>
+      
+
+      <!-- Enable responsiveness on mobile devices-->
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+      <link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png">
+      <link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png">
+      <link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png">
+      <link rel="manifest" href="/favicon/site.webmanifest">
+
+      <script async src="https://umami.orhun.dev/script.js" data-website-id="56ca5ca7-ba9f-416e-8bee-a132c155d56b"></script>
+
+      <link rel="stylesheet" href="https://unpkg.com/applause-button/dist/applause-button.css" />
+      <script src="https://unpkg.com/applause-button/dist/applause-button.js"></script>
+
+      
+      <title>Zero-dependency random number generation in Rust - Orhun&#x27;s Blog</title>
+      
+      <link rel="alternate" type="application/rss+xml" title="Orhun&#x27;s Blog RSS Feed" href="https://blog.orhun.dev/rss.xml" />
+
+      
+          <link rel="stylesheet" href="https://blog.orhun.dev/site.css">
+      
+
+      
+      
+    </head>
+
+    <body class="hack dark main container">
+        
+    
+        
+                
+                    <header>
+                    <nav itemscope itemtype="http://schema.org/SiteNavigationElement" class="nav-flex">
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://blog.orhun.dev">
+                                <span itemprop="name">Home</span>
+                            </a>
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://blog.orhun.dev/categories">
+                                <span itemprop="name">Categories</span>
+                            </a>
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://github.com/orhun/personal-blog">
+                                <span itemprop="name">Source</span>
+                            </a>
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://github.com/orhun">
+                                <span itemprop="name">GitHub</span>
+                            </a>
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://donate.orhun.dev">
+                                <span itemprop="name">Donate</span>
+                            </a>
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://blog.orhun.dev/rss.xml">
+                                <span itemprop="name">RSS</span>
+                            </a>
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://orhun.dev">
+                                <span itemprop="name">About</span>
+                            </a>
+                        
+                        <div class="search-container">
+                            <input type="text" id="search" placeholder="Search...">
+                            <div class="search-results">
+                                <div class="search-results__items"></div>
+                            </div>
+                        </div>
+                    </nav>
+                    </header>
+                
+            
+    
+
+<article itemscope itemtype="http://schema.org/BlogPosting">
+    <header>
+        <h1 itemprop="headline">Zero-dependency random number generation in Rust</h1>
+        <span class="muted">
+    <svg style="margin-bottom:-3px" class="i-clock" viewBox="0 0 32 32"
+         width="16" height="16" fill="none" stroke="currentcolor"
+         stroke-linecap="round" stroke-linejoin="round" stroke-width="6.25%">
+        <circle cx="16" cy="16" r="14"/>
+        <path d="M16 8 L16 16 20 20"/>
+    </svg>
+    <span>12 minute read</span>
+    <svg style="margin-bottom: -3px" class="i-edit" viewBox="0 0 32 32"
+         width="16" height="16" fill="none" stroke="currentcolor"
+         stroke-linecap="round" stroke-linejoin="round" stroke-width="6.25%">
+        <path d="M30 7 L25 2 5 22 3 29 10 27 Z M21 6 L26 11 Z M5 22 L10 27 Z"/>
+    </svg>
+
+    Published: 2023-01-03
+</span>
+    </header>
+    <div itemprop="articleBody">
+      <p>Let's investigate how to generate random numbers without external dependencies in Rust.</p>
+<span id="continue-reading"></span><center>
+<img alt="https://xkcd.com/221/" src="/xkcd221.png"/>
+</center>
+<br>
+<p>Random numbers are very interesting. It feels like magic that we can generate such unpredictable entropies from deterministic sources.</p>
+<p>But how does this happen? Before jumping into the generation of random numbers in Rust, let's understand the process of random number generation and how true randomness could never be created without special hardware.</p>
+<h3 id="is-random-really-random">Is random really random?</h3>
+<p>First of all, nothing is <em>truly</em> random when we consider the modern computers that we use on daily basis. This is because they are designed to be <em>deterministic</em>. What this means is that, given some initial state and an operation to perform, we can predict <em>exactly</em> how the machine will evolve. Simply put, for the given inputs <code>2</code> and <code>2</code>, we know the operation <code>2+2</code> will be outputting <code>4</code>. This makes total sense since we don't want to wonder what an addition will do, we just want to 'add'. However, this situation of certainty is incompatible with generating <em>truly</em> random numbers. From the definition of "truly", we understand that there should be absolutely no way to predict it, regardless of the information we have. Although it seems impossible to predict a random number without certain quantum-mechanical processes, since it would require knowing the state of every molecule in the atmosphere, we still cannot say that what we generate is <em>truly</em> random.</p>
+<p>But then, how do we generate 'random' numbers? Well, the answer is, in most cases, random is not so random. That's when <a rel="external" href="https://en.wikipedia.org/wiki/Pseudorandomness">pseudorandomness</a> steps into the scene.</p>
+<blockquote>
+<p>Pseudo-random sequences typically exhibit statistical randomness while being generated by an entirely deterministic causal process.</p>
+</blockquote>
+<p>Cryptographically secure pseudorandom number generators (<strong>CSPRNG</strong>s) are very important in computing. Without them, we wouldn't have encryption algorithms. They <em>emulate</em> randomness by taking a statistically random sequence and using formulas to make it "random enough".</p>
+<p>The math behind PRNG might be complex but in general, it requires two steps:</p>
+<ol>
+<li>Provide the PRNG with an arbitrary <strong>seed</strong>.</li>
+<li>Ask for the next random number.</li>
+</ol>
+<p>The <code>seed</code> is a starting point for creating random numbers. If the seed changes, the generated numbers also change. If the same seed is used, the same number is generated. The current timestamp is often used as a unique seed value. That precise time never occurs again, so a PRNG with that seed should produce a unique set of random numbers.</p>
+<p>Now that we understand how random is not <em>truly</em> random and we can use pseudorandom with a seed to generate "random enough" numbers, let's see the ways of using PRNG in Rust and whether it is possible to do without extra dependencies. Unfortunately, there isn't a widely accepted and conventional way to generate random numbers by only using the core/standard library so we will have to be a little bit creative.</p>
+<p>But hey, it will be fun!</p>
+<hr />
+<h3 id="using-rand">Using <a rel="external" href="https://crates.io/crates/rand"><code>rand</code></a></h3>
+<p>Probably the most straightforward of generating random numbers is using the <code>rand</code> crate.</p>
+<p>Here are some <a rel="external" href="https://rust-lang-nursery.github.io/rust-cookbook/algorithms/randomness.html">examples</a>:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="rust"><span class="giallo-l"><span style="color: #E06C75;">use</span><span style="color: #61AFEF;"> rand</span><span style="color: #E06C75;">::</span><span style="color: #E5C07B;">Rng</span><span>;</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #E06C75;">fn</span><span style="color: #B57EDC;"> main</span><span>() {</span></span>
+<span class="giallo-l"><span style="color: #61AFEF;">    let mut</span><span style="color: #C6CCD7;"> rng</span><span style="color: #E06C75;"> =</span><span style="color: #61AFEF;"> rand</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">thread_rng</span><span>();</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #61AFEF;">    let</span><span style="color: #C6CCD7;"> n1</span><span style="color: #E06C75;">:</span><span style="color: #E5C07B;"> u8</span><span style="color: #E06C75;"> =</span><span style="color: #C6CCD7;"> rng</span><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">gen</span><span>();</span></span>
+<span class="giallo-l"><span style="color: #61AFEF;">    let</span><span style="color: #C6CCD7;"> n2</span><span style="color: #E06C75;">:</span><span style="color: #E5C07B;"> u16</span><span style="color: #E06C75;"> =</span><span style="color: #C6CCD7;"> rng</span><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">gen</span><span>();</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;">    // Prints 57, 31141, 1371217128, 1901352909, 0.5792015593471697, etc.</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">    println!</span><span>(&quot;</span><span style="color: #98C379;">Random u8: </span><span>{}&quot;,</span><span style="color: #C6CCD7;"> n1</span><span>);</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">    println!</span><span>(&quot;</span><span style="color: #98C379;">Random u16: </span><span>{}&quot;,</span><span style="color: #C6CCD7;"> n2</span><span>);</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">    println!</span><span>(&quot;</span><span style="color: #98C379;">Random u32: </span><span>{}&quot;,</span><span style="color: #C6CCD7;"> rng</span><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">gen</span><span style="color: #E06C75;">::</span><span>&lt;</span><span style="color: #E5C07B;">u32</span><span>&gt;());</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">    println!</span><span>(&quot;</span><span style="color: #98C379;">Random i32: </span><span>{}&quot;,</span><span style="color: #C6CCD7;"> rng</span><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">gen</span><span style="color: #E06C75;">::</span><span>&lt;</span><span style="color: #E5C07B;">i32</span><span>&gt;());</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">    println!</span><span>(&quot;</span><span style="color: #98C379;">Random float: </span><span>{}&quot;,</span><span style="color: #C6CCD7;"> rng</span><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">gen</span><span style="color: #E06C75;">::</span><span>&lt;</span><span style="color: #E5C07B;">f64</span><span>&gt;());</span></span>
+<span class="giallo-l"><span>}</span></span></code></pre>
+<blockquote>
+<p>Generates random numbers with help of random-number
+generator <a rel="external" href="https://docs.rs/rand/latest/rand/trait.Rng.html"><code>rand::Rng</code></a> obtained via <a rel="external" href="https://docs.rs/rand/latest/rand/fn.thread_rng.html"><code>rand::thread_rng</code></a>. Each thread has an
+initialized generator. Integers are uniformly distributed over the range of the
+type, and floating point numbers are uniformly distributed from 0 up to but not
+including 1.</p>
+</blockquote>
+<p>If we want to give a <em>seed</em> and generate the same number every time we run the program, then we can change the PRNG implementation as follows:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="rust"><span class="giallo-l"><span style="color: #E06C75;">use</span><span style="color: #61AFEF;"> rand</span><span style="color: #E06C75;">::</span><span>{</span><span style="color: #E5C07B;">Rng</span><span>,</span><span style="color: #E5C07B;"> SeedableRng</span><span>};</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">use</span><span style="color: #61AFEF;"> rand_pcg</span><span style="color: #E06C75;">::</span><span style="color: #E5C07B;">Pcg64</span><span>;</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #61AFEF;">const</span><span style="color: #56B6C2;"> SEED</span><span style="color: #E06C75;">:</span><span style="color: #E5C07B;"> u64</span><span style="color: #E06C75;"> =</span><span style="color: #56B6C2;"> 42</span><span>;</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #E06C75;">fn</span><span style="color: #B57EDC;"> main</span><span>() {</span></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;">    // Uses PCG random number generator (XSL RR 128/64 (LCG) variant).</span></span>
+<span class="giallo-l"><span style="color: #61AFEF;">    let mut</span><span style="color: #C6CCD7;"> rng</span><span style="color: #E06C75;"> =</span><span style="color: #E5C07B;"> Pcg64</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">seed_from_u64</span><span>(</span><span style="color: #56B6C2;">SEED</span><span>);</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;">    // Prints &quot;Random u8: 9&quot; every time we run.</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">    println!</span><span>(&quot;</span><span style="color: #98C379;">Random u8: </span><span>{}&quot;,</span><span style="color: #C6CCD7;"> rng</span><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">gen</span><span style="color: #E06C75;">::</span><span>&lt;</span><span style="color: #E5C07B;">u8</span><span>&gt;());</span></span>
+<span class="giallo-l"><span>}</span></span></code></pre>
+<p>However, we're still far from our objective, which is generating random numbers without dependencies. Even <code>rand</code> with default features has several transitive dependencies:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #B57EDC;">$</span><span style="color: #98C379;"> cargo tree</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #B57EDC;">testapp</span><span style="color: #98C379;"> v0.1.0</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">└──</span><span style="color: #98C379;"> rand v0.8.5</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">    ├──</span><span style="color: #98C379;"> libc v0.2.139</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">    ├──</span><span style="color: #98C379;"> rand_chacha v0.3.1</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">    │</span><span style="color: #98C379;">   ├── ppv-lite86 v0.2.17</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">    │</span><span style="color: #98C379;">   └── rand_core v0.6.4</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">    │</span><span style="color: #98C379;">       └── getrandom v0.2.8</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">    │</span><span style="color: #98C379;">           ├── cfg-if v1.0.0</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">    │</span><span style="color: #98C379;">           └── libc v0.2.139</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">    └──</span><span style="color: #98C379;"> rand_core v0.6.4</span><span> (*)</span></span></code></pre>
+<p>Maybe we can look into reducing the transitive dependency count somehow before trying to achieve our 0-dependency goal.</p>
+<p>I'm not sure how usable <code>rand</code> will be in this case, but we can simply remove the default features:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="toml"><span class="giallo-l"><span>[</span><span style="color: #E5C07B;">dependencies</span><span>]</span></span>
+<span class="giallo-l"><span style="color: #C6CCD7;">rand</span><span> = {</span><span style="color: #C6CCD7;"> version</span><span> = &quot;</span><span style="color: #98C379;">0.8.5</span><span>&quot;,</span><span style="color: #C6CCD7;"> default-features</span><span> =</span><span style="color: #56B6C2;"> false</span><span> }</span></span></code></pre>
+<p>Then we have:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #B57EDC;">$</span><span style="color: #98C379;"> cargo tree</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #B57EDC;">testapp</span><span style="color: #98C379;"> v0.1.0</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">└──</span><span style="color: #98C379;"> rand v0.8.5</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">    └──</span><span style="color: #98C379;"> rand_core v0.6.4</span></span></code></pre>
+<p>Still not looking good? Well, luckily, we have an alternative crate to use.</p>
+<hr />
+<h3 id="using-fastrand">Using <a rel="external" href="https://crates.io/crates/fastrand"><code>fastrand</code></a></h3>
+<p><code>fastrand</code> is a simple and fast random number generator that uses <a rel="external" href="https://github.com/wangyi-fudan/wyhash">wyhash</a>. This hash function is also simple and fast but not cryptographically secure.</p>
+<p>So our previous examples with <code>rand</code> become the following:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="rust"><span class="giallo-l"><span style="color: #E06C75;">fn</span><span style="color: #B57EDC;"> main</span><span>() {</span></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;">    // Prints 119, 67, 233, etc.</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">    println!</span><span>(&quot;</span><span style="color: #98C379;">Random u8: </span><span>{}&quot;,</span><span style="color: #61AFEF;"> fastrand</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">u8</span><span>(</span><span style="color: #E06C75;">..</span><span>));</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;">    // Pick an arbitrary number as seed.</span></span>
+<span class="giallo-l"><span style="color: #61AFEF;">    fastrand</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">seed</span><span>(</span><span style="color: #56B6C2;">42</span><span>);</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;">    // Prints e.g. 52 every time we run.</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">    println!</span><span>(&quot;</span><span style="color: #98C379;">Random u8 with seed: </span><span>{}&quot;,</span><span style="color: #61AFEF;"> fastrand</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">u8</span><span>(</span><span style="color: #E06C75;">..</span><span>));</span></span>
+<span class="giallo-l"><span>}</span></span></code></pre>
+<p>How about our dependency count?</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #B57EDC;">$</span><span style="color: #98C379;"> cargo tree</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #B57EDC;">testapp</span><span style="color: #98C379;"> v0.1.0</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">└──</span><span style="color: #98C379;"> fastrand v1.8.0</span></span></code></pre>
+<p>Well, it's good, but still not quite there. Technically, this approach is not 0-deps since <code>fastrand</code> itself is a dependency to our program.</p>
+<p>Our goal is to have a single function that is simple enough for getting a random number every time we call it.</p>
+<p>Hmm, let's see what we can do.</p>
+<hr />
+<h3 id="zero-dependency-random-number-generation"><strong>Zero-dependency Random Number Generation</strong></h3>
+<p>There is more than one way to simulate entropy to generate random numbers and I will be mentioning the most suggested/interesting ways that I came across on <a rel="external" href="https://www.reddit.com/r/rust/comments/c1az1t/random_numbers_without_crates/">Reddit</a> and <a rel="external" href="https://users.rust-lang.org/t/random-number-without-using-the-external-crate/17260">Rust users forum</a>.</p>
+<hr />
+<h4 id="nanoseconds">Nanoseconds</h4>
+<p>Here is the poor man's random number generator which only takes the nanoseconds of the current time:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="rust"><span class="giallo-l"><span style="color: #E06C75;">use</span><span style="color: #61AFEF;"> std</span><span style="color: #E06C75;">::</span><span style="color: #61AFEF;">error</span><span style="color: #E06C75;">::</span><span style="color: #E5C07B;">Error</span><span>;</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">use</span><span style="color: #61AFEF;"> std</span><span style="color: #E06C75;">::</span><span style="color: #61AFEF;">time</span><span style="color: #E06C75;">::</span><span>{</span><span style="color: #E5C07B;">SystemTime</span><span>,</span><span style="color: #E5C07B;"> UNIX_EPOCH</span><span>};</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #E06C75;">fn</span><span style="color: #B57EDC;"> main</span><span>()</span><span style="color: #E06C75;"> -&gt;</span><span style="color: #E5C07B;"> Result</span><span>&lt;(),</span><span style="color: #E5C07B;"> Box</span><span>&lt;</span><span style="color: #E06C75;">dyn</span><span style="color: #E5C07B;"> Error</span><span>&gt;&gt; {</span></span>
+<span class="giallo-l"><span style="color: #61AFEF;">    let</span><span style="color: #C6CCD7;"> nanos</span><span style="color: #E06C75;"> =</span><span style="color: #E5C07B;"> SystemTime</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">now</span><span>()</span><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">duration_since</span><span>(</span><span style="color: #56B6C2;">UNIX_EPOCH</span><span>)</span><span style="color: #E06C75;">?.</span><span style="color: #B57EDC;">subsec_nanos</span><span>();</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;">    // Prints 864479511, 455850730, etc.</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">    println!</span><span>(&quot;</span><span style="color: #98C379;">Random number: </span><span>{</span><span style="color: #98C379;">nanos</span><span>}&quot;);</span></span>
+<span class="giallo-l"><span style="color: #E5C07B;">    Ok</span><span>(())</span></span>
+<span class="giallo-l"><span>}</span></span></code></pre>
+<p>In this example, we take the current time which is expressed as duration since <a rel="external" href="https://en.wikipedia.org/wiki/Unix_time">epoch</a>, and extract the number of nanoseconds elapsed in the current second. For example, if the current time is "10:20:30.123456789" then our 'random' number will be 123456789. The problem here is that the number will be always between zero and 1 billion. We need to use a bit of modulo arithmetic to get a random number in the desired range.</p>
+<p>Well, this was suboptimal. Let's see what else we can do.</p>
+<hr />
+<h4 id="dev-urandom"><code>/dev/urandom</code></h4>
+<blockquote>
+<p>In Unix-like operating systems, <code>/dev/random</code> and <code>/dev/urandom</code> are special files that serve as cryptographically secure pseudorandom number generators. They allow access to environmental noise collected from device drivers and other sources.</p>
+</blockquote>
+<p>The difference between <code>/dev/random</code> and <code>/dev/urandom</code> is that <code>/dev/random</code> only returns random bytes within the estimated number of bits of noise in the entropy pool whereas <code>/dev/urandom</code> does not block waiting for more entropy. Thus <code>/dev/urandom</code> is theoretically vulnerable to a cryptographic attack on the algorithms used by the driver and less random than <code>/dev/random</code>. <code>/dev/random</code> is more suitable for very high-quality randomness applications such as one-time pad or key generation.</p>
+<p>(If you would like to learn more about these magical files, see <a rel="external" href="https://www.2uo.de/myths-about-urandom/">Myths about /dev/urandom</a>)</p>
+<p>In our case, we don't want to wait for the entropy pool until additional environmental noise is gathered so we can use <code>/dev/urandom</code>.</p>
+<p>(Edit after <a rel="external" href="https://lobste.rs/s/9lfkmv/zero_dependency_random_number#c_wrwsw0">Foxboron's comment</a>: Apparently since the March of 2022 / Kernel 5.6, there is no difference between <code>/dev/random</code> and <code>/dev/urandom</code>. See <a rel="external" href="https://www.theregister.com/2022/03/21/new_linux_kernel_has_improved/">this article</a>.)</p>
+<p>An example usage of <code>/dev/urandom</code> which generates a random string is the following:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #B57EDC;">$</span><span style="color: #98C379;"> cat /dev/urandom</span><span style="color: #E06C75;"> |</span><span style="color: #B57EDC;"> base64</span><span style="color: #E06C75;"> |</span><span style="color: #B57EDC;"> head</span><span style="color: #56B6C2;"> -c 10</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #B57EDC;">66Dphl5MAh</span></span></code></pre>
+<p>In Rust, we can utilize <code>/dev/urandom</code> like so:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="rust"><span class="giallo-l"><span style="color: #E06C75;">use</span><span style="color: #61AFEF;"> std</span><span style="color: #E06C75;">::</span><span style="color: #61AFEF;">fs</span><span style="color: #E06C75;">::</span><span style="color: #E5C07B;">File</span><span>;</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">use</span><span style="color: #61AFEF;"> std</span><span style="color: #E06C75;">::</span><span style="color: #61AFEF;">io</span><span style="color: #E06C75;">::</span><span>{</span><span style="color: #E5C07B;">Read</span><span>,</span><span style="color: #E5C07B;"> Result</span><span>};</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #E06C75;">fn</span><span style="color: #B57EDC;"> main</span><span>()</span><span style="color: #E06C75;"> -&gt;</span><span style="color: #E5C07B;"> Result</span><span>&lt;()&gt; {</span></span>
+<span class="giallo-l"><span style="color: #61AFEF;">    let mut</span><span style="color: #C6CCD7;"> rng</span><span style="color: #E06C75;"> =</span><span style="color: #E5C07B;"> File</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">open</span><span>(&quot;</span><span style="color: #98C379;">/dev/urandom</span><span>&quot;)</span><span style="color: #E06C75;">?</span><span>;</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #61AFEF;">    let mut</span><span style="color: #C6CCD7;"> buffer</span><span style="color: #E06C75;"> =</span><span> [</span><span style="color: #56B6C2;">0</span><span style="color: #E5C07B;">u8</span><span>;</span><span style="color: #56B6C2;"> 1</span><span>];</span></span>
+<span class="giallo-l"><span style="color: #C6CCD7;">    rng</span><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">read_exact</span><span>(</span><span style="color: #E06C75;">&amp;</span><span style="color: #61AFEF;">mut</span><span style="color: #C6CCD7;"> buffer</span><span>)</span><span style="color: #E06C75;">?</span><span>;</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;">    // Prints 92, 119, 122, etc.</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">    println!</span><span>(&quot;</span><span style="color: #98C379;">Random u8: </span><span>{}&quot;,</span><span style="color: #C6CCD7;"> buffer</span><span>[</span><span style="color: #56B6C2;">0</span><span>]);</span></span>
+<span class="giallo-l"><span style="color: #E5C07B;">    Ok</span><span>(())</span></span>
+<span class="giallo-l"><span>}</span></span></code></pre>
+<p>Although this solution will work perfectly fine on Unix-based operating systems, we won't be able to run this on other operating systems such as Microsoft Windows since <code>/dev/urandom</code> doesn't exist.</p>
+<p>But hey, we got our RNG without extra dependencies!</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #B57EDC;">$</span><span style="color: #98C379;"> cargo tree</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #B57EDC;">testapp</span><span style="color: #98C379;"> v0.1.0</span></span></code></pre>
+<p>Interestingly enough, <a rel="external" href="https://docs.rs/rand/latest/rand/rngs/struct.OsRng.html"><code>OsRng</code></a> implementation of <code>rand</code> also depends on this approach:</p>
+<blockquote>
+<p>The implementation is provided by the <a rel="external" href="https://crates.io/crates/getrandom">getrandom</a> crate.</p>
+</blockquote>
+<p>And <code>getrandom</code> crate reads <code>/dev/urandom</code> under the hood:</p>
+<blockquote>
+<p>Uses <a rel="external" href="https://man7.org/linux/man-pages/man2/getrandom.2.html">getrandom</a> system call if available, otherwise <code>/dev/urandom</code> after successfully polling <code>/dev/random</code>.</p>
+</blockquote>
+<p>Wait, did I just read "getrandom system call"? I wonder if we can we utilize that for generating random numbers.</p>
+<hr />
+<h4 id="getrandom-2"><code>getrandom(2)</code></h4>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="c"><span class="giallo-l"><span>#</span><span style="color: #E06C75;">include</span><span> &lt;</span><span style="color: #98C379;">sys/random.h</span><span>&gt;</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #61AFEF;">ssize_t</span><span style="color: #B57EDC;"> getrandom</span><span>(</span><span style="color: #61AFEF;">void</span><span style="color: #E06C75;"> *</span><span style="color: #C6CCD7;">buf</span><span>,</span><span style="color: #61AFEF;"> size_t</span><span style="color: #C6CCD7;"> buflen</span><span>,</span><span style="color: #61AFEF;"> unsigned int</span><span style="color: #C6CCD7;"> flags</span><span>);</span></span></code></pre>
+<blockquote>
+<p>The <code>getrandom()</code> system call fills the buffer pointed to by <code>buf</code> with up to <code>buflen</code> random bytes.
+These bytes can be used to <strong>seed</strong> user-space random number generators or for cryptographic purposes.
+By default, <code>getrandom()</code> draws entropy from the urandom source (i.e., the same source as the <code>/dev/urandom</code> device).
+This behavior can be changed via the <code>flags</code> argument.</p>
+</blockquote>
+<p>In order to use this system call in Rust, we need to define own our extern function or use the <a rel="external" href="https://crates.io/crates/libc">libc</a> crate since Unix systems expose the syscalls through <code>libc</code>.</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="rust"><span class="giallo-l"><span style="color: #5F6672;font-style: italic;">// https://man7.org/linux/man-pages/man2/getrandom.2.html</span></span>
+<span class="giallo-l"><span>#[cfg(not(target_os </span><span style="color: #E06C75;">=</span><span> &quot;</span><span style="color: #98C379;">windows</span><span>&quot;))]</span></span>
+<span class="giallo-l"><span>#[link(name </span><span style="color: #E06C75;">=</span><span> &quot;</span><span style="color: #98C379;">c</span><span>&quot;)]</span></span>
+<span class="giallo-l"><span style="color: #61AFEF;">extern</span><span> &quot;</span><span style="color: #98C379;">C</span><span>&quot; {</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">    fn</span><span style="color: #B57EDC;"> getrandom</span><span>(</span><span style="color: #C6CCD7;">buf</span><span style="color: #E06C75;">: *</span><span style="color: #61AFEF;">const</span><span style="color: #E5C07B;"> u8</span><span>,</span><span style="color: #C6CCD7;"> buflen</span><span style="color: #E06C75;">:</span><span style="color: #E5C07B;"> usize</span><span>,</span><span style="color: #C6CCD7;"> flags</span><span style="color: #E06C75;">:</span><span style="color: #E5C07B;"> u32</span><span>)</span><span style="color: #E06C75;"> -&gt;</span><span style="color: #E5C07B;"> usize</span><span>;</span></span>
+<span class="giallo-l"><span>}</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #E06C75;">fn</span><span style="color: #B57EDC;"> main</span><span>() {</span></span>
+<span class="giallo-l"><span style="color: #61AFEF;">    let</span><span style="color: #C6CCD7;"> buffer</span><span style="color: #E06C75;"> =</span><span> [</span><span style="color: #56B6C2;">0</span><span style="color: #E5C07B;">u8</span><span>;</span><span style="color: #56B6C2;"> 1</span><span>];</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">    unsafe</span><span> {</span><span style="color: #B57EDC;"> getrandom</span><span>(</span><span style="color: #C6CCD7;">buffer</span><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">as_ptr</span><span>(),</span><span style="color: #56B6C2;"> 1</span><span>,</span><span style="color: #56B6C2;"> 2</span><span>) };</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;">    // Prints 78, 51, 241, etc.</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">    println!</span><span>(&quot;</span><span style="color: #98C379;">Seed: </span><span>{</span><span style="color: #98C379;">:?</span><span>}&quot;,</span><span style="color: #C6CCD7;"> buffer</span><span>[</span><span style="color: #56B6C2;">0</span><span>]);</span></span>
+<span class="giallo-l"><span>}</span></span></code></pre>
+<p>In our example, we defined an extern function with the same name as our system call (<code>getrandom</code>) to link to C library on the system so that we can interoperate with the C code. When we run this program, we can see that random seeds are generated using the <code>getrandom()</code> system call.</p>
+<p>The downside of this approach is that it will only work on systems that <code>getrandom()</code> system call exists and it is inescapably using <code>unsafe</code> code.</p>
+<p>But yeah, it is 0-deps on the surface, except the system call itself.</p>
+<hr />
+<h4 id="rand-srand"><code>rand()</code> / <code>srand()</code></h4>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="c"><span class="giallo-l"><span>#</span><span style="color: #E06C75;">include</span><span> &lt;</span><span style="color: #98C379;">stdlib.h</span><span>&gt;</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #61AFEF;">int</span><span style="color: #B57EDC;"> rand</span><span>(</span><span style="color: #61AFEF;">void</span><span>);</span></span>
+<span class="giallo-l"><span style="color: #61AFEF;">void</span><span style="color: #B57EDC;"> srand</span><span>(</span><span style="color: #61AFEF;">unsigned int</span><span style="color: #C6CCD7;"> seed</span><span>);</span></span></code></pre>
+<p>Another external way of generating random numbers is to call the C library function <a rel="external" href="https://www.ibm.com/docs/en/zos/2.2.0?topic=functions-rand-generate-random-number">rand()</a>. Along with <a rel="external" href="https://www.ibm.com/docs/en/zos/2.2.0?topic=functions-srand-set-seed-rand-function">srand()</a>, you can set the seed to use for a pseudorandom number generator. If <code>srand()</code> is not called, the <code>rand()</code> seed is set as if <code>srand(1)</code> was called at the program start.</p>
+<p>We can implement this in Rust similar to <code>getrandom()</code> system call. For the seed, we can use the <a href="https://blog.orhun.dev/zero-deps-random-in-rust/#nanoseconds">nanoseconds</a>:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="rust"><span class="giallo-l"><span style="color: #E06C75;">use</span><span style="color: #61AFEF;"> std</span><span style="color: #E06C75;">::</span><span style="color: #61AFEF;">error</span><span style="color: #E06C75;">::</span><span style="color: #E5C07B;">Error</span><span>;</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">use</span><span style="color: #61AFEF;"> std</span><span style="color: #E06C75;">::</span><span style="color: #61AFEF;">time</span><span style="color: #E06C75;">::</span><span>{</span><span style="color: #E5C07B;">SystemTime</span><span>,</span><span style="color: #E5C07B;"> UNIX_EPOCH</span><span>};</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span>#[link(name </span><span style="color: #E06C75;">=</span><span> &quot;</span><span style="color: #98C379;">c</span><span>&quot;)]</span></span>
+<span class="giallo-l"><span style="color: #61AFEF;">extern</span><span> &quot;</span><span style="color: #98C379;">C</span><span>&quot; {</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">    fn</span><span style="color: #B57EDC;"> rand</span><span>()</span><span style="color: #E06C75;"> -&gt;</span><span style="color: #E5C07B;"> i32</span><span>;</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">    fn</span><span style="color: #B57EDC;"> srand</span><span>(</span><span style="color: #C6CCD7;">seed</span><span style="color: #E06C75;">:</span><span style="color: #E5C07B;"> u32</span><span>);</span></span>
+<span class="giallo-l"><span>}</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #E06C75;">fn</span><span style="color: #B57EDC;"> main</span><span>()</span><span style="color: #E06C75;"> -&gt;</span><span style="color: #E5C07B;"> Result</span><span>&lt;(),</span><span style="color: #E5C07B;"> Box</span><span>&lt;</span><span style="color: #E06C75;">dyn</span><span style="color: #E5C07B;"> Error</span><span>&gt;&gt; {</span></span>
+<span class="giallo-l"><span style="color: #61AFEF;">    let</span><span style="color: #C6CCD7;"> seed</span><span style="color: #E06C75;"> =</span><span style="color: #E5C07B;"> SystemTime</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">now</span><span>()</span><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">duration_since</span><span>(</span><span style="color: #56B6C2;">UNIX_EPOCH</span><span>)</span><span style="color: #E06C75;">?.</span><span style="color: #B57EDC;">subsec_nanos</span><span>();</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #E06C75;">    unsafe</span><span> {</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">        srand</span><span>(</span><span style="color: #C6CCD7;">seed</span><span>);</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;">        // Prints 1741856104, 1321400234, etc.</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">        println!</span><span>(&quot;</span><span style="color: #98C379;">Random number: </span><span>{}&quot;,</span><span style="color: #B57EDC;"> rand</span><span>());</span></span>
+<span class="giallo-l"><span>    }</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #E5C07B;">    Ok</span><span>(())</span></span>
+<span class="giallo-l"><span>}</span></span></code></pre>
+<p>This has the same disadvantages as <code>getrandom</code>, it requires the C library for linking and has <code>unsafe</code> code.</p>
+<hr />
+<h4 id="getauxval-3"><code>getauxval(3)</code></h4>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="c"><span class="giallo-l"><span>#</span><span style="color: #E06C75;">include</span><span> &lt;</span><span style="color: #98C379;">sys/auxv.h</span><span>&gt;</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #61AFEF;">unsigned long</span><span style="color: #B57EDC;"> getauxval</span><span>(</span><span style="color: #61AFEF;">unsigned long</span><span style="color: #C6CCD7;"> type</span><span>);</span></span></code></pre>
+<blockquote>
+<p>The <a rel="external" href="https://man7.org/linux/man-pages/man3/getauxval.3.html">getauxval()</a> function retrieves values from the auxiliary vector, a mechanism that the kernel's ELF binary loader uses to pass certain information to user space when a program is executed.</p>
+<p>Each entry in the auxiliary vector consists of a pair of values: a type that identifies what this entry represents, and a value for that type. Given the argument <code>type</code>, <code>getauxval()</code> returns the corresponding value.</p>
+</blockquote>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="rust"><span class="giallo-l"><span style="color: #5F6672;font-style: italic;">// https://man7.org/linux/man-pages/man3/getauxval.3.html</span></span>
+<span class="giallo-l"><span>#[cfg(not(target_os </span><span style="color: #E06C75;">=</span><span> &quot;</span><span style="color: #98C379;">windows</span><span>&quot;))]</span></span>
+<span class="giallo-l"><span>#[link(name </span><span style="color: #E06C75;">=</span><span> &quot;</span><span style="color: #98C379;">c</span><span>&quot;)]</span></span>
+<span class="giallo-l"><span style="color: #61AFEF;">extern</span><span> &quot;</span><span style="color: #98C379;">C</span><span>&quot; {</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">    fn</span><span style="color: #B57EDC;"> getauxval</span><span>(</span><span style="color: #C6CCD7;">r#type</span><span style="color: #E06C75;">:</span><span style="color: #E5C07B;"> u64</span><span>)</span><span style="color: #E06C75;"> -&gt;</span><span style="color: #E5C07B;"> u64</span><span>;</span></span>
+<span class="giallo-l"><span>}</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #E06C75;">fn</span><span style="color: #B57EDC;"> main</span><span>() {</span></span>
+<span class="giallo-l"><span style="color: #61AFEF;">    let</span><span style="color: #C6CCD7;"> rnd</span><span style="color: #E06C75;"> = unsafe</span><span> {</span><span style="color: #E06C75;"> *</span><span>(</span><span style="color: #B57EDC;">getauxval</span><span>(</span><span style="color: #56B6C2;">25</span><span>)</span><span style="color: #E06C75;"> as *</span><span style="color: #61AFEF;">const</span><span> [</span><span style="color: #E5C07B;">u8</span><span>;</span><span style="color: #56B6C2;"> 1</span><span>]) };</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;">    // Prints 206, 120, 76, etc.</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">    println!</span><span>(&quot;</span><span style="color: #98C379;">Random number: </span><span>{</span><span style="color: #98C379;">:?</span><span>}&quot;,</span><span style="color: #C6CCD7;"> rnd</span><span>[</span><span style="color: #56B6C2;">0</span><span>]);</span></span>
+<span class="giallo-l"><span>}</span></span></code></pre>
+<p>The <code>type</code> argument of <code>getauxval()</code> ("25" in this case) is defined in <code>libc</code> as follows:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="rust"><span class="giallo-l"><span style="color: #5F6672;font-style: italic;">// The address of sixteen bytes containing a random value.</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">pub</span><span style="color: #61AFEF;"> const</span><span style="color: #56B6C2;"> AT_RANDOM</span><span style="color: #E06C75;">: ::</span><span style="color: #C6CCD7;">c_ulong</span><span style="color: #E06C75;"> =</span><span style="color: #56B6C2;"> 25</span><span>;</span></span></code></pre>
+<p>This solution was originally suggested by <a rel="external" href="https://www.reddit.com/r/rust/comments/102ar8c/comment/j2s7h8l/?utm_source=share&amp;utm_medium=web2x&amp;context=3">mina86ng</a> on Reddit.</p>
+<hr />
+<h4 id="raw-pointers">Raw pointers</h4>
+<p>Let's go for our last attempt.</p>
+<p>The bottom line is, if we allocate something, take the pointer to it, retrieve the address, and cast it to an integer; we will get a random number. The address in the memory is not totally random, but probably random enough to do stuff™.</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="rust"><span class="giallo-l"><span style="color: #E06C75;">fn</span><span style="color: #B57EDC;"> main</span><span>() {</span></span>
+<span class="giallo-l"><span style="color: #61AFEF;">    let</span><span style="color: #C6CCD7;"> pointer</span><span style="color: #E06C75;"> =</span><span style="color: #E5C07B;"> Box</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">into_raw</span><span>(</span><span style="color: #61AFEF;">Box</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">new</span><span>(</span><span style="color: #56B6C2;">42</span><span>));</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;">    // Prints 94560791661472, 94796207967136, etc.</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">    println!</span><span>(&quot;</span><span style="color: #98C379;">Random number: </span><span>{}&quot;,</span><span style="color: #C6CCD7;"> pointer</span><span style="color: #E06C75;"> as</span><span style="color: #E5C07B;"> usize</span><span>);</span></span>
+<span class="giallo-l"><span>}</span></span></code></pre>
+<p>The problem with that approach is, apart from using a memory address for a random number, the numbers are always even since they are a memory address aligned to the size of an integer.</p>
+<p>Also, the code above has memory leaks due to not handling the memory after calling <a rel="external" href="https://doc.rust-lang.org/std/boxed/struct.Box.html#method.into_raw"><code>Box::into_raw</code></a>.</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #B57EDC;">$</span><span style="color: #98C379;"> valgrind</span><span style="color: #56B6C2;"> -v</span><span style="color: #98C379;"> target/debug/testapp</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #98C379;">==985609== HEAP SUMMARY:</span></span>
+<span class="giallo-l"><span style="color: #98C379;">==985609==     in use at exit:</span><span style="color: #56B6C2;"> 4</span><span style="color: #98C379;"> bytes in</span><span style="color: #56B6C2;"> 1</span><span style="color: #98C379;"> blocks</span></span>
+<span class="giallo-l"><span style="color: #98C379;">==985609==   total heap usage:</span><span style="color: #56B6C2;"> 12</span><span style="color: #98C379;"> allocs,</span><span style="color: #56B6C2;"> 11</span><span style="color: #98C379;"> frees, 3,185 bytes allocated</span></span>
+<span class="giallo-l"><span style="color: #98C379;">==985609==</span></span>
+<span class="giallo-l"><span style="color: #98C379;">==985609== Searching for pointers to</span><span style="color: #56B6C2;"> 1</span><span style="color: #98C379;"> not-freed blocks</span></span>
+<span class="giallo-l"><span style="color: #98C379;">==985609== Checked 110,200 bytes</span></span>
+<span class="giallo-l"><span style="color: #98C379;">==985609==</span></span>
+<span class="giallo-l"><span style="color: #98C379;">==985609== LEAK SUMMARY:</span></span>
+<span class="giallo-l"><span style="color: #98C379;">==985609==    definitely lost:</span><span style="color: #56B6C2;"> 4</span><span style="color: #98C379;"> bytes in</span><span style="color: #56B6C2;"> 1</span><span style="color: #98C379;"> blocks</span></span>
+<span class="giallo-l"><span style="color: #98C379;">==985609==    indirectly lost:</span><span style="color: #56B6C2;"> 0</span><span style="color: #98C379;"> bytes in</span><span style="color: #56B6C2;"> 0</span><span style="color: #98C379;"> blocks</span></span>
+<span class="giallo-l"><span style="color: #98C379;">==985609==      possibly lost:</span><span style="color: #56B6C2;"> 0</span><span style="color: #98C379;"> bytes in</span><span style="color: #56B6C2;"> 0</span><span style="color: #98C379;"> blocks</span></span>
+<span class="giallo-l"><span style="color: #98C379;">==985609==    still reachable:</span><span style="color: #56B6C2;"> 0</span><span style="color: #98C379;"> bytes in</span><span style="color: #56B6C2;"> 0</span><span style="color: #98C379;"> blocks</span></span>
+<span class="giallo-l"><span style="color: #98C379;">==985609==         suppressed:</span><span style="color: #56B6C2;"> 0</span><span style="color: #98C379;"> bytes in</span><span style="color: #56B6C2;"> 0</span><span style="color: #98C379;"> blocks</span></span></code></pre>
+<p>So we can edit the code as follows for manual cleanup by explicitly running the destructor and deallocating the memory:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="rust"><span class="giallo-l"><span style="color: #E06C75;">use</span><span style="color: #61AFEF;"> std</span><span style="color: #E06C75;">::</span><span style="color: #61AFEF;">alloc</span><span style="color: #E06C75;">::</span><span>{dealloc,</span><span style="color: #E5C07B;"> Layout</span><span>};</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #E06C75;">fn</span><span style="color: #B57EDC;"> main</span><span>() {</span></span>
+<span class="giallo-l"><span style="color: #61AFEF;">    let</span><span style="color: #C6CCD7;"> pointer</span><span style="color: #E06C75;"> =</span><span style="color: #E5C07B;"> Box</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">into_raw</span><span>(</span><span style="color: #61AFEF;">Box</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">new</span><span>(</span><span style="color: #56B6C2;">42</span><span>));</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;">    // Prints 94560791661472, 94796207967136, etc.</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">    println!</span><span>(&quot;</span><span style="color: #98C379;">Random number: </span><span>{}&quot;,</span><span style="color: #C6CCD7;"> pointer</span><span style="color: #E06C75;"> as</span><span style="color: #E5C07B;"> usize</span><span>);</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #E06C75;">    unsafe</span><span> {</span></span>
+<span class="giallo-l"><span style="color: #61AFEF;">        std</span><span style="color: #E06C75;">::</span><span style="color: #61AFEF;">ptr</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">drop_in_place</span><span>(</span><span style="color: #C6CCD7;">pointer</span><span>);</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">        dealloc</span><span>(</span><span style="color: #C6CCD7;">pointer</span><span style="color: #E06C75;"> as *</span><span style="color: #61AFEF;">mut</span><span style="color: #E5C07B;"> u8</span><span>,</span><span style="color: #61AFEF;"> Layout</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">new</span><span style="color: #E06C75;">::</span><span>&lt;</span><span style="color: #E5C07B;">u32</span><span>&gt;());</span></span>
+<span class="giallo-l"><span>    }</span></span>
+<span class="giallo-l"><span>}</span></span></code></pre><pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #B57EDC;">$</span><span style="color: #98C379;"> valgrind</span><span style="color: #56B6C2;"> -v</span><span style="color: #98C379;"> target/debug/testapp</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #98C379;">==986501== HEAP SUMMARY:</span></span>
+<span class="giallo-l"><span style="color: #98C379;">==986501==     in use at exit:</span><span style="color: #56B6C2;"> 0</span><span style="color: #98C379;"> bytes in</span><span style="color: #56B6C2;"> 0</span><span style="color: #98C379;"> blocks</span></span>
+<span class="giallo-l"><span style="color: #98C379;">==986501==   total heap usage:</span><span style="color: #56B6C2;"> 12</span><span style="color: #98C379;"> allocs,</span><span style="color: #56B6C2;"> 12</span><span style="color: #98C379;"> frees, 3,185 bytes allocated</span></span>
+<span class="giallo-l"><span style="color: #98C379;">==986501==</span></span>
+<span class="giallo-l"><span style="color: #98C379;">==986501== All heap blocks were freed</span><span style="color: #56B6C2;"> --</span><span style="color: #98C379;"> no leaks are possible</span></span></code></pre>
+<p>Yay! No leaks.</p>
+<p>But... Damn. Why are we even dealing with this? Let's just use a raw pointer via <code>*const T</code>:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="rust"><span class="giallo-l"><span style="color: #E06C75;">fn</span><span style="color: #B57EDC;"> main</span><span>() {</span></span>
+<span class="giallo-l"><span style="color: #61AFEF;">    let</span><span style="color: #C6CCD7;"> num</span><span style="color: #E06C75;"> =</span><span style="color: #56B6C2;"> 42</span><span style="color: #E5C07B;">u8</span><span>;</span></span>
+<span class="giallo-l"><span style="color: #61AFEF;">    let</span><span style="color: #C6CCD7;"> address</span><span style="color: #E06C75;"> = &amp;</span><span style="color: #C6CCD7;">num</span><span style="color: #E06C75;"> as *</span><span style="color: #61AFEF;">const</span><span style="color: #E5C07B;"> u8</span><span>;</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;">    // Prints 140736885020951, 140731585258103, etc.</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">    println!</span><span>(&quot;{}&quot;,</span><span style="color: #C6CCD7;"> address</span><span style="color: #E06C75;"> as</span><span style="color: #E5C07B;"> usize</span><span>);</span></span>
+<span class="giallo-l"><span>}</span></span></code></pre>
+<p>In this example, obtaining an address like this is completely safe. But we will need to use <code>unsafe</code> Rust if we want to do anything with it.</p>
+<p>However, thanks to <a rel="external" href="https://lobste.rs/s/9lfkmv/zero_dependency_random_number#c_kwmq2d">spacejam's comment</a>, we can see that it is not a good entropy source.</p>
+<blockquote>
+<p><a rel="external" href="https://en.wikipedia.org/wiki/Address_space_layout_randomization">ASLR</a> (address space layout randomization) implementations tend to have weaknesses that manifest in ways that might not be obvious just looking at the scrambled output.</p>
+</blockquote>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="rust"><span class="giallo-l"><span style="color: #E06C75;">fn</span><span style="color: #B57EDC;"> main</span><span>() {</span></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;">    // Prints:</span></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;">    // 0x000055a7a8b55410</span></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;">    // 0x000055a4d561b410</span></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;">    // 0x000055c683ec3410</span></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;">    // 0x0000560f7b369410</span></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;">    // etc.</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">    dbg!</span><span>[</span><span style="color: #C6CCD7;">main</span><span style="color: #E06C75;"> as *</span><span style="color: #61AFEF;">const</span><span style="color: #E5C07B;"> u8</span><span>];</span></span>
+<span class="giallo-l"><span>}</span></span></code></pre>
+<p>More succinctly:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="rust"><span class="giallo-l"><span style="color: #E06C75;">fn</span><span style="color: #B57EDC;"> main</span><span>() {</span></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;">    // Prints:</span></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;">    //</span></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;">    // 1088</span></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;">    // 1088</span></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;">    // 1088</span></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;">    // etc.</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">    dbg!</span><span>[</span><span style="color: #C6CCD7;">main</span><span style="color: #E06C75;"> as *</span><span style="color: #61AFEF;">const</span><span style="color: #E5C07B;"> u8</span><span style="color: #E06C75;"> as</span><span style="color: #E5C07B;"> usize</span><span style="color: #E06C75;"> %</span><span style="color: #56B6C2;"> 4096</span><span>];</span></span>
+<span class="giallo-l"><span>}</span></span></code></pre>
+<blockquote>
+<p>While the stack in the previous example gets a different distribution due to its reliance on a stack frame’s placement in the address space, there are still sharp edges about every system’s ASLR implementation that it’s kind of frustrating that only exploit writers seem to pay any attention to, despite their significant impacts on performance.</p>
+</blockquote>
+<p>Another comment about how bad this approach would be is the following:</p>
+<blockquote>
+<p>The "randomness" comes from ASLR, which is <em>extremely</em> limited on 32b systems (8~16 bits of entropy). 64b systems have more room, but it's still absolutely awful as an rng, IIRC on x86_64 Linux it defaults to 28 bits (you can check <code>/proc/sys/vm/mmap_rnd_bits</code> for the value on your system, last I checked it could be set from 28 to 32 inclusive).</p>
+<p>If the allocator uses brk instead of mmap, it's worse, you get 13 bits of entropy out of the brk ASLR. Or less if you use huge pages.</p>
+<ul>
+<li><a rel="external" href="https://www.reddit.com/user/masklinn/">masklinn</a> on Reddit</li>
+</ul>
+</blockquote>
+<hr />
+<h4 id="std-collections-hash-map-randomstate"><code>std::collections::hash_map::RandomState</code></h4>
+<p>This solution was suggested by several people after I shared the blog post so thanks!</p>
+<p>Simply, we can use the <a rel="external" href="https://doc.rust-lang.org/std/collections/hash_map/struct.RandomState.html">RandomState</a> of the standard library's HashMap implementation and generate a random number from the hasher:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="rust"><span class="giallo-l"><span style="color: #E06C75;">use</span><span style="color: #61AFEF;"> std</span><span style="color: #E06C75;">::</span><span style="color: #61AFEF;">collections</span><span style="color: #E06C75;">::</span><span style="color: #61AFEF;">hash_map</span><span style="color: #E06C75;">::</span><span style="color: #E5C07B;">RandomState</span><span>;</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">use</span><span style="color: #61AFEF;"> std</span><span style="color: #E06C75;">::</span><span style="color: #61AFEF;">hash</span><span style="color: #E06C75;">::</span><span>{</span><span style="color: #E5C07B;">BuildHasher</span><span>,</span><span style="color: #E5C07B;"> Hasher</span><span>};</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #E06C75;">fn</span><span style="color: #B57EDC;"> main</span><span>() {</span></span>
+<span class="giallo-l"><span style="color: #61AFEF;">    let</span><span style="color: #C6CCD7;"> hasher</span><span style="color: #E06C75;"> =</span><span style="color: #E5C07B;"> RandomState</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">new</span><span>()</span><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">build_hasher</span><span>();</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;">    // Prints 938021294471563529, 17633394154785464152, etc.</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">    println!</span><span>(&quot;</span><span style="color: #98C379;">Random number: </span><span>{}&quot;,</span><span style="color: #C6CCD7;"> hasher</span><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">finish</span><span>());</span></span>
+<span class="giallo-l"><span>}</span></span></code></pre>
+<p>It probably makes more sense to use these random values as seed rather than random number. For example, we can have the following function for generating a random seed and combine it with a suggestion by <a rel="external" href="https://github.com/matklad/config/blob/b8ea0aad0f86d4575651a390a3c7aefb63229774/templates/snippets/src/lib.rs#L28L42">matklad</a>:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="rust"><span class="giallo-l"><span style="color: #E06C75;">use</span><span style="color: #61AFEF;"> std</span><span style="color: #E06C75;">::</span><span style="color: #61AFEF;">collections</span><span style="color: #E06C75;">::</span><span style="color: #61AFEF;">hash_map</span><span style="color: #E06C75;">::</span><span style="color: #E5C07B;">RandomState</span><span>;</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">use</span><span style="color: #61AFEF;"> std</span><span style="color: #E06C75;">::</span><span style="color: #61AFEF;">hash</span><span style="color: #E06C75;">::</span><span>{</span><span style="color: #E5C07B;">BuildHasher</span><span>,</span><span style="color: #E5C07B;"> Hasher</span><span>};</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #E06C75;">pub fn</span><span style="color: #B57EDC;"> random_seed</span><span>()</span><span style="color: #E06C75;"> -&gt;</span><span style="color: #E5C07B;"> u64</span><span> {</span></span>
+<span class="giallo-l"><span style="color: #E5C07B;">    RandomState</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">new</span><span>()</span><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">build_hasher</span><span>()</span><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">finish</span><span>()</span></span>
+<span class="giallo-l"><span>}</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;">// Pseudorandom number generator from the &quot;Xorshift RNGs&quot; paper by George Marsaglia.</span></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;">//</span></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;">// https://github.com/rust-lang/rust/blob/1.55.0/library/core/src/slice/sort.rs#L559-L573</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">pub fn</span><span style="color: #B57EDC;"> random_numbers</span><span>()</span><span style="color: #E06C75;"> -&gt; impl</span><span style="color: #E5C07B;"> Iterator</span><span>&lt;</span><span style="color: #E5C07B;">Item</span><span style="color: #E06C75;"> =</span><span style="color: #E5C07B;"> u32</span><span>&gt; {</span></span>
+<span class="giallo-l"><span style="color: #61AFEF;">    let mut</span><span style="color: #C6CCD7;"> random</span><span style="color: #E06C75;"> =</span><span style="color: #56B6C2;"> 92</span><span style="color: #E5C07B;">u32</span><span>;</span></span>
+<span class="giallo-l"><span style="color: #61AFEF;">    std</span><span style="color: #E06C75;">::</span><span style="color: #61AFEF;">iter</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">repeat_with</span><span>(</span><span style="color: #E06C75;">move ||</span><span> {</span></span>
+<span class="giallo-l"><span style="color: #C6CCD7;">        random</span><span style="color: #E06C75;"> ^=</span><span style="color: #C6CCD7;"> random</span><span style="color: #E06C75;"> &lt;&lt;</span><span style="color: #56B6C2;"> 13</span><span>;</span></span>
+<span class="giallo-l"><span style="color: #C6CCD7;">        random</span><span style="color: #E06C75;"> ^=</span><span style="color: #C6CCD7;"> random</span><span style="color: #E06C75;"> &gt;&gt;</span><span style="color: #56B6C2;"> 17</span><span>;</span></span>
+<span class="giallo-l"><span style="color: #C6CCD7;">        random</span><span style="color: #E06C75;"> ^=</span><span style="color: #C6CCD7;"> random</span><span style="color: #E06C75;"> &lt;&lt;</span><span style="color: #56B6C2;"> 5</span><span>;</span></span>
+<span class="giallo-l"><span style="color: #C6CCD7;">        random</span></span>
+<span class="giallo-l"><span>    })</span></span>
+<span class="giallo-l"><span>}</span></span></code></pre>
+<hr />
+<h3 id="final-thoughts">Final thoughts</h3>
+<p>Of course, there might be other ways to generate a random number without dependencies. This article aims to show the simplest ways without going too much into mathematical details.</p>
+<p>Thanks to everyone who commented in the <a rel="external" href="https://users.rust-lang.org/t/random-number-without-using-the-external-crate/17260/18">forums thread</a>, it was definitely helpful to read all the replies!</p>
+<p>Let me know via the comments below if there are any other cool ways for generating random numbers.</p>
+<p>See you next time! 🐻</p>
+
+    </div>
+
+    
+        <footer>
+            <hr>
+            <p>
+                
+                    Published by Orhun Parmaksız
+                
+                
+                    
+                    in <a href="https://blog.orhun.dev/categories/rust/">Rust</a>
+                
+                
+            </p>
+            
+            
+            <div style="display: flex; justify-content: space-between; align-items: center">
+              <div>
+                <iframe
+                  src="https://github.com/sponsors/orhun/button"
+                  title="Sponsor @orhun"
+                  height="35"
+                  width="116"
+                  style="border: 0"
+                ></iframe>
+                <a href="https://www.buymeacoffee.com/orhun" target="_blank"
+                  ><img
+                    src="https://cdn.buymeacoffee.com/buttons/v2/default-white.png"
+                    alt="Buy Me A Coffee"
+                    style="height: 40px !important; width: 150px !important"
+                /></a>
+              </div>
+              <div>
+                <applause-button
+                  style="width: 50px; height: 50px"
+                  url="https://blog.orhun.dev&#x2F;zero-deps-random-in-rust&#x2F;"
+                  color="white"
+                  multiclap="true"
+                />
+              </div>
+              <div>
+                <div style="width: auto; height: 39px">
+                  <p style="margin: 0; color: #fff; font-style: italic">✨ Sponsored by:</p>
+                </div>
+                <a href="https://www.jetbrains.com/" target="_blank"
+                  ><img
+                    src="/sponsors/jetbrains.png"
+                    alt="JetBrains"
+                    style="height: 45px; width: auto"
+                /></a>
+                <a href="https://terminaltrove.com/" target="_blank"
+                  ><img
+                    src="/sponsors/terminal_trove.png"
+                    alt="Terminal Trove"
+                    style="height: 40px; width: auto"
+                /></a>
+              </div>
+            </div>
+            <script src="https://utteranc.es/client.js"
+                    repo="orhun/personal-blog"
+                    issue-term="url"
+                    label="comments"
+                    theme="github-dark"
+                    crossorigin="anonymous"
+                    async>
+            </script>
+        </footer>
+    
+</article>
+
+
+    </body>
+
+    <script type="text/javascript" src="https://blog.orhun.dev/elasticlunr.min.js"></script>
+    <script type="text/javascript" src="https://blog.orhun.dev/js/search.js"></script>
+
+</html>

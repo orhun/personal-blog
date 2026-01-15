@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <meta http-equiv="content-type" content="text/html; charset=utf-8">
+      <meta property="og:type" content="website" />
+      <meta property="og:url" content="https://blog.orhun.dev"/>
+      
+      <meta property="og:title" content="How hard upgrading a Rust JWT library could be? - Orhun&#x27;s Blog" />
+      
+      <meta property="og:image" content="https://blog.orhun.dev/crow.png" />
+      
+      <meta name="description" content="FOSS • Linux • Programming" />
+      <meta property="og:description" content="FOSS • Linux • Programming"/>
+      
+
+      <!-- Enable responsiveness on mobile devices-->
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+      <link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png">
+      <link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png">
+      <link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png">
+      <link rel="manifest" href="/favicon/site.webmanifest">
+
+      <script async src="https://umami.orhun.dev/script.js" data-website-id="56ca5ca7-ba9f-416e-8bee-a132c155d56b"></script>
+
+      <link rel="stylesheet" href="https://unpkg.com/applause-button/dist/applause-button.css" />
+      <script src="https://unpkg.com/applause-button/dist/applause-button.js"></script>
+
+      
+      <title>How hard upgrading a Rust JWT library could be? - Orhun&#x27;s Blog</title>
+      
+      <link rel="alternate" type="application/rss+xml" title="Orhun&#x27;s Blog RSS Feed" href="https://blog.orhun.dev/rss.xml" />
+
+      
+          <link rel="stylesheet" href="https://blog.orhun.dev/site.css">
+      
+
+      
+      
+    </head>
+
+    <body class="hack dark main container">
+        
+    
+        
+                
+                    <header>
+                    <nav itemscope itemtype="http://schema.org/SiteNavigationElement" class="nav-flex">
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://blog.orhun.dev">
+                                <span itemprop="name">Home</span>
+                            </a>
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://blog.orhun.dev/categories">
+                                <span itemprop="name">Categories</span>
+                            </a>
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://github.com/orhun/personal-blog">
+                                <span itemprop="name">Source</span>
+                            </a>
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://github.com/orhun">
+                                <span itemprop="name">GitHub</span>
+                            </a>
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://donate.orhun.dev">
+                                <span itemprop="name">Donate</span>
+                            </a>
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://blog.orhun.dev/rss.xml">
+                                <span itemprop="name">RSS</span>
+                            </a>
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://orhun.dev">
+                                <span itemprop="name">About</span>
+                            </a>
+                        
+                        <div class="search-container">
+                            <input type="text" id="search" placeholder="Search...">
+                            <div class="search-results">
+                                <div class="search-results__items"></div>
+                            </div>
+                        </div>
+                    </nav>
+                    </header>
+                
+            
+    
+
+<article itemscope itemtype="http://schema.org/BlogPosting">
+    <header>
+        <h1 itemprop="headline">How hard upgrading a Rust JWT library could be?</h1>
+        <span class="muted">
+    <svg style="margin-bottom:-3px" class="i-clock" viewBox="0 0 32 32"
+         width="16" height="16" fill="none" stroke="currentcolor"
+         stroke-linecap="round" stroke-linejoin="round" stroke-width="6.25%">
+        <circle cx="16" cy="16" r="14"/>
+        <path d="M16 8 L16 16 20 20"/>
+    </svg>
+    <span>8 minute read</span>
+    <svg style="margin-bottom: -3px" class="i-edit" viewBox="0 0 32 32"
+         width="16" height="16" fill="none" stroke="currentcolor"
+         stroke-linecap="round" stroke-linejoin="round" stroke-width="6.25%">
+        <path d="M30 7 L25 2 5 22 3 29 10 27 Z M21 6 L26 11 Z M5 22 L10 27 Z"/>
+    </svg>
+
+    Published: 2022-04-22
+</span>
+    </header>
+    <div itemprop="articleBody">
+      <p>Recently one of my clients requested me to maintain their Rust project. It is a web server that is built with <a rel="external" href="https://rocket.rs/">Rocket</a> + <a rel="external" href="http://diesel.rs/">Diesel</a> and running stable for a couple of years now. Like any other Rust developer would do, the first thing that I checked was the outdated dependencies via <code>cargo-outdated</code>. The result was close to what I expected: most of the dependencies were out-of-date. However, among all those crates, <a rel="external" href="https://github.com/mikkyang/rust-jwt">rust-jwt</a> caught my eye. It was 12 minor versions behind!</p>
+<span id="continue-reading"></span><pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #B57EDC;">Name</span><span style="color: #98C379;">                        Project  Compat  Latest   Kind    Platform</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">----</span><span style="color: #56B6C2;">                        -------  ------  ------   ----    --------</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">jwt</span><span style="color: #56B6C2;">                         0.4.0    ---     0.16.0</span><span style="color: #98C379;">   Normal</span><span style="color: #56B6C2;">  ---</span></span></code></pre>
+<p>Although this doesn't seem like a big problem, since it is not a major version or anything, I took this lightly and started working on updating the other dependencies. It is the JWT that everyone knows and loves after all, how hard updating this dependency would be?</p>
+<p>Well, it turns out, it was pretty hard after in my case.</p>
+<p>The version that the project used at the time was <code>0.4.0</code>. When I checked the changelog (release notes), there wasn't even an entry about it! Even worse, this version is not tagged on GitHub. The oldest version on GitHub was <code>0.5.0</code> and the release notes are the following:</p>
+<blockquote>
+<h3 id="update-very-outdated-dependencies">Update (very outdated) dependencies</h3>
+<p>The only user facing changes are much needed updates to the crypto dependencies, courtesy of #10.</p>
+<p>Types from the previous crate, <code>rust-crypto</code> are replaced with types from various crates from <a rel="external" href="https://github.com/RustCrypto">https://github.com/RustCrypto</a>.</p>
+</blockquote>
+<p>Although this is a good improvement for the library itself, it surely didn't look too good for me. I have spent some time deciphering what these release notes mean and it eventually boils down to <a rel="external" href="https://github.com/DaGenix/rust-crypto">rust-crypto</a> crate being unmaintained since 2016.</p>
+<ul>
+<li><a rel="external" href="https://rustsec.org/advisories/RUSTSEC-2016-0005.html">RUSTSEC-2016-0005</a>: rust-crypto is unmaintained; switch to a modern alternative</li>
+</ul>
+<p>So the maintainer of rust-jwt made the most expected thing by moving away from <code>rust-crypto</code> and migrating the cryptography-related operations to be handled by the actively maintained <a rel="external" href="https://github.com/RustCrypto">RustCrypto</a> project. I was sure I will benefit from this change in the security and performance aspect.</p>
+<p>One thing to note here, was that really a "minor" change in rust-jwt? Can I just bump the dependency and call it a day?</p>
+<p>Well, I don't know. I thought to myself "Hey let me bump it to the latest version, it's all minor changes anyways". That's why I updated it to <code>0.16.0</code> and took a look at the previous changelog entries before attempting to compile the project.</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #B57EDC;">0.6.0:</span><span style="color: #98C379;"> New Token API</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #B57EDC;">-</span><span style="color: #98C379;"> Move all of the previous structs to the legacy module</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">-</span><span style="color: #98C379;"> Introduce more idiomatic Header, Claims, and Token types</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">-</span><span style="color: #98C379;"> Support more algorithms with optional OpenSSL support</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">-</span><span style="color: #98C379;"> Convenience methods to just sign and verify claims</span></span></code></pre>
+<p>So it seemed like I will be dealing with 2 issues:</p>
+<ol>
+<li>Side effects of "rust-crypto -&gt; RustCrypto"</li>
+<li>New API</li>
+</ol>
+<h3 id="use-case">Use case</h3>
+<p>To demonstrate my use case of this library, I wrote this oversimplified <a rel="external" href="https://github.com/fornwall/rust-script">Rust script</a>:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="rust"><span class="giallo-l"><span>#</span><span style="color: #E06C75;">!/</span><span style="color: #C6CCD7;">usr</span><span style="color: #E06C75;">/</span><span style="color: #C6CCD7;">bin</span><span style="color: #E06C75;">/</span><span style="color: #C6CCD7;">env rust</span><span style="color: #E06C75;">-</span><span style="color: #C6CCD7;">script</span></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;">//! ```cargo</span></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;">//! [dependencies]</span></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;">//! jwt = &quot;0.4.0&quot;</span></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;">//! rust-crypto = &quot;0.2&quot;</span></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;">//! ```</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #E06C75;">use</span><span style="color: #61AFEF;"> crypto</span><span style="color: #E06C75;">::</span><span style="color: #61AFEF;">sha2</span><span style="color: #E06C75;">::</span><span style="color: #E5C07B;">Sha256</span><span>;</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">use</span><span style="color: #61AFEF;"> jwt</span><span style="color: #E06C75;">::</span><span>{</span><span style="color: #E5C07B;">Header</span><span>,</span><span style="color: #E5C07B;"> Registered</span><span>,</span><span style="color: #E5C07B;"> Token</span><span>};</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #61AFEF;">const</span><span style="color: #56B6C2;"> DATA</span><span style="color: #E06C75;">: &amp;</span><span style="color: #E5C07B;">str</span><span style="color: #E06C75;"> =</span><span> &quot;</span><span style="color: #98C379;">420</span><span>&quot;;</span></span>
+<span class="giallo-l"><span style="color: #61AFEF;">const</span><span style="color: #56B6C2;"> SECRET_KEY</span><span style="color: #E06C75;">: &amp;</span><span style="color: #E5C07B;">str</span><span style="color: #E06C75;"> =</span><span> &quot;</span><span style="color: #98C379;">verysecretkey</span><span>&quot;;</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #E06C75;">fn</span><span style="color: #B57EDC;"> main</span><span>() {</span></span>
+<span class="giallo-l"><span style="color: #61AFEF;">    let</span><span style="color: #C6CCD7;"> claims</span><span style="color: #E06C75;"> =</span><span style="color: #E5C07B;"> Registered</span><span> {</span></span>
+<span class="giallo-l"><span style="color: #C6CCD7;">        sub</span><span style="color: #E06C75;">:</span><span style="color: #E5C07B;"> Some</span><span>(</span><span style="color: #56B6C2;">DATA</span><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">to_string</span><span>()),</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">        ..</span><span style="color: #E5C07B;">Default</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">default</span><span>()</span></span>
+<span class="giallo-l"><span>    };</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #61AFEF;">    let</span><span style="color: #C6CCD7;"> header</span><span style="color: #E06C75;"> =</span><span style="color: #E5C07B;"> Header</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">default</span><span>();</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #61AFEF;">    let</span><span style="color: #C6CCD7;"> token</span><span style="color: #E06C75;"> =</span><span style="color: #E5C07B;"> Token</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">new</span><span>(</span><span style="color: #C6CCD7;">header</span><span>,</span><span style="color: #C6CCD7;"> claims</span><span>)</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">        .</span><span style="color: #B57EDC;">signed</span><span>(</span><span style="color: #56B6C2;">SECRET_KEY</span><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">as_bytes</span><span>(),</span><span style="color: #61AFEF;"> Sha256</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">new</span><span>())</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">        .</span><span style="color: #B57EDC;">unwrap</span><span>();</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #B57EDC;">    println!</span><span>(&quot;{</span><span style="color: #98C379;">token</span><span>}&quot;);</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #61AFEF;">    let</span><span style="color: #C6CCD7;"> token</span><span style="color: #E06C75;"> =</span><span style="color: #E5C07B;"> Token</span><span style="color: #E06C75;">::</span><span>&lt;</span><span style="color: #E5C07B;">Header</span><span>,</span><span style="color: #E5C07B;"> Registered</span><span>&gt;</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">parse</span><span>(</span><span style="color: #E06C75;">&amp;</span><span style="color: #C6CCD7;">token</span><span>)</span><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">unwrap</span><span>();</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">    if</span><span style="color: #C6CCD7;"> token</span><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">verify</span><span>(</span><span style="color: #56B6C2;">SECRET_KEY</span><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">as_bytes</span><span>(),</span><span style="color: #61AFEF;"> Sha256</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">new</span><span>()) {</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">        assert_eq!</span><span>(</span><span style="color: #E5C07B;">Some</span><span>(</span><span style="color: #56B6C2;">DATA</span><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">to_string</span><span>()),</span><span style="color: #C6CCD7;"> token</span><span style="color: #E06C75;">.</span><span>claims</span><span style="color: #E06C75;">.</span><span>sub);</span></span>
+<span class="giallo-l"><span>    }</span><span style="color: #E06C75;"> else</span><span> {</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">        panic!</span><span>(&quot;</span><span style="color: #98C379;">Token is not valid</span><span>&quot;)</span></span>
+<span class="giallo-l"><span>    }</span></span>
+<span class="giallo-l"><span>}</span></span></code></pre>
+<p>After upgrading the dependencies, the script looks something like this:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="rust"><span class="giallo-l"><span>#</span><span style="color: #E06C75;">!/</span><span style="color: #C6CCD7;">usr</span><span style="color: #E06C75;">/</span><span style="color: #C6CCD7;">bin</span><span style="color: #E06C75;">/</span><span style="color: #C6CCD7;">env rust</span><span style="color: #E06C75;">-</span><span style="color: #C6CCD7;">script</span></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;">//! ```cargo</span></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;">//! [dependencies]</span></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;">//! hmac = &quot;0.12.1&quot;</span></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;">//! jwt = &quot;0.16.0&quot;</span></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;">//! sha2 = &quot;0.10.2&quot;</span></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;">//! ```</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #E06C75;">use</span><span style="color: #61AFEF;"> hmac</span><span style="color: #E06C75;">::</span><span>{</span><span style="color: #E5C07B;">Hmac</span><span>,</span><span style="color: #E5C07B;"> Mac</span><span>};</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">use</span><span style="color: #61AFEF;"> jwt</span><span style="color: #E06C75;">::</span><span style="color: #61AFEF;">claims</span><span style="color: #E06C75;">::</span><span style="color: #E5C07B;">RegisteredClaims</span><span>;</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">use</span><span style="color: #61AFEF;"> jwt</span><span style="color: #E06C75;">::</span><span>{</span><span style="color: #E5C07B;">Header</span><span>,</span><span style="color: #E5C07B;"> SignWithKey</span><span>,</span><span style="color: #E5C07B;"> Token</span><span>,</span><span style="color: #E5C07B;"> VerifyWithKey</span><span>};</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">use</span><span style="color: #61AFEF;"> sha2</span><span style="color: #E06C75;">::</span><span style="color: #E5C07B;">Sha256</span><span>;</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">use</span><span style="color: #61AFEF;"> std</span><span style="color: #E06C75;">::</span><span style="color: #61AFEF;">collections</span><span style="color: #E06C75;">::</span><span style="color: #E5C07B;">BTreeMap</span><span>;</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #61AFEF;">const</span><span style="color: #56B6C2;"> DATA</span><span style="color: #E06C75;">: &amp;</span><span style="color: #E5C07B;">str</span><span style="color: #E06C75;"> =</span><span> &quot;</span><span style="color: #98C379;">420</span><span>&quot;;</span></span>
+<span class="giallo-l"><span style="color: #61AFEF;">const</span><span style="color: #56B6C2;"> SECRET_KEY</span><span style="color: #E06C75;">: &amp;</span><span style="color: #E5C07B;">str</span><span style="color: #E06C75;"> =</span><span> &quot;</span><span style="color: #98C379;">verysecretkey</span><span>&quot;;</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #E06C75;">fn</span><span style="color: #B57EDC;"> main</span><span>() {</span></span>
+<span class="giallo-l"><span style="color: #61AFEF;">    let</span><span style="color: #C6CCD7;"> secret_key</span><span style="color: #E06C75;"> =</span><span style="color: #E5C07B;"> Hmac</span><span style="color: #E06C75;">::</span><span>&lt;</span><span style="color: #E5C07B;">Sha256</span><span>&gt;</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">new_from_slice</span><span>(</span><span style="color: #56B6C2;">SECRET_KEY</span><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">as_bytes</span><span>())</span><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">unwrap</span><span>();</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #61AFEF;">    let</span><span style="color: #C6CCD7;"> claims</span><span style="color: #E06C75;"> =</span><span style="color: #E5C07B;"> RegisteredClaims</span><span> {</span></span>
+<span class="giallo-l"><span style="color: #C6CCD7;">        subject</span><span style="color: #E06C75;">:</span><span style="color: #E5C07B;"> Some</span><span>(</span><span style="color: #56B6C2;">DATA</span><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">to_string</span><span>()),</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">        ..</span><span style="color: #E5C07B;">Default</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">default</span><span>()</span></span>
+<span class="giallo-l"><span>    };</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #61AFEF;">    let</span><span style="color: #C6CCD7;"> header</span><span style="color: #E06C75;"> =</span><span style="color: #E5C07B;"> Header</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">default</span><span>();</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #61AFEF;">    let</span><span style="color: #C6CCD7;"> token</span><span style="color: #E06C75;"> =</span><span style="color: #E5C07B;"> Token</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">new</span><span>(</span><span style="color: #C6CCD7;">header</span><span>,</span><span style="color: #C6CCD7;"> claims</span><span>)</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">        .</span><span style="color: #B57EDC;">sign_with_key</span><span>(</span><span style="color: #E06C75;">&amp;</span><span style="color: #C6CCD7;">secret_key</span><span>)</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">        .</span><span style="color: #B57EDC;">unwrap</span><span>();</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #B57EDC;">    println!</span><span>(&quot;{}&quot;,</span><span style="color: #C6CCD7;"> token</span><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">as_str</span><span>());</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #E06C75;">    match</span><span style="color: #E5C07B;"> VerifyWithKey</span><span style="color: #E06C75;">::</span><span>&lt;</span><span style="color: #E5C07B;">Token</span><span>&lt;</span><span style="color: #E5C07B;">Header</span><span>,</span><span style="color: #E5C07B;"> BTreeMap</span><span>&lt;</span><span style="color: #E5C07B;">String</span><span>,</span><span style="color: #E5C07B;"> String</span><span>&gt;,</span><span style="color: #C6CCD7;"> _</span><span>&gt;&gt;</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">verify_with_key</span><span>(</span></span>
+<span class="giallo-l"><span style="color: #C6CCD7;">        token</span><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">as_str</span><span>(),</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">        &amp;</span><span style="color: #C6CCD7;">secret_key</span><span>,</span></span>
+<span class="giallo-l"><span>    ) {</span></span>
+<span class="giallo-l"><span style="color: #E5C07B;">        Ok</span><span>(</span><span style="color: #C6CCD7;">token</span><span>)</span><span style="color: #E06C75;"> =&gt;</span><span> {</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">            assert_eq!</span><span>(</span><span style="color: #56B6C2;">DATA</span><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">to_string</span><span>(),</span><span style="color: #C6CCD7;"> token</span><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">claims</span><span>()[&quot;</span><span style="color: #98C379;">sub</span><span>&quot;]);</span></span>
+<span class="giallo-l"><span>        }</span></span>
+<span class="giallo-l"><span style="color: #E5C07B;">        Err</span><span>(</span><span style="color: #C6CCD7;">e</span><span>)</span><span style="color: #E06C75;"> =&gt;</span><span> {</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">            panic!</span><span>(&quot;</span><span style="color: #98C379;">Token is not valid: </span><span>{}&quot;,</span><span style="color: #C6CCD7;"> e</span><span>)</span></span>
+<span class="giallo-l"><span>        }</span></span>
+<span class="giallo-l"><span>    }</span></span>
+<span class="giallo-l"><span>}</span></span></code></pre>
+<p>Let's check the output of both scripts:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #B57EDC;">$</span><span style="color: #98C379;"> ./jwt-0.4.0.rs</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">eyJ0eXAiOiJKV1QiLCJraWQiOm51bGwsImFsZyI6IkhTMjU2In0.eyJpc3MiOm51bGwsInN1YiI6IjQyMCIsImF1ZCI6bnVsbCwiZXhwIjpudWxsLCJuYmYiOm51bGwsImlhdCI6bnVsbCwianRpIjpudWxsfQ./sN8Ur+b+38g4X2yQsIuhs4Z1dWjPW+7SHSFgmYa4xM</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #B57EDC;">$</span><span style="color: #98C379;"> ./jwt-0.16.0.rs</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI0MjAifQ.wvPvTjXDF9tfOmB8ZjVh9Bosx5zw9M5SCpQ_NMI29OI</span></span></code></pre>
+<p>Hmm, they print different tokens and the second one is visibly shorter for some reason. This is probably due to the API changes in the library.</p>
+<blockquote>
+<p>So what? Just upgrade the dependencies, it works.</p>
+</blockquote>
+<p>Well, that's right. However, there is a bigger problem.</p>
+<h3 id="architecture">Architecture</h3>
+<p>In the current architecture, JWT tokens are stored on the user device and used for authentication. On top of that, there is a "use without registration" feature of the app which means users can take a look at the app and use some of the features without logging in but still they will have a JWT token associated in case they want to register later on.</p>
+<p><img src="/jwt-server-client-architecture.png" alt="Architecture" /></p>
+<p>At the end of the day, changing the JWT decoding logic in an incompatible way would make the tokens of those "anonymous" users invalid thus they will be logged out and lose their data. On the other hand, normal users will also be logged out but a new JWT token will be generated on login. Anonymous users cannot log in because... well, they are anonymous.</p>
+<p>At this point, I realized I was dealing with a dependency that will eventually affect <strong>~100k</strong> users. Simply bumping rust-jwt will discard all the existing JWT tokens and make the application unusable for the majority of the users. Some time passed and I put more thought into this topic and we came up with a solution with the help of my colleague:</p>
+<ol>
+<li>Add an API endpoint for renewing the JWT token of a user.</li>
+<li>Call this endpoint from the mobile application to renew the user token.</li>
+<li>Hope that most of the users will update the app and have their tokens renewed.</li>
+</ol>
+<p>Although this sounds like a feasible solution, it requires an unnecessary amount of time and work. Plus I had different priorities at the time so I postponed it for later, thinking that I will eventually feel less lazy to implement and coordinate this.</p>
+<p>Unsurprisingly, it didn't happen.</p>
+<h3 id="inspection">Inspection</h3>
+<p>I decided to debug this issue further and understand the root cause of this problem. Why would two different versions of the same library yield two completely different and incompatible tokens? There wasn't even a major change in the library!</p>
+<p>Let's inspect the previously generated tokens with <a rel="external" href="https://github.com/mike-engel/jwt-cli">jwt-cli</a>:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #B57EDC;">$</span><span style="color: #98C379;"> ./jwt-0.4.0.rs</span><span style="color: #E06C75;"> |</span><span style="color: #B57EDC;"> jwt</span><span style="color: #98C379;"> decode -</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #B57EDC;">Token</span><span style="color: #98C379;"> header</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">------------</span></span>
+<span class="giallo-l"><span>{</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">  &quot;typ&quot;:</span><span> &quot;</span><span style="color: #98C379;">JWT</span><span>&quot;</span><span style="color: #98C379;">,</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">  &quot;alg&quot;:</span><span> &quot;</span><span style="color: #98C379;">HS256</span><span>&quot;</span></span>
+<span class="giallo-l"><span>}</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #B57EDC;">Token</span><span style="color: #98C379;"> claims</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">------------</span></span>
+<span class="giallo-l"><span>{</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">  &quot;aud&quot;:</span><span style="color: #98C379;"> null,</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">  &quot;exp&quot;:</span><span style="color: #98C379;"> null,</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">  &quot;iat&quot;:</span><span style="color: #98C379;"> null,</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">  &quot;iss&quot;:</span><span style="color: #98C379;"> null,</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">  &quot;jti&quot;:</span><span style="color: #98C379;"> null,</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">  &quot;nbf&quot;:</span><span style="color: #98C379;"> null,</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">  &quot;sub&quot;:</span><span> &quot;</span><span style="color: #98C379;">420</span><span>&quot;</span></span>
+<span class="giallo-l"><span>}</span></span></code></pre><pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #B57EDC;">$</span><span style="color: #98C379;"> ./jwt-0.16.0.rs</span><span style="color: #E06C75;"> |</span><span style="color: #B57EDC;"> jwt</span><span style="color: #98C379;"> decode -</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #B57EDC;">Token</span><span style="color: #98C379;"> header</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">------------</span></span>
+<span class="giallo-l"><span>{</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">  &quot;alg&quot;:</span><span> &quot;</span><span style="color: #98C379;">HS256</span><span>&quot;</span></span>
+<span class="giallo-l"><span>}</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #B57EDC;">Token</span><span style="color: #98C379;"> claims</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">------------</span></span>
+<span class="giallo-l"><span>{</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">  &quot;sub&quot;:</span><span> &quot;</span><span style="color: #98C379;">420</span><span>&quot;</span></span>
+<span class="giallo-l"><span>}</span></span></code></pre>
+<p>The newer version of rust-jwt strips the empty (null) fields from claims, that's why the generated token is different (and shorter than I expected). Also, <code>typ</code> field is missing from the header.</p>
+<blockquote>
+<p>You already know where this is going. I'm going to modify the rust-jwt library for my needs!</p>
+</blockquote>
+<p>Let's solve the missing header field problem first by explicitly specifying <code>typ</code> while defining the header:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="rust"><span class="giallo-l"><span style="color: #61AFEF;">let</span><span style="color: #C6CCD7;"> header</span><span style="color: #E06C75;"> =</span><span style="color: #E5C07B;"> Header</span><span> {</span></span>
+<span class="giallo-l"><span style="color: #C6CCD7;">    algorithm</span><span style="color: #E06C75;">:</span><span style="color: #61AFEF;"> jwt</span><span style="color: #E06C75;">::</span><span style="color: #E5C07B;">AlgorithmType</span><span style="color: #E06C75;">::</span><span style="color: #E5C07B;">Hs256</span><span>,</span></span>
+<span class="giallo-l"><span style="color: #C6CCD7;">    type_</span><span style="color: #E06C75;">:</span><span style="color: #E5C07B;"> Some</span><span>(</span><span style="color: #61AFEF;">jwt</span><span style="color: #E06C75;">::</span><span style="color: #61AFEF;">header</span><span style="color: #E06C75;">::</span><span style="color: #E5C07B;">HeaderType</span><span style="color: #E06C75;">::</span><span style="color: #E5C07B;">JsonWebToken</span><span>),</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">    ..</span><span style="color: #E5C07B;">Default</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">default</span><span>()</span></span>
+<span class="giallo-l"><span>};</span></span></code></pre><pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #B57EDC;">$</span><span style="color: #98C379;"> ./jwt-0.16.0.rs</span><span style="color: #E06C75;"> |</span><span style="color: #B57EDC;"> jwt</span><span style="color: #98C379;"> decode -</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #B57EDC;">Token</span><span style="color: #98C379;"> header</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">------------</span></span>
+<span class="giallo-l"><span>{</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">  &quot;typ&quot;:</span><span> &quot;</span><span style="color: #98C379;">JWT</span><span>&quot;</span><span style="color: #98C379;">,</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">  &quot;alg&quot;:</span><span> &quot;</span><span style="color: #98C379;">HS256</span><span>&quot;</span></span>
+<span class="giallo-l"><span>}</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #B57EDC;">Token</span><span style="color: #98C379;"> claims</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">------------</span></span>
+<span class="giallo-l"><span>{</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">  &quot;sub&quot;:</span><span> &quot;</span><span style="color: #98C379;">420</span><span>&quot;</span></span>
+<span class="giallo-l"><span>}</span></span></code></pre>
+<p>Nice! We have the correct header fields in the generated token. Also, why not update the <a rel="external" href="https://doc.rust-lang.org/std/default/trait.Default.html">Default</a> implementation of <a rel="external" href="https://github.com/mikkyang/rust-jwt/blob/a09172fcbf667db7a982c787ff709c6d6294ef18/src/header.rs#L32">Header</a> so that we can use it as it was before?</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="diff"><span class="giallo-l"><span style="color: #E06C75;">-#[derive(Default, Debug, PartialEq, Serialize, Deserialize)]</span></span>
+<span class="giallo-l"><span style="color: #98C379;">+#[derive(Debug, PartialEq, Serialize, Deserialize)]</span></span>
+<span class="giallo-l"><span style="color: #5F6672;"> pub struct Header {</span></span>
+<span class="giallo-l"><span style="color: #5F6672;">     #[serde(rename = &quot;typ&quot;)]</span></span>
+<span class="giallo-l"><span style="color: #5F6672;">     pub type_: Option&lt;HeaderType&gt;,</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">@@ -43,6 +43,17 @@</span><span style="color: #5F6672;"> pub struct Header {</span></span>
+<span class="giallo-l"><span style="color: #5F6672;">     pub content_type: Option&lt;HeaderContentType&gt;,</span></span>
+<span class="giallo-l"><span style="color: #5F6672;"> }</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #98C379;">+impl Default for Header {</span></span>
+<span class="giallo-l"><span style="color: #98C379;">+    fn default() -&gt; Header {</span></span>
+<span class="giallo-l"><span style="color: #98C379;">+        Header {</span></span>
+<span class="giallo-l"><span style="color: #98C379;">+            type_: Some(HeaderType::JsonWebToken),</span></span>
+<span class="giallo-l"><span style="color: #98C379;">+            key_id: None,</span></span>
+<span class="giallo-l"><span style="color: #98C379;">+            algorithm: AlgorithmType::Hs256,</span></span>
+<span class="giallo-l"><span style="color: #98C379;">+            content_type: None,</span></span>
+<span class="giallo-l"><span style="color: #98C379;">+        }</span></span>
+<span class="giallo-l"><span style="color: #98C379;">+    }</span></span>
+<span class="giallo-l"><span style="color: #98C379;">+}</span></span>
+<span class="giallo-l"><span style="color: #98C379;">+</span></span></code></pre>
+<p><a rel="external" href="https://github.com/orhun/rust-jwt/commit/a2433724a4ed4f1e028624968b6f0d4eb67c4734">https://github.com/orhun/rust-jwt/commit/a2433724a4ed4f1e028624968b6f0d4eb67c4734</a></p>
+<p>Ta-da!</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="rust"><span class="giallo-l"><span style="color: #61AFEF;">let</span><span style="color: #C6CCD7;"> header</span><span style="color: #E06C75;"> =</span><span style="color: #E5C07B;"> Header</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">default</span><span>();</span></span></code></pre>
+<p>Next step, let's figure out why null fields do not exist in the token.</p>
+<p>The answer is shrouded in the struct definition of <a rel="external" href="https://github.com/mikkyang/rust-jwt/blob/a09172fcbf667db7a982c787ff709c6d6294ef18/src/claims.rs#L31"><code>RegisteredClaims</code></a>:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="rust"><span class="giallo-l"><span>#[derive(</span><span style="color: #E5C07B;">Clone</span><span>,</span><span style="color: #E5C07B;"> Debug</span><span>,</span><span style="color: #E5C07B;"> Default</span><span>,</span><span style="color: #E5C07B;"> PartialEq</span><span>,</span><span style="color: #E5C07B;"> Serialize</span><span>,</span><span style="color: #E5C07B;"> Deserialize</span><span>)]</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">pub</span><span style="color: #61AFEF;"> struct</span><span style="color: #E5C07B;"> RegisteredClaims</span><span> {</span></span>
+<span class="giallo-l"><span>    #[serde(rename </span><span style="color: #E06C75;">=</span><span> &quot;</span><span style="color: #98C379;">iss</span><span>&quot;, skip_serializing_if </span><span style="color: #E06C75;">=</span><span> &quot;</span><span style="color: #98C379;">Option::is_none</span><span>&quot;)]</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">    pub</span><span style="color: #C6CCD7;"> issuer</span><span style="color: #E06C75;">:</span><span style="color: #E5C07B;"> Option</span><span>&lt;</span><span style="color: #E5C07B;">String</span><span>&gt;,</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span>    #[serde(rename </span><span style="color: #E06C75;">=</span><span> &quot;</span><span style="color: #98C379;">sub</span><span>&quot;, skip_serializing_if </span><span style="color: #E06C75;">=</span><span> &quot;</span><span style="color: #98C379;">Option::is_none</span><span>&quot;)]</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">    pub</span><span style="color: #C6CCD7;"> subject</span><span style="color: #E06C75;">:</span><span style="color: #E5C07B;"> Option</span><span>&lt;</span><span style="color: #E5C07B;">String</span><span>&gt;,</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span>    #[serde(rename </span><span style="color: #E06C75;">=</span><span> &quot;</span><span style="color: #98C379;">aud</span><span>&quot;, skip_serializing_if </span><span style="color: #E06C75;">=</span><span> &quot;</span><span style="color: #98C379;">Option::is_none</span><span>&quot;)]</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">    pub</span><span style="color: #C6CCD7;"> audience</span><span style="color: #E06C75;">:</span><span style="color: #E5C07B;"> Option</span><span>&lt;</span><span style="color: #E5C07B;">String</span><span>&gt;,</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span>    #[serde(rename </span><span style="color: #E06C75;">=</span><span> &quot;</span><span style="color: #98C379;">exp</span><span>&quot;, skip_serializing_if </span><span style="color: #E06C75;">=</span><span> &quot;</span><span style="color: #98C379;">Option::is_none</span><span>&quot;)]</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">    pub</span><span style="color: #C6CCD7;"> expiration</span><span style="color: #E06C75;">:</span><span style="color: #E5C07B;"> Option</span><span>&lt;</span><span style="color: #E5C07B;">SecondsSinceEpoch</span><span>&gt;,</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span>    #[serde(rename </span><span style="color: #E06C75;">=</span><span> &quot;</span><span style="color: #98C379;">nbf</span><span>&quot;, skip_serializing_if </span><span style="color: #E06C75;">=</span><span> &quot;</span><span style="color: #98C379;">Option::is_none</span><span>&quot;)]</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">    pub</span><span style="color: #C6CCD7;"> not_before</span><span style="color: #E06C75;">:</span><span style="color: #E5C07B;"> Option</span><span>&lt;</span><span style="color: #E5C07B;">SecondsSinceEpoch</span><span>&gt;,</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span>    #[serde(rename </span><span style="color: #E06C75;">=</span><span> &quot;</span><span style="color: #98C379;">iat</span><span>&quot;, skip_serializing_if </span><span style="color: #E06C75;">=</span><span> &quot;</span><span style="color: #98C379;">Option::is_none</span><span>&quot;)]</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">    pub</span><span style="color: #C6CCD7;"> issued_at</span><span style="color: #E06C75;">:</span><span style="color: #E5C07B;"> Option</span><span>&lt;</span><span style="color: #E5C07B;">SecondsSinceEpoch</span><span>&gt;,</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span>    #[serde(rename </span><span style="color: #E06C75;">=</span><span> &quot;</span><span style="color: #98C379;">jti</span><span>&quot;, skip_serializing_if </span><span style="color: #E06C75;">=</span><span> &quot;</span><span style="color: #98C379;">Option::is_none</span><span>&quot;)]</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">    pub</span><span style="color: #C6CCD7;"> json_web_token_id</span><span style="color: #E06C75;">:</span><span style="color: #E5C07B;"> Option</span><span>&lt;</span><span style="color: #E5C07B;">String</span><span>&gt;,</span></span>
+<span class="giallo-l"><span>}</span></span></code></pre>
+<p>Bingo! <a rel="external" href="https://serde.rs/field-attrs.html#skip_serializing_if">skip_serializing_if</a> attribute in combination with "Option::is_none" causes <code>None</code> fields to be removed from the generated token. So let's just remove that attribute.</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="diff"><span class="giallo-l"><span style="color: #5F6672;"> #[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize)]</span></span>
+<span class="giallo-l"><span style="color: #5F6672;"> pub struct RegisteredClaims {</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">-    #[serde(rename = &quot;iss&quot;, skip_serializing_if = &quot;Option::is_none&quot;)]</span></span>
+<span class="giallo-l"><span style="color: #98C379;">+    #[serde(rename = &quot;iss&quot;)]</span></span>
+<span class="giallo-l"><span style="color: #5F6672;">     pub issuer: Option&lt;String&gt;,</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #E06C75;">-    #[serde(rename = &quot;sub&quot;, skip_serializing_if = &quot;Option::is_none&quot;)]</span></span>
+<span class="giallo-l"><span style="color: #98C379;">+    #[serde(rename = &quot;sub&quot;)]</span></span>
+<span class="giallo-l"><span style="color: #5F6672;">     pub subject: Option&lt;String&gt;,</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #E06C75;">-    #[serde(rename = &quot;aud&quot;, skip_serializing_if = &quot;Option::is_none&quot;)]</span></span>
+<span class="giallo-l"><span style="color: #98C379;">+    #[serde(rename = &quot;aud&quot;)]</span></span>
+<span class="giallo-l"><span style="color: #5F6672;">     pub audience: Option&lt;String&gt;,</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #E06C75;">-    #[serde(rename = &quot;exp&quot;, skip_serializing_if = &quot;Option::is_none&quot;)]</span></span>
+<span class="giallo-l"><span style="color: #98C379;">+    #[serde(rename = &quot;exp&quot;)]</span></span>
+<span class="giallo-l"><span style="color: #5F6672;">     pub expiration: Option&lt;SecondsSinceEpoch&gt;,</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #E06C75;">-    #[serde(rename = &quot;nbf&quot;, skip_serializing_if = &quot;Option::is_none&quot;)]</span></span>
+<span class="giallo-l"><span style="color: #98C379;">+    #[serde(rename = &quot;nbf&quot;)]</span></span>
+<span class="giallo-l"><span style="color: #5F6672;">     pub not_before: Option&lt;SecondsSinceEpoch&gt;,</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #E06C75;">-    #[serde(rename = &quot;iat&quot;, skip_serializing_if = &quot;Option::is_none&quot;)]</span></span>
+<span class="giallo-l"><span style="color: #98C379;">+    #[serde(rename = &quot;iat&quot;)]</span></span>
+<span class="giallo-l"><span style="color: #5F6672;">     pub issued_at: Option&lt;SecondsSinceEpoch&gt;,</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #E06C75;">-    #[serde(rename = &quot;jti&quot;, skip_serializing_if = &quot;Option::is_none&quot;)]</span></span>
+<span class="giallo-l"><span style="color: #98C379;">+    #[serde(rename = &quot;jti&quot;)]</span></span>
+<span class="giallo-l"><span style="color: #5F6672;">     pub json_web_token_id: Option&lt;String&gt;,</span></span>
+<span class="giallo-l"><span style="color: #5F6672;"> }</span></span></code></pre>
+<p><a rel="external" href="https://github.com/orhun/rust-jwt/commit/4ef2ff4768a6485281e1bd451dee502bfc185d0d">https://github.com/orhun/rust-jwt/commit/4ef2ff4768a6485281e1bd451dee502bfc185d0d</a></p>
+<p>That should be enough, right?</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #B57EDC;">$</span><span style="color: #98C379;"> ./jwt-0.16.0.rs</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOm51bGwsInN1YiI6IjQyMCIsImF1ZCI6bnVsbCwiZXhwIjpudWxsLCJuYmYiOm51bGwsImlhdCI6bnVsbCwianRpIjpudWxsfQ.mXy5xf4an2Bfv6mmhABh9-Yfmqit2AeXZWahCPgrvr0</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #B57EDC;">thread</span><span> &#39;</span><span style="color: #98C379;">main</span><span>&#39;</span><span style="color: #98C379;"> panicked at</span><span> &#39;</span><span style="color: #98C379;">Token is not valid: invalid type: null, expected a string at line 1 column 11</span><span>&#39;</span><span style="color: #98C379;">, jwt-0.16.0.rs:45:13</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">note:</span><span style="color: #98C379;"> run with</span><span> `</span><span style="color: #C6CCD7;">RUST_BACKTRACE</span><span style="color: #E06C75;">=</span><span style="color: #98C379;">1</span><span>`</span><span style="color: #B57EDC;"> environment</span><span style="color: #98C379;"> variable to display a backtrace</span></span></code></pre>
+<p>Uhm... verification failed. It is because we allowed <code>Option</code> types by removing the serde attribute so we should update the generic parameter from <code>String</code> to <code>Option&lt;String&gt;</code> in our expected claims data in the script:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="diff"><span class="giallo-l"><span style="color: #E06C75;">-    match VerifyWithKey::&lt;Token&lt;Header, BTreeMap&lt;String, String&gt;, _&gt;&gt;::verify_with_key(</span></span>
+<span class="giallo-l"><span style="color: #98C379;">+    match VerifyWithKey::&lt;Token&lt;Header, BTreeMap&lt;String, Option&lt;String&gt;&gt;, _&gt;&gt;::verify_with_key(</span></span>
+<span class="giallo-l"><span style="color: #5F6672;">         token.as_str(),</span></span>
+<span class="giallo-l"><span style="color: #5F6672;">         &amp;secret_key,</span></span>
+<span class="giallo-l"><span style="color: #5F6672;">     ) {</span></span>
+<span class="giallo-l"><span style="color: #5F6672;">         Ok(token) =&gt; {</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">-            assert_eq!(DATA.to_string(), token.claims()[&quot;sub&quot;]);</span></span>
+<span class="giallo-l"><span style="color: #98C379;">+            assert_eq!(Some(DATA.to_string()), token.claims()[&quot;sub&quot;]);</span></span>
+<span class="giallo-l"><span style="color: #5F6672;">         }</span></span>
+<span class="giallo-l"><span style="color: #5F6672;">         Err(e) =&gt; {</span></span>
+<span class="giallo-l"><span style="color: #5F6672;">             panic!(&quot;Token is not valid: {}&quot;, e)</span></span></code></pre><pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #B57EDC;">$</span><span style="color: #98C379;"> ./jwt-0.16.0.rs</span><span style="color: #E06C75;"> |</span><span style="color: #B57EDC;"> jwt</span><span style="color: #98C379;"> decode -</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #B57EDC;">Token</span><span style="color: #98C379;"> header</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">------------</span></span>
+<span class="giallo-l"><span>{</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">  &quot;typ&quot;:</span><span> &quot;</span><span style="color: #98C379;">JWT</span><span>&quot;</span><span style="color: #98C379;">,</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">  &quot;alg&quot;:</span><span> &quot;</span><span style="color: #98C379;">HS256</span><span>&quot;</span></span>
+<span class="giallo-l"><span>}</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #B57EDC;">Token</span><span style="color: #98C379;"> claims</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">------------</span></span>
+<span class="giallo-l"><span>{</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">  &quot;aud&quot;:</span><span style="color: #98C379;"> null,</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">  &quot;exp&quot;:</span><span style="color: #98C379;"> null,</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">  &quot;iat&quot;:</span><span style="color: #98C379;"> null,</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">  &quot;iss&quot;:</span><span style="color: #98C379;"> null,</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">  &quot;jti&quot;:</span><span style="color: #98C379;"> null,</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">  &quot;nbf&quot;:</span><span style="color: #98C379;"> null,</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">  &quot;sub&quot;:</span><span> &quot;</span><span style="color: #98C379;">420</span><span>&quot;</span></span>
+<span class="giallo-l"><span>}</span></span></code></pre>
+<p>Good. We now have null fields in the claims. But do we have the same data in tokens generated by both scripts?</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #B57EDC;">$</span><span style="color: #98C379;"> diff</span><span> &lt;(</span><span style="color: #B57EDC;">./jwt-0.4.0.rs</span><span style="color: #E06C75;"> |</span><span style="color: #B57EDC;"> jwt</span><span style="color: #98C379;"> decode -</span><span>) &lt;(</span><span style="color: #B57EDC;">./jwt-0.16.0.rs</span><span style="color: #E06C75;"> |</span><span style="color: #B57EDC;"> jwt</span><span style="color: #98C379;"> decode -</span><span>) &amp;&amp;</span><span style="color: #B57EDC;"> echo</span><span> &quot;</span><span style="color: #98C379;">decode result is the same</span><span>&quot;</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">decode</span><span style="color: #98C379;"> result is the same</span></span></code></pre>
+<p>Yay! It is the expected output. Let's check the tokens too if they are the same:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #B57EDC;">$</span><span style="color: #98C379;"> ./jwt-0.4.0.rs</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">eyJ0eXAiOiJKV1QiLCJraWQiOm51bGwsImFsZyI6IkhTMjU2In0.eyJpc3MiOm51bGwsInN1YiI6IjQyMCIsImF1ZCI6bnVsbCwiZXhwIjpudWxsLCJuYmYiOm51bGwsImlhdCI6bnVsbCwianRpIjpudWxsfQ./sN8Ur+b+38g4X2yQsIuhs4Z1dWjPW+7SHSFgmYa4xM</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #B57EDC;">$</span><span style="color: #98C379;"> ./jwt-0.16.0.rs</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOm51bGwsInN1YiI6IjQyMCIsImF1ZCI6bnVsbCwiZXhwIjpudWxsLCJuYmYiOm51bGwsImlhdCI6bnVsbCwianRpIjpudWxsfQ.mXy5xf4an2Bfv6mmhABh9-Yfmqit2AeXZWahCPgrvr0</span></span></code></pre>
+<p>Uh-oh... Token data is exactly the same according to <code>jwt-cli</code> but tokens are different. What is going on?</p>
+<blockquote>
+<p>WE'VE BEEN BAMBOOZLED.</p>
+</blockquote>
+<p>It turns out <code>jwt-cli</code> was wrong /o\</p>
+<p>It uses <a rel="external" href="https://github.com/Keats/jsonwebtoken">jsonwebtoken</a> under the hood for decoding the tokens and this library has the same serde attribute:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="rust"><span class="giallo-l"><span>#[derive(</span><span style="color: #E5C07B;">Debug</span><span>,</span><span style="color: #E5C07B;"> Clone</span><span>,</span><span style="color: #E5C07B;"> PartialEq</span><span>,</span><span style="color: #E5C07B;"> Serialize</span><span>,</span><span style="color: #E5C07B;"> Deserialize</span><span>,</span><span style="color: #E5C07B;"> Hash</span><span>)]</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">pub</span><span style="color: #61AFEF;"> struct</span><span style="color: #E5C07B;"> Header</span><span> {</span></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;">    /// The type of JWS: it can only be &quot;JWT&quot; here</span></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;">    ///</span></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;">    /// Defined in [RFC7515#4.1.9](https://tools.ietf.org/html/rfc7515#section-4.1.9).</span></span>
+<span class="giallo-l"><span>    #[serde(skip_serializing_if </span><span style="color: #E06C75;">=</span><span> &quot;</span><span style="color: #98C379;">Option::is_none</span><span>&quot;)]</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">    pub</span><span style="color: #C6CCD7;"> typ</span><span style="color: #E06C75;">:</span><span style="color: #E5C07B;"> Option</span><span>&lt;</span><span style="color: #E5C07B;">String</span><span>&gt;,</span></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;">    /// &lt;strip&gt;</span></span></code></pre>
+<p>See <a rel="external" href="https://github.com/Keats/jsonwebtoken/blob/e869bff62fddb039ea20c60813549d30aa00e7f2/src/header.rs#L13">jsonwebtoken::Header</a></p>
+<p>So that's why null fields are not shown in the output. 🤦🏼‍♂️</p>
+<p>Later on I used <a rel="external" href="https://jwt.io/">jwt.io</a> to compare the data of the both tokens and it revealed the following result:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="diff"><span class="giallo-l"><span style="color: #5F6672;"> {</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">-  &quot;alg&quot;: &quot;HS256&quot;,</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">-  &quot;typ&quot;: &quot;JWT&quot;</span></span>
+<span class="giallo-l"><span style="color: #98C379;">+  &quot;typ&quot;: &quot;JWT&quot;,</span></span>
+<span class="giallo-l"><span style="color: #98C379;">+  &quot;kid&quot;: null,</span></span>
+<span class="giallo-l"><span style="color: #98C379;">+  &quot;alg&quot;: &quot;HS256&quot;</span></span>
+<span class="giallo-l"><span style="color: #5F6672;"> }</span></span></code></pre>
+<p>So only <code>kid</code> is missing from the header? Alright, easy:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="diff"><span class="giallo-l"><span style="color: #5F6672;"> pub struct Header {</span></span>
+<span class="giallo-l"><span style="color: #5F6672;">     #[serde(rename = &quot;alg&quot;)]</span></span>
+<span class="giallo-l"><span style="color: #5F6672;">     pub algorithm: AlgorithmType,</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #E06C75;">-    #[serde(rename = &quot;kid&quot;, skip_serializing_if = &quot;Option::is_none&quot;)]</span></span>
+<span class="giallo-l"><span style="color: #98C379;">+    #[serde(rename = &quot;kid&quot;)]</span></span>
+<span class="giallo-l"><span style="color: #5F6672;">     pub key_id: Option&lt;String&gt;,</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #5F6672;">     #[serde(rename = &quot;typ&quot;, skip_serializing_if = &quot;Option::is_none&quot;)]</span></span></code></pre>
+<p><a rel="external" href="https://github.com/orhun/rust-jwt/commit/b8c4b78d357fa20f54afc4c1ddcc0cb29479e1a4">https://github.com/orhun/rust-jwt/commit/b8c4b78d357fa20f54afc4c1ddcc0cb29479e1a4</a></p>
+<p>How about now?</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="diff"><span class="giallo-l"><span style="color: #5F6672;"> {</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">-  &quot;alg&quot;: &quot;HS256&quot;,</span></span>
+<span class="giallo-l"><span style="color: #98C379;">+  &quot;typ&quot;: &quot;JWT&quot;,</span></span>
+<span class="giallo-l"><span style="color: #5F6672;">   &quot;kid&quot;: null,</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">-  &quot;typ&quot;: &quot;JWT&quot;</span></span>
+<span class="giallo-l"><span style="color: #98C379;">+  &quot;alg&quot;: &quot;HS256&quot;</span></span>
+<span class="giallo-l"><span style="color: #5F6672;"> }</span></span></code></pre>
+<p>Oooh, they need to be in the same order as well. Let's reorder the struct fields:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="diff"><span class="giallo-l"><span style="color: #5F6672;"> pub struct Header {</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">-    #[serde(rename = &quot;alg&quot;)]</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">-    pub algorithm: AlgorithmType,</span></span>
+<span class="giallo-l"><span style="color: #98C379;">+    #[serde(rename = &quot;typ&quot;, skip_serializing_if = &quot;Option::is_none&quot;)]</span></span>
+<span class="giallo-l"><span style="color: #98C379;">+    pub type_: Option&lt;HeaderType&gt;,</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #5F6672;">     #[serde(rename = &quot;kid&quot;)]</span></span>
+<span class="giallo-l"><span style="color: #5F6672;">     pub key_id: Option&lt;String&gt;,</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #E06C75;">-    #[serde(rename = &quot;typ&quot;, skip_serializing_if = &quot;Option::is_none&quot;)]</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">-    pub type_: Option&lt;HeaderType&gt;,</span></span>
+<span class="giallo-l"><span style="color: #98C379;">+    #[serde(rename = &quot;alg&quot;)]</span></span>
+<span class="giallo-l"><span style="color: #98C379;">+    pub algorithm: AlgorithmType,</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #5F6672;">     #[serde(rename = &quot;cty&quot;, skip_serializing_if = &quot;Option::is_none&quot;)]</span></span>
+<span class="giallo-l"><span style="color: #5F6672;">     pub content_type: Option&lt;HeaderContentType&gt;,</span></span></code></pre>
+<p><a rel="external" href="https://github.com/orhun/rust-jwt/commit/c6d2fb9cc635ee0beafdeaebdac68c5d9e0d7c23">https://github.com/orhun/rust-jwt/commit/c6d2fb9cc635ee0beafdeaebdac68c5d9e0d7c23</a></p>
+<p>That should be fine now. Please god!</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #B57EDC;">$</span><span style="color: #98C379;"> diff</span><span> &lt;(</span><span style="color: #B57EDC;">./jwt-0.4.0.rs</span><span style="color: #E06C75;"> |</span><span style="color: #B57EDC;"> jwt</span><span style="color: #98C379;"> decode -</span><span>) &lt;(</span><span style="color: #B57EDC;">./jwt-0.16.0.rs</span><span style="color: #E06C75;"> |</span><span style="color: #B57EDC;"> jwt</span><span style="color: #98C379;"> decode -</span><span>)</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #B57EDC;">$</span><span style="color: #98C379;"> diff</span><span> &lt;(</span><span style="color: #B57EDC;">./jwt-0.4.0.rs</span><span>) &lt;(</span><span style="color: #B57EDC;">./jwt-0.16.0.rs</span><span>)</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">1c1</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">&lt;</span><span> eyJ0eXAiOiJKV1QiLCJraWQiOm51bGwsImFsZyI6IkhTMjU2In0.eyJpc3MiOm51bGwsInN1YiI6IjQyMCIsImF1ZCI6bnVsbCwiZXhwIjpudWxsLCJuYmYiOm51bGwsImlhdCI6bnVsbCwianRpIjpudWxsfQ./sN8Ur+b+38g4X2yQsIuhs4Z1dWjPW+7SHSFgmYa4xM</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">---</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">&gt;</span><span> eyJ0eXAiOiJKV1QiLCJraWQiOm51bGwsImFsZyI6IkhTMjU2In0.eyJpc3MiOm51bGwsInN1YiI6IjQyMCIsImF1ZCI6bnVsbCwiZXhwIjpudWxsLCJuYmYiOm51bGwsImlhdCI6bnVsbCwianRpIjpudWxsfQ._sN8Ur-b-38g4X2yQsIuhs4Z1dWjPW-7SHSFgmYa4xM</span></span></code></pre>
+<p>WHAT!? OH... WAIT... They look so similar. Only the signature part is slightly different:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #B57EDC;">/sN8Ur+b+38g4X2yQsIuhs4Z1dWjPW+7SHSFgmYa4xM</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">_sN8Ur-b-38g4X2yQsIuhs4Z1dWjPW-7SHSFgmYa4xM</span></span></code></pre>
+<p>(<code>/</code> instead of <code>_</code> &amp; <code>+</code> instead of <code>-</code>)</p>
+<p>Well, it turns out they are actually the same token. According to the warning on jwt.io, the difference is due to the first token not being encoded correctly:</p>
+<blockquote>
+<p>Warning: Looks like your JWT signature is not encoded correctly using base64url (<a rel="external" href="https://tools.ietf.org/html/rfc4648#section-5">https://tools.ietf.org/html/rfc4648#section-5</a>).</p>
+<p>Note that padding ("=") must be omitted as per <a rel="external" href="https://tools.ietf.org/html/rfc7515#section-2">https://tools.ietf.org/html/rfc7515#section-2</a></p>
+</blockquote>
+<p>Just to be safe, I decided to replace the invalid characters in the signature before verifying:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="diff"><span class="giallo-l"><span style="color: #E06C75;">-        if key.verify(header_str, claims_str, signature_str)? {</span></span>
+<span class="giallo-l"><span style="color: #98C379;">+        let signature_str = signature_str.replace(&#39;+&#39;, &quot;-&quot;).replace(&#39;/&#39;, &quot;_&quot;);</span></span>
+<span class="giallo-l"><span style="color: #98C379;">+        if key.verify(header_str, claims_str, &amp;signature_str)? {</span></span>
+<span class="giallo-l"><span style="color: #5F6672;">             Ok(Token {</span></span>
+<span class="giallo-l"><span style="color: #5F6672;">                 header: self.header,</span></span>
+<span class="giallo-l"><span style="color: #5F6672;">                 claims: self.claims,</span></span></code></pre>
+<p><a rel="external" href="https://github.com/orhun/rust-jwt/commit/3a47cae2b5d2a12a46548c07646305f1df0e1253">https://github.com/orhun/rust-jwt/commit/3a47cae2b5d2a12a46548c07646305f1df0e1253</a></p>
+<p>And then I tested it with different tokens and had no issues, meaning that this -<em>slightly modified</em>- version of rust-jwt is used in production now! 🎉</p>
+<details>
+<summary>The final version of the script</summary>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="rust"><span class="giallo-l"><span>#</span><span style="color: #E06C75;">!/</span><span style="color: #C6CCD7;">usr</span><span style="color: #E06C75;">/</span><span style="color: #C6CCD7;">bin</span><span style="color: #E06C75;">/</span><span style="color: #C6CCD7;">env rust</span><span style="color: #E06C75;">-</span><span style="color: #C6CCD7;">script</span></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;">//! ```cargo</span></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;">//! [dependencies]</span></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;">//! hmac = &quot;0.12.1&quot;</span></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;">//! jwt = { version=&quot;0.16.0&quot;, git=&quot;https://github.com/orhun/rust-jwt&quot;  }</span></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;">//! sha2 = &quot;0.10.2&quot;</span></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;">//! ```</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #E06C75;">use</span><span style="color: #61AFEF;"> hmac</span><span style="color: #E06C75;">::</span><span>{</span><span style="color: #E5C07B;">Hmac</span><span>,</span><span style="color: #E5C07B;"> Mac</span><span>};</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">use</span><span style="color: #61AFEF;"> jwt</span><span style="color: #E06C75;">::</span><span style="color: #61AFEF;">claims</span><span style="color: #E06C75;">::</span><span style="color: #E5C07B;">RegisteredClaims</span><span>;</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">use</span><span style="color: #61AFEF;"> jwt</span><span style="color: #E06C75;">::</span><span>{</span><span style="color: #E5C07B;">Header</span><span>,</span><span style="color: #E5C07B;"> SignWithKey</span><span>,</span><span style="color: #E5C07B;"> Token</span><span>,</span><span style="color: #E5C07B;"> VerifyWithKey</span><span>};</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">use</span><span style="color: #61AFEF;"> sha2</span><span style="color: #E06C75;">::</span><span style="color: #E5C07B;">Sha256</span><span>;</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">use</span><span style="color: #61AFEF;"> std</span><span style="color: #E06C75;">::</span><span style="color: #61AFEF;">collections</span><span style="color: #E06C75;">::</span><span style="color: #E5C07B;">BTreeMap</span><span>;</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #61AFEF;">const</span><span style="color: #56B6C2;"> DATA</span><span style="color: #E06C75;">: &amp;</span><span style="color: #E5C07B;">str</span><span style="color: #E06C75;"> =</span><span> &quot;</span><span style="color: #98C379;">420</span><span>&quot;;</span></span>
+<span class="giallo-l"><span style="color: #61AFEF;">const</span><span style="color: #56B6C2;"> SECRET_KEY</span><span style="color: #E06C75;">: &amp;</span><span style="color: #E5C07B;">str</span><span style="color: #E06C75;"> =</span><span> &quot;</span><span style="color: #98C379;">verysecretkey</span><span>&quot;;</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #E06C75;">fn</span><span style="color: #B57EDC;"> main</span><span>() {</span></span>
+<span class="giallo-l"><span style="color: #61AFEF;">    let</span><span style="color: #C6CCD7;"> secret_key</span><span style="color: #E06C75;"> =</span><span style="color: #E5C07B;"> Hmac</span><span style="color: #E06C75;">::</span><span>&lt;</span><span style="color: #E5C07B;">Sha256</span><span>&gt;</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">new_from_slice</span><span>(</span><span style="color: #56B6C2;">SECRET_KEY</span><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">as_bytes</span><span>())</span><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">unwrap</span><span>();</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #61AFEF;">    let</span><span style="color: #C6CCD7;"> claims</span><span style="color: #E06C75;"> =</span><span style="color: #E5C07B;"> RegisteredClaims</span><span> {</span></span>
+<span class="giallo-l"><span style="color: #C6CCD7;">        subject</span><span style="color: #E06C75;">:</span><span style="color: #E5C07B;"> Some</span><span>(</span><span style="color: #56B6C2;">DATA</span><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">to_string</span><span>()),</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">        ..</span><span style="color: #E5C07B;">RegisteredClaims</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">default</span><span>()</span></span>
+<span class="giallo-l"><span>    };</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #61AFEF;">    let</span><span style="color: #C6CCD7;"> header</span><span style="color: #E06C75;"> =</span><span style="color: #E5C07B;"> Header</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">default</span><span>();</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #61AFEF;">    let</span><span style="color: #C6CCD7;"> token</span><span style="color: #E06C75;"> =</span><span style="color: #E5C07B;"> Token</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">new</span><span>(</span><span style="color: #C6CCD7;">header</span><span>,</span><span style="color: #C6CCD7;"> claims</span><span>)</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">        .</span><span style="color: #B57EDC;">sign_with_key</span><span>(</span><span style="color: #E06C75;">&amp;</span><span style="color: #C6CCD7;">secret_key</span><span>)</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">        .</span><span style="color: #B57EDC;">unwrap</span><span>();</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #B57EDC;">    println!</span><span>(&quot;{}&quot;,</span><span style="color: #C6CCD7;"> token</span><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">as_str</span><span>());</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #E06C75;">    match</span><span style="color: #E5C07B;"> VerifyWithKey</span><span style="color: #E06C75;">::</span><span>&lt;</span><span style="color: #E5C07B;">Token</span><span>&lt;</span><span style="color: #E5C07B;">Header</span><span>,</span><span style="color: #E5C07B;"> BTreeMap</span><span>&lt;</span><span style="color: #E5C07B;">String</span><span>,</span><span style="color: #E5C07B;"> Option</span><span>&lt;</span><span style="color: #E5C07B;">String</span><span>&gt;&gt;,</span><span style="color: #C6CCD7;"> _</span><span>&gt;&gt;</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">verify_with_key</span><span>(</span></span>
+<span class="giallo-l"><span style="color: #C6CCD7;">        token</span><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">as_str</span><span>(),</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">        &amp;</span><span style="color: #C6CCD7;">secret_key</span><span>,</span></span>
+<span class="giallo-l"><span>    ) {</span></span>
+<span class="giallo-l"><span style="color: #E5C07B;">        Ok</span><span>(</span><span style="color: #C6CCD7;">token</span><span>)</span><span style="color: #E06C75;"> =&gt;</span><span> {</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">            assert_eq!</span><span>(</span><span style="color: #E5C07B;">Some</span><span>(</span><span style="color: #56B6C2;">DATA</span><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">to_string</span><span>()),</span><span style="color: #C6CCD7;"> token</span><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">claims</span><span>()[&quot;</span><span style="color: #98C379;">sub</span><span>&quot;]);</span></span>
+<span class="giallo-l"><span>        }</span></span>
+<span class="giallo-l"><span style="color: #E5C07B;">        Err</span><span>(</span><span style="color: #C6CCD7;">e</span><span>)</span><span style="color: #E06C75;"> =&gt;</span><span> {</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">            panic!</span><span>(&quot;</span><span style="color: #98C379;">Token is not valid: </span><span>{}&quot;,</span><span style="color: #C6CCD7;"> e</span><span>)</span></span>
+<span class="giallo-l"><span>        }</span></span>
+<span class="giallo-l"><span>    }</span></span>
+<span class="giallo-l"><span>}</span></span></code></pre></details>
+<p>I pushed the changes in the rust-jwt library to my fork in case anyone hits this incredibly specific issue: <a rel="external" href="https://github.com/orhun/rust-jwt"><strong>https://github.com/orhun/rust-jwt</strong></a></p>
+<p>Thanks for coming down with me to this rabbit hole! 🐇</p>
+<p>(Special thanks to <a rel="external" href="https://timhei.de">Tim Heide</a> for bringing this issue to my attention.)</p>
+<p>~ cya!</p>
+
+    </div>
+
+    
+        <footer>
+            <hr>
+            <p>
+                
+                    Published by Orhun Parmaksız
+                
+                
+                    
+                    in <a href="https://blog.orhun.dev/categories/rust/">Rust</a>
+                
+                
+            </p>
+            
+            
+            <div style="display: flex; justify-content: space-between; align-items: center">
+              <div>
+                <iframe
+                  src="https://github.com/sponsors/orhun/button"
+                  title="Sponsor @orhun"
+                  height="35"
+                  width="116"
+                  style="border: 0"
+                ></iframe>
+                <a href="https://www.buymeacoffee.com/orhun" target="_blank"
+                  ><img
+                    src="https://cdn.buymeacoffee.com/buttons/v2/default-white.png"
+                    alt="Buy Me A Coffee"
+                    style="height: 40px !important; width: 150px !important"
+                /></a>
+              </div>
+              <div>
+                <applause-button
+                  style="width: 50px; height: 50px"
+                  url="https://blog.orhun.dev&#x2F;upgrading-rust-jwt&#x2F;"
+                  color="white"
+                  multiclap="true"
+                />
+              </div>
+              <div>
+                <div style="width: auto; height: 39px">
+                  <p style="margin: 0; color: #fff; font-style: italic">✨ Sponsored by:</p>
+                </div>
+                <a href="https://www.jetbrains.com/" target="_blank"
+                  ><img
+                    src="/sponsors/jetbrains.png"
+                    alt="JetBrains"
+                    style="height: 45px; width: auto"
+                /></a>
+                <a href="https://terminaltrove.com/" target="_blank"
+                  ><img
+                    src="/sponsors/terminal_trove.png"
+                    alt="Terminal Trove"
+                    style="height: 40px; width: auto"
+                /></a>
+              </div>
+            </div>
+            <script src="https://utteranc.es/client.js"
+                    repo="orhun/personal-blog"
+                    issue-term="url"
+                    label="comments"
+                    theme="github-dark"
+                    crossorigin="anonymous"
+                    async>
+            </script>
+        </footer>
+    
+</article>
+
+
+    </body>
+
+    <script type="text/javascript" src="https://blog.orhun.dev/elasticlunr.min.js"></script>
+    <script type="text/javascript" src="https://blog.orhun.dev/js/search.js"></script>
+
+</html>

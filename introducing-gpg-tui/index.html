@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <meta http-equiv="content-type" content="text/html; charset=utf-8">
+      <meta property="og:type" content="website" />
+      <meta property="og:url" content="https://blog.orhun.dev"/>
+      
+      <meta property="og:title" content="Introducing gpg-tui, a Terminal User Interface for GnuPG - Orhun&#x27;s Blog" />
+      
+      <meta property="og:image" content="https://blog.orhun.dev/crow.png" />
+      
+      <meta name="description" content="FOSS • Linux • Programming" />
+      <meta property="og:description" content="FOSS • Linux • Programming"/>
+      
+
+      <!-- Enable responsiveness on mobile devices-->
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+      <link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png">
+      <link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png">
+      <link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png">
+      <link rel="manifest" href="/favicon/site.webmanifest">
+
+      <script async src="https://umami.orhun.dev/script.js" data-website-id="56ca5ca7-ba9f-416e-8bee-a132c155d56b"></script>
+
+      <link rel="stylesheet" href="https://unpkg.com/applause-button/dist/applause-button.css" />
+      <script src="https://unpkg.com/applause-button/dist/applause-button.js"></script>
+
+      
+      <title>Introducing gpg-tui, a Terminal User Interface for GnuPG - Orhun&#x27;s Blog</title>
+      
+      <link rel="alternate" type="application/rss+xml" title="Orhun&#x27;s Blog RSS Feed" href="https://blog.orhun.dev/rss.xml" />
+
+      
+          <link rel="stylesheet" href="https://blog.orhun.dev/site.css">
+      
+
+      
+      
+    </head>
+
+    <body class="hack dark main container">
+        
+    
+        
+                
+                    <header>
+                    <nav itemscope itemtype="http://schema.org/SiteNavigationElement" class="nav-flex">
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://blog.orhun.dev">
+                                <span itemprop="name">Home</span>
+                            </a>
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://blog.orhun.dev/categories">
+                                <span itemprop="name">Categories</span>
+                            </a>
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://github.com/orhun/personal-blog">
+                                <span itemprop="name">Source</span>
+                            </a>
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://github.com/orhun">
+                                <span itemprop="name">GitHub</span>
+                            </a>
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://donate.orhun.dev">
+                                <span itemprop="name">Donate</span>
+                            </a>
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://blog.orhun.dev/rss.xml">
+                                <span itemprop="name">RSS</span>
+                            </a>
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://orhun.dev">
+                                <span itemprop="name">About</span>
+                            </a>
+                        
+                        <div class="search-container">
+                            <input type="text" id="search" placeholder="Search...">
+                            <div class="search-results">
+                                <div class="search-results__items"></div>
+                            </div>
+                        </div>
+                    </nav>
+                    </header>
+                
+            
+    
+
+<article itemscope itemtype="http://schema.org/BlogPosting">
+    <header>
+        <h1 itemprop="headline">Introducing gpg-tui, a Terminal User Interface for GnuPG</h1>
+        <span class="muted">
+    <svg style="margin-bottom:-3px" class="i-clock" viewBox="0 0 32 32"
+         width="16" height="16" fill="none" stroke="currentcolor"
+         stroke-linecap="round" stroke-linejoin="round" stroke-width="6.25%">
+        <circle cx="16" cy="16" r="14"/>
+        <path d="M16 8 L16 16 20 20"/>
+    </svg>
+    <span>6 minute read</span>
+    <svg style="margin-bottom: -3px" class="i-edit" viewBox="0 0 32 32"
+         width="16" height="16" fill="none" stroke="currentcolor"
+         stroke-linecap="round" stroke-linejoin="round" stroke-width="6.25%">
+        <path d="M30 7 L25 2 5 22 3 29 10 27 Z M21 6 L26 11 Z M5 22 L10 27 Z"/>
+    </svg>
+
+    Published: 2021-05-29
+</span>
+    </header>
+    <div itemprop="articleBody">
+      <p>gpg-tui is a TUI for managing the GnuPG keys 🔐 In this post, I'm giving a brief introduction to the project as well as describing the thought process and main development challenges behind it.</p>
+<span id="continue-reading"></span>
+<p><a rel="external" href="https://github.com/orhun/gpg-tui"><img src="https://github.com/orhun/gpg-tui/raw/master/assets/logo.jpg" alt="Logo" /></a></p>
+<center>
+<p><a href="https://github.com/orhun/gpg-tui"><b>https://github.com/orhun/gpg-tui</b></a></p>
+</center>
+<h2 id="background">Background</h2>
+<p><a rel="external" href="https://gnupg.org/">GnuPG</a> is a well-known implementation of the <a rel="external" href="https://www.ietf.org/rfc/rfc4880.txt">OpenPGP</a> standard which is been used for years in various communities and projects. It's also known as "GPG", which is the name of the command line tool that makes it easier to integrate with other applications. It is battle-tested over the years and has a wealth of frontend applications and libraries.</p>
+<p>My past with GnuPG is roughly the same with an ordinary developer who is into programming, open source, and related concepts. So I cannot say that I was using it for more than encryption/decryption/verification of files/emails and different types of authentication. It is a tool basically for securing the communication for me.</p>
+<p>But some things about gpg, the CLI tool, were bugging me. I remember times that I have to run multiple commands to get fully informed about a key. Or I have to process its output to get the information that I needed. (using <code>grep</code>, <code>sed</code>, etc.) Not to mention that some of the output of gpg is quite confusing if you're unfamiliar with the GnuPG terms. So for years, I was thinking that it'd be nice to have a more user-friendly and interactive tool to handle the tasks that gpg is trying to accomplish. These tasks include key management operations such as listing (showing subkeys, user ids, signatures), signing, deleting keys, etc.</p>
+<h2 id="plan">Plan</h2>
+<p>So I decided to write this tool in <a rel="external" href="https://www.rust-lang.org/">Rust</a>, using <a rel="external" href="https://github.com/fdehau/tui-rs">tui-rs</a> and <a rel="external" href="https://github.com/gpg-rs/gpgme">bindings</a> for the <a rel="external" href="https://www.gnupg.org/software/gpgme/index.html">GPGME library</a>.</p>
+<p>GPGME uses GnuPG's OpenPGP backend as default to provide a high-level crypto API for various operations including <em>key management</em>, which was the thing I needed. And I have written a TUI program using tui-rs <a rel="external" href="https://github.com/orhun/kmon">before</a>, so why not use it again?</p>
+<h2 id="implementation">Implementation</h2>
+<p>I'd like to point out the 2 main issues that I've dealt with during the development process.</p>
+<h3 id="listing-format">Listing Format</h3>
+<p>I started with the very basic: <em>listing keys</em>. Thankfully GPGME had an example for it, so it was supposed to be <em>easy</em> to implement.</p>
+<p>Output from GPGME <a rel="external" href="https://github.com/gpg-rs/gpgme/blob/master/examples/keylist.rs">example</a>:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="plain"><span class="giallo-l"><span>keyid   : E19F76D037BD65B6</span></span>
+<span class="giallo-l"><span>fpr     : B14085A20355B74DE0CE0FA1E19F76D037BD65B6</span></span>
+<span class="giallo-l"><span>caps    : esc</span></span>
+<span class="giallo-l"><span>flags   :</span></span>
+<span class="giallo-l"><span>userid 0: Example Key &lt;example@key&gt;</span></span>
+<span class="giallo-l"><span>valid  0: Validity::Ultimate(5)</span></span>
+<span class="giallo-l"><span>userid 1: Other User ID &lt;example@key&gt;</span></span>
+<span class="giallo-l"><span>valid  1: Validity::Ultimate(5)</span></span></code></pre>
+<p>Ta-da! It's done.</p>
+<p>Well, no. It was good and well until I reached the point where I realized I should come up with my own listing format. If I use this format or the format that <code>gpg -k</code> uses, I'm afraid I can't extend it for my needs. So I played around with different formats a little bit and found an optimal one that can expand/shrink to show more/fewer details about an individual key. It consists of two columns which are <a rel="external" href="https://github.com/orhun/gpg-tui#key-information">key information</a> and <a rel="external" href="https://github.com/orhun/gpg-tui#user-information">user information</a>:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="plain"><span class="giallo-l"><span>[sc--] rsa3072/B14085A20355B74DE0CE0FA1E19F76D037BD65B6  │  [u] Example Key &lt;example@key&gt;</span></span>
+<span class="giallo-l"><span>|      └─(2021-05-14)                                    │   │  └─[13] selfsig (2021-05-16)</span></span>
+<span class="giallo-l"><span>[--e-] rsa3072/E56CAC142AE5A979BEECB00FB4F68595CAD4E7E5  │   └─[u] Other User ID &lt;example@key&gt;</span></span>
+<span class="giallo-l"><span>       └─(2021-05-14)                                              ├─[13] selfsig (2021-05-16)</span></span>
+<span class="giallo-l"><span>                                                                   └─[10] 84C39331F6F85326 Other Signer Key &lt;example@signer&gt; (2021-05-16)</span></span></code></pre>
+<p>Thanks to tree-like output, everything was clearer and it was possible to show more detail without worrying about making the output look complicated.</p>
+<p>Here's the <code>gpg -k</code> output of the same key:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="plain"><span class="giallo-l"><span>pub   rsa3072 2021-05-14 [SC]</span></span>
+<span class="giallo-l"><span>      B14085A20355B74DE0CE0FA1E19F76D037BD65B6</span></span>
+<span class="giallo-l"><span>uid           [ultimate] Example Key &lt;example@key&gt;</span></span>
+<span class="giallo-l"><span>uid           [ultimate] Other User ID &lt;example@key&gt;</span></span>
+<span class="giallo-l"><span>sub   rsa3072 2021-05-14 [E]</span></span></code></pre>
+<p>I explain this custom format in detail in the project's <a rel="external" href="https://github.com/orhun/gpg-tui#approach">documentation</a>.</p>
+<p>After figuring out the format that I think the most suitable for the key listing, I made it possible to <a rel="external" href="https://github.com/orhun/gpg-tui#detailed-view">toggle the detail level</a> that list entries shows by assigning a key to it. So it will be not only possible to interactively select/scroll these keys, the user was also supposed to be able to see the other user ids and signatures if they want. That was a plus one.</p>
+<p><img src="https://user-images.githubusercontent.com/24392180/119889592-6f889900-bf3f-11eb-85fc-c9c3e445fb81.gif" alt="Listing Keys" /></p>
+<h3 id="gpg-fallback">GPG Fallback</h3>
+<p>My next step was figuring out which operations that I wanted to support. I knew that <a rel="external" href="https://linux.die.net/man/1/gpg">gpg manpage</a> had a section called "How to manage your keys", so I decided to go along with it. The plan is to support all of these features, with the extensions/flexibility that having a TUI provides.</p>
+<p>After implementing a couple of those features using GPGME, I realized it was not possible to do it all due to various reasons.</p>
+<blockquote>
+<p>well, whatever.</p>
+</blockquote>
+<p>I thought I can get help from gpg for these cases. It's already a powerful tool, so why not use it instead of designing custom tabs/widgets/layouts for each feature? I can pause the TUI during the execution of a gpg command and resume it afterward. Seems like a good idea.</p>
+<p>So I did. And I'm pretty happy with the result. Until I decide to extend the TUI for these operations, I think it's better to get help from 3-4 external gpg commands.</p>
+<p><img src="https://user-images.githubusercontent.com/24392180/119894905-df9a1d80-bf45-11eb-8600-3b3c4e340794.gif" alt="GPG Fallback" /></p>
+<h2 id="gpg-on-steroids">"GPG on steroids"</h2>
+<p>And so my journey continued and I implemented the commonly used gpg operations for my interface. I also added some extra features to use the real power of having a TUI. And since I'm designing a TUI for GPG, I named the project <strong>gpg-tui</strong>. Just simple.</p>
+<p>Here's the end result:</p>
+<p><img src="https://github.com/orhun/gpg-tui/raw/master/demo/gpg-tui-showcase.gif" alt="Demo" /></p>
+<p>As of the initial release, <strong>gpg-tui</strong> can do the following:</p>
+<ul>
+<li><a rel="external" href="https://github.com/orhun/gpg-tui#list">List keys</a></li>
+<li><a rel="external" href="https://github.com/orhun/gpg-tui#export">Export keys</a></li>
+<li><a rel="external" href="https://github.com/orhun/gpg-tui#sign">Sign keys</a></li>
+<li><a rel="external" href="https://github.com/orhun/gpg-tui#edit">Edit keys</a></li>
+<li><a rel="external" href="https://github.com/orhun/gpg-tui#importreceive">Import/receive keys</a></li>
+<li><a rel="external" href="https://github.com/orhun/gpg-tui#send">Send keys</a></li>
+<li><a rel="external" href="https://github.com/orhun/gpg-tui#generate">Generate keys</a></li>
+<li><a rel="external" href="https://github.com/orhun/gpg-tui#delete">Delete keys</a></li>
+<li><a rel="external" href="https://github.com/orhun/gpg-tui#refresh">Refresh keys</a></li>
+</ul>
+<p>With lots of additional TUI features like <a rel="external" href="https://github.com/orhun/gpg-tui#copy--paste">copy/paste mode</a>, <a rel="external" href="https://github.com/orhun/gpg-tui#options-menu">options menu</a>, and <a rel="external" href="https://github.com/orhun/gpg-tui#running-commands">command prompt</a>!</p>
+<p>See <a rel="external" href="https://github.com/orhun/gpg-tui/blob/master/README.md">README.md</a> for more information.</p>
+<h2 id="endnote">Endnote</h2>
+<p>My goal for the next releases is to implement new features that will make key management even easier. I wish a project that is born solely from my needs will also be useful for other people.</p>
+<ul>
+<li><a rel="external" href="https://github.com/orhun/gpg-tui">Homepage of gpg-tui</a> (GitHub)</li>
+<li><a rel="external" href="https://github.com/orhun">My GitHub profile</a> (<strong>@orhun</strong>, check out my other projects!)</li>
+<li><a rel="external" href="https://twitter.com/orhundev">Follow me on Twitter</a> (<strong>@orhundev</strong>)</li>
+<li><a rel="external" href="https://twitter.com/gpg_tui">Follow gpg-tui on Twitter</a> (<strong>@gpg_tui</strong>, for latest updates)</li>
+</ul>
+<p>Also if you liked <strong>gpg-tui</strong> and/or my other projects, consider consider supporting me on <a rel="external" href="https://github.com/sponsors/orhun">GitHub Sponsors</a> or <a rel="external" href="https://www.patreon.com/orhunp">Patreon</a>.</p>
+<p>(I recently got my first ever patron so I'd like to thank Ethem for their nice surprise and support :D)</p>
+<p>Have a good day!</p>
+
+    </div>
+
+    
+        <footer>
+            <hr>
+            <p>
+                
+                    Published by Orhun Parmaksız
+                
+                
+                    
+                    in <a href="https://blog.orhun.dev/categories/projects/">Projects</a>
+                
+                
+            </p>
+            
+            
+            <div style="display: flex; justify-content: space-between; align-items: center">
+              <div>
+                <iframe
+                  src="https://github.com/sponsors/orhun/button"
+                  title="Sponsor @orhun"
+                  height="35"
+                  width="116"
+                  style="border: 0"
+                ></iframe>
+                <a href="https://www.buymeacoffee.com/orhun" target="_blank"
+                  ><img
+                    src="https://cdn.buymeacoffee.com/buttons/v2/default-white.png"
+                    alt="Buy Me A Coffee"
+                    style="height: 40px !important; width: 150px !important"
+                /></a>
+              </div>
+              <div>
+                <applause-button
+                  style="width: 50px; height: 50px"
+                  url="https://blog.orhun.dev&#x2F;introducing-gpg-tui&#x2F;"
+                  color="white"
+                  multiclap="true"
+                />
+              </div>
+              <div>
+                <div style="width: auto; height: 39px">
+                  <p style="margin: 0; color: #fff; font-style: italic">✨ Sponsored by:</p>
+                </div>
+                <a href="https://www.jetbrains.com/" target="_blank"
+                  ><img
+                    src="/sponsors/jetbrains.png"
+                    alt="JetBrains"
+                    style="height: 45px; width: auto"
+                /></a>
+                <a href="https://terminaltrove.com/" target="_blank"
+                  ><img
+                    src="/sponsors/terminal_trove.png"
+                    alt="Terminal Trove"
+                    style="height: 40px; width: auto"
+                /></a>
+              </div>
+            </div>
+            <script src="https://utteranc.es/client.js"
+                    repo="orhun/personal-blog"
+                    issue-term="url"
+                    label="comments"
+                    theme="github-dark"
+                    crossorigin="anonymous"
+                    async>
+            </script>
+        </footer>
+    
+</article>
+
+
+    </body>
+
+    <script type="text/javascript" src="https://blog.orhun.dev/elasticlunr.min.js"></script>
+    <script type="text/javascript" src="https://blog.orhun.dev/js/search.js"></script>
+
+</html>

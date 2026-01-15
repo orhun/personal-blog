@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <meta http-equiv="content-type" content="text/html; charset=utf-8">
+      <meta property="og:type" content="website" />
+      <meta property="og:url" content="https://blog.orhun.dev"/>
+      
+      <meta property="og:title" content="Generating terminal user interfaces with Ratatui + ChatGPT - Orhun&#x27;s Blog" />
+      
+      <meta property="og:image" content="https://blog.orhun.dev/crow.png" />
+      
+      <meta name="description" content="FOSS • Linux • Programming" />
+      <meta property="og:description" content="FOSS • Linux • Programming"/>
+      
+
+      <!-- Enable responsiveness on mobile devices-->
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+      <link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png">
+      <link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png">
+      <link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png">
+      <link rel="manifest" href="/favicon/site.webmanifest">
+
+      <script async src="https://umami.orhun.dev/script.js" data-website-id="56ca5ca7-ba9f-416e-8bee-a132c155d56b"></script>
+
+      <link rel="stylesheet" href="https://unpkg.com/applause-button/dist/applause-button.css" />
+      <script src="https://unpkg.com/applause-button/dist/applause-button.js"></script>
+
+      
+      <title>Generating terminal user interfaces with Ratatui + ChatGPT - Orhun&#x27;s Blog</title>
+      
+      <link rel="alternate" type="application/rss+xml" title="Orhun&#x27;s Blog RSS Feed" href="https://blog.orhun.dev/rss.xml" />
+
+      
+          <link rel="stylesheet" href="https://blog.orhun.dev/site.css">
+      
+
+      
+      
+    </head>
+
+    <body class="hack dark main container">
+        
+    
+        
+                
+                    <header>
+                    <nav itemscope itemtype="http://schema.org/SiteNavigationElement" class="nav-flex">
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://blog.orhun.dev">
+                                <span itemprop="name">Home</span>
+                            </a>
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://blog.orhun.dev/categories">
+                                <span itemprop="name">Categories</span>
+                            </a>
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://github.com/orhun/personal-blog">
+                                <span itemprop="name">Source</span>
+                            </a>
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://github.com/orhun">
+                                <span itemprop="name">GitHub</span>
+                            </a>
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://donate.orhun.dev">
+                                <span itemprop="name">Donate</span>
+                            </a>
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://blog.orhun.dev/rss.xml">
+                                <span itemprop="name">RSS</span>
+                            </a>
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://orhun.dev">
+                                <span itemprop="name">About</span>
+                            </a>
+                        
+                        <div class="search-container">
+                            <input type="text" id="search" placeholder="Search...">
+                            <div class="search-results">
+                                <div class="search-results__items"></div>
+                            </div>
+                        </div>
+                    </nav>
+                    </header>
+                
+            
+    
+
+<article itemscope itemtype="http://schema.org/BlogPosting">
+    <header>
+        <h1 itemprop="headline">Generating terminal user interfaces with Ratatui + ChatGPT</h1>
+        <span class="muted">
+    <svg style="margin-bottom:-3px" class="i-clock" viewBox="0 0 32 32"
+         width="16" height="16" fill="none" stroke="currentcolor"
+         stroke-linecap="round" stroke-linejoin="round" stroke-width="6.25%">
+        <circle cx="16" cy="16" r="14"/>
+        <path d="M16 8 L16 16 20 20"/>
+    </svg>
+    <span>8 minute read</span>
+    <svg style="margin-bottom: -3px" class="i-edit" viewBox="0 0 32 32"
+         width="16" height="16" fill="none" stroke="currentcolor"
+         stroke-linecap="round" stroke-linejoin="round" stroke-width="6.25%">
+        <path d="M30 7 L25 2 5 22 3 29 10 27 Z M21 6 L26 11 Z M5 22 L10 27 Z"/>
+    </svg>
+
+    Published: 2023-07-17
+</span>
+    </header>
+    <div itemprop="articleBody">
+      <p>"<a rel="external" href="https://github.com/ratatui-org/ratatui"><strong>Ratatui</strong></a>" is a Rust library for building rich terminal user interfaces. In this post, I'm sharing what's new in the latest version and also a fun way to easily create terminal user interfaces in a jiffy.</p>
+<span id="continue-reading"></span><center>
+<p><img src="/ratatui-logo.png" alt="ratatui" /></p>
+</center>
+<p>See my <a rel="external" href="https://blog.orhun.dev/ratatui-0-21-0/">previous blog post</a> about <code>ratatui</code> for retrospectives and the status of the project.</p>
+<p>Today marks the new release of <code>ratatui</code> and we are very excited to share the new things we have been working on in the last month. But before anything, a couple of news about the project:</p>
+<ul>
+<li>We had a meeting on 2023-07-16, you can read the meeting notes <a rel="external" href="https://github.com/ratatui-org/ratatui/discussions/316">here</a>.</li>
+<li>We will have scheduled meetings soon for discussing the status of the project more often. (Still deciding the time &amp; day for that).</li>
+<li>Join the <a rel="external" href="https://discord.gg/pMCEU9hNEj">Discord server</a> for keeping up-to-date with <code>ratatui</code> news and contributing to the project!</li>
+</ul>
+<p>We appreciate everyone who contribute to the project and most importantly <a rel="external" href="https://github.com/fdehau">Florian Dehau</a> for creating tui-rs in the first place! 💖</p>
+<p>Today, I decided to do something different and share a fun thing that has been on my mind for a while before going into what's new in <code>ratatui</code>.</p>
+<p>So, without further ado, let's dive into it! 🐁</p>
+<hr />
+<h2 id="generating-terminal-user-interfaces">Generating terminal user interfaces</h2>
+<p>I have a new open source project coming up in the next months and I am happy to say that I have been using <code>ratatui</code> extensively to build it from the ground. Although it is fun to write TUI code, I sometimes think if it would be possible to find an easier/faster way to avoid boilerplate code and speed up the development. We are still working on improving the widget/stylization API of <code>ratatui</code> to avoid code repetition but still, I sometimes find myself rewriting the same code over and over again.</p>
+<p>One day, I had a flashback to a moment from months back where I needed to design a very basic HTML page but I was too lazy to do it and used <a rel="external" href="https://en.wikipedia.org/wiki/ChatGPT">ChatGPT</a> for it. Well, what if I generate the TUI code as well and save myself from the burden of imagining the widget positions in my mind and trying to <em>code out</em> abstract things. That would be nice, right?</p>
+<p><strong>Q</strong>: Well, ChatGPT does not support image processing for now. So why waste your time writing prompts for your design instead of writing the actual code instead?</p>
+<p><strong>A</strong>: Who said I am going to write prompts?</p>
+<p><strong>Q</strong>: Huh?</p>
+<p>That's right. While I was using ChatGPT to generate that simple HTML page, I came up with a text-based but also visual solution. Ladies and gentlemen, I present to you:</p>
+<blockquote>
+<p><strong>ASCIIFlow</strong>: a client-side only web based application for drawing ASCII diagrams.</p>
+<p>GitHub: <a rel="external" href="https://github.com/lewish/asciiflow">https://github.com/lewish/asciiflow</a></p>
+</blockquote>
+<p><img src="/asciiflow-example.png" alt="ASCIIFlow" /></p>
+<center>
+<p><a rel="external" href="https://asciiflow.com">https://asciiflow.com</a></p>
+</center>
+<p>So you can simply draw boxes, lines, arrows, texts, and whatever you imagine on a canvas and export it (or copy it to the clipboard) easily.</p>
+<p>In case it isn't clear, our plan is to:</p>
+<ul>
+<li>Design the interface on ASCIIFlow.</li>
+<li>Give the ASCII design (text) to ChatGPT.</li>
+<li>Generate Rust (<code>ratatui</code>) code.</li>
+<li>Profit.</li>
+</ul>
+<p>Let's try it!</p>
+<blockquote>
+<p><strong>Prompt</strong>: Write the Rust code for using <code>tui-rs</code> library for building the following terminal user interface:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="go"><span class="giallo-l"><span>┌────────────────</span><span style="color: #C6CCD7;">orhun</span><span>&#39;</span><span style="color: #98C379;">s blog────────────────────┐</span></span>
+<span class="giallo-l"><span style="color: #98C379;">│                                                │</span></span>
+<span class="giallo-l"><span style="color: #98C379;">│ ┌─ratatui is awesome──────────┐ ┌─stars──────┐ │</span></span>
+<span class="giallo-l"><span style="color: #98C379;">│ │ - written in Rust           │ │            │ │</span></span>
+<span class="giallo-l"><span style="color: #98C379;">│ │                             │ │          │ │ │</span></span>
+<span class="giallo-l"><span style="color: #98C379;">│ │ - easy to use               │ │         ┌┘ │ │</span></span>
+<span class="giallo-l"><span style="color: #98C379;">│ │                             │ │         │  │ │</span></span>
+<span class="giallo-l"><span style="color: #98C379;">│ │ - whole lotta widgets       │ │      ┌──┘  │ │</span></span>
+<span class="giallo-l"><span style="color: #98C379;">│ │                             │ │      │     │ │</span></span>
+<span class="giallo-l"><span style="color: #98C379;">│ │ - different backends        │ │      │     │ │</span></span>
+<span class="giallo-l"><span style="color: #98C379;">│ │                             │ │      │     │ │</span></span>
+<span class="giallo-l"><span style="color: #98C379;">│ │ - kick-ass name             │ │ ┌────┘     │ │</span></span>
+<span class="giallo-l"><span style="color: #98C379;">│ │                             │ │ │          │ │</span></span>
+<span class="giallo-l"><span style="color: #98C379;">│ │ (this is a scrollable list) │ │            │ │</span></span>
+<span class="giallo-l"><span style="color: #98C379;">│ └─────────────────────────────┘ └────────────┘ │</span></span>
+<span class="giallo-l"><span style="color: #98C379;">│                                                │</span></span>
+<span class="giallo-l"><span style="color: #98C379;">└────────────────────────────────────────────────┘</span></span></code></pre></blockquote>
+<p>Unfortunately, ChatGPT doesn't have the knowledge of <code>ratatui</code> yet and it cakes its pants when you want to use it so we are using <code>tui-rs</code> in our prompt. Also, it suggests using <code>tui-rs</code> <code>0.16.0</code> which shows how much it is left behind.</p>
+<p>But anyways, it can generate some <em>usable</em> Rust code for us.</p>
+<p><img src="/tui-rs-chatgpt.png" alt="tui-rs ChatGPT" /></p>
+<p>If we remove the unrelated parts such as terminal/backend initialization and event handling, we are left with:</p>
+<details>
+<summary><b>Click to expand</b></summary>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="rust"><span class="giallo-l"><span style="color: #61AFEF;">let</span><span style="color: #C6CCD7;"> chunks</span><span style="color: #E06C75;"> =</span><span style="color: #E5C07B;"> Layout</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">default</span><span>()</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">        .</span><span style="color: #B57EDC;">direction</span><span>(</span><span style="color: #61AFEF;">Direction</span><span style="color: #E06C75;">::</span><span style="color: #E5C07B;">Vertical</span><span>)</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">        .</span><span style="color: #B57EDC;">constraints</span><span>([</span><span style="color: #61AFEF;">Constraint</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">Length</span><span>(</span><span style="color: #56B6C2;">3</span><span>),</span><span style="color: #61AFEF;"> Constraint</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">Min</span><span>(</span><span style="color: #56B6C2;">3</span><span>),</span><span style="color: #61AFEF;"> Constraint</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">Length</span><span>(</span><span style="color: #56B6C2;">1</span><span>)]</span><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">as_ref</span><span>())</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">        .</span><span style="color: #B57EDC;">split</span><span>(</span><span style="color: #C6CCD7;">terminal</span><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">size</span><span>()</span><span style="color: #E06C75;">?</span><span>);</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #61AFEF;">let</span><span style="color: #C6CCD7;"> header</span><span style="color: #E06C75;"> =</span><span style="color: #E5C07B;"> Block</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">default</span><span>()</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">    .</span><span style="color: #B57EDC;">borders</span><span>(</span><span style="color: #61AFEF;">Borders</span><span style="color: #E06C75;">::</span><span style="color: #56B6C2;">ALL</span><span>)</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">    .</span><span style="color: #B57EDC;">title</span><span>(&quot;</span><span style="color: #98C379;">orhun&#39;s blog</span><span>&quot;)</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">    .</span><span style="color: #B57EDC;">title_style</span><span>(</span><span style="color: #61AFEF;">Style</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">default</span><span>()</span><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">fg</span><span>(</span><span style="color: #61AFEF;">Color</span><span style="color: #E06C75;">::</span><span style="color: #E5C07B;">Cyan</span><span>));</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #61AFEF;">let</span><span style="color: #C6CCD7;"> paragraph</span><span style="color: #E06C75;"> =</span><span style="color: #E5C07B;"> Paragraph</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">new</span><span>(&quot;</span><span style="color: #98C379;">ratatui is awesome</span><span>&quot;)</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">    .</span><span style="color: #B57EDC;">block</span><span>(</span><span style="color: #61AFEF;">Block</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">default</span><span>()</span><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">title</span><span>(&quot;&quot;</span><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">as_ref</span><span>())</span><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">borders</span><span>(</span><span style="color: #61AFEF;">Borders</span><span style="color: #E06C75;">::</span><span style="color: #56B6C2;">ALL</span><span>));</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #61AFEF;">let</span><span style="color: #C6CCD7;"> stars</span><span style="color: #E06C75;"> =</span><span style="color: #E5C07B;"> Paragraph</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">new</span><span>(&quot;</span><span style="color: #98C379;">stars</span><span>&quot;)</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">    .</span><span style="color: #B57EDC;">block</span><span>(</span><span style="color: #61AFEF;">Block</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">default</span><span>()</span><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">title</span><span>(&quot;&quot;</span><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">as_ref</span><span>())</span><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">borders</span><span>(</span><span style="color: #61AFEF;">Borders</span><span style="color: #E06C75;">::</span><span style="color: #56B6C2;">ALL</span><span>));</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #61AFEF;">let</span><span style="color: #C6CCD7;"> widgets</span><span style="color: #E06C75;"> =</span><span style="color: #B57EDC;"> vec!</span><span>[</span></span>
+<span class="giallo-l"><span style="color: #E5C07B;">    ListItem</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">new</span><span>(&quot;</span><span style="color: #98C379;">- written in Rust</span><span>&quot;),</span></span>
+<span class="giallo-l"><span style="color: #E5C07B;">    ListItem</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">new</span><span>(&quot;</span><span style="color: #98C379;">- easy to use</span><span>&quot;),</span></span>
+<span class="giallo-l"><span style="color: #E5C07B;">    ListItem</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">new</span><span>(&quot;</span><span style="color: #98C379;">- whole lotta widgets</span><span>&quot;),</span></span>
+<span class="giallo-l"><span style="color: #E5C07B;">    ListItem</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">new</span><span>(&quot;</span><span style="color: #98C379;">- different backends</span><span>&quot;),</span></span>
+<span class="giallo-l"><span style="color: #E5C07B;">    ListItem</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">new</span><span>(&quot;</span><span style="color: #98C379;">- kick-ass name</span><span>&quot;),</span></span>
+<span class="giallo-l"><span>];</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #61AFEF;">let</span><span style="color: #C6CCD7;"> list</span><span style="color: #E06C75;"> =</span><span style="color: #E5C07B;"> List</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">new</span><span>(</span><span style="color: #C6CCD7;">widgets</span><span>)</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">    .</span><span style="color: #B57EDC;">block</span><span>(</span><span style="color: #61AFEF;">Block</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">default</span><span>()</span><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">title</span><span>(&quot;&quot;</span><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">as_ref</span><span>())</span><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">borders</span><span>(</span><span style="color: #61AFEF;">Borders</span><span style="color: #E06C75;">::</span><span style="color: #56B6C2;">ALL</span><span>))</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">    .</span><span style="color: #B57EDC;">highlight_style</span><span>(</span><span style="color: #61AFEF;">Style</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">default</span><span>()</span><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">fg</span><span>(</span><span style="color: #61AFEF;">Color</span><span style="color: #E06C75;">::</span><span style="color: #E5C07B;">LightGreen</span><span>));</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #61AFEF;">let</span><span style="color: #C6CCD7;"> dataset</span><span style="color: #E06C75;"> =</span><span style="color: #E5C07B;"> Dataset</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">default</span><span>()</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">    .</span><span style="color: #B57EDC;">name</span><span>(&quot;</span><span style="color: #98C379;">Stars</span><span>&quot;)</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">    .</span><span style="color: #B57EDC;">marker</span><span>(</span><span style="color: #61AFEF;">tui</span><span style="color: #E06C75;">::</span><span style="color: #61AFEF;">symbols</span><span style="color: #E06C75;">::</span><span style="color: #61AFEF;">Marker</span><span style="color: #E06C75;">::</span><span style="color: #E5C07B;">Dot</span><span>)</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">    .</span><span style="color: #B57EDC;">graph_type</span><span>(</span><span style="color: #61AFEF;">GraphType</span><span style="color: #E06C75;">::</span><span style="color: #E5C07B;">Line</span><span>)</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">    .</span><span style="color: #B57EDC;">style</span><span>(</span><span style="color: #61AFEF;">Style</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">default</span><span>()</span><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">fg</span><span>(</span><span style="color: #61AFEF;">Color</span><span style="color: #E06C75;">::</span><span style="color: #E5C07B;">Yellow</span><span>))</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">    .</span><span style="color: #B57EDC;">data</span><span>(</span><span style="color: #E06C75;">&amp;</span><span>[</span></span>
+<span class="giallo-l"><span>        (</span><span style="color: #56B6C2;">0</span><span>.</span><span style="color: #56B6C2;">0</span><span>,</span><span style="color: #56B6C2;"> 0</span><span>.</span><span style="color: #56B6C2;">0</span><span>),</span></span>
+<span class="giallo-l"><span>        (</span><span style="color: #56B6C2;">1</span><span>.</span><span style="color: #56B6C2;">0</span><span>,</span><span style="color: #56B6C2;"> 100</span><span>.</span><span style="color: #56B6C2;">0</span><span>),</span></span>
+<span class="giallo-l"><span>        (</span><span style="color: #56B6C2;">2</span><span>.</span><span style="color: #56B6C2;">0</span><span>,</span><span style="color: #56B6C2;"> 200</span><span>.</span><span style="color: #56B6C2;">0</span><span>),</span></span>
+<span class="giallo-l"><span>        (</span><span style="color: #56B6C2;">3</span><span>.</span><span style="color: #56B6C2;">0</span><span>,</span><span style="color: #56B6C2;"> 300</span><span>.</span><span style="color: #56B6C2;">0</span><span>),</span></span>
+<span class="giallo-l"><span>        (</span><span style="color: #56B6C2;">4</span><span>.</span><span style="color: #56B6C2;">0</span><span>,</span><span style="color: #56B6C2;"> 400</span><span>.</span><span style="color: #56B6C2;">0</span><span>),</span></span>
+<span class="giallo-l"><span>        (</span><span style="color: #56B6C2;">5</span><span>.</span><span style="color: #56B6C2;">0</span><span>,</span><span style="color: #56B6C2;"> 500</span><span>.</span><span style="color: #56B6C2;">0</span><span>),</span></span>
+<span class="giallo-l"><span>        (</span><span style="color: #56B6C2;">6</span><span>.</span><span style="color: #56B6C2;">0</span><span>,</span><span style="color: #56B6C2;"> 600</span><span>.</span><span style="color: #56B6C2;">0</span><span>),</span></span>
+<span class="giallo-l"><span>    ]);</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #61AFEF;">let</span><span style="color: #C6CCD7;"> chart</span><span style="color: #E06C75;"> =</span><span style="color: #E5C07B;"> Chart</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">new</span><span>(</span><span style="color: #B57EDC;">vec!</span><span>[</span><span style="color: #C6CCD7;">dataset</span><span>])</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">    .</span><span style="color: #B57EDC;">block</span><span>(</span><span style="color: #61AFEF;">Block</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">default</span><span>()</span><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">title</span><span>(&quot;&quot;</span><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">as_ref</span><span>())</span><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">borders</span><span>(</span><span style="color: #61AFEF;">Borders</span><span style="color: #E06C75;">::</span><span style="color: #56B6C2;">ALL</span><span>))</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">    .</span><span style="color: #B57EDC;">x_axis</span><span>(</span></span>
+<span class="giallo-l"><span style="color: #61AFEF;">        tui</span><span style="color: #E06C75;">::</span><span style="color: #61AFEF;">widgets</span><span style="color: #E06C75;">::</span><span style="color: #61AFEF;">Axis</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">default</span><span>()</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">            .</span><span style="color: #B57EDC;">title</span><span>(&quot;</span><span style="color: #98C379;">Time</span><span>&quot;)</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">            .</span><span style="color: #B57EDC;">style</span><span>(</span><span style="color: #61AFEF;">Style</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">default</span><span>()</span><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">fg</span><span>(</span><span style="color: #61AFEF;">Color</span><span style="color: #E06C75;">::</span><span style="color: #E5C07B;">White</span><span>)),</span></span>
+<span class="giallo-l"><span>    )</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">    .</span><span style="color: #B57EDC;">y_axis</span><span>(</span></span>
+<span class="giallo-l"><span style="color: #61AFEF;">        tui</span><span style="color: #E06C75;">::</span><span style="color: #61AFEF;">widgets</span><span style="color: #E06C75;">::</span><span style="color: #61AFEF;">Axis</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">default</span><span>()</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">            .</span><span style="color: #B57EDC;">title</span><span>(&quot;</span><span style="color: #98C379;">Stars</span><span>&quot;)</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">            .</span><span style="color: #B57EDC;">style</span><span>(</span><span style="color: #61AFEF;">Style</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">default</span><span>()</span><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">fg</span><span>(</span><span style="color: #61AFEF;">Color</span><span style="color: #E06C75;">::</span><span style="color: #E5C07B;">White</span><span>)),</span></span>
+<span class="giallo-l"><span>    );</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #C6CCD7;">terminal</span><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">draw</span><span>(</span><span style="color: #E06C75;">|</span><span style="color: #61AFEF;">mut</span><span style="color: #C6CCD7;"> f</span><span style="color: #E06C75;">|</span><span> {</span></span>
+<span class="giallo-l"><span style="color: #C6CCD7;">    f</span><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">render_widget</span><span>(</span><span style="color: #C6CCD7;">header</span><span>,</span><span style="color: #C6CCD7;"> chunks</span><span>[</span><span style="color: #56B6C2;">0</span><span>]);</span></span>
+<span class="giallo-l"><span style="color: #C6CCD7;">    f</span><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">render_widget</span><span>(</span><span style="color: #C6CCD7;">paragraph</span><span>,</span><span style="color: #C6CCD7;"> chunks</span><span>[</span><span style="color: #56B6C2;">1</span><span>]);</span></span>
+<span class="giallo-l"><span style="color: #C6CCD7;">    f</span><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">render_widget</span><span>(</span><span style="color: #C6CCD7;">stars</span><span>,</span><span style="color: #C6CCD7;"> chunks</span><span>[</span><span style="color: #56B6C2;">1</span><span>]);</span></span>
+<span class="giallo-l"><span style="color: #C6CCD7;">    f</span><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">render_stateful_widget</span><span>(</span><span style="color: #C6CCD7;">list</span><span>,</span><span style="color: #C6CCD7;"> chunks</span><span>[</span><span style="color: #56B6C2;">1</span><span>],</span><span style="color: #E06C75;"> &amp;</span><span style="color: #61AFEF;">mut Default</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">default</span><span>());</span></span>
+<span class="giallo-l"><span style="color: #C6CCD7;">    f</span><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">render_widget</span><span>(</span><span style="color: #C6CCD7;">chart</span><span>,</span><span style="color: #C6CCD7;"> chunks</span><span>[</span><span style="color: #56B6C2;">2</span><span>]);</span></span>
+<span class="giallo-l"><span>})</span><span style="color: #E06C75;">?</span><span>;</span></span></code></pre></details>
+<p>Which is clearly wrong but can be a good stepping stone for what we actually want to build.</p>
+<p>Here is the final layout code with some edits:</p>
+<details>
+<summary><b>Click to expand</b></summary>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="rust"><span class="giallo-l"><span style="color: #5F6672;font-style: italic;">// Render the header first.</span></span>
+<span class="giallo-l"><span style="color: #61AFEF;">let</span><span style="color: #C6CCD7;"> header</span><span style="color: #E06C75;"> =</span><span style="color: #E5C07B;"> Block</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">default</span><span>()</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">    .</span><span style="color: #B57EDC;">borders</span><span>(</span><span style="color: #61AFEF;">Borders</span><span style="color: #E06C75;">::</span><span style="color: #56B6C2;">ALL</span><span>)</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">    .</span><span style="color: #B57EDC;">title</span><span>(</span><span style="color: #61AFEF;">Title</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">from</span><span>(&quot;</span><span style="color: #98C379;">orhun&#39;s blog</span><span>&quot;)</span><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">alignment</span><span>(</span><span style="color: #61AFEF;">Alignment</span><span style="color: #E06C75;">::</span><span style="color: #E5C07B;">Center</span><span>))</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">    .</span><span style="color: #B57EDC;">title_style</span><span>(</span><span style="color: #61AFEF;">Style</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">default</span><span>()</span><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">fg</span><span>(</span><span style="color: #61AFEF;">Color</span><span style="color: #E06C75;">::</span><span style="color: #E5C07B;">Cyan</span><span>));</span></span>
+<span class="giallo-l"><span style="color: #C6CCD7;">f</span><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">render_widget</span><span>(</span><span style="color: #C6CCD7;">header</span><span>,</span><span style="color: #C6CCD7;"> terminal</span><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">size</span><span>()</span><span style="color: #E06C75;">?</span><span>);</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;">// Split the layout.</span></span>
+<span class="giallo-l"><span style="color: #61AFEF;">let</span><span style="color: #C6CCD7;"> chunks</span><span style="color: #E06C75;"> =</span><span style="color: #E5C07B;"> Layout</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">default</span><span>()</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">    .</span><span style="color: #B57EDC;">direction</span><span>(</span><span style="color: #61AFEF;">Direction</span><span style="color: #E06C75;">::</span><span style="color: #E5C07B;">Horizontal</span><span>)</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">    .</span><span style="color: #B57EDC;">margin</span><span>(</span><span style="color: #56B6C2;">1</span><span>)</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">    .</span><span style="color: #B57EDC;">constraints</span><span>([</span><span style="color: #61AFEF;">Constraint</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">Percentage</span><span>(</span><span style="color: #56B6C2;">70</span><span>),</span><span style="color: #61AFEF;"> Constraint</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">Percentage</span><span>(</span><span style="color: #56B6C2;">30</span><span>)]</span><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">as_ref</span><span>())</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">    .</span><span style="color: #B57EDC;">split</span><span>(</span><span style="color: #C6CCD7;">terminal</span><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">size</span><span>()</span><span style="color: #E06C75;">?</span><span>);</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;">// Prepare the list.</span></span>
+<span class="giallo-l"><span style="color: #61AFEF;">let</span><span style="color: #C6CCD7;"> widgets</span><span style="color: #E06C75;"> =</span><span style="color: #B57EDC;"> vec!</span><span>[</span></span>
+<span class="giallo-l"><span style="color: #E5C07B;">    ListItem</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">new</span><span>(&quot;</span><span style="color: #98C379;">- written in Rust</span><span>&quot;),</span></span>
+<span class="giallo-l"><span style="color: #E5C07B;">    ListItem</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">new</span><span>(&quot;</span><span style="color: #98C379;">- easy to use</span><span>&quot;),</span></span>
+<span class="giallo-l"><span style="color: #E5C07B;">    ListItem</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">new</span><span>(&quot;</span><span style="color: #98C379;">- whole lotta widgets</span><span>&quot;),</span></span>
+<span class="giallo-l"><span style="color: #E5C07B;">    ListItem</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">new</span><span>(&quot;</span><span style="color: #98C379;">- different backends</span><span>&quot;),</span></span>
+<span class="giallo-l"><span style="color: #E5C07B;">    ListItem</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">new</span><span>(&quot;</span><span style="color: #98C379;">- kick-ass name</span><span>&quot;),</span></span>
+<span class="giallo-l"><span>];</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #61AFEF;">let</span><span style="color: #C6CCD7;"> list</span><span style="color: #E06C75;"> =</span><span style="color: #E5C07B;"> List</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">new</span><span>(</span><span style="color: #C6CCD7;">widgets</span><span>)</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">    .</span><span style="color: #B57EDC;">block</span><span>(</span></span>
+<span class="giallo-l"><span style="color: #61AFEF;">        Block</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">default</span><span>()</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">            .</span><span style="color: #B57EDC;">title</span><span>(&quot;</span><span style="color: #98C379;">ratatui is awesome</span><span>&quot;</span><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">as_ref</span><span>())</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">            .</span><span style="color: #B57EDC;">borders</span><span>(</span><span style="color: #61AFEF;">Borders</span><span style="color: #E06C75;">::</span><span style="color: #56B6C2;">ALL</span><span>),</span></span>
+<span class="giallo-l"><span>    )</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">    .</span><span style="color: #B57EDC;">highlight_style</span><span>(</span><span style="color: #61AFEF;">Style</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">default</span><span>()</span><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">fg</span><span>(</span><span style="color: #61AFEF;">Color</span><span style="color: #E06C75;">::</span><span style="color: #E5C07B;">LightGreen</span><span>));</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;">// Prepare the chart.</span></span>
+<span class="giallo-l"><span style="color: #61AFEF;">let</span><span style="color: #C6CCD7;"> dataset</span><span style="color: #E06C75;"> =</span><span style="color: #E5C07B;"> Dataset</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">default</span><span>()</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">    .</span><span style="color: #B57EDC;">name</span><span>(&quot;</span><span style="color: #98C379;">Stars</span><span>&quot;)</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">    .</span><span style="color: #B57EDC;">marker</span><span>(</span><span style="color: #61AFEF;">Marker</span><span style="color: #E06C75;">::</span><span style="color: #E5C07B;">Dot</span><span>)</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">    .</span><span style="color: #B57EDC;">graph_type</span><span>(</span><span style="color: #61AFEF;">GraphType</span><span style="color: #E06C75;">::</span><span style="color: #E5C07B;">Line</span><span>)</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">    .</span><span style="color: #B57EDC;">style</span><span>(</span><span style="color: #61AFEF;">Style</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">default</span><span>()</span><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">fg</span><span>(</span><span style="color: #61AFEF;">Color</span><span style="color: #E06C75;">::</span><span style="color: #E5C07B;">Yellow</span><span>))</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">    .</span><span style="color: #B57EDC;">data</span><span>(</span><span style="color: #E06C75;">&amp;</span><span>[</span></span>
+<span class="giallo-l"><span>        (</span><span style="color: #56B6C2;">0</span><span>.</span><span style="color: #56B6C2;">0</span><span>,</span><span style="color: #56B6C2;"> 0</span><span>.</span><span style="color: #56B6C2;">0</span><span>),</span></span>
+<span class="giallo-l"><span>        (</span><span style="color: #56B6C2;">1</span><span>.</span><span style="color: #56B6C2;">0</span><span>,</span><span style="color: #56B6C2;"> 100</span><span>.</span><span style="color: #56B6C2;">0</span><span>),</span></span>
+<span class="giallo-l"><span>        (</span><span style="color: #56B6C2;">2</span><span>.</span><span style="color: #56B6C2;">0</span><span>,</span><span style="color: #56B6C2;"> 200</span><span>.</span><span style="color: #56B6C2;">0</span><span>),</span></span>
+<span class="giallo-l"><span>        (</span><span style="color: #56B6C2;">3</span><span>.</span><span style="color: #56B6C2;">0</span><span>,</span><span style="color: #56B6C2;"> 300</span><span>.</span><span style="color: #56B6C2;">0</span><span>),</span></span>
+<span class="giallo-l"><span>        (</span><span style="color: #56B6C2;">4</span><span>.</span><span style="color: #56B6C2;">0</span><span>,</span><span style="color: #56B6C2;"> 400</span><span>.</span><span style="color: #56B6C2;">0</span><span>),</span></span>
+<span class="giallo-l"><span>        (</span><span style="color: #56B6C2;">5</span><span>.</span><span style="color: #56B6C2;">0</span><span>,</span><span style="color: #56B6C2;"> 500</span><span>.</span><span style="color: #56B6C2;">0</span><span>),</span></span>
+<span class="giallo-l"><span>        (</span><span style="color: #56B6C2;">6</span><span>.</span><span style="color: #56B6C2;">0</span><span>,</span><span style="color: #56B6C2;"> 600</span><span>.</span><span style="color: #56B6C2;">0</span><span>),</span></span>
+<span class="giallo-l"><span>    ]);</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #61AFEF;">let</span><span style="color: #C6CCD7;"> chart</span><span style="color: #E06C75;"> =</span><span style="color: #E5C07B;"> Chart</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">new</span><span>(</span><span style="color: #B57EDC;">vec!</span><span>[</span><span style="color: #C6CCD7;">dataset</span><span>])</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">    .</span><span style="color: #B57EDC;">block</span><span>(</span></span>
+<span class="giallo-l"><span style="color: #61AFEF;">        Block</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">default</span><span>()</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">            .</span><span style="color: #B57EDC;">title</span><span>(&quot;</span><span style="color: #98C379;">stars</span><span>&quot;</span><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">as_ref</span><span>())</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">            .</span><span style="color: #B57EDC;">borders</span><span>(</span><span style="color: #61AFEF;">Borders</span><span style="color: #E06C75;">::</span><span style="color: #56B6C2;">ALL</span><span>),</span></span>
+<span class="giallo-l"><span>    )</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">    .</span><span style="color: #B57EDC;">x_axis</span><span>(</span></span>
+<span class="giallo-l"><span style="color: #61AFEF;">        Axis</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">default</span><span>()</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">            .</span><span style="color: #B57EDC;">title</span><span>(&quot;</span><span style="color: #98C379;">Time</span><span>&quot;)</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">            .</span><span style="color: #B57EDC;">style</span><span>(</span><span style="color: #61AFEF;">Style</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">default</span><span>()</span><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">fg</span><span>(</span><span style="color: #61AFEF;">Color</span><span style="color: #E06C75;">::</span><span style="color: #E5C07B;">White</span><span>))</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">            .</span><span style="color: #B57EDC;">bounds</span><span>([</span><span style="color: #56B6C2;">0</span><span>.</span><span style="color: #56B6C2;">0</span><span>,</span><span style="color: #56B6C2;"> 6</span><span>.</span><span style="color: #56B6C2;">0</span><span>]),</span></span>
+<span class="giallo-l"><span>    )</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">    .</span><span style="color: #B57EDC;">y_axis</span><span>(</span></span>
+<span class="giallo-l"><span style="color: #61AFEF;">        Axis</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">default</span><span>()</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">            .</span><span style="color: #B57EDC;">title</span><span>(&quot;</span><span style="color: #98C379;">Stars</span><span>&quot;)</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">            .</span><span style="color: #B57EDC;">style</span><span>(</span><span style="color: #61AFEF;">Style</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">default</span><span>()</span><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">fg</span><span>(</span><span style="color: #61AFEF;">Color</span><span style="color: #E06C75;">::</span><span style="color: #E5C07B;">White</span><span>))</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">            .</span><span style="color: #B57EDC;">bounds</span><span>([</span><span style="color: #56B6C2;">0</span><span>.</span><span style="color: #56B6C2;">0</span><span>,</span><span style="color: #56B6C2;"> 600</span><span>.</span><span style="color: #56B6C2;">0</span><span>]),</span></span>
+<span class="giallo-l"><span>    );</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;">// Render.</span></span>
+<span class="giallo-l"><span style="color: #C6CCD7;">terminal</span><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">draw</span><span>(</span><span style="color: #E06C75;">|</span><span style="color: #61AFEF;">mut</span><span style="color: #C6CCD7;"> f</span><span style="color: #E06C75;">|</span><span> {</span></span>
+<span class="giallo-l"><span style="color: #C6CCD7;">    f</span><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">render_stateful_widget</span><span>(</span><span style="color: #C6CCD7;">list</span><span>,</span><span style="color: #C6CCD7;"> chunks</span><span>[</span><span style="color: #56B6C2;">0</span><span>],</span><span style="color: #E06C75;"> &amp;</span><span style="color: #61AFEF;">mut Default</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">default</span><span>());</span></span>
+<span class="giallo-l"><span style="color: #C6CCD7;">    f</span><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">render_widget</span><span>(</span><span style="color: #C6CCD7;">chart</span><span>,</span><span style="color: #C6CCD7;"> chunks</span><span>[</span><span style="color: #56B6C2;">1</span><span>]);</span></span>
+<span class="giallo-l"><span>})</span><span style="color: #E06C75;">?</span><span>;</span></span></code></pre></details>
+<p>And here we have it:</p>
+<p><img src="/ratatui-demo.jpg" alt="demo" /></p>
+<h2 id="what-s-new"><strong>What's new?</strong></h2>
+<img src="/ratatui-logo.png" style="width: 15%"/>
+<p>Now that we have seen what we can do using <code>ratatui</code>, it is time to get into the details of the latest release!</p>
+<p><strong>Full changelog</strong>: <a rel="external" href="https://github.com/ratatui-org/ratatui/releases/tag/v0.22.0">https://github.com/ratatui-org/ratatui/releases/tag/v0.22.0</a></p>
+<hr />
+<h3 id="prelude">Prelude</h3>
+<p>We now have a <code>prelude</code> module! This allows users of the library to easily use <code>ratatui</code> without a huge amount of imports.</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="rust"><span class="giallo-l"><span style="color: #E06C75;">use</span><span style="color: #61AFEF;"> ratatui</span><span style="color: #E06C75;">::</span><span style="color: #61AFEF;">prelude</span><span style="color: #E06C75;">::*</span><span>;</span></span></code></pre>
+<p>Aside from the main types that are used in the library, this <code>prelude</code> also re-exports several modules to make it easy to qualify types that would otherwise collide. For example:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="rust"><span class="giallo-l"><span style="color: #E06C75;">use</span><span style="color: #61AFEF;"> ratatui</span><span style="color: #E06C75;">::</span><span>{</span><span style="color: #61AFEF;">prelude</span><span style="color: #E06C75;">::*</span><span>,</span><span style="color: #61AFEF;"> widgets</span><span style="color: #E06C75;">::*</span><span>};</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span>#[derive(</span><span style="color: #E5C07B;">Debug</span><span>,</span><span style="color: #E5C07B;"> Default</span><span>,</span><span style="color: #E5C07B;"> PartialEq</span><span>,</span><span style="color: #E5C07B;"> Eq</span><span>)]</span></span>
+<span class="giallo-l"><span style="color: #61AFEF;">struct</span><span style="color: #E5C07B;"> Line</span><span>;</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #B57EDC;">assert_eq!</span><span>(</span><span style="color: #E5C07B;">Line</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">default</span><span>(),</span><span style="color: #E5C07B;"> Line</span><span>);</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">assert_eq!</span><span>(</span><span style="color: #61AFEF;">text</span><span style="color: #E06C75;">::</span><span style="color: #E5C07B;">Line</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">default</span><span>(),</span><span style="color: #61AFEF;"> ratatui</span><span style="color: #E06C75;">::</span><span style="color: #61AFEF;">text</span><span style="color: #E06C75;">::</span><span style="color: #E5C07B;">Line</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">from</span><span>(</span><span style="color: #B57EDC;">vec!</span><span>[]));</span></span></code></pre>
+<hr />
+<h3 id="new-widget-scrollbar">New widget: Scrollbar</h3>
+<p>A scrollbar widget has been added which can be used with any <code>Rect</code>. It can also be customized with different styles and symbols.</p>
+<p>Here are the components of a <code>Scrollbar</code>:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #E06C75;">&lt;</span><span>--▮-------</span><span style="color: #E06C75;">&gt;</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">^</span><span style="color: #98C379;">  ^   ^   ^</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">│</span><span style="color: #98C379;">  │   │   └ end</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">│</span><span style="color: #98C379;">  │   └──── track</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">│</span><span style="color: #98C379;">  └──────── thumb</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">└───────────</span><span style="color: #98C379;"> begin</span></span></code></pre>
+<p>To use it, render it as a stateful widget along with <code>ScrollbarState</code>:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="rust"><span class="giallo-l"><span style="color: #C6CCD7;">frame</span><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">render_stateful_widget</span><span>(</span></span>
+<span class="giallo-l"><span style="color: #61AFEF;">    Scrollbar</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">default</span><span>()</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">        .</span><span style="color: #B57EDC;">orientation</span><span>(</span><span style="color: #61AFEF;">ScrollbarOrientation</span><span style="color: #E06C75;">::</span><span style="color: #E5C07B;">VerticalRight</span><span>)</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">        .</span><span style="color: #B57EDC;">begin_symbol</span><span>(</span><span style="color: #E5C07B;">Some</span><span>(&quot;</span><span style="color: #98C379;">↑</span><span>&quot;))</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">        .</span><span style="color: #B57EDC;">end_symbol</span><span>(</span><span style="color: #E5C07B;">Some</span><span>(&quot;</span><span style="color: #98C379;">↓</span><span>&quot;)),</span></span>
+<span class="giallo-l"><span style="color: #C6CCD7;">    rect</span><span>,</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">    &amp;</span><span style="color: #61AFEF;">mut</span><span style="color: #C6CCD7;"> scrollbar_state</span><span>,</span></span>
+<span class="giallo-l"><span>);</span></span></code></pre>
+<p>Will result in:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #B57EDC;">┌scrollbar──────────────────↑</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">│This</span><span style="color: #98C379;"> is a longer line      ║</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">│Veeeeeeeeeeeeeeeery</span><span style="color: #98C379;">    looo█</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">│This</span><span style="color: #98C379;"> is a line             ║</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">└───────────────────────────↓</span></span></code></pre>
+<hr />
+<h3 id="block-support-multiple-titles">Block: support multiple titles</h3>
+<p><code>Block</code> widget now supports having more than one title via <code>Title</code> widget.</p>
+<p>Each title will be rendered with a single space separating titles that are in the same position or alignment. When both centered and non-centered titles are rendered, the centered space is calculated based on the full width of the block, rather than the leftover width.</p>
+<p>You can provide various types as the title, including strings, string slices, borrowed strings (<code>Cow&lt;str&gt;</code>), spans, or vectors of spans (<code>Vec&lt;Span&gt;</code>).</p>
+<p>It can be used as follows:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="rust"><span class="giallo-l"><span style="color: #E5C07B;">Block</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">default</span><span>()</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">    .</span><span style="color: #B57EDC;">borders</span><span>(</span><span style="color: #61AFEF;">Borders</span><span style="color: #E06C75;">::</span><span style="color: #56B6C2;">ALL</span><span>)</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">    .</span><span style="color: #B57EDC;">title</span><span>(&quot;</span><span style="color: #98C379;">Title</span><span>&quot;)</span><span style="color: #5F6672;font-style: italic;"> // By default in the top right corner</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">    .</span><span style="color: #B57EDC;">title</span><span>(</span><span style="color: #61AFEF;">Title</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">from</span><span>(&quot;</span><span style="color: #98C379;">Left</span><span>&quot;)</span><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">alignment</span><span>(</span><span style="color: #61AFEF;">Alignment</span><span style="color: #E06C75;">::</span><span style="color: #E5C07B;">Left</span><span>))</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">    .</span><span style="color: #B57EDC;">title</span><span>(</span><span style="color: #61AFEF;">Title</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">from</span><span>(&quot;</span><span style="color: #98C379;">Center</span><span>&quot;)</span><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">alignment</span><span>(</span><span style="color: #61AFEF;">Alignment</span><span style="color: #E06C75;">::</span><span style="color: #E5C07B;">Center</span><span>))</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">    .</span><span style="color: #B57EDC;">title</span><span>(</span><span style="color: #61AFEF;">Title</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">from</span><span>(&quot;</span><span style="color: #98C379;">Bottom</span><span>&quot;)</span><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">position</span><span>(</span><span style="color: #61AFEF;">Position</span><span style="color: #E06C75;">::</span><span style="color: #E5C07B;">Bottom</span><span>))</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">    .</span><span style="color: #B57EDC;">title</span><span>(</span></span>
+<span class="giallo-l"><span style="color: #61AFEF;">        Title</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">from</span><span>(&quot;</span><span style="color: #98C379;">Bottom center</span><span>&quot;)</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">            .</span><span style="color: #B57EDC;">alignment</span><span>(</span><span style="color: #61AFEF;">Alignment</span><span style="color: #E06C75;">::</span><span style="color: #E5C07B;">Center</span><span>)</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">            .</span><span style="color: #B57EDC;">position</span><span>(</span><span style="color: #61AFEF;">Position</span><span style="color: #E06C75;">::</span><span style="color: #E5C07B;">Bottom</span><span>),</span></span>
+<span class="giallo-l"><span>    );</span></span></code></pre>
+<p>Results in:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #B57EDC;">┌Title─Left──Center─────────────┐</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">│</span><span style="color: #98C379;">                               │</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">│</span><span style="color: #98C379;">                               │</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">│</span><span style="color: #98C379;">                               │</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">└Bottom───Bottom</span><span style="color: #98C379;"> center─────────┘</span></span></code></pre>
+<hr />
+<h3 id="barchart-support-groups">Barchart: support groups</h3>
+<p><code>Barchart</code> has been improved to support adding multiple bars from different data sets. This can be done by using the newly added <code>Bar</code> and <code>BarGroup</code> objects.</p>
+<p>This makes it possible to render fancy stuff like this:</p>
+<p><img src="/ratatui-barchart.jpg" alt="ratatui barchart" /></p>
+<p>See the <a rel="external" href="https://github.com/ratatui-org/ratatui/blob/main/examples/barchart.rs">barchart example</a> for more information and implementation details.</p>
+<hr />
+<h3 id="stylization-shorthands">Stylization shorthands</h3>
+<p>It is possible to use style shorthands for <code>str</code>, <code>Span</code>, and <code>Paragraph</code>.</p>
+<p>A crazy example would be:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="rust"><span class="giallo-l"><span>&quot;</span><span style="color: #98C379;">hello</span><span>&quot;</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">    .</span><span style="color: #B57EDC;">on_black</span><span>()</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">    .</span><span style="color: #B57EDC;">black</span><span>()</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">    .</span><span style="color: #B57EDC;">bold</span><span>()</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">    .</span><span style="color: #B57EDC;">underline</span><span>()</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">    .</span><span style="color: #B57EDC;">dimmed</span><span>()</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">    .</span><span style="color: #B57EDC;">slow_blink</span><span>()</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">    .</span><span style="color: #B57EDC;">crossed_out</span><span>()</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">    .</span><span style="color: #B57EDC;">reversed</span><span>()</span></span></code></pre>
+<p>This especially helps with concise styling:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="rust"><span class="giallo-l"><span style="color: #B57EDC;">assert_eq!</span><span>(</span></span>
+<span class="giallo-l"><span>  &quot;</span><span style="color: #98C379;">hello</span><span>&quot;</span><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">red</span><span>()</span><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">on_blue</span><span>()</span><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">bold</span><span>(),</span></span>
+<span class="giallo-l"><span style="color: #E5C07B;">  Span</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">styled</span><span>(&quot;</span><span style="color: #98C379;">hello</span><span>&quot;,</span><span style="color: #61AFEF;"> Style</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">default</span><span>()</span><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">fg</span><span>(</span><span style="color: #61AFEF;">Color</span><span style="color: #E06C75;">::</span><span style="color: #E5C07B;">Red</span><span>)</span><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">bg</span><span>(</span><span style="color: #61AFEF;">Color</span><span style="color: #E06C75;">::</span><span style="color: #E5C07B;">Blue</span><span>)</span><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">add_modifier</span><span>(</span><span style="color: #61AFEF;">Modifier</span><span style="color: #E06C75;">::</span><span style="color: #56B6C2;">BOLD</span><span>))</span></span>
+<span class="giallo-l"><span>)</span></span></code></pre>
+<hr />
+<h3 id="stylize-everything">Stylize everything!</h3>
+<p>All widgets can be styled now (i.e. <code>set_style</code>)</p>
+<p><code>Styled</code> trait is implemented for all the remaining widgets, including:</p>
+<ul>
+<li><code>Barchart</code></li>
+<li><code>Chart</code> (including <code>Axis</code> and <code>Dataset</code>)</li>
+<li><code>Gauge</code> and <code>LineGauge</code></li>
+<li><code>List</code> and <code>ListItem</code></li>
+<li><code>Sparkline</code></li>
+<li><code>Table</code>, <code>Row</code>, and <code>Cell</code></li>
+<li><code>Tabs</code></li>
+<li><code>Style</code></li>
+</ul>
+<hr />
+<h3 id="constant-styles">Constant styles</h3>
+<p><code>Style</code>s can be constructed in a <code>const</code> context as follows:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="rust"><span class="giallo-l"><span style="color: #61AFEF;">const</span><span style="color: #56B6C2;"> DEFAULT_MODIFIER</span><span style="color: #E06C75;">:</span><span style="color: #E5C07B;"> Modifier</span><span style="color: #E06C75;"> =</span><span style="color: #E5C07B;"> Modifier</span><span style="color: #E06C75;">::</span><span style="color: #56B6C2;">BOLD</span><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">union</span><span>(</span><span style="color: #61AFEF;">Modifier</span><span style="color: #E06C75;">::</span><span style="color: #56B6C2;">ITALIC</span><span>);</span></span>
+<span class="giallo-l"><span style="color: #61AFEF;">const</span><span style="color: #56B6C2;"> EMPTY</span><span style="color: #E06C75;">:</span><span style="color: #E5C07B;"> Modifier</span><span style="color: #E06C75;"> =</span><span style="color: #E5C07B;"> Modifier</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">empty</span><span>();</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #61AFEF;">const</span><span style="color: #56B6C2;"> DEFAULT_STYLE</span><span style="color: #E06C75;">:</span><span style="color: #E5C07B;"> Style</span><span style="color: #E06C75;"> =</span><span style="color: #E5C07B;"> Style</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">with</span><span>(</span><span style="color: #56B6C2;">DEFAULT_MODIFIER</span><span>,</span><span style="color: #56B6C2;"> EMPTY</span><span>)</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">    .</span><span style="color: #B57EDC;">fg</span><span>(</span><span style="color: #61AFEF;">Color</span><span style="color: #E06C75;">::</span><span style="color: #E5C07B;">Red</span><span>)</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">    .</span><span style="color: #B57EDC;">bg</span><span>(</span><span style="color: #61AFEF;">Color</span><span style="color: #E06C75;">::</span><span style="color: #E5C07B;">Black</span><span>);</span></span></code></pre>
+<hr />
+<h3 id="more-colors-formats">More colors formats</h3>
+<p>It is now possible to parse hyphenated color names like <code>light-red</code> via <code>Color::from_str</code>.</p>
+<p>Additionally, all colors from the <a rel="external" href="https://en.wikipedia.org/wiki/ANSI_escape_code#Colors">ANSI color table</a> are supported (though some names are not exactly the same).</p>
+<ul>
+<li><code>gray</code> is sometimes called <code>white</code> - this is not supported as we use <code>white</code> for bright white</li>
+<li><code>gray</code> is sometimes called <code>silver</code> - this is supported</li>
+<li><code>darkgray</code> is sometimes called <code>light black</code> or <code>bright black</code> (both are supported)</li>
+<li><code>white</code> is sometimes called <code>light white</code> or <code>bright white</code> (both are supported)</li>
+<li>we support <code>bright</code> and <code>light</code> prefixes for all colors</li>
+<li>we support <code>-</code> and <code>_</code> and <code> </code> as separators for all colors</li>
+<li>we support both <code>gray</code> and <code>grey</code> spellings</li>
+</ul>
+<p>For example:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="rust"><span class="giallo-l"><span style="color: #E06C75;">use</span><span style="color: #61AFEF;"> ratatui</span><span style="color: #E06C75;">::</span><span style="color: #61AFEF;">style</span><span style="color: #E06C75;">::</span><span style="color: #E5C07B;">Color</span><span>;</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">use</span><span style="color: #61AFEF;"> std</span><span style="color: #E06C75;">::</span><span style="color: #61AFEF;">str</span><span style="color: #E06C75;">::</span><span style="color: #E5C07B;">FromStr</span><span>;</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #B57EDC;">assert_eq!</span><span>(</span><span style="color: #E5C07B;">Color</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">from_str</span><span>(&quot;</span><span style="color: #98C379;">red</span><span>&quot;),</span><span style="color: #E5C07B;"> Ok</span><span>(</span><span style="color: #E5C07B;">Color</span><span style="color: #E06C75;">::</span><span style="color: #E5C07B;">Red</span><span>));</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">assert_eq!</span><span>(&quot;</span><span style="color: #98C379;">red</span><span>&quot;</span><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">parse</span><span>(),</span><span style="color: #E5C07B;"> Ok</span><span>(</span><span style="color: #E5C07B;">Color</span><span style="color: #E06C75;">::</span><span style="color: #E5C07B;">Red</span><span>));</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">assert_eq!</span><span>(&quot;</span><span style="color: #98C379;">lightred</span><span>&quot;</span><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">parse</span><span>(),</span><span style="color: #E5C07B;"> Ok</span><span>(</span><span style="color: #E5C07B;">Color</span><span style="color: #E06C75;">::</span><span style="color: #E5C07B;">LightRed</span><span>));</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">assert_eq!</span><span>(&quot;</span><span style="color: #98C379;">light red</span><span>&quot;</span><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">parse</span><span>(),</span><span style="color: #E5C07B;"> Ok</span><span>(</span><span style="color: #E5C07B;">Color</span><span style="color: #E06C75;">::</span><span style="color: #E5C07B;">LightRed</span><span>));</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">assert_eq!</span><span>(&quot;</span><span style="color: #98C379;">light-red</span><span>&quot;</span><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">parse</span><span>(),</span><span style="color: #E5C07B;"> Ok</span><span>(</span><span style="color: #E5C07B;">Color</span><span style="color: #E06C75;">::</span><span style="color: #E5C07B;">LightRed</span><span>));</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">assert_eq!</span><span>(&quot;</span><span style="color: #98C379;">light_red</span><span>&quot;</span><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">parse</span><span>(),</span><span style="color: #E5C07B;"> Ok</span><span>(</span><span style="color: #E5C07B;">Color</span><span style="color: #E06C75;">::</span><span style="color: #E5C07B;">LightRed</span><span>));</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">assert_eq!</span><span>(&quot;</span><span style="color: #98C379;">lightRed</span><span>&quot;</span><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">parse</span><span>(),</span><span style="color: #E5C07B;"> Ok</span><span>(</span><span style="color: #E5C07B;">Color</span><span style="color: #E06C75;">::</span><span style="color: #E5C07B;">LightRed</span><span>));</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">assert_eq!</span><span>(&quot;</span><span style="color: #98C379;">bright red</span><span>&quot;</span><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">parse</span><span>(),</span><span style="color: #E5C07B;"> Ok</span><span>(</span><span style="color: #E5C07B;">Color</span><span style="color: #E06C75;">::</span><span style="color: #E5C07B;">LightRed</span><span>));</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">assert_eq!</span><span>(&quot;</span><span style="color: #98C379;">bright-red</span><span>&quot;</span><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">parse</span><span>(),</span><span style="color: #E5C07B;"> Ok</span><span>(</span><span style="color: #E5C07B;">Color</span><span style="color: #E06C75;">::</span><span style="color: #E5C07B;">LightRed</span><span>));</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">assert_eq!</span><span>(&quot;</span><span style="color: #98C379;">silver</span><span>&quot;</span><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">parse</span><span>(),</span><span style="color: #E5C07B;"> Ok</span><span>(</span><span style="color: #E5C07B;">Color</span><span style="color: #E06C75;">::</span><span style="color: #E5C07B;">Gray</span><span>));</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">assert_eq!</span><span>(&quot;</span><span style="color: #98C379;">dark-grey</span><span>&quot;</span><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">parse</span><span>(),</span><span style="color: #E5C07B;"> Ok</span><span>(</span><span style="color: #E5C07B;">Color</span><span style="color: #E06C75;">::</span><span style="color: #E5C07B;">DarkGray</span><span>));</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">assert_eq!</span><span>(&quot;</span><span style="color: #98C379;">dark gray</span><span>&quot;</span><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">parse</span><span>(),</span><span style="color: #E5C07B;"> Ok</span><span>(</span><span style="color: #E5C07B;">Color</span><span style="color: #E06C75;">::</span><span style="color: #E5C07B;">DarkGray</span><span>));</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">assert_eq!</span><span>(&quot;</span><span style="color: #98C379;">light-black</span><span>&quot;</span><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">parse</span><span>(),</span><span style="color: #E5C07B;"> Ok</span><span>(</span><span style="color: #E5C07B;">Color</span><span style="color: #E06C75;">::</span><span style="color: #E5C07B;">DarkGray</span><span>));</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">assert_eq!</span><span>(&quot;</span><span style="color: #98C379;">white</span><span>&quot;</span><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">parse</span><span>(),</span><span style="color: #E5C07B;"> Ok</span><span>(</span><span style="color: #E5C07B;">Color</span><span style="color: #E06C75;">::</span><span style="color: #E5C07B;">White</span><span>));</span></span>
+<span class="giallo-l"><span style="color: #B57EDC;">assert_eq!</span><span>(&quot;</span><span style="color: #98C379;">bright white</span><span>&quot;</span><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">parse</span><span>(),</span><span style="color: #E5C07B;"> Ok</span><span>(</span><span style="color: #E5C07B;">Color</span><span style="color: #E06C75;">::</span><span style="color: #E5C07B;">White</span><span>));</span></span></code></pre>
+<hr />
+<h3 id="integrations">Integrations</h3>
+<p>Following tools are now integrated into the repository:</p>
+<ul>
+<li><a rel="external" href="https://github.com/rhysd/cargo-husky"><code>cargo-husky</code></a>: git pre-push hooks</li>
+<li><a rel="external" href="https://github.com/Canop/bacon"><code>bacon</code></a>: background code checks / coverage</li>
+<li><a rel="external" href="https://github.com/commitizen/cz-cli"><code>commitizen</code></a>: conventional commits</li>
+<li><a rel="external" href="https://github.com/EmbarkStudios/cargo-deny"><code>cargo-deny</code></a>: linting dependencies</li>
+<li><a rel="external" href="https://github.com/crate-ci/typos"><code>typos</code></a>: spell checker</li>
+</ul>
+<hr />
+<h3 id="other">Other</h3>
+<ul>
+<li>Benchmarks added for the <code>Paragraph</code> widget</li>
+<li>Added underline colors support for <code>crossterm</code> backend</li>
+<li>Mark some of the low-level functions of <code>Block</code>, <code>Layout</code> and <code>Rect</code> as <code>const</code></li>
+<li>The project license has been updated to acknowledge <code>ratatui</code> developers</li>
+</ul>
+<hr />
+<h2 id="endnote">Endnote</h2>
+<p>Feel free to join the <a rel="external" href="https://discord.gg/pMCEU9hNEj">Discord server</a> for chatting/getting help about <code>ratatui</code>. If you are interested in contributing, check out our <a rel="external" href="https://github.com/ratatui-org/ratatui/blob/main/CONTRIBUTING.md">contribution guidelines</a> and <a rel="external" href="https://github.com/ratatui-org/ratatui/issues">open issues</a> for getting started!</p>
+<p>Also, check out <a rel="external" href="https://github.com/ratatui-org/ratatui/wiki/Apps-using-Ratatui">these cool apps</a> using <code>ratatui</code>!</p>
+<p>Lastly, shout out to these awesome people for their first contributions to the project:</p>
+<ul>
+<li><a rel="external" href="https://github.com/Nydragon">@Nydragon</a></li>
+<li><a rel="external" href="https://github.com/snpefk">@snpefk</a></li>
+<li><a rel="external" href="https://github.com/Philipp-M">@Philipp-M</a></li>
+<li><a rel="external" href="https://github.com/mrbcmorris">@mrbcmorris</a></li>
+<li><a rel="external" href="https://github.com/endepointe">@endepointe</a></li>
+<li><a rel="external" href="https://github.com/kdheepak">@kdheepak</a></li>
+<li><a rel="external" href="https://github.com/samyosm">@samyosm</a></li>
+<li><a rel="external" href="https://github.com/SLASHLogin">@SLASHLogin</a></li>
+<li><a rel="external" href="https://github.com/karthago1">@karthago1</a></li>
+<li><a rel="external" href="https://github.com/BoolPurist">@BoolPurist</a></li>
+<li><a rel="external" href="https://github.com/Nogesma">@Nogesma</a></li>
+<li><a rel="external" href="https://github.com/lthoerner">@lthoerner</a></li>
+</ul>
+<p>Cheers!</p>
+<p>🐭</p>
+
+    </div>
+
+    
+        <footer>
+            <hr>
+            <p>
+                
+                    Published by Orhun Parmaksız
+                
+                
+                    
+                    in <a href="https://blog.orhun.dev/categories/ratatui/">Ratatui</a>
+                
+                
+            </p>
+            
+            
+            <div style="display: flex; justify-content: space-between; align-items: center">
+              <div>
+                <iframe
+                  src="https://github.com/sponsors/orhun/button"
+                  title="Sponsor @orhun"
+                  height="35"
+                  width="116"
+                  style="border: 0"
+                ></iframe>
+                <a href="https://www.buymeacoffee.com/orhun" target="_blank"
+                  ><img
+                    src="https://cdn.buymeacoffee.com/buttons/v2/default-white.png"
+                    alt="Buy Me A Coffee"
+                    style="height: 40px !important; width: 150px !important"
+                /></a>
+              </div>
+              <div>
+                <applause-button
+                  style="width: 50px; height: 50px"
+                  url="https://blog.orhun.dev&#x2F;ratatui-0-22-0&#x2F;"
+                  color="white"
+                  multiclap="true"
+                />
+              </div>
+              <div>
+                <div style="width: auto; height: 39px">
+                  <p style="margin: 0; color: #fff; font-style: italic">✨ Sponsored by:</p>
+                </div>
+                <a href="https://www.jetbrains.com/" target="_blank"
+                  ><img
+                    src="/sponsors/jetbrains.png"
+                    alt="JetBrains"
+                    style="height: 45px; width: auto"
+                /></a>
+                <a href="https://terminaltrove.com/" target="_blank"
+                  ><img
+                    src="/sponsors/terminal_trove.png"
+                    alt="Terminal Trove"
+                    style="height: 40px; width: auto"
+                /></a>
+              </div>
+            </div>
+            <script src="https://utteranc.es/client.js"
+                    repo="orhun/personal-blog"
+                    issue-term="url"
+                    label="comments"
+                    theme="github-dark"
+                    crossorigin="anonymous"
+                    async>
+            </script>
+        </footer>
+    
+</article>
+
+
+    </body>
+
+    <script type="text/javascript" src="https://blog.orhun.dev/elasticlunr.min.js"></script>
+    <script type="text/javascript" src="https://blog.orhun.dev/js/search.js"></script>
+
+</html>

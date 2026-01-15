@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+    <channel>
+      <title>Orhun&#x27;s Blog - Ratatui</title>
+      <link>https://blog.orhun.dev</link>
+      <description>FOSS • Linux • Programming</description>
+      <generator>Zola</generator>
+      <language>en</language>
+      <atom:link href="https://blog.orhun.dev/categories/ratatui/rss.xml" rel="self" type="application/rss+xml"/>
+      <lastBuildDate>Mon, 08 Apr 2024 00:00:00 +0000</lastBuildDate>
+      <item>
+          <title>Ratatui Received Funding: What&#x27;s Next?</title>
+          <pubDate>Mon, 08 Apr 2024 00:00:00 +0000</pubDate>
+          <author>Unknown</author>
+          <link>https://blog.orhun.dev/open-source-funding-with-ratatui/</link>
+          <guid>https://blog.orhun.dev/open-source-funding-with-ratatui/</guid>
+          <description xml:base="https://blog.orhun.dev/open-source-funding-with-ratatui/">&lt;p&gt;Let&#x27;s delve into the realm of open source funding along with Ratatui&#x27;s journey.&lt;&#x2F;p&gt;</description>
+      </item>
+      <item>
+          <title>From tui-rs to Ratatui: 6 Months of Cooking Up Rust TUIs</title>
+          <pubDate>Mon, 28 Aug 2023 00:00:00 +0000</pubDate>
+          <author>Unknown</author>
+          <link>https://blog.orhun.dev/ratatui-0-23-0/</link>
+          <guid>https://blog.orhun.dev/ratatui-0-23-0/</guid>
+          <description xml:base="https://blog.orhun.dev/ratatui-0-23-0/">&lt;p&gt;Let&#x27;s take a look at what is new in the new version of &quot;&lt;a rel=&quot;external&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;ratatui-org&#x2F;ratatui&quot;&gt;&lt;strong&gt;Ratatui&lt;&#x2F;strong&gt;&lt;&#x2F;a&gt;&quot; and how it became the successor of &lt;a rel=&quot;external&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;fdehau&#x2F;tui-rs&quot;&gt;&lt;code&gt;tui-rs&lt;&#x2F;code&gt;&lt;&#x2F;a&gt;.&lt;&#x2F;p&gt;</description>
+      </item>
+      <item>
+          <title>Generating terminal user interfaces with Ratatui + ChatGPT</title>
+          <pubDate>Mon, 17 Jul 2023 00:00:00 +0000</pubDate>
+          <author>Unknown</author>
+          <link>https://blog.orhun.dev/ratatui-0-22-0/</link>
+          <guid>https://blog.orhun.dev/ratatui-0-22-0/</guid>
+          <description xml:base="https://blog.orhun.dev/ratatui-0-22-0/">&lt;p&gt;&quot;&lt;a rel=&quot;external&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;ratatui-org&#x2F;ratatui&quot;&gt;&lt;strong&gt;Ratatui&lt;&#x2F;strong&gt;&lt;&#x2F;a&gt;&quot; is a Rust library for building rich terminal user interfaces. In this post, I&#x27;m sharing what&#x27;s new in the latest version and also a fun way to easily create terminal user interfaces in a jiffy.&lt;&#x2F;p&gt;</description>
+      </item>
+      <item>
+          <title>Ratatui: Build rich terminal user interfaces using Rust</title>
+          <pubDate>Mon, 29 May 2023 00:00:00 +0000</pubDate>
+          <author>Unknown</author>
+          <link>https://blog.orhun.dev/ratatui-0-21-0/</link>
+          <guid>https://blog.orhun.dev/ratatui-0-21-0/</guid>
+          <description xml:base="https://blog.orhun.dev/ratatui-0-21-0/">&lt;p&gt;&quot;&lt;a rel=&quot;external&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;ratatui-org&#x2F;ratatui&quot;&gt;&lt;strong&gt;Ratatui&lt;&#x2F;strong&gt;&lt;&#x2F;a&gt;&quot; came a long way since its transition from the original &lt;a rel=&quot;external&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;fdehau&#x2F;tui-rs&quot;&gt;&lt;code&gt;tui-rs&lt;&#x2F;code&gt;&lt;&#x2F;a&gt; crate. In this post, let&#x27;s take a look at what&#x27;s new in the latest version.&lt;&#x2F;p&gt;</description>
+      </item>
+    </channel>
+</rss>
