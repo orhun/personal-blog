@@ -161,7 +161,7 @@ In the configuration above, we configured the notification window dimensions, co
 
 Now let's take a closer look at the `template`:
 
-```jinja2
+```jinja
 [{{app_name}}] <b>{{summary}}</b>\
 {% if body %} {{body}}{% endif %} \
 {% if now(timestamp=true) - timestamp > 60 %} \
