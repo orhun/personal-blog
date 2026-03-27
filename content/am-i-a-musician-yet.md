@@ -1,5 +1,5 @@
 +++
-title = "Am I a musician yet? - Superbooth 2025 Experience"
+title = "Superbooth 2025 Experience"
 date = 2025-05-12
 
 [taxonomies]
