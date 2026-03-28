@@ -1,5 +1,5 @@
 +++
-title = "Building a Guitar Trainer with Rust"
+title = "Building a guitar trainer with embedded Rust"
 date = 2026-03-28
 
 [taxonomies]
@@ -14,6 +14,8 @@ All I wanted was to learn how to play guitar, but ended up building a DIY kit fo
 
 <iframe width="560" height="315" src="https://www.youtube.com/embed/tZm7cLaHAR0?si=ilAY4rk8yqG-OIfX" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
+[https://github.com/orhun/tuitar](https://github.com/orhun/tuitar)
+
 ---
 
 In the beginning of 2025, I picked up playing guitar again after a long break, thanks to the encouragement of a friend.
@@ -23,7 +25,7 @@ I needed practical knowledge right away, so that I could include simple chords a
 That's when I decided to build a tool to practice electric guitar, without even an idea of what that would look like. As if that wasn't enough craziness, I also submitted this project idea to the [Rust Forge conference](https://rustforgeconf.com/) so that I could speedrun the development if the talk got accepted.
 (i.e. _talk-driven development_: set a deadline and become responsible to deliver something)
 
-Coincidentally, the [Ratatui](https://ratatui.rs/) project had a new backend called [Mousefood](https://github.com/ratatui/mousefood) at the time. This allowed running terminal UIs on embedded devices (e.g. ESP32). This seemed like a perfect opportunity to hack with terminal UIs, embedded and guitar tooling. However, since I still wasn’t confident about what to build, I took a trip to Berlin in May to visit [Superbooth](https://www.superbooth.com/) (a huge synthesizer fair). In the end, I had [more inspiration](https://blog.orhun.dev/am-i-a-musician-yet/) than I needed.
+Coincidentally, the [Ratatui](https://ratatui.rs/) project had a new backend called [Mousefood](https://github.com/ratatui/mousefood) at the time. This allowed running terminal UIs on embedded devices (e.g. ESP32). This seemed like a perfect opportunity to hack with terminal UIs, embedded and guitar tooling. However, since I still wasn't confident about what to build, I took a trip to Berlin in May to visit [Superbooth](https://www.superbooth.com/) (a huge synthesizer fair). In the end, I had [more inspiration](https://blog.orhun.dev/am-i-a-musician-yet/) than I needed.
 
 <q>
 Ok, it seems like you are getting a bit sidetracked. I mean, getting excited about synthesizers is cool and all, but what about the guitar tool?
@@ -65,7 +67,7 @@ Setting up the toolchain was so cursed that at some point I needed to symlink a 
 Is this how the progress look like? Just a tiny rectangle?
 </q>
 
-Chill... let me hook up the microphone. It’s just a matter of changing the cpal input with a MAX4466 connected to an ADC pin and we should be able to do pitch detection inside of this tiny rectangle. Just need to change the callback and the rest should work the same.
+Chill... let me hook up the microphone. It's just a matter of changing the cpal input with a MAX4466 connected to an ADC pin and we should be able to do pitch detection inside of this tiny rectangle. Just need to change the callback and the rest should work the same.
 
 ```rust
 let sample_callback = |data: &[i16], _| { };
@@ -162,7 +164,7 @@ I also made the [ratatui-fretboard](https://crates.io/crates/ratatui-fretboard) 
 <img src="/ratatui-fretboard.png" width="60%"/>
 
 <small>
-Tbh you can also render things like this but pls don’t.
+Tbh you can also render things like this but pls don't.
 </small>
 
 The result was satisfying to see:
@@ -279,7 +281,7 @@ Hey rat chef, can you take a look at the connections for me and tell me what mig
 <br>
 
 <q>
-Holy cheese... It looks like doing everything on a breadboard might be the problem here. The connections might be loose, there might be noise from the components or anything could happen. Let’s make a PCB and wrap this up.
+Holy cheese... It looks like doing everything on a breadboard might be the problem here. The connections might be loose, there might be noise from the components or anything could happen. Let's make a PCB and wrap this up.
 </q>
 
 While we're at it, let's have a proper name for this project and a logo. I have so many ideas to implement too!
@@ -323,7 +325,7 @@ Implementing the "song mode" was more difficult though. Firstly, I had to purcha
 We can't parse these MIDI files during runtime though. 512kb RAM, remember?
 </q>
 
-Yup, that’s why I parse them during build time and simply ship them as a part of the firmware for now. I know I know… I can do so many other things instead (e.g. this ESP32 device has Wi-Fi and Bluetooth). But remember, I’m still prototyping!!! (if you believe that)
+Yup, that's why I parse them during build time and simply ship them as a part of the firmware for now. I know I know… I can do so many other things instead (e.g. this ESP32 device has Wi-Fi and Bluetooth). But remember, I'm still prototyping!!! (if you believe that)
 
 Parsing MIDI files looks like this:
 
@@ -466,7 +468,7 @@ Huh? Guru Meditation Error? That sounds scary and spiritual.
 It refers to a [famous critical system crash notification](https://en.wikipedia.org/wiki/Guru_Meditation) that originated from the Amiga era of computing.
 
 <q>
-Got it. One thing that I’m sure is that this is some obscure toolchain bug, just wipe your system, reboot and it will be fine, most likely.
+Got it. One thing that I'm sure is that this is some obscure toolchain bug, just wipe your system, reboot and it will be fine, most likely.
 </q>
 
 Uhh, to make this matter worse, this issue turned out to be reproducible from 16,500 km away from me. Remember the person that I gave away the DIY kit in New Zealand? He sent me those logs above... He built the entire kit and got stuck running the firmware.
@@ -495,7 +497,7 @@ I kept reading the logs to figure out what might be wrong:
 ```
 
 <q>
-So it consistently crashes while executing "find_fundamental_frequency" function? I’m assuming it also calls __rustc::__rdl_alloc and __rustc::__rust_alloc which means this might be a memory allocation issue? What is that fundamental frequency function doing anyways?
+So it consistently crashes while executing "find_fundamental_frequency" function? I'm assuming it also calls __rustc::__rdl_alloc and __rustc::__rust_alloc which means this might be a memory allocation issue? What is that fundamental frequency function doing anyways?
 </q>
 
 I guess it might be allocating more memory than it should? I tried executing nothing in there and reflashed the firmware, but now it crashes at one of the "render" functions. Ugh... It is so strange.
@@ -508,11 +510,11 @@ Yes, it shows that the issue is not related to any code path, it simply happens 
 But I still don't understand the significance of /home/orhun/gh/esp32-playground/spi_display_example/target. Maybe it has a deeper meaning and I need to become a target-directory-Guru and start meditating to understand it
 
 <q>
-Nah come on, it’s just a target directory. What is in it anyways?
+Nah come on, it's just a target directory. What is in it anyways?
 </q>
 
 It simply contains build artifacts, compiled objects and a bunch of C/SDK artifacts produced by the ESP-IDF. Wait a minute... Maybe it is something caused by [esp-idf-sys](https://github.com/esp-rs/esp-idf-sys)? It essentially downloads esp-idf, its gcc toolchain, and builds it. If something is incompatible or goes wrong then it might lead to this strange situation.
-Hey rat, get the tools, we’re diving into the target directory.
+Hey rat, get the tools, we're diving into the target directory.
 
 <q>
 Ahoi chef! I got <a href="https://github.com/GNOME/meld">meld</a> to compare directories.
@@ -530,7 +532,7 @@ Wait a minute... I thought we were already overriding that value in the sdkconfi
 
 I figured out the rest by just thinking. Normal human thinking.
 
-It's because <g>sdkconfig.defaults</g> lives in the `firmware/` directory. And it’s only being read if it is at the project root. This is not documented anywhere…
+It's because <g>sdkconfig.defaults</g> lives in the `firmware/` directory. And it's only being read if it is at the project root. This is not documented anywhere…
 
 I guess I moved that file to a subdirectory while I was splitting up the project into workspace crates in the past.
 So the fix was simply move it back to the workspace root:
@@ -561,5 +563,7 @@ Tuitar GitHub: [**https://github.com/orhun/tuitar**](https://github.com/orhun/tu
 - [RustForge talk](https://www.youtube.com/watch?v=es48dmNWMVQ&t=29905s)
 
 Hackster article: [This ESP32 Gadget Makes Guitar Practice a Breeze](https://www.hackster.io/news/fret-not-this-esp32-gadget-makes-guitar-practice-a-breeze-dcc26bcef0ba)
+
+<img src="/tuitar-bell-curve.jpg" width="60%"/>
 
 Hope you enjoyed the read! 🐁
