@@ -16,6 +16,9 @@
       {% if page.description %}
       <meta name="description" content="{{ page.description }}" />
       <meta property="og:description" content="{{ page.description }}"/>
+      {% elif page.summary %}
+      <meta name="description" content="{{ page.summary | striptags | trim }}" />
+      <meta property="og:description" content="{{ page.summary | striptags | trim }}"/>
       {% elif config.description %}
       <meta name="description" content="{{ config.description }}" />
       <meta property="og:description" content="{{ config.description }}"/>
