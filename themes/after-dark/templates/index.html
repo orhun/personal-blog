@@ -6,7 +6,11 @@
       <meta http-equiv="X-UA-Compatible" content="IE=edge">
       <meta http-equiv="content-type" content="text/html; charset=utf-8">
       <meta property="og:type" content="website" />
+      {% if page %}
+      <meta property="og:url" content="{{ page.permalink | safe }}"/>
+      {% else %}
       <meta property="og:url" content="{{ config.base_url | safe }}"/>
+      {% endif %}
       {% if page.title %}
       <meta property="og:title" content="{{ page.title | safe }} - {{ config.title }}" />
       {% elif config.title %}
