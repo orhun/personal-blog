@@ -3,7 +3,7 @@ base_url = "https://blog.orhun.dev"
 
 # The site title and description; used in feeds by default.
 title = "Orhun's Blog"
-description = "Here be rats"
+description = "Systems programming, Rust, Ratatui, terminal tools, open source & life stuff by Orhun Parmaksız"
 
 # The default language; used in feeds.
 default_language = "en"
