@@ -3,7 +3,7 @@ base_url = "https://blog.orhun.dev"
 
 # The site title and description; used in feeds by default.
 title = "Orhun's Blog"
-description = "FOSS • Linux • Programming"
+description = "Here be rats"
 
 # The default language; used in feeds.
 default_language = "en"
@@ -50,4 +50,4 @@ after_dark_menu = [
   { name = "RSS", url = "$BASE_URL/rss.xml" },
   { name = "About", url = "https://orhun.dev" },
 ]
-after_dark_title = "Orhun's Blog | FOSS • Linux • Programming"
+after_dark_title = "Orhun's Blog"
