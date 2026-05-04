@@ -1,27 +1,29 @@
 +++
 title = "Introducing Ratty: A reimagined terminal emulator"
-date = 2026-04-29
+date = 2026-05-15
 
 [taxonomies]
-categories = ["Thoughts"]
+categories = ["Projects"]
 +++
 
-I built a terminal emulator that isn't what a terminal emulator is supposed to be.
+I built a terminal emulator that breaks the rules.
+
+<!-- more -->
 
 <video controls width="80%">
   <source src="ratty-demo.mp4" type="video/mp4">
   Your browser does not support the video tag.
 </video>
 
-<!-- more -->
-
-<i>TL;DR: [Ratty](https://github.com/orhun/ratty) is a terminal emulator that supports 3D objects.<br>It is inspired by TempleOS and built with Rust and Ratatui.</i>
+<i>TL;DR: [Ratty](https://github.com/orhun/ratty) is a GPU-rendered terminal emulator that supports inline 3D graphics.<br>
+It is inspired by TempleOS and built with Rust and Ratatui.<br>
+</i>
 
 <!-- vim-markdown-toc GFM -->
 
 - [**Background**](#background)
 - [**Motivation**](#motivation)
-- [A new terminal](#a-new-terminal)
+- [**Ratty**, a new 3D terminal](#ratty-a-new-3d-terminal)
   - [Implementation](#implementation)
   - [Graphics Protocol](#graphics-protocol)
 - [Wrapping up](#wrapping-up)
@@ -85,7 +87,7 @@ When we launched [Terminal Tuesdays podcast](https://www.youtube.com/@TerminalCo
 
 What really blew my mind was that the VT100's screen isn't a baked animation at all, it's a live terminal UI rendered by Ratatui. Rust code renders the 2D terminal output with [soft_ratatui](https://github.com/gold-silver-copper/soft_ratatui), composites it into the model's screen texture and Bevy displays that texture on the 3D terminal as the camera animates around it. In other words, it's a 2D terminal renderer feeding a 3D animation pipeline in real time.
 
-<img src="rotating-terminal-diagram.png" width="70%"/>
+<img src="rotating_terminal_diagram.png" width="70%"/>
 
 The possibility of rendering TUIs in 3D space got me really excited. Then for the next two consecutive weekends, I hacked on Bevy and Ratatui integrations at our [Mercimek hackerspace](https://mercimek.space/) meetups. At first I really didn't know what I was building, so I just threw the [rotating_terminal](https://github.com/gold-silver-copper/rotating_terminal) repository to Codex and asked it to make things for me. At some point I even vibe coded a really broken game on [a livestream](https://www.youtube.com/watch?v=RTg6uL_j9Sc), which was fun:
 
@@ -103,17 +105,17 @@ And so, [Ratty](https://github.com/orhun/ratty) was born.
 
 ---
 
-## A new terminal
+<img width="300" src="https://raw.githubusercontent.com/orhun/ratty/refs/heads/main/assets/img/ratty-logo.gif" />
 
-![]
+<br>
+
+## **Ratty**, a new 3D terminal
+
+The idea is that terminal can be a richer graphical interface rather than a text-only environment. With this in mind,
 
 ### Implementation
 
 ### Graphics Protocol
-
-A protocol that I have created to allow TUIs to own font data https://rapha.land/introducing-glyph-protocol-for-terminals/
-
-Example with ratatui https://github.com/raphamorim/glyph-protocol-examples
 
 > A terminal is supposed to be a canvas. If the canvas cannot render what the application asks it to, the canvas is incomplete.
 
