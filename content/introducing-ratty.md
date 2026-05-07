@@ -19,7 +19,14 @@ I built a terminal emulator that breaks the rules.
 It is inspired by TempleOS and built with Rust and Ratatui.<br>
 </i>
 
-TOC
+- [Background](#background)
+- [Motivation](#motivation)
+- [**A new terminal** 🧀](#a-new-terminal)
+  - [Implementation](#implementation)
+  - [Graphics Protocol](#graphics-protocol)
+  - [Building applications](#building-applications)
+- [FAQ](#faq)
+- [Wrapping up](#wrapping-up)
 
 ---
 
@@ -80,17 +87,18 @@ What really blew my mind was that the VT100's screen isn't a baked animation at 
 
 <img src="rotating-terminal-diagram.png" width="70%"/>
 
-The possibility of rendering TUIs in 3D space got me really excited. Then for the next two consecutive weekends, I hacked on Bevy and Ratatui integrations at our [Mercimek hackerspace](https://mercimek.space/) meetups. At first I really didn't know what I was building, so I just threw the [rotating_terminal](https://github.com/gold-silver-copper/rotating_terminal) repository to Codex and asked it to make things for me. At some point I even vibe coded a really broken game on [a livestream](https://www.youtube.com/watch?v=RTg6uL_j9Sc), which was fun:
+The possibility of rendering TUIs in 3D space got me really excited. Then for the next two consecutive weekends, I hacked on Bevy and Ratatui integrations at the [Mercimek hackerspace](https://mercimek.space/).<br>
+At first I really didn't know what I was building, so I just threw the [rotating_terminal](https://github.com/gold-silver-copper/rotating_terminal) repository to Codex and asked it to make things for me. At some point I even vibe coded a really broken game on [a livestream](https://www.youtube.com/watch?v=RTg6uL_j9Sc), which was fun:
 
 <img src="cursed-rat-game.gif" width="70%"/>
 
-That rectangle in the background was rendered with Ratatui, which made one thing apparent for me: the idea had a potential and I could weigh in on it to build something proper.
+That rectangle in the background was rendered with Ratatui, which made one thing apparent for me: <i>the idea had a potential and I could weigh in on it to build something proper.</i>
 
-Coincidentally while these events were unfolding, [Raphael Amorim](https://github.com/raphamorim/) came up with a new terminal protocol called [Glyph Protocol](https://rapha.land/introducing-glyph-protocol-for-terminals/) which allows terminals to own font data and render glyphs as first-class objects. It also had [an example with Ratatui](https://github.com/raphamorim/glyph-protocol-examples) which showed how to render a TUI with custom fonts and glyphs. This was inspiring.
+Coincidentally while these events were unfolding, [Raphael Amorim](https://github.com/raphamorim/) came up with a new terminal protocol called [Glyph Protocol](https://rapha.land/introducing-glyph-protocol-for-terminals/) which allows terminals to own font data and render glyphs as first-class objects. It also had [an example with Ratatui](https://github.com/raphamorim/glyph-protocol-examples) which showed how to render a TUI with custom fonts and glyphs. This was inspiring:
 
 <img src="glyph-protocol-examples.png" width="60%"/>
 
-And that's when it clicked. What I really wanted was not rendering 2D graphics in a 3D space, but the opposite. Basically I wanted to render 3D graphics in a 2D terminal and just follow what [Terry Davis did with TempleOS](#background). Reading the glyph protocol also gave me confidence that I could also design my own [terminal protocol](#ratty-graphics-protocol) similar to it.
+And that's when it clicked. What I really wanted was not rendering 2D graphics in a 3D space, but the opposite. Basically I wanted to render 3D graphics in a 2D terminal and just follow what [Terry Davis did with TempleOS](#background). Reading the glyph protocol also gave me confidence that I could also design my own [terminal protocol](#graphics-protocol) similar to it.
 
 And so, <g>Ratty</g> was born.
 
@@ -100,7 +108,9 @@ And so, <g>Ratty</g> was born.
 
 <br>
 
-## **Ratty, a new 3D terminal!**
+<a id="a-new-terminal"></a>
+
+## **Ratty, a new 3D terminal!** 🧀
 
 In [Ratty](https://github.com/orhun/ratty),
 
@@ -109,7 +119,7 @@ In [Ratty](https://github.com/orhun/ratty),
 - you can insert 3D models and sprites into the terminal.
 
 <video controls width="80%">
-  <source src="ratty-3d-with-audio.mp4" type="video/mp4">
+  <source src="ratty-warp2-with-audio.mp4" type="video/mp4">
   Your browser does not support the video tag.
 </video>
 
@@ -130,11 +140,85 @@ That's not it. Remember the documents in TempleOS with inline sprites?
   Your browser does not support the video tag.
 </video>
 
-Ratty also supports the [Kitty Image Protocol](https://sw.kovidgoyal.net/kitty/graphics-protocol/) (how ironic!) so you can render images (like the TempleOS logo above).
+<details>
+  <summary><b>Click here to for a fun fact!</b></summary>
+
+The inserted 3D objects in the demo above are actually from the [TempleOS codebase](https://github.com/cia-foundation/TempleOS) itself.<br>
+I extracted them and converted them to OBJ format to use it in the demo specifically.
+
+<q>"Extracted them?" What?</q>
+
+Yes, these objects were not stored as "normal" 3D model files, but they live inside "DolDoc documents" or HolyC (`.HC`) source files as embedded sprite bins. This is because the TempleOS shell is just a document as explained before, so when a game or a menu needs to use a sprite, it just embeds the sprite data into the same file and references it from there.
+
+More technically speaking: at the file-format level, a DolDoc document is stored as plain document text, then a terminating `NUL`, and then a tail section of appended `CDocBin` records with raw sprite payloads after each record. The `BI=` field in an inline `$$SP...$$` or `$$IB...$$` entry is effectively an index into that appended binary section.
+
+A simplified layout looks like this:
+
+```text
+[$$SP,"<1>",BI=1$$ ... document text ... \0]
+[CDocBin header: num=1, size=246, use_cnt=3]
+[raw CSprite bytes...]
+[CDocBin header: num=2, size=282, use_cnt=3]
+[raw CSprite bytes...]
+...
+```
+
+So the visible DolDoc source contains the inline `BI=1` reference, while the actual sprite data lives later in the same file, after the text section has already ended.
+
+`CDocBin` stores metadata such as `num`, `size`, and `use_cnt`, and the payload is usually a packed `CSprite` stream. Those sprite streams are not always raster images. They can be vector-ish drawing commands, bitmap blocks, or mesh-like records such as `SPT_MESH`.
+
+**That is why extracting `.obj` files was annoying as hell.**
+
+1. Find the NUL that terminates the document text.
+2. Walk the appended bin headers.
+3. Dump the raw bin payloads.
+4. Decode the sprite bytes into OBJ geometry.
+
+Here is a minimal script that extracts the sprite data:
+
+```rust
+fn u32le(buf: &[u8], off: usize) -> u32 {
+    u32::from_le_bytes(buf[off..off + 4].try_into().unwrap())
+}
+
+fn main() {
+    let blob = std::fs::read("Demo/Games/CastleFrankenstein.HC").unwrap();
+    let text_end = blob.iter().position(|&b| b == 0).unwrap();
+    let mut off = text_end + 1;
+
+    while off + 16 <= blob.len() {
+        let num = u32le(&blob, off);
+        let flags = u32le(&blob, off + 4);
+        let size = u32le(&blob, off + 8) as usize;
+        let use_cnt = u32le(&blob, off + 12);
+        off += 16;
+
+        let data = &blob[off..off + size];
+        off += size;
+
+        if !data.is_empty() {
+            println!(
+                "BI={} flags={} size={} use_cnt={} first_type={}",
+                num,
+                flags,
+                size,
+                use_cnt,
+                data[0] & 0x7f
+            );
+        }
+    }
+}
+```
+
+</details>
+
+Ratty also supports the [Kitty Image Protocol](https://sw.kovidgoyal.net/kitty/graphics-protocol/) (how ironic!) so you can render images (like the TempleOS logo on top right in the demo above).
 
 <q>How the heck all of this works under the hood?</q>
 
-### **Implementation**
+<a id="implementation"></a>
+
+### **Implementation** ⚙️
 
 Let's break down how the terminal output gets rendered on the screen in three stages:
 
@@ -253,7 +337,9 @@ bob_amplitude = 0.1
 
 That's where the graphics protocol comes in.
 
-### **Ratty Graphics Protocol**
+<a id="graphics-protocol"></a>
+
+### **Ratty Graphics Protocol** 🐁
 
 The underlying idea behind Ratty is that terminal can be a richer graphical interface rather than a text-only environment. But unlike TempleOS, the terminal still should be usable in today's world and should support the tools that we already use. In other words, Ratty is trying to coexist with the modern terminal ecosystem rather than replacing it.
 
@@ -319,17 +405,23 @@ Here is a demo that places a [big rat](https://github.com/orhun/ratty/blob/main/
   Your browser does not support the video tag.
 </video>
 
+<q>How feasible do you think it will be for other terminals to implement RGP?</q>
+
+Honestly, not feasible at all. The whole graphics protocol is designed around Ratty's architecture and rendering pipeline, so supporting that in a traditional terminal emulator would be really hard. Some possibilities are **1)** they can either half way support the protocol where the graphics are rendered as ASCII-based 3D models or **2)** this would be inspiring enough that we start re-thinking what terminal might be and it paves the way for other protocols (which is a more realistic goal to have).
+
 Of course, the protocol is still a work in progress ([in this document](https://github.com/orhun/ratty/blob/main/protocols/graphics.md)) and there might be things that need to be changed. But the general idea is to have a simple and extensible protocol that applications can use to leverage Ratty's graphics capabilities without needing to know about the underlying rendering pipeline.
 
 <i>Speaking of...</i>
 
-### Building applications
+<a id="building-applications"></a>
+
+### **Building applications** 🦀
 
 Today, a Ratatui widget called [`ratatui-ratty`](https://crates.io/crates/ratatui-ratty) exists for building applications on top of RGP.
 
 To use it, just add the dependency to your `Cargo.toml`:
 
-```
+```sh
 cargo add ratatui-ratty
 ```
 
@@ -365,23 +457,49 @@ let mut buf = Buffer::empty(Rect::new(0, 0, 80, 24));
 So if you have an application that already uses Ratatui, you can just add `ratatui-ratty` as a dependency and start rendering spinning rats, octopuses or whatever you want!<br>
 See the [widget examples here](https://github.com/orhun/ratty/tree/main/widget/examples)!
 
-## FAQ
+---
 
-AI?
+## **FAQ**
 
-<q>How feasible do you think it will be for other terminals to implement?</q>
+<q>How can I try out Ratty today?</q>
 
-Not feasible at all. The whole graphics protocol is designed around Ratty's architecture and rendering pipeline, so supporting that in a traditional terminal emulator would be really hard. Some possibilities are 1) they can either half way support the protocol where the graphics are rendered as ASCII-based 3D models or 2) this would be inspiring enough that we start re-thinking what terminal might be and it paves the way for other protocols (which is a more realistic goal to have).
+Ratty is fully open source and available on GitHub: [**https://github.com/orhun/ratty**](https://github.com/orhun/ratty)
 
-questions: 600 deps, backwards?
+Follow the installation instructions there or simply install it with `cargo`:
 
-600 deps for a terminal emulator?
-game engine for a terminal emulator?
-memory usage?
+```sh
+cargo install ratty
+```
 
-> A terminal is supposed to be a canvas. If the canvas cannot render what the application asks it to, the canvas is incomplete.
+<q>I just installed Ratty and it compiled 600 Rust dependencies. My CPU caught on fire.<br>What the hell?
+</q>
 
-## Wrapping up
+Sorry to hear that.
+
+Ratty is literally running a game engine (Bevy) under the hood, so it is expected to have more dependencies than a traditional terminal emulator. Related to that, you might realize more resource usage while the terminal is running, which is also expected given the capabilities. It is definitely not the lightest terminal emulator out there and it's not trying to be.
+
+I know, sacrificing 300MB of RAM just to run a terminal emulator is a lot. But everything comes with a cost, especially the spinning rat cursor...
+
+Hopefully we can optimize that in the future!
+
+<q>So you're using Ratatui to render a terminal emulator? Isn't that a bit... backwards?<br>I thought it is a library to build applications _inside_ the terminal.</q>
+
+A-ha! That's correct. And that's why Ratatui is more powerful than you think.
+
+Ratty uses Ratatui as a terminal rendering layer. So instead of writing a TUI app that runs in a terminal, Ratty takes parsed
+terminal state and rebuilds it as a Ratatui-style buffer, then renders that buffer onto a texture.
+
+That works well because Ratatui already has a solid model for terminal cells, styles and buffer-based rendering. See the [`terminal`](https://github.com/orhun/ratty/blob/main/src/terminal.rs) ([docs](https://docs.rs/ratty/latest/ratty/terminal/index.html)) module for more details.
+
+<q>How much AI was involved in this work?</q>
+
+See my stance on AI-assisted programming [in this blog post](https://blog.orhun.dev/code-responsibly/).
+
+To put it briefly: it was involved, but definitely not in a way that I would consider "sloppy".
+
+---
+
+## **Wrapping up**
 
 All I wanted was to build a terminal emulator with a spinning rat as a cursor.
 
@@ -389,8 +507,6 @@ Making a terminal emulator is difficult.
 
 > If i restricted my coding projects to useful things, I would probably be a farmer by now
 > [11:37 AM]Coko [NVIM], : these kinds of experiments are where creativity is born
-
-Exporting TempleOS artifacts
 
 I'm just trying to make terminal more powerful and fun to use.
 
