@@ -19,7 +19,7 @@ I built a terminal emulator that breaks the rules.
 It is inspired by TempleOS and built with Rust and Ratatui.<br>
 </i>
 
-- [Background](#background)
+- [Origins](#origins)
 - [Motivation](#motivation)
 - [**A new terminal** 🧀](#a-new-terminal)
   - [Implementation](#implementation)
@@ -30,7 +30,7 @@ It is inspired by TempleOS and built with Rust and Ratatui.<br>
 
 ---
 
-## **Background**
+## **Origins**
 
 If you have ever tried out [TempleOS](https://en.wikipedia.org/wiki/TempleOS) or seen videos of it, you probably know that the whole operating system feels like a fever dream or a psychedelic trip.
 
@@ -46,16 +46,16 @@ But most importantly, I was really impressed by the fact that [Terry Davis](http
 
 <q>Well, what's the upside of that?</q>
 
-Basically, the command line becomes the direct interface for everything. You can write code, interact with system and render graphics all in the same place, which why TempleOS feels so unusual compared to conventional operating systems.
+Basically, the command line becomes the direct interface for everything. You can write code, interact with the system and render graphics all in the same place, which is why TempleOS feels so unusual compared to conventional operating systems.
 
-In [one of the livestreams](https://youtu.be/urO4RTEsPBg?si=sQh2WZktOUoXmd5y&t=1040) where Terry was demonstrating the features of TempleOS, he first draws a 3D mesh and then directly preview it in the command line:
+In [one of the livestreams](https://youtu.be/urO4RTEsPBg?si=sQh2WZktOUoXmd5y&t=1040) where Terry was demonstrating the features of TempleOS, he first draws a 3D mesh and then directly previews it in the command line:
 
 <video controls width="60%">
   <source src="templeos-commandline.mp4" type="video/mp4">
   Your browser does not support the video tag.
 </video>
 
-Then he proceeds to import the sprite next the code and uses it there:
+Then he proceeds to import the sprite next to the code and uses it there:
 
 <video controls width="60%">
   <source src="templeos-editor.mp4" type="video/mp4">
@@ -76,7 +76,7 @@ Until today.
 
 ## **Motivation**
 
-When we launched [Terminal Tuesdays podcast](https://www.youtube.com/@TerminalCollectiveOrg), we needed a looping footage to play during the show. I wanted something visually pleasing to watch and something that fits our VT100 theme. We already had the rights to use [this 3D model](https://www.artstation.com/artwork/bK5yom), but I had no idea how to animate it. So I asked it on our [Grindhouse server](https://grindhouse.dev/) whether if anyone would have experience animating something like that. The next day, one of our talented members [gold-silver-copper](https://github.com/gold-silver-copper) came up with this amazing [rotating terminal animation](https://github.com/gold-silver-copper/rotating_terminal):
+When we launched [Terminal Tuesdays podcast](https://www.youtube.com/@TerminalCollectiveOrg), we needed looping footage to play during the show. I wanted something visually pleasing to watch and something that fits our VT100 theme. We already had the rights to use [this 3D model](https://www.artstation.com/artwork/bK5yom), but I had no idea how to animate it. So I asked on our [Grindhouse server](https://grindhouse.dev/) whether anyone would have experience animating something like that. The next day, one of our talented members [gold-silver-copper](https://github.com/gold-silver-copper) came up with this amazing [rotating terminal animation](https://github.com/gold-silver-copper/rotating_terminal):
 
 <video controls width="80%">
   <source src="rotating-terminal-loop.mp4" type="video/mp4">
@@ -92,13 +92,13 @@ At first I really didn't know what I was building, so I just threw the [rotating
 
 <img src="cursed-rat-game.gif" width="70%"/>
 
-That rectangle in the background was rendered with Ratatui, which made one thing apparent for me: <i>the idea had a potential and I could weigh in on it to build something proper.</i>
+That rectangle in the background was rendered with Ratatui, which made one thing apparent to me: <i>the idea had potential and I could build on it to make something proper.</i>
 
 Coincidentally while these events were unfolding, [Raphael Amorim](https://github.com/raphamorim/) came up with a new terminal protocol called [Glyph Protocol](https://rapha.land/introducing-glyph-protocol-for-terminals/) which allows terminals to own font data and render glyphs as first-class objects. It also had [an example with Ratatui](https://github.com/raphamorim/glyph-protocol-examples) which showed how to render a TUI with custom fonts and glyphs. This was inspiring:
 
 <img src="glyph-protocol-examples.png" width="60%"/>
 
-And that's when it clicked. What I really wanted was not rendering 2D graphics in a 3D space, but the opposite. Basically I wanted to render 3D graphics in a 2D terminal and just follow what [Terry Davis did with TempleOS](#background). Reading the glyph protocol also gave me confidence that I could also design my own [terminal protocol](#graphics-protocol) similar to it.
+And that's when it clicked. What I really wanted was not rendering 2D graphics in a 3D space, but the opposite. Basically I wanted to render 3D graphics in a 2D terminal and just follow what [Terry Davis did with TempleOS](#origins). Reading the glyph protocol also gave me confidence that I could also design my own [terminal protocol](#graphics-protocol) similar to it.
 
 And so, <g>Ratty</g> was born.
 
@@ -141,7 +141,7 @@ That's not it. Remember the documents in TempleOS with inline sprites?
 </video>
 
 <details>
-  <summary><b>Click here to for a fun fact!</b></summary>
+  <summary><b>Click here for a fun fact!</b></summary>
 
 The inserted 3D objects in the demo above are actually from the [TempleOS codebase](https://github.com/cia-foundation/TempleOS) itself.<br>
 I extracted them and converted them to OBJ format to use it in the demo specifically.
@@ -214,7 +214,7 @@ fn main() {
 
 Ratty also supports the [Kitty Image Protocol](https://sw.kovidgoyal.net/kitty/graphics-protocol/) (how ironic!) so you can render images (like the TempleOS logo on top right in the demo above).
 
-<q>How the heck all of this works under the hood?</q>
+<q>How the heck does all of this work under the hood?</q>
 
 <a id="implementation"></a>
 
@@ -341,9 +341,9 @@ That's where the graphics protocol comes in.
 
 ### **Ratty Graphics Protocol** 🐁
 
-The underlying idea behind Ratty is that terminal can be a richer graphical interface rather than a text-only environment. But unlike TempleOS, the terminal still should be usable in today's world and should support the tools that we already use. In other words, Ratty is trying to coexist with the modern terminal ecosystem rather than replacing it.
+The underlying idea behind Ratty is that the terminal can be a richer graphical interface rather than a text-only environment. But unlike TempleOS, the terminal should still be usable in today's world and should support the tools that we already use. In other words, Ratty is trying to coexist with the modern terminal ecosystem rather than replacing it.
 
-This means that we're still dependent on legacy terminal stack (ANSI escape codes, VT100 control sequences, etc.), but we can design a new terminal protocol on top of it to extend the terminal's capabilities. That's where the [**Ratty Graphics Protocol (RGP)**](https://github.com/orhun/ratty/blob/main/protocols/graphics.md) comes in.
+This means that we're still dependent on the legacy terminal stack (ANSI escape codes, VT100 control sequences, etc.), but we can design a new terminal protocol on top of it to extend the terminal's capabilities. That's where the [**Ratty Graphics Protocol (RGP)**](https://github.com/orhun/ratty/blob/main/protocols/graphics.md) comes in.
 
 The core idea is simple:
 
@@ -376,7 +376,7 @@ RGP currently has four operations:
 - `p` for placing an object into terminal cell space
 - `d` for deleting an object
 
-For example, to support if the terminal supports RGP, an application can send:
+For example, to check whether the terminal supports RGP, an application can send:
 
 ```text
 ESC _ ratty;g;s ESC \
@@ -407,7 +407,7 @@ Here is a demo that places a [big rat](https://github.com/orhun/ratty/blob/main/
 
 <q>How feasible do you think it will be for other terminals to implement RGP?</q>
 
-Honestly, not feasible at all. The whole graphics protocol is designed around Ratty's architecture and rendering pipeline, so supporting that in a traditional terminal emulator would be really hard. Some possibilities are **1)** they can either half way support the protocol where the graphics are rendered as ASCII-based 3D models or **2)** this would be inspiring enough that we start re-thinking what terminal might be and it paves the way for other protocols (which is a more realistic goal to have).
+Honestly, not feasible at all. The whole graphics protocol is designed around Ratty's architecture and rendering pipeline, so supporting that in a traditional terminal emulator would be really hard. Some possibilities are **1)** they can either halfway support the protocol where the graphics are rendered as ASCII-based 3D models or **2)** this would be inspiring enough that we start re-thinking what a terminal might be and it paves the way for other protocols (which is a more realistic goal to have).
 
 Of course, the protocol is still a work in progress ([in this document](https://github.com/orhun/ratty/blob/main/protocols/graphics.md)) and there might be things that need to be changed. But the general idea is to have a simple and extensible protocol that applications can use to leverage Ratty's graphics capabilities without needing to know about the underlying rendering pipeline.
 
@@ -452,24 +452,28 @@ let mut buf = Buffer::empty(Rect::new(0, 0, 80, 24));
 (&graphic).render(Rect::new(10, 5, 24, 10), &mut buf);
 ```
 
-> To reiterate, the widget does not directly draw an object into the terminal buffer. Instead, it writes the appropriate RGP messages to stdout to register and place the object, and then Ratty takes care of rendering it in the scene.
+To reiterate, the widget does not directly draw an object into the terminal buffer. Instead, it writes the appropriate RGP messages to stdout to register and place the object, and then Ratty takes care of rendering it in the scene.
 
 So if you have an application that already uses Ratatui, you can just add `ratatui-ratty` as a dependency and start rendering spinning rats, octopuses or whatever you want!<br>
 See the [widget examples here](https://github.com/orhun/ratty/tree/main/widget/examples)!
 
 ---
 
-## **FAQ**
+<a id="faq"></a>
+
+## **Frequently Asked Questions**
 
 <q>How can I try out Ratty today?</q>
 
 Ratty is fully open source and available on GitHub: [**https://github.com/orhun/ratty**](https://github.com/orhun/ratty)
 
-Follow the installation instructions there or simply install it with `cargo`:
+Follow the [installation instructions](https://github.com/orhun/ratty#installation) or simply install it with `cargo`:
 
 ```sh
 cargo install ratty
 ```
+
+Then you can [configure](https://github.com/orhun/ratty#configuration) it to your liking by tweaking [`ratty.toml`](https://github.com/orhun/ratty/blob/main/config/ratty.toml).
 
 <q>I just installed Ratty and it compiled 600 Rust dependencies. My CPU caught on fire.<br>What the hell?
 </q>
@@ -499,19 +503,27 @@ To put it briefly: it was involved, but definitely not in a way that I would con
 
 ---
 
-## **Wrapping up**
+<a id="wrapping-up"></a>
 
-All I wanted was to build a terminal emulator with a spinning rat as a cursor.
+## **Wrapping up** 🐀
 
-Making a terminal emulator is difficult.
+All I wanted was to build a terminal emulator with a spinning rat as a cursor. Instead, I might have bitten off a bigger cheese. Funny thing is, it is [not the first time](https://github.com/orhun/kermit) that this is happening so I guess I never learn my lesson when it comes to my terminal obsession.
 
-> If i restricted my coding projects to useful things, I would probably be a farmer by now
-> [11:37 AM]Coko [NVIM], : these kinds of experiments are where creativity is born
+I must say, making a terminal emulator (and maintaining it as an open source project) is difficult. Ratty is just a fun experiment that I did to see if I could make the terminal more powerful and fun to use and not something that I expect people to daily-drive. But I guess I can't stop you if you want to do that and I will try my best to keep maintaining the project.  
+<small>(<i>hint</i>: sponsorships help with motivation!)</small>
 
-I'm just trying to make terminal more powerful and fun to use.
+My ultimate goal with Ratty is to explore the possibilities of what a terminal can be and inspire new ideas and projects in the terminal space. I believe these kinds of experiments are where creativity is born and I hope to spark some ideas for the future of terminals.<br>
+<small>I also submitted a talk to EuroRust 2026 in Barcelona so hopefully I can share more about Ratty there!</small>
 
-If you want to see terminals move forward, support these new terminal protocols such as the Glyph protocol and respective projects. And let me know if Ratty is worth exploring further.
+🪤
 
-I'm obsessed with terminals.
+---
 
-Mention EuroRust talk
+<sup>
+
+<i>What people are going to read is, "It's about a pathetic schizophrenic who made a crappy operating system."<br>
+My perspective is, "God said I made His temple."</i>
+
+— Terry A. Davis (RIP)
+
+</sup>
