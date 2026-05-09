@@ -1,6 +1,6 @@
 +++
 title = "Introducing Ratty: A reimagined terminal emulator"
-date = 2026-05-15
+date = 2026-05-11
 
 [taxonomies]
 categories = ["Projects"]
