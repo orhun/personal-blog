@@ -19,6 +19,8 @@ I built a terminal emulator that breaks the rules.
 It is inspired by TempleOS and built with Rust and Ratatui.<br>
 </i>
 
+<iframe width="560" height="315" src="https://www.youtube.com/embed/cY9AX5j-osY?si=eNH_ycD4BaQfcWSs" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+
 - [Origins](#origins)
 - [Motivation](#motivation)
 - [**A new terminal** 🧀](#a-new-terminal)
@@ -104,7 +106,7 @@ And so, <g>Ratty</g> was born.
 
 ---
 
-<img width="350" src="https://raw.githubusercontent.com/orhun/ratty/refs/heads/main/assets/img/ratty-logo.gif" />
+<img width="350" src="https://raw.githubusercontent.com/orhun/ratty/refs/heads/main/website/assets/images/ratty-logo.gif" />
 
 <br>
 
