@@ -1,12 +1,12 @@
 +++
-title = "Introducing Ratty: A reimagined terminal emulator"
+title = "Ratty: A terminal emulator with inline 3D graphics"
 date = 2026-05-11
 
 [taxonomies]
 categories = ["Projects"]
 +++
 
-I built a terminal emulator that breaks the rules.
+Just trying to answer one simple question: What if the terminal was 3D?
 
 <!-- more -->
 
@@ -36,7 +36,7 @@ It is inspired by TempleOS and built with Rust and Ratatui.<br>
 
 If you have ever tried out [TempleOS](https://en.wikipedia.org/wiki/TempleOS) or seen videos of it, you probably know that the whole operating system feels like a fever dream or a psychedelic trip.
 
-<video controls width="70%">
+<video controls muted width="70%">
   <source src="templeos-menu.mp4" type="video/mp4">
   Your browser does not support the video tag.
 </video>
@@ -52,14 +52,14 @@ Basically, the command line becomes the direct interface for everything. You can
 
 In [one of the livestreams](https://youtu.be/urO4RTEsPBg?si=sQh2WZktOUoXmd5y&t=1040) where Terry was demonstrating the features of TempleOS, he first draws a 3D mesh and then directly previews it in the command line:
 
-<video controls width="60%">
+<video controls muted width="60%">
   <source src="templeos-commandline.mp4" type="video/mp4">
   Your browser does not support the video tag.
 </video>
 
 Then he proceeds to import the sprite next to the code and uses it there:
 
-<video controls width="60%">
+<video controls muted width="60%">
   <source src="templeos-editor.mp4" type="video/mp4">
   Your browser does not support the video tag.
 </video>
@@ -70,7 +70,7 @@ Yes, you can literally have a spinning 3D model of a rat as a comment in a sourc
 
 In Terry's own words: <i>["f\*cking sprites, command-line... f\*cking... f\*ck yeah"](https://youtu.be/o48KzPa42_o?si=flrPpdM4oXjTur9F&t=17)</i>.
 
-So, this whole <i>"sprites on the command-line"</i> idea was in the back of my mind for a while. I even [reported](https://github.com/raphamorim/rio/issues/346) to a modern terminal project, hoping that my good friend [Raphael Amorim](https://github.com/raphamorim/) would be interested. But so far, a terminal emulator like that didn't come up.
+So, this whole <i>"sprites on the command-line"</i> idea was in the back of my mind for a while. I even [reported](https://github.com/raphamorim/rio/issues/346) to a modern terminal project, hoping that my good friend [Raphael Amorim](https://github.com/raphamorim/) would be interested. But so far, a terminal emulator like that didn't exist.
 
 Until today.
 
@@ -80,12 +80,12 @@ Until today.
 
 When we launched [Terminal Tuesdays podcast](https://www.youtube.com/@TerminalCollectiveOrg), we needed looping footage to play during the show. I wanted something visually pleasing to watch and something that fits our VT100 theme. We already had the rights to use [this 3D model](https://www.artstation.com/artwork/bK5yom), but I had no idea how to animate it. So I asked on our [Grindhouse server](https://grindhouse.dev/) whether anyone would have experience animating something like that. The next day, one of our talented members [gold-silver-copper](https://github.com/gold-silver-copper) came up with this amazing [rotating terminal animation](https://github.com/gold-silver-copper/rotating_terminal):
 
-<video controls width="80%">
+<video controls muted width="80%">
   <source src="rotating-terminal-loop.mp4" type="video/mp4">
   Your browser does not support the video tag.
 </video>
 
-What really blew my mind was that the VT100's screen isn't a baked animation at all, it's a live terminal UI rendered by Ratatui. Rust code renders the 2D terminal output with [soft_ratatui](https://github.com/gold-silver-copper/soft_ratatui), composites it into the model's screen texture and Bevy displays that texture on the 3D terminal as the camera animates around it. In other words, it's a 2D terminal renderer feeding a 3D animation pipeline in real time.
+What really blew my mind was that the VT100's screen isn't a baked animation at all, it's a live terminal UI rendered by [Ratatui](https://ratatui.rs). Rust code renders the 2D terminal output with [soft_ratatui](https://github.com/gold-silver-copper/soft_ratatui), composites it into the model's screen texture and [Bevy](https://bevyengine.org/) displays that texture on the 3D terminal as the camera animates around it. In other words, it's a 2D terminal renderer feeding a 3D animation pipeline in real time.
 
 <img src="rotating-terminal-diagram.png" width="70%"/>
 
@@ -120,7 +120,7 @@ In [Ratty](https://github.com/orhun/ratty),
 - your whole terminal is a 3D canvas,
 - you can insert 3D models and sprites into the terminal.
 
-<video controls width="80%">
+<video controls muted width="80%">
   <source src="ratty-warp2-with-audio.mp4" type="video/mp4">
   Your browser does not support the video tag.
 </video>
@@ -129,7 +129,7 @@ In [Ratty](https://github.com/orhun/ratty),
 
 Yes! Also check out the [3D drawing demo](https://github.com/orhun/ratty/blob/main/widget/examples/draw.rs):
 
-<video controls width="80%">
+<video controls muted width="80%">
   <source src="ratty-draw-with-audio.mp4" type="video/mp4">
   Your browser does not support the video tag.
 </video>
@@ -137,7 +137,7 @@ Yes! Also check out the [3D drawing demo](https://github.com/orhun/ratty/blob/ma
 That's not it. Remember the documents in TempleOS with inline sprites?  
 [Here it is](https://github.com/orhun/ratty/blob/main/widget/examples/document.rs), but in Ratty:
 
-<video controls width="80%">
+<video controls muted width="80%">
   <source src="ratty-document-with-audio.mp4" type="video/mp4">
   Your browser does not support the video tag.
 </video>
@@ -337,7 +337,7 @@ bob_amplitude = 0.1
 
 <q>That is so cute! But how about rendering arbitrary 3D objects?</q>
 
-That's where the graphics protocol comes in.
+Glad you asked!
 
 <a id="graphics-protocol"></a>
 
@@ -402,7 +402,7 @@ ESC _ ratty;g;p;id=7;row=5;col=10;w=3;h=2;animate=1;scale=1.0;depth=1.5;color=7f
 
 Here is a demo that places a [big rat](https://github.com/orhun/ratty/blob/main/widget/examples/big_rat.rs) in the terminal and tweaks some of its parameters:
 
-<video controls width="80%">
+<video controls muted width="80%">
   <source src="ratty-big-rat-with-audio.mp4" type="video/mp4">
   Your browser does not support the video tag.
 </video>
@@ -517,7 +517,7 @@ I must say, making a terminal emulator (and maintaining it as an open source pro
 My ultimate goal with Ratty is to explore the possibilities of what a terminal can be and inspire new ideas and projects in the terminal space. I believe these kinds of experiments are where creativity is born and I hope to spark some ideas for the future of terminals.<br>
 <small>I also submitted a talk to EuroRust 2026 in Barcelona so hopefully I can share more about Ratty there!</small>
 
-🪤
+🪤 [https://ratty-term.org](https://ratty-term.org) 🪤
 
 ---
 
