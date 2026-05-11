@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <meta http-equiv="content-type" content="text/html; charset=utf-8">
+      <meta property="og:type" content="website" />
+      
+      <meta property="og:url" content="https://blog.orhun.dev/800-rust-projects/"/>
+      
+      
+      <meta property="og:title" content="800 Rust terminal projects in 3 years - Orhun&#x27;s Blog" />
+      
+      <meta property="og:image" content="https://blog.orhun.dev/poorly-drawn-rat.png" />
+      
+      <meta name="description" content="I have discovered and shared ~800 open source Rust CLI projects over the past 3 years." />
+      <meta property="og:description" content="I have discovered and shared ~800 open source Rust CLI projects over the past 3 years."/>
+      
+
+      <!-- Enable responsiveness on mobile devices-->
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+      <link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png">
+      <link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png">
+      <link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png">
+      <link rel="manifest" href="/favicon/site.webmanifest">
+
+      <script async src="https://umami.orhun.dev/script.js" data-website-id="56ca5ca7-ba9f-416e-8bee-a132c155d56b"></script>
+
+      <link rel="stylesheet" href="https://unpkg.com/applause-button/dist/applause-button.css" />
+      <script src="https://unpkg.com/applause-button/dist/applause-button.js"></script>
+
+      
+      <title>800 Rust terminal projects in 3 years - Orhun&#x27;s Blog</title>
+      
+      <link rel="alternate" type="application/rss+xml" title="Orhun&#x27;s Blog RSS Feed" href="https://blog.orhun.dev/rss.xml" />
+
+      
+          <link rel="stylesheet" href="https://blog.orhun.dev/site.css">
+      
+
+      
+      
+    </head>
+
+    <body class="hack dark main container">
+        
+    
+        
+                
+                    <header>
+                    <nav itemscope itemtype="http://schema.org/SiteNavigationElement" class="nav-flex">
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://blog.orhun.dev">
+                                <span itemprop="name">Home</span>
+                            </a>
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://blog.orhun.dev/categories">
+                                <span itemprop="name">Categories</span>
+                            </a>
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://github.com/orhun/personal-blog">
+                                <span itemprop="name">Source</span>
+                            </a>
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://github.com/orhun">
+                                <span itemprop="name">GitHub</span>
+                            </a>
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://blog.orhun.dev/rss.xml">
+                                <span itemprop="name">RSS</span>
+                            </a>
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://orhun.dev">
+                                <span itemprop="name">About</span>
+                            </a>
+                        
+                        <div class="search-container">
+                            <input type="text" id="search" placeholder="Search...">
+                            <div class="search-results">
+                                <div class="search-results__items"></div>
+                            </div>
+                        </div>
+                    </nav>
+                    </header>
+                
+            
+    
+
+<article itemscope itemtype="http://schema.org/BlogPosting">
+    <header>
+        <h1 itemprop="headline">800 Rust terminal projects in 3 years</h1>
+        <span class="muted">
+    <svg style="margin-bottom:-3px" class="i-clock" viewBox="0 0 32 32"
+         width="16" height="16" fill="none" stroke="currentcolor"
+         stroke-linecap="round" stroke-linejoin="round" stroke-width="6.25%">
+        <circle cx="16" cy="16" r="14"/>
+        <path d="M16 8 L16 16 20 20"/>
+    </svg>
+    <span>15 minute read</span>
+    <svg style="margin-bottom: -3px" class="i-edit" viewBox="0 0 32 32"
+         width="16" height="16" fill="none" stroke="currentcolor"
+         stroke-linecap="round" stroke-linejoin="round" stroke-width="6.25%">
+        <path d="M30 7 L25 2 5 22 3 29 10 27 Z M21 6 L26 11 Z M5 22 L10 27 Z"/>
+    </svg>
+
+    Published: 2026-04-03
+</span>
+    </header>
+    <div itemprop="articleBody">
+      <p>I have discovered and shared ~800 open source Rust CLI projects over the past 3 years.</p>
+<span id="continue-reading"></span><a href="https://static.orhun.dev/800-projects.png">
+<img class="glowing-border" src="/800-posts.png" width="90%"/>
+</a>
+<p><i>Above is a collage of screenshots from hundreds of Rust terminal and TUI projects<br>shared on Mastodon.</i></p>
+<p><a href="https://blog.orhun.dev/800-rust-projects/#top-99-rust-terminal-tools">🔗 Click here to jump to the "Top 99 Rust terminal projects"!</a></p>
+<p>If you follow me on <a rel="external" href="https://x.com/orhundev">X</a>/<a rel="external" href="https://fosstodon.org/@orhun">Mastodon</a>/<a rel="external" href="https://bsky.app/profile/orhun.dev">Bluesky</a>/<a rel="external" href="https://www.linkedin.com/in/orhunp/">LinkedIn</a>, you might be familiar with my regular posts that usually go like this:</p>
+<blockquote>
+<p>I have discovered a 🐀 today!</p>
+<p>🐀 - a rat!</p>
+<p>💯 Does rat things</p>
+<p>⭐ GitHub: ...</p>
+<p>#rat</p>
+</blockquote>
+<p>Today, I have realized it has been a while since I started doing this and wondered what I could do with everything I collected over the years.
+So here we are!</p>
+<p>But first, I feel like you might have some questions.</p>
+<p><q>Uhh, yeah. I have one: "Why?"</q></p>
+<p>I have detailed my motivation and strategy towards open source <a rel="external" href="https://blog.orhun.dev/open-source-grindset/">in this blog post</a> and <a rel="external" href="https://www.youtube.com/watch?v=HDU8dpt-tNE">conference talk</a>, but in a nutshell:</p>
+<p><strong>1</strong>. I like Rust and I want more people to use it after seeing what they can build with it,<br />
+<strong>2</strong>. I maintain <a rel="external" href="https://ratatui.rs">Ratatui</a> and sharing projects built with it helps grow the ecosystem,<br />
+<strong>3</strong>. It helps surface hidden gems that would otherwise go unnoticed,<br />
+<strong>4</strong>. It's hella fun.</p>
+<p>Recently, one of the Rust ecosystem leaders <a rel="external" href="https://bsky.app/profile/nikomatsakis.com/post/3mhssugo65c2f">said</a>:</p>
+<p>"<i>I love these posts :) highlight of my day to see all the awesome stuff people do</i>"</p>
+<p>I also received many similar messages over the years, so I guess that's a good enough reason to keep doing it!</p>
+<p><q>How do you discover projects?</q></p>
+<p>In the same way that everyone does: through GitHub, social media and word of mouth.<br />
+A couple of my special sources include:</p>
+<p><strong>1</strong>. Discord servers like <a rel="external" href="https://discord.gg/pMCEU9hNEj">Ratatui</a>, <a rel="external" href="https://discord.com/invite/vdUh3KTBPX">Grindhouse</a> and <a rel="external" href="https://discord.gg/6EUERBrAMs">Terminal Collective</a><br />
+(follow channels like <code>#showcase</code> and <code>#show-and-tell</code> for the good stuff!)</p>
+<p><strong>2</strong>. <a rel="external" href="https://terminaltrove.com/">Terminal Trove newsletter</a> for weekly curated terminal projects<br />
+(they sponsored me a while back which I'm super grateful for, definitely give them a sub!)</p>
+<p><strong>3</strong>. GitHub search, e.g. <a rel="external" href="https://github.com/search?q=ratatui&amp;type=repositories&amp;s=updated&amp;o=desc">searching for Ratatui projects</a><br />
+(this method is underrated)</p>
+<p>Then I maintain a list of things to post in a plain text file and try to post something every day. It's probably fine if I miss a day or two, but I try to keep the cheese rolling 🧀</p>
+<h2 id="looking-at-the-data-eyes">Looking at the data 👀</h2>
+<p>So, I have ran the numbers:</p>
+<blockquote>
+<p>Posts analyzed: 786<br />
+Posting range: 2022-12-15 to 2026-03-31<br />
+Total favourites: 10655<br />
+Total reblogs: 4529<br />
+Total replies: 658<br />
+Average favourites per post: 13.56<br />
+Average reblogs per post: 5.76<br />
+Average replies per post: 0.84<br />
+Active days: 653<br />
+Covered date range: 2022-12-15 to 2026-03-31 (1203 days)<br />
+Average posts per active day: 1.20</p>
+</blockquote>
+<p>Please note that those are aggregated from <g>Mastodon only</g>, since the other platforms weren't that friendly for automation:</p>
+<table><thead><tr><th><strong>Platform</strong></th><th><strong>Public API?</strong></th><th><strong>Reality</strong></th></tr></thead><tbody>
+<tr><td><a rel="external" href="https://x.com/orhundev">X (Twitter)</a></td><td>❌ (paid/locked)</td><td>Expensive / restricted</td></tr>
+<tr><td><a rel="external" href="https://fosstodon.org/@orhun/">Mastodon (Fosstodon)</a></td><td>✅</td><td>Fully open, best option</td></tr>
+<tr><td><a rel="external" href="https://bsky.app/profile/orhun.dev">Bluesky</a></td><td>✅</td><td>Modern + dev-friendly</td></tr>
+<tr><td><a rel="external" href="https://www.linkedin.com/in/orhunp/">LinkedIn</a></td><td>❌ (restricted)</td><td>Only for approved apps</td></tr>
+</tbody></table>
+<p>I put together a Rust script to fetch my Mastodon project posts, save them as structured JSON, and analyze their posting and engagement stats.
+Luckily <a rel="external" href="https://github.com/h3poteto/megalodon-rs">megalodon-rs</a> exists, which made everything super easy. The full script is available <a rel="external" href="https://github.com/orhun/mastodon-post-analyzer/blob/main/src/main.rs">on GitHub</a> ⭐</p>
+<p>With using the data over the years, I present you the Top 99 Rust terminal projects as of April 2026! 🏆</p>
+<p>Disclaimers:</p>
+<ul>
+<li>The ranking is based on the number of favourites x reblogs x replies each post received <a rel="external" href="https://fosstodon.org/@orhun">on Mastodon</a>, which may not be a perfect indicator of a project's quality or popularity. But it's a fun way to see which projects resonated with y'all the most!</li>
+<li>On other platforms, the ranking might be different due to different audiences and engagement patterns.</li>
+<li>The Ratatui projects (<code>github.com/ratatui</code>) and my personal projects (<code>github.com/orhun</code>) are excluded from the ranking to keep it fair.</li>
+</ul>
+<p>I'm sure there is something in there for everyone!</p>
+<h1 id="top-99-rust-terminal-tools"><strong>Top 99 Rust Terminal Tools</strong></h1>
+<table><thead><tr><th><strong>Rank</strong></th><th><strong>Project</strong></th><th><strong>Description</strong></th><th><strong>Repo</strong></th><th style="text-align: right"><strong>Score</strong></th></tr></thead><tbody>
+<tr><td>🥇</td><td>🌸 <strong>cyme</strong></td><td>A modern and cross-platform lsusb</td><td><a rel="external" href="https://github.com/tuna-f1sh/cyme"><code>tuna-f1sh/cyme</code></a></td><td style="text-align: right"><a rel="external" href="https://fosstodon.org/@orhun/113124441267143423">369</a></td></tr>
+<tr><td>🥈</td><td>🥒 <strong>gurk</strong></td><td>Signal Messenger client for the terminal</td><td><a rel="external" href="https://github.com/boxdot/gurk-rs"><code>boxdot/gurk-rs</code></a></td><td style="text-align: right"><a rel="external" href="https://fosstodon.org/@orhun/114007249344819263">214</a></td></tr>
+<tr><td>🥉</td><td>⚔️ <strong>ratthew</strong></td><td>A 3D dungeon crawler in the terminal</td><td><a rel="external" href="https://github.com/cxreiff/ratthew"><code>cxreiff/ratthew</code></a></td><td style="text-align: right"><a rel="external" href="https://fosstodon.org/@orhun/114421390014777917">197</a></td></tr>
+<tr><td>4</td><td>📡 <strong>atac</strong></td><td>A simple API client in your terminal</td><td><a rel="external" href="https://github.com/Julien-cpsn/ATAC"><code>Julien-cpsn/ATAC</code></a></td><td style="text-align: right"><a rel="external" href="https://fosstodon.org/@orhun/112281288353834485">163</a></td></tr>
+<tr><td>5</td><td>💾 <strong>monolith</strong></td><td>CLI tool for saving complete web pages</td><td><a rel="external" href="https://github.com/Y2Z/monolith"><code>Y2Z/monolith</code></a></td><td style="text-align: right"><a rel="external" href="https://fosstodon.org/@orhun/112852693518362858">149</a></td></tr>
+<tr><td>6</td><td>🖌️ <strong>brush</strong></td><td>Bash/POSIX-compatible shell implemented in Rust</td><td><a rel="external" href="https://github.com/reubeno/brush"><code>reubeno/brush</code></a></td><td style="text-align: right"><a rel="external" href="https://fosstodon.org/@orhun/114371024652516269">119</a></td></tr>
+<tr><td>7</td><td>📨 <strong>iamb</strong></td><td>A Matrix client for Vim addicts</td><td><a rel="external" href="https://github.com/ulyssa/iamb"><code>ulyssa/iamb</code></a></td><td style="text-align: right"><a rel="external" href="https://fosstodon.org/@orhun/112008978775866361">114</a></td></tr>
+<tr><td>8</td><td>📄 <strong>doxx</strong></td><td>Terminal-based document viewer for Microsoft Word files</td><td><a rel="external" href="https://github.com/bgreenwell/doxx"><code>bgreenwell/doxx</code></a></td><td style="text-align: right"><a rel="external" href="https://fosstodon.org/@orhun/115066127573137095">109</a></td></tr>
+<tr><td>9</td><td>🔎 <strong>flamelens</strong></td><td>An interactive flamegraph viewer for the terminal</td><td><a rel="external" href="https://github.com/YS-L/flamelens"><code>YS-L/flamelens</code></a></td><td style="text-align: right"><a rel="external" href="https://fosstodon.org/@orhun/114018543956542396">90</a></td></tr>
+<tr><td>10</td><td>💽 <strong>caligula</strong></td><td>A user-friendly, lightweight TUI for disk imaging</td><td><a rel="external" href="https://github.com/ifd3f/caligula"><code>ifd3f/caligula</code></a></td><td style="text-align: right"><a rel="external" href="https://fosstodon.org/@orhun/112389284218391496">89</a></td></tr>
+<tr><td>11</td><td>🛠️ <strong>heretek</strong></td><td>A gdb TUI dashboard</td><td><a rel="external" href="https://github.com/wcampbell0x2a/heretek"><code>wcampbell0x2a/heretek</code></a></td><td style="text-align: right"><a rel="external" href="https://fosstodon.org/@orhun/114302362201072129">88</a></td></tr>
+<tr><td>12</td><td>🎮 <strong>Plastic</strong></td><td>A NES emulator that runs in your terminal</td><td><a rel="external" href="https://github.com/Amjad50/plastic"><code>Amjad50/plastic</code></a></td><td style="text-align: right"><a rel="external" href="https://fosstodon.org/@orhun/113350571052740107">87</a></td></tr>
+<tr><td>13</td><td>🧩 <strong>setrixtui</strong></td><td>A TUI puzzle game where falling blocks become sand</td><td><a rel="external" href="https://github.com/Mjoyufull/Setrixtui"><code>Mjoyufull/Setrixtui</code></a></td><td style="text-align: right"><a rel="external" href="https://fosstodon.org/@orhun/116059079702467991">81</a></td></tr>
+<tr><td>14</td><td>🎬 <strong>gitlogue</strong></td><td>A cinematic Git commit replay tool for the terminal</td><td><a rel="external" href="https://github.com/unhappychoice/gitlogue"><code>unhappychoice/gitlogue</code></a></td><td style="text-align: right"><a rel="external" href="https://fosstodon.org/@orhun/115576266511493186">79</a></td></tr>
+<tr><td>15</td><td>🌀 <strong>cute</strong></td><td>TUI HTTP client with API/auth key management and request history/storage</td><td><a rel="external" href="https://github.com/PThorpe92/CuTE"><code>PThorpe92/CuTE</code></a></td><td style="text-align: right"><a rel="external" href="https://fosstodon.org/@orhun/112263799395387466">73</a></td></tr>
+<tr><td>16</td><td>🚀 <strong>serie</strong></td><td>A rich git commit graph in your terminal, like magic</td><td><a rel="external" href="https://github.com/lusingander/serie"><code>lusingander/serie</code></a></td><td style="text-align: right"><a rel="external" href="https://fosstodon.org/@orhun/112869522457979235">71</a></td></tr>
+<tr><td>17</td><td>⚙️ <strong>systemctl-tui</strong></td><td>A fast and simple TUI for interacting with systemd services and their logs</td><td><a rel="external" href="https://github.com/rgwood/systemctl-tui"><code>rgwood/systemctl-tui</code></a></td><td style="text-align: right"><a rel="external" href="https://fosstodon.org/@orhun/112371588174657662">69</a></td></tr>
+<tr><td>18</td><td>📡 <strong>netscanner</strong></td><td>Network scanning tool</td><td><a rel="external" href="https://github.com/Chleba/netscanner"><code>Chleba/netscanner</code></a></td><td style="text-align: right"><a rel="external" href="https://fosstodon.org/@orhun/112072604157874674">67</a></td></tr>
+<tr><td>19</td><td>🧊 <strong>soft_ratatui</strong></td><td>Pure software renderer</td><td><a rel="external" href="https://github.com/gold-silver-copper/soft_ratatui"><code>gold-silver-copper/soft_ratatui</code></a></td><td style="text-align: right"><a rel="external" href="https://fosstodon.org/@orhun/115293704572241232">64</a></td></tr>
+<tr><td>20</td><td>🎼 <strong>scope-tui</strong></td><td>A simple oscilloscope/vectorscope/spectroscope for your terminal</td><td><a rel="external" href="https://github.com/alemidev/scope-tui"><code>alemidev/scope-tui</code></a></td><td style="text-align: right"><a rel="external" href="https://fosstodon.org/@orhun/112083487783239141">62</a></td></tr>
+<tr><td>21</td><td>⚡ <strong>eilmeldung</strong></td><td>A fast &amp; powerful TUI RSS reader</td><td><a rel="external" href="https://github.com/christo-auer/eilmeldung"><code>christo-auer/eilmeldung</code></a></td><td style="text-align: right"><a rel="external" href="https://fosstodon.org/@orhun/115762900710823858">61</a></td></tr>
+<tr><td>22</td><td>🐗 <strong>hexhog</strong></td><td>A configurable hex viewer &amp; editor for your terminal</td><td><a rel="external" href="https://github.com/DVDTSB/hexhog"><code>DVDTSB/hexhog</code></a></td><td style="text-align: right"><a rel="external" href="https://fosstodon.org/@orhun/115383314341988431">61</a></td></tr>
+<tr><td>23</td><td>🎧 <strong>Auditorium</strong></td><td>Listen to your music library in the terminal</td><td><a rel="external" href="https://github.com/nate-craft/auditorium"><code>nate-craft/auditorium</code></a></td><td style="text-align: right"><a rel="external" href="https://fosstodon.org/@orhun/115170316997264518">59</a></td></tr>
+<tr><td>24</td><td>🔮 <strong>regect</strong></td><td>Regex 101 like CLI tool</td><td><a rel="external" href="https://github.com/kloki/regect"><code>kloki/regect</code></a></td><td style="text-align: right"><a rel="external" href="https://fosstodon.org/@orhun/113011400779721925">59</a></td></tr>
+<tr><td>25</td><td>🌳 <strong>treemd</strong></td><td>An interactive Markdown navigator with a collapsible heading tree</td><td><a rel="external" href="https://github.com/Epistates/treemd"><code>Epistates/treemd</code></a></td><td style="text-align: right"><a rel="external" href="https://fosstodon.org/@orhun/115649170883381821">58</a></td></tr>
+<tr><td>26</td><td>🎛️ <strong>wiremix</strong></td><td>A simple TUI audio mixer for PipeWire</td><td><a rel="external" href="https://github.com/tsowell/wiremix"><code>tsowell/wiremix</code></a></td><td style="text-align: right"><a rel="external" href="https://fosstodon.org/@orhun/114584479458531031">57</a></td></tr>
+<tr><td>27</td><td>📰 <strong>bulletty</strong></td><td>A RSS/ATOM feed reader for your terminal</td><td><a rel="external" href="https://github.com/CrociDB/bulletty"><code>CrociDB/bulletty</code></a></td><td style="text-align: right"><a rel="external" href="https://fosstodon.org/@orhun/115212417041919103">55</a></td></tr>
+<tr><td>28</td><td>🪄 <strong>xan</strong></td><td>The CSV magician</td><td><a rel="external" href="https://github.com/medialab/xan"><code>medialab/xan</code></a></td><td style="text-align: right"><a rel="external" href="https://fosstodon.org/@orhun/113996390709582528">54</a></td></tr>
+<tr><td>29</td><td>💠 <strong>bevy_tui_texture</strong></td><td>A Bevy plugin for rendering TUIs using Ratatui and wgpu</td><td><a rel="external" href="https://github.com/tt-toe/bevy_tui_texture"><code>tt-toe/bevy_tui_texture</code></a></td><td style="text-align: right"><a rel="external" href="https://fosstodon.org/@orhun/115921278727633282">52</a></td></tr>
+<tr><td>30</td><td>🐠 <strong>lifecycler</strong></td><td>Terminal aquarium</td><td><a rel="external" href="https://github.com/cxreiff/lifecycler"><code>cxreiff/lifecycler</code></a></td><td style="text-align: right"><a rel="external" href="https://fosstodon.org/@orhun/112880954506496288">52</a></td></tr>
+<tr><td>31</td><td>🌀 <strong>ratatui-wgpu</strong></td><td>A wgpu based rendering backend for</td><td><a rel="external" href="https://github.com/Jesterhearts/ratatui-wgpu"><code>Jesterhearts/ratatui-wgpu</code></a></td><td style="text-align: right"><a rel="external" href="https://fosstodon.org/@orhun/113044663726097022">52</a></td></tr>
+<tr><td>32</td><td>🌀 <strong>bevy_ratatui_render</strong></td><td>A Bevy plugin for rendering a Bevy app to the terminal using Ratatui</td><td><a rel="external" href="https://github.com/cxreiff/bevy_ratatui_render"><code>cxreiff/bevy_ratatui_render</code></a></td><td style="text-align: right"><a rel="external" href="https://fosstodon.org/@orhun/112558215589709734">51</a></td></tr>
+<tr><td>33</td><td>🔍 <strong>bpftop</strong></td><td>Provides a dynamic real-time view of running eBPF programs</td><td><a rel="external" href="https://github.com/Netflix/bpftop"><code>Netflix/bpftop</code></a></td><td style="text-align: right"><a rel="external" href="https://fosstodon.org/@orhun/112427954507271367">51</a></td></tr>
+<tr><td>34</td><td>✨ <strong>Gitu</strong></td><td>A TUI Git client inspired by Magit</td><td><a rel="external" href="https://github.com/altsem/gitu"><code>altsem/gitu</code></a></td><td style="text-align: right"><a rel="external" href="https://fosstodon.org/@orhun/112042982860750206">51</a></td></tr>
+<tr><td>35</td><td>📄 <strong>tdf</strong></td><td>A TUI-based PDF viewer</td><td><a rel="external" href="https://github.com/itsjunetime/tdf"><code>itsjunetime/tdf</code></a></td><td style="text-align: right"><a rel="external" href="https://fosstodon.org/@orhun/112970461439554375">50</a></td></tr>
+<tr><td>36</td><td>⌨️ <strong>typr</strong></td><td>Typing practice plugin for Neovim with dashboard</td><td><a rel="external" href="https://github.com/nvzone/typr"><code>nvzone/typr</code></a></td><td style="text-align: right"><a rel="external" href="https://fosstodon.org/@orhun/113956194651427353">49</a></td></tr>
+<tr><td>37</td><td>🪨 <strong>basalt</strong></td><td>Manage Obsidian notes directly from the terminal</td><td><a rel="external" href="https://github.com/erikjuhani/basalt"><code>erikjuhani/basalt</code></a></td><td style="text-align: right"><a rel="external" href="https://fosstodon.org/@orhun/114375171253674971">46</a></td></tr>
+<tr><td>38</td><td>🏴‍☠️ <strong>Rebels in the Sky</strong></td><td>P2P terminal game about space pirates playing basketball across the galaxy</td><td><a rel="external" href="https://github.com/ricott1/rebels-in-the-sky"><code>ricott1/rebels-in-the-sky</code></a></td><td style="text-align: right"><a rel="external" href="https://fosstodon.org/@orhun/111912512874171902">46</a></td></tr>
+<tr><td>39</td><td>🌀 <strong>systemd-manager-tui</strong></td><td>Manage systemd services in the terminal</td><td><a rel="external" href="https://github.com/matheus-git/systemd-manager-tui"><code>matheus-git/systemd-manager-tui</code></a></td><td style="text-align: right"><a rel="external" href="https://fosstodon.org/@orhun/114744065918017875">46</a></td></tr>
+<tr><td>40</td><td>🌀 <strong>termscp</strong></td><td>A feature rich TUI for file transfer and explorer</td><td><a rel="external" href="https://github.com/veeso/termscp"><code>veeso/termscp</code></a></td><td style="text-align: right"><a rel="external" href="https://fosstodon.org/@orhun/112287698007247046">46</a></td></tr>
+<tr><td>41</td><td>👾 <strong>cellular-automaton</strong></td><td>execute aesthetically pleasing animations</td><td><a rel="external" href="https://github.com/Eandrju/cellular-automaton.nvim"><code>Eandrju/cellular-automaton.nvim</code></a></td><td style="text-align: right"><a rel="external" href="https://fosstodon.org/@orhun/111058101605090700">44</a></td></tr>
+<tr><td>42</td><td>🧪 <strong>jiq</strong></td><td>An interactive JSON query tool with live results</td><td><a rel="external" href="https://github.com/bellicose100xp/jiq"><code>bellicose100xp/jiq</code></a></td><td style="text-align: right"><a rel="external" href="https://fosstodon.org/@orhun/116077000868424553">44</a></td></tr>
+<tr><td>43</td><td>➡️ <strong>ratatui-ffi</strong></td><td>Native C ABI bindings for Ratatui</td><td><a rel="external" href="https://github.com/holo-q/ratatui-ffi"><code>holo-q/ratatui-ffi</code></a></td><td style="text-align: right"><a rel="external" href="https://fosstodon.org/@orhun/115230443440553346">44</a></td></tr>
+<tr><td>44</td><td>🌀 <strong>rumdl</strong></td><td>A fast Markdown linter &amp; formatter</td><td><a rel="external" href="https://github.com/rvben/rumdl"><code>rvben/rumdl</code></a></td><td style="text-align: right"><a rel="external" href="https://fosstodon.org/@orhun/116013126337598119">44</a></td></tr>
+<tr><td>45</td><td>🚗 <strong>suzui-rs</strong></td><td>Suzuki Serial Data Line (SDL) viewer in Rust</td><td><a rel="external" href="https://github.com/thatdevsherry/suzui-rs"><code>thatdevsherry/suzui-rs</code></a></td><td style="text-align: right"><a rel="external" href="https://fosstodon.org/@orhun/114851577006613106">44</a></td></tr>
+<tr><td>46</td><td>🤠 <strong>yeehaw</strong></td><td>A batteries-included text-based application framework</td><td><a rel="external" href="https://github.com/bogzbonny/yeehaw"><code>bogzbonny/yeehaw</code></a></td><td style="text-align: right"><a rel="external" href="https://fosstodon.org/@orhun/114109548685307712">44</a></td></tr>
+<tr><td>47</td><td>📊 <strong>tui-piechart</strong></td><td>A customizable pie chart widget for</td><td><a rel="external" href="https://github.com/sorinirimies/tui-piechart"><code>sorinirimies/tui-piechart</code></a></td><td style="text-align: right"><a rel="external" href="https://fosstodon.org/@orhun/115530189473335955">43</a></td></tr>
+<tr><td>48</td><td>⚙️ <strong>DataTUI</strong></td><td>A terminal UI for viewing data</td><td><a rel="external" href="https://github.com/forensicmatt/datatui"><code>forensicmatt/datatui</code></a></td><td style="text-align: right"><a rel="external" href="https://fosstodon.org/@orhun/115232309179984882">41</a></td></tr>
+<tr><td>49</td><td>📨 <strong>mqttui</strong></td><td>Subscribe to a MQTT Topic or publish something quickly from the terminal</td><td><a rel="external" href="https://github.com/EdJoPaTo/mqttui"><code>EdJoPaTo/mqttui</code></a></td><td style="text-align: right"><a rel="external" href="https://fosstodon.org/@orhun/112123857700405569">41</a></td></tr>
+<tr><td>50</td><td>🐱 <strong>manga-tui</strong></td><td>Terminal-based manga reader and downloader</td><td><a rel="external" href="https://github.com/josueBarretogit/manga-tui"><code>josueBarretogit/manga-tui</code></a></td><td style="text-align: right"><a rel="external" href="https://fosstodon.org/@orhun/112926893805919270">40</a></td></tr>
+<tr><td>51</td><td>🐭 <strong>webatui</strong></td><td>Make TUI-themed WASM web apps</td><td><a rel="external" href="https://github.com/TylerBloom/webatui"><code>TylerBloom/webatui</code></a></td><td style="text-align: right"><a rel="external" href="https://fosstodon.org/@orhun/113441770382671965">40</a></td></tr>
+<tr><td>52</td><td>🛠️ <strong>csvlens</strong></td><td>A command line CSV file viewer</td><td><a rel="external" href="https://github.com/YS-L/csvlens"><code>YS-L/csvlens</code></a></td><td style="text-align: right"><a rel="external" href="https://fosstodon.org/@orhun/112129041509672599">39</a></td></tr>
+<tr><td>53</td><td>🔋 <strong>jolt</strong></td><td>A battery &amp; energy monitor TUI</td><td><a rel="external" href="https://github.com/jordond/jolt"><code>jordond/jolt</code></a></td><td style="text-align: right"><a rel="external" href="https://fosstodon.org/@orhun/116006123697266808">39</a></td></tr>
+<tr><td>54</td><td>⚙️ <strong>journalview</strong></td><td>View, filter, and navigate system logs from journalctl</td><td><a rel="external" href="https://github.com/codervijo/journalview"><code>codervijo/journalview</code></a></td><td style="text-align: right"><a rel="external" href="https://fosstodon.org/@orhun/113961869796165176">39</a></td></tr>
+<tr><td>55</td><td>🏒 <strong>ssHattrick</strong></td><td>Multiplayer game that you can play over SSH</td><td><a rel="external" href="https://github.com/ricott1/sshattrick"><code>ricott1/sshattrick</code></a></td><td style="text-align: right"><a rel="external" href="https://fosstodon.org/@orhun/111991879758031807">39</a></td></tr>
+<tr><td>56</td><td>🧱 <strong>tetrs</strong></td><td>A modern Tetromino game with a TUI</td><td><a rel="external" href="https://github.com/strophox/tetrs"><code>strophox/tetrs</code></a></td><td style="text-align: right"><a rel="external" href="https://fosstodon.org/@orhun/115833078593947584">39</a></td></tr>
+<tr><td>57</td><td>🌲 <strong>lstr</strong></td><td>A minimalist directory tree viewer with an optional TUI mode</td><td><a rel="external" href="https://github.com/bgreenwell/lstr"><code>bgreenwell/lstr</code></a></td><td style="text-align: right"><a rel="external" href="https://fosstodon.org/@orhun/116066047015593988">38</a></td></tr>
+<tr><td>58</td><td>🧬 <strong>NanoCore</strong></td><td>An 8-bit CPU emulator + assembler + TUI debugger</td><td><a rel="external" href="https://github.com/AfaanBilal/NanoCore"><code>AfaanBilal/NanoCore</code></a></td><td style="text-align: right"><a rel="external" href="https://fosstodon.org/@orhun/115683165333227548">38</a></td></tr>
+<tr><td>59</td><td>♜ <strong>chess-tui</strong></td><td>Play chess in your terminal</td><td><a rel="external" href="https://github.com/thomas-mauran/chess-tui"><code>thomas-mauran/chess-tui</code></a></td><td style="text-align: right"><a rel="external" href="https://fosstodon.org/@orhun/112292077917101703">37</a></td></tr>
+<tr><td>60</td><td>🌀 <strong>hl</strong></td><td>The tool for analyzing logs</td><td><a rel="external" href="https://github.com/pamburus/hl"><code>pamburus/hl</code></a></td><td style="text-align: right"><a rel="external" href="https://fosstodon.org/@orhun/113520221270347242">37</a></td></tr>
+<tr><td>61</td><td>🦀 <strong>modalkit</strong></td><td>A Rust library for building modal editing applications</td><td><a rel="external" href="https://github.com/ulyssa/modalkit"><code>ulyssa/modalkit</code></a></td><td style="text-align: right"><a rel="external" href="https://fosstodon.org/@orhun/112271141387724028">37</a></td></tr>
+<tr><td>62</td><td>🍺 <strong>zerobrew</strong></td><td>A modern drop-in replacement for Homebrew on macOS</td><td><a rel="external" href="https://github.com/lucasgelfond/zerobrew"><code>lucasgelfond/zerobrew</code></a></td><td style="text-align: right"><a rel="external" href="https://fosstodon.org/@orhun/116047932164305515">37</a></td></tr>
+<tr><td>63</td><td>🦆 <strong>ducker</strong></td><td>A terminal app for managing Docker containers</td><td><a rel="external" href="https://github.com/robertpsoane/ducker"><code>robertpsoane/ducker</code></a></td><td style="text-align: right"><a rel="external" href="https://fosstodon.org/@orhun/112688261934022526">36</a></td></tr>
+<tr><td>64</td><td>🎮 <strong>sharad_ratatui</strong></td><td>A text-based Shadowrun role-playing game</td><td><a rel="external" href="https://github.com/ProHaller/sharad_ratatui"><code>ProHaller/sharad_ratatui</code></a></td><td style="text-align: right"><a rel="external" href="https://fosstodon.org/@orhun/114065121057270272">36</a></td></tr>
+<tr><td>65</td><td>🔍 <strong>tabiew</strong></td><td>View and query CSV and TSV files</td><td><a rel="external" href="https://github.com/shshemi/tabiew"><code>shshemi/tabiew</code></a></td><td style="text-align: right"><a rel="external" href="https://fosstodon.org/@orhun/112502716625721793">36</a></td></tr>
+<tr><td>66</td><td>🦾 <strong>tenere</strong></td><td>TUI for LLMs written in Rust</td><td><a rel="external" href="https://github.com/pythops/tenere"><code>pythops/tenere</code></a></td><td style="text-align: right"><a rel="external" href="https://fosstodon.org/@orhun/112117127579562805">36</a></td></tr>
+<tr><td>67</td><td>🐘 <strong>tsql</strong></td><td>A modern PostgreSQL manager TUI</td><td><a rel="external" href="https://github.com/fcoury/tsql"><code>fcoury/tsql</code></a></td><td style="text-align: right"><a rel="external" href="https://fosstodon.org/@orhun/115728558086836742">36</a></td></tr>
+<tr><td>68</td><td>🌀 <strong>channels-console</strong></td><td>A TUI dashboard for inspecting std/tokio/futures/crossbeam channels</td><td><a rel="external" href="https://github.com/pawurb/channels-console"><code>pawurb/channels-console</code></a></td><td style="text-align: right"><a rel="external" href="https://fosstodon.org/@orhun/115532274508528420">35</a></td></tr>
+<tr><td>69</td><td>🖼️ <strong>md-tui</strong></td><td>Markdown renderer in the terminal</td><td><a rel="external" href="https://github.com/henriklovhaug/md-tui"><code>henriklovhaug/md-tui</code></a></td><td style="text-align: right"><a rel="external" href="https://fosstodon.org/@orhun/112450995959357823">35</a></td></tr>
+<tr><td>70</td><td>🦀 <strong>cargo-wizard</strong></td><td>Applies profile and config templates to your Cargo project</td><td><a rel="external" href="https://github.com/Kobzol/cargo-wizard"><code>Kobzol/cargo-wizard</code></a></td><td style="text-align: right"><a rel="external" href="https://fosstodon.org/@orhun/112326515478512618">34</a></td></tr>
+<tr><td>71</td><td>🎧 <strong>concertus</strong></td><td>A plug-and-play TUI music player for local libraries</td><td><a rel="external" href="https://github.com/Jaxx497/concertus"><code>Jaxx497/concertus</code></a></td><td style="text-align: right"><a rel="external" href="https://fosstodon.org/@orhun/115654628219874598">34</a></td></tr>
+<tr><td>72</td><td>🎹 <strong>CrabSID</strong></td><td>A TUI music player for Commodore 64 SID tunes</td><td><a rel="external" href="https://github.com/mlund/crabsid"><code>mlund/crabsid</code></a></td><td style="text-align: right"><a rel="external" href="https://fosstodon.org/@orhun/116022942130800421">34</a></td></tr>
+<tr><td>73</td><td>💽 <strong>dua</strong></td><td>View disk space usage and delete unwanted data</td><td><a rel="external" href="https://github.com/Byron/dua-cli"><code>Byron/dua-cli</code></a></td><td style="text-align: right"><a rel="external" href="https://fosstodon.org/@orhun/111709098835761455">34</a></td></tr>
+<tr><td>74</td><td>🦀 <strong>md-tui</strong></td><td>Markdown renderer</td><td><a rel="external" href="https://github.com/henriklovhaug/Preview.nvim"><code>henriklovhaug/Preview.nvim</code></a></td><td style="text-align: right"><a rel="external" href="https://fosstodon.org/@orhun/112513228192831000">34</a></td></tr>
+<tr><td>75</td><td>💯 <strong>pls</strong></td><td>A prettier and powerful ls(1) for the pros</td><td><a rel="external" href="https://github.com/pls-rs/pls"><code>pls-rs/pls</code></a></td><td style="text-align: right"><a rel="external" href="https://fosstodon.org/@orhun/113216805246862474">34</a></td></tr>
+<tr><td>76</td><td>🧪 <strong>SeqTUI</strong></td><td>A terminal-based sequence data viewer &amp; toolkit</td><td><a rel="external" href="https://github.com/ranwez-search/SeqTUI"><code>ranwez-search/SeqTUI</code></a></td><td style="text-align: right"><a rel="external" href="https://fosstodon.org/@orhun/115826090895157665">34</a></td></tr>
+<tr><td>77</td><td>🧭 <strong>tui-scrollbar</strong></td><td>Smooth &amp; fractional scrollbar widget for</td><td><a rel="external" href="https://github.com/joshka/tui-widgets"><code>joshka/tui-widgets</code></a></td><td style="text-align: right"><a rel="external" href="https://fosstodon.org/@orhun/115933555840484995">34</a></td></tr>
+<tr><td>78</td><td>🧹 <strong>wiper</strong></td><td>Disk cleanup tool with visual breakdown of directory sizes</td><td><a rel="external" href="https://github.com/ikebastuz/wiper"><code>ikebastuz/wiper</code></a></td><td style="text-align: right"><a rel="external" href="https://fosstodon.org/@orhun/112458051058466989">34</a></td></tr>
+<tr><td>79</td><td>✈️ <strong>adsb_deku</strong></td><td>Rust ADS-B decoder + TUI radar application</td><td><a rel="external" href="https://github.com/rsadsb/adsb_deku"><code>rsadsb/adsb_deku</code></a></td><td style="text-align: right"><a rel="external" href="https://fosstodon.org/@orhun/113072977456671678">33</a></td></tr>
+<tr><td>80</td><td>🐦 <strong>perch</strong></td><td>A TUI client for Mastodon &amp; Bluesky</td><td><a rel="external" href="https://github.com/ricardodantas/perch"><code>ricardodantas/perch</code></a></td><td style="text-align: right"><a rel="external" href="https://fosstodon.org/@orhun/116132096080693793">33</a></td></tr>
+<tr><td>81</td><td>🌀 <strong>rgx</strong></td><td>TUI regex tester with real-time matching</td><td><a rel="external" href="https://github.com/brevity1swos/rgx"><code>brevity1swos/rgx</code></a></td><td style="text-align: right"><a rel="external" href="https://fosstodon.org/@orhun/116223901683903903">33</a></td></tr>
+<tr><td>82</td><td>🧲 <strong>superseedr</strong></td><td>A full-featured BitTorrent client for the terminal</td><td><a rel="external" href="https://github.com/Jagalite/superseedr"><code>Jagalite/superseedr</code></a></td><td style="text-align: right"><a rel="external" href="https://fosstodon.org/@orhun/115412577714581422">33</a></td></tr>
+<tr><td>83</td><td>📖 <strong>bookokrat</strong></td><td>A terminal-based EPUB reader</td><td><a rel="external" href="https://github.com/bugzmanov/bookokrat"><code>bugzmanov/bookokrat</code></a></td><td style="text-align: right"><a rel="external" href="https://fosstodon.org/@orhun/115526727604124239">32</a></td></tr>
+<tr><td>84</td><td>🔧 <strong>jirust</strong></td><td>Jira terminal UI</td><td><a rel="external" href="https://github.com/Code-Militia/jirust"><code>Code-Militia/jirust</code></a></td><td style="text-align: right"><a rel="external" href="https://fosstodon.org/@orhun/112445116954961528">32</a></td></tr>
+<tr><td>85</td><td>🦀 <strong>ouch</strong></td><td>Painless compression and decompression in the terminal - written in Rust</td><td><a rel="external" href="https://github.com/ouch-org/ouch"><code>ouch-org/ouch</code></a></td><td style="text-align: right"><a rel="external" href="https://fosstodon.org/@orhun/111533591722497726">32</a></td></tr>
+<tr><td>86</td><td>📺 <strong>television</strong></td><td>A general purpose fuzzy finder TUI</td><td><a rel="external" href="https://github.com/alexpasmantier/television"><code>alexpasmantier/television</code></a></td><td style="text-align: right"><a rel="external" href="https://fosstodon.org/@orhun/113509495988625551">32</a></td></tr>
+<tr><td>87</td><td>🌀 <strong>tui-shader</strong></td><td>A library for using GPU shaders in TUI applications</td><td><a rel="external" href="https://github.com/pemattern/tui-shader"><code>pemattern/tui-shader</code></a></td><td style="text-align: right"><a rel="external" href="https://fosstodon.org/@orhun/114058423007375995">32</a></td></tr>
+<tr><td>88</td><td>🃏 <strong>BalatroTUI</strong></td><td>Balatro game in your terminal</td><td><a rel="external" href="https://github.com/Passeriform/BalatroTUI"><code>Passeriform/BalatroTUI</code></a></td><td style="text-align: right"><a rel="external" href="https://fosstodon.org/@orhun/114827940563251355">31</a></td></tr>
+<tr><td>89</td><td>🌪️ <strong>blendr</strong></td><td>The hacker's BLE (bluetooth low energy) browser terminal app</td><td><a rel="external" href="https://github.com/dmtrKovalenko/blendr"><code>dmtrKovalenko/blendr</code></a></td><td style="text-align: right"><a rel="external" href="https://fosstodon.org/@orhun/112416960856732015">31</a></td></tr>
+<tr><td>90</td><td>🧬 <strong>keifu</strong></td><td>A TUI for visualizing Git commit graphs</td><td><a rel="external" href="https://github.com/trasta298/keifu"><code>trasta298/keifu</code></a></td><td style="text-align: right"><a rel="external" href="https://fosstodon.org/@orhun/115951106671033679">31</a></td></tr>
+<tr><td>91</td><td>🃏 <strong>private_poker</strong></td><td>A poker library, server, client, and TUI</td><td><a rel="external" href="https://github.com/theOGognf/private_poker"><code>theOGognf/private_poker</code></a></td><td style="text-align: right"><a rel="external" href="https://fosstodon.org/@orhun/113192763281555921">31</a></td></tr>
+<tr><td>92</td><td>🐭 <strong>ratframe</strong></td><td>egui widget + Ratatui backend</td><td><a rel="external" href="https://github.com/gold-silver-copper/ratatui_egui_wasm"><code>gold-silver-copper/ratatui_egui_wasm</code></a></td><td style="text-align: right"><a rel="external" href="https://fosstodon.org/@orhun/112320924157137862">31</a></td></tr>
+<tr><td>93</td><td>🌐 <strong>RustNet</strong></td><td>A cross-platform network monitor</td><td><a rel="external" href="https://github.com/domcyrus/rustnet"><code>domcyrus/rustnet</code></a></td><td style="text-align: right"><a rel="external" href="https://fosstodon.org/@orhun/115200563156229696">31</a></td></tr>
+<tr><td>94</td><td>🏗️ <strong>texaform</strong></td><td>A factory game automated by your code</td><td><a rel="external" href="https://github.com/JoshuaPostel/texaform"><code>JoshuaPostel/texaform</code></a></td><td style="text-align: right"><a rel="external" href="https://fosstodon.org/@orhun/114936069734753992">31</a></td></tr>
+<tr><td>95</td><td>🐢 <strong>tortuise</strong></td><td>Render 3D scenes using pure terminal symbols</td><td><a rel="external" href="https://github.com/buildoak/tortuise"><code>buildoak/tortuise</code></a></td><td style="text-align: right"><a rel="external" href="https://fosstodon.org/@orhun/116255422270714671">31</a></td></tr>
+<tr><td>96</td><td>🛰️ <strong>tracker</strong></td><td>Track satellites and predict orbits in real-time in your terminal</td><td><a rel="external" href="https://github.com/ShenMian/tracker"><code>ShenMian/tracker</code></a></td><td style="text-align: right"><a rel="external" href="https://fosstodon.org/@orhun/113622335730027874">31</a></td></tr>
+<tr><td>97</td><td>📓 <strong>tui-journal</strong></td><td>Your journal app if you live in a terminal</td><td><a rel="external" href="https://github.com/AmmarAbouZor/tui-journal"><code>AmmarAbouZor/tui-journal</code></a></td><td style="text-align: right"><a rel="external" href="https://fosstodon.org/@orhun/112342194663598142">31</a></td></tr>
+<tr><td>98</td><td>📚 <strong>ekphos</strong></td><td>A markdown research TUI inspired by Obsidian</td><td><a rel="external" href="https://github.com/hanebox/ekphos"><code>hanebox/ekphos</code></a></td><td style="text-align: right"><a rel="external" href="https://fosstodon.org/@orhun/115900423288491075">30</a></td></tr>
+<tr><td>99</td><td>🌌 <strong>fractouille</strong></td><td>Fractal explorer for the terminal</td><td><a rel="external" href="https://github.com/PottierLoic/Fractouille"><code>PottierLoic/Fractouille</code></a></td><td style="text-align: right"><a rel="external" href="https://fosstodon.org/@orhun/114635880247903446">30</a></td></tr>
+</tbody></table>
+<p>The full list (600+) is also available <a rel="external" href="https://github.com/orhun/mastodon-post-analyzer/blob/main/FULL_LIST.md">here</a>.</p>
+<h2 id="what-s-next">What's next?</h2>
+<p><g>I will keep posting.</g></p>
+<p>If you want to help in any way:</p>
+<ul>
+<li>If you have a Rust/Ratatui/terminal project or if you know one that deserves more attention, send it to me and I will post about it!</li>
+<li>If you have ideas for what I could do with this data or have any feedback for the posts, let me know!</li>
+<li>Smash the sponsor button below if you want to support the work that I do.</li>
+</ul>
+<p>Cheers! 🐁</p>
+<p><a rel="external" href="https://x.com/orhundev">X</a> | <a rel="external" href="https://fosstodon.org/@orhun">Mastodon</a> | <a rel="external" href="https://bsky.app/profile/orhun.dev">Bluesky</a> | <a rel="external" href="https://www.linkedin.com/in/orhunp/">LinkedIn</a></p>
+
+    </div>
+
+    
+        <footer>
+            <hr>
+            <p>
+                
+                    Published by Orhun Parmaksız
+                
+                
+                    
+                    in <a href="https://blog.orhun.dev/categories/projects/">Projects</a>
+                
+                
+            </p>
+            
+            
+            <div style="display: flex; justify-content: space-between; align-items: center">
+              <div>
+                <iframe
+                  src="https://github.com/sponsors/orhun/button"
+                  title="Sponsor @orhun"
+                  height="35"
+                  width="116"
+                  style="border: 0"
+                ></iframe>
+                <a href="https://www.buymeacoffee.com/orhun" target="_blank"
+                  ><img
+                    src="https://cdn.buymeacoffee.com/buttons/v2/default-white.png"
+                    alt="Buy Me A Coffee"
+                    style="height: 40px !important; width: 150px !important"
+                /></a>
+              </div>
+              <div>
+                <applause-button
+                  style="width: 50px; height: 50px"
+                  url="https://blog.orhun.dev&#x2F;800-rust-projects&#x2F;"
+                  color="white"
+                  multiclap="true"
+                />
+              </div>
+              <div>
+                <div style="width: auto; height: 39px">
+                  <p style="margin: 0; color: #fff; font-style: italic">✨ Sponsored by:</p>
+                </div>
+                <a href="https://www.jetbrains.com/" target="_blank"
+                  ><img
+                    src="/sponsors/jetbrains.png"
+                    alt="JetBrains"
+                    style="height: 45px; width: auto"
+                /></a>
+                <a href="https://terminaltrove.com/" target="_blank"
+                  ><img
+                    src="/sponsors/terminal_trove.png"
+                    alt="Terminal Trove"
+                    style="height: 40px; width: auto"
+                /></a>
+                <a href="https://www.recall.ai/" target="_blank"
+                  ><img
+                    src="/sponsors/recall.jpg"
+                    alt="Recall"
+                    style="height: 40px; width: auto"
+                /></a>
+                <a href="https://opensource.sap.com/" target="_blank"
+                  ><img
+                    src="/sponsors/sap.png"
+                    alt="SAP"
+                    style="height: 40px; width: auto"
+                /></a>
+              </div>
+            </div>
+            <script src="https://utteranc.es/client.js"
+                    repo="orhun/personal-blog"
+                    issue-term="url"
+                    label="comments"
+                    theme="github-dark"
+                    crossorigin="anonymous"
+                    async>
+            </script>
+        </footer>
+    
+</article>
+
+
+    </body>
+
+    <script type="text/javascript" src="https://blog.orhun.dev/elasticlunr.min.js"></script>
+    <script type="text/javascript" src="https://blog.orhun.dev/js/search.js"></script>
+
+</html>

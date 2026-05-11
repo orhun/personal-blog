@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <meta http-equiv="content-type" content="text/html; charset=utf-8">
+      <meta property="og:type" content="website" />
+      
+      <meta property="og:url" content="https://blog.orhun.dev/code-responsibly/"/>
+      
+      
+      <meta property="og:title" content="Write less code, be more responsible - Orhun&#x27;s Blog" />
+      
+      <meta property="og:image" content="https://blog.orhun.dev/poorly-drawn-rat.png" />
+      
+      <meta name="description" content="My thoughts on AI-assisted programming." />
+      <meta property="og:description" content="My thoughts on AI-assisted programming."/>
+      
+
+      <!-- Enable responsiveness on mobile devices-->
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+      <link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png">
+      <link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png">
+      <link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png">
+      <link rel="manifest" href="/favicon/site.webmanifest">
+
+      <script async src="https://umami.orhun.dev/script.js" data-website-id="56ca5ca7-ba9f-416e-8bee-a132c155d56b"></script>
+
+      <link rel="stylesheet" href="https://unpkg.com/applause-button/dist/applause-button.css" />
+      <script src="https://unpkg.com/applause-button/dist/applause-button.js"></script>
+
+      
+      <title>Write less code, be more responsible - Orhun&#x27;s Blog</title>
+      
+      <link rel="alternate" type="application/rss+xml" title="Orhun&#x27;s Blog RSS Feed" href="https://blog.orhun.dev/rss.xml" />
+
+      
+          <link rel="stylesheet" href="https://blog.orhun.dev/site.css">
+      
+
+      
+      
+    </head>
+
+    <body class="hack dark main container">
+        
+    
+        
+                
+                    <header>
+                    <nav itemscope itemtype="http://schema.org/SiteNavigationElement" class="nav-flex">
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://blog.orhun.dev">
+                                <span itemprop="name">Home</span>
+                            </a>
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://blog.orhun.dev/categories">
+                                <span itemprop="name">Categories</span>
+                            </a>
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://github.com/orhun/personal-blog">
+                                <span itemprop="name">Source</span>
+                            </a>
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://github.com/orhun">
+                                <span itemprop="name">GitHub</span>
+                            </a>
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://blog.orhun.dev/rss.xml">
+                                <span itemprop="name">RSS</span>
+                            </a>
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://orhun.dev">
+                                <span itemprop="name">About</span>
+                            </a>
+                        
+                        <div class="search-container">
+                            <input type="text" id="search" placeholder="Search...">
+                            <div class="search-results">
+                                <div class="search-results__items"></div>
+                            </div>
+                        </div>
+                    </nav>
+                    </header>
+                
+            
+    
+
+<article itemscope itemtype="http://schema.org/BlogPosting">
+    <header>
+        <h1 itemprop="headline">Write less code, be more responsible</h1>
+        <span class="muted">
+    <svg style="margin-bottom:-3px" class="i-clock" viewBox="0 0 32 32"
+         width="16" height="16" fill="none" stroke="currentcolor"
+         stroke-linecap="round" stroke-linejoin="round" stroke-width="6.25%">
+        <circle cx="16" cy="16" r="14"/>
+        <path d="M16 8 L16 16 20 20"/>
+    </svg>
+    <span>6 minute read</span>
+    <svg style="margin-bottom: -3px" class="i-edit" viewBox="0 0 32 32"
+         width="16" height="16" fill="none" stroke="currentcolor"
+         stroke-linecap="round" stroke-linejoin="round" stroke-width="6.25%">
+        <path d="M30 7 L25 2 5 22 3 29 10 27 Z M21 6 L26 11 Z M5 22 L10 27 Z"/>
+    </svg>
+
+    Published: 2026-04-11
+</span>
+    </header>
+    <div itemprop="articleBody">
+      <p>My thoughts on AI-assisted programming.</p>
+<span id="continue-reading"></span><center>
+<img src="/rat-assisted-programming.jpg" width="75%"/>
+<p><i>"AI-assisted programming?</i><br>
+<i>Nah, I have a rat under my hat"</i></p>
+</center>
+<p>These days, the discourse on AI-assisted programming, vibe coding and LLMs is getting a bit overwhelming and sometimes we are overexposing ourselves to it, whether we want it or not.<br />
+The irony is, "not talking about AI" is still "talking about AI", so we might as well talk about it.</p>
+<q>
+Wait, what? I can very much "not talk about AI". I mean, I don't do vibe coding.  
+But I see more vibe coded projects coming out and I sometimes see cool stuff.
+People seem to use Claude these days, probably becaus-
+</q>
+<p>You are talking about AI right now!</p>
+<q>
+You got me!
+Well, with this blog post, you are becoming a part of this whole AI over exposure anyways.
+</q>
+<p>Probably. But recently I realized that I might have some opinions to share while I was talking to my friends <a rel="external" href="https://www.youtube.com/watch?v=fyDE_tbAAlw">on this podcast</a>. Also, I should mention, these thoughts probably have an expiry date of 6 months since things are changing fast!</p>
+<h2 id="accepting-the-change-pill"><strong>Accepting the change</strong> 💊</h2>
+<p><g>Programming is fun.</g> Or should I say "was fun"?</p>
+<p><q>It can still be fun! Just because the tools have changed and you can now one-shot a SaaS project that would have taken 3 months to build in 2018 doesn't mean that the joy from crafting something is gone. It's just that the process might be different, but <em>you</em> are still <g>responsible</g> for the end product. There is still a value that you are providing there.</q></p>
+<p>I'm in the basket of developers that think that AI has forced us to change and adapt, in the sense of utilizing AI-assisted programming tools. For a while I was already using <a rel="external" href="https://github.com/copilot">GitHub Copilot</a> for better completions and code generation, but I first experimented with proper AI-assisted development with <a rel="external" href="https://github.com/openai/codex">Codex</a>, during <a rel="external" href="https://www.youtube.com/playlist?list=PLxqHy2Zr5TiWOHYcTgxYZMzHV36PxRVf9">this livestream series</a>.
+Long story short, I was building a terminal user interface for <a rel="external" href="https://doc.rust-lang.org/cargo/">cargo</a>'s tree command (<a rel="external" href="https://github.com/orhun/cargo-tree-tui">cargo-tree-tui</a>), which required me to design a tree data model and a compatible render layer with caching, without compromising the performance.</p>
+<p>At first, I gave Codex the full power. Then I felt lost, confused and illiterate. Quickly realized it was a mistake, so I switched to a "commit-by-commit quality-checked AI-assisted" approach, where I solve a certain problem with AI, then read everything to the last semicolon and verify that I understand it fully. This made everything much better and I felt less dumb, but after a while I got bored. I was not writing code anymore but constantly doing code reviews.</p>
+<p><q>Ok I feel depressed listening to that. Maybe it would take the same or less amount of time and it would be more fun if you just don't use AI and write everything yourself?</q></p>
+<p>Yes, but I'm lazy. Even though I do that, I will probably use Codex for the other boring tasks...</p>
+<p>I think the key is to find a <g>balance</g>, like everything else in life. So these days I'm trying a mixed approach where I use AI for boring things or things that I can't do quickly, and just write the fun parts myself and do a final pass to make sure everything is up to the quality I want.</p>
+<p>⚠️ I think it's important to experiment and find what works for you, and not to feel guilty about it. I skipped doing some <a rel="external" href="https://www.youtube.com/@orhundev">livestreams</a> because of this exact reason (since the process would likely involve AI and I don't want to stream a prompting session), but I think it was a mistake. From now on I would like to be more open about my use of AI and don't treat it like a bad habit.</p>
+<p>As a bonus, see <a rel="external" href="https://www.youtube.com/watch?v=LGrx9ueO3y0">this interview</a> in which I further talked about how I use AI and other related things.</p>
+<h2 id="quality-problem-100"><strong>Quality problem</strong> 💯</h2>
+<p>I post about the <a rel="external" href="https://blog.orhun.dev/800-rust-projects/">cool stuff that I found</a> on my social media every day. This process involves following certain sources and maintaining a list of material actively. What I have recently realized is, I no longer can catch up with the new tools and my list is getting larger and larger everyday. My guess is, this is due to the influx of vibe-coded apps, since now it generally takes less time and effort to build things.</p>
+<p><q>So you are saying that the quality of the projects is going down?</q></p>
+<p>Not necessarily, but I think there is a risk of that. It's also related to the <g>maintainability</g> of those projects. Sometimes I discover a project that is truly wonderful but visibly vibe-coded. I start using it without the guarantee of next release not running <code>rm -rf</code> and wipe my system.</p>
+<p><q>Can we blame the developers for that?</q></p>
+<p>It's something ethical that I don't know the answer to. In my case, it was the guy's first ever open source project and he understandably went for the quickest way of creating an app. While I appreciate their contribution to open source, they should be responsible for the quality of what they put out there.</p>
+<p><q>I think this applies to everyone though. Nowadays many people are pushing AI-assisted code, some of them in a responsible way, some of them not. So... what do we do?</q></p>
+<p>Like I said, I don't know. The only thing that I can do is to be responsible myself and advise others to be responsible as well.</p>
+<h3 id="license-question-scales"><strong>License question</strong> ⚖️</h3>
+<p>There are obviously licensing questions as well. Can we use AI-generated code in an X licensed project? What will be the license of the generated code? How ethical is it to use AI-generated code in the open source context?</p>
+<p><q>I recently witnessed someone call the LLM industry toxic toward the FOSS movement.</q></p>
+<p>Well I don't know about that. In my internet experience, licensing disputes mostly lead to nowhere and I don't think this will be an exception. However, I would still be interested in hearing different opinions on this topic, that's why I'm putting this out there.</p>
+<p><q>Look, I ain't no lawyer as well. I'm just a rat.</q></p>
+<h3 id="wrapping-up-memo"><strong>Wrapping up</strong> 📝</h3>
+<p>I adopted <a rel="external" href="https://blog.orhun.dev/open-source-grindset">"Grinding"</a> a while ago as my motto and started <a rel="external" href="https://grindhouse.dev/">a community</a> around it <a rel="external" href="https://blog.orhun.dev/2025-wrapped/#communities">last year</a>. I think it applies to this situation as well.</p>
+<p>We should keep <g>grinding</g>, keep building cool &amp; high quality stuff, and how we got there shouldn't be that important. AI is just another tool, and not a replacement for creativity and hard work.</p>
+<q>
+Be responsible.
+Don't drink and drive / don't vibe code and commit.
+</q>
+<p>🧀</p>
+
+    </div>
+
+    
+        <footer>
+            <hr>
+            <p>
+                
+                    Published by Orhun Parmaksız
+                
+                
+                    
+                    in <a href="https://blog.orhun.dev/categories/thoughts/">Thoughts</a>
+                
+                
+            </p>
+            
+            
+            <div style="display: flex; justify-content: space-between; align-items: center">
+              <div>
+                <iframe
+                  src="https://github.com/sponsors/orhun/button"
+                  title="Sponsor @orhun"
+                  height="35"
+                  width="116"
+                  style="border: 0"
+                ></iframe>
+                <a href="https://www.buymeacoffee.com/orhun" target="_blank"
+                  ><img
+                    src="https://cdn.buymeacoffee.com/buttons/v2/default-white.png"
+                    alt="Buy Me A Coffee"
+                    style="height: 40px !important; width: 150px !important"
+                /></a>
+              </div>
+              <div>
+                <applause-button
+                  style="width: 50px; height: 50px"
+                  url="https://blog.orhun.dev&#x2F;code-responsibly&#x2F;"
+                  color="white"
+                  multiclap="true"
+                />
+              </div>
+              <div>
+                <div style="width: auto; height: 39px">
+                  <p style="margin: 0; color: #fff; font-style: italic">✨ Sponsored by:</p>
+                </div>
+                <a href="https://www.jetbrains.com/" target="_blank"
+                  ><img
+                    src="/sponsors/jetbrains.png"
+                    alt="JetBrains"
+                    style="height: 45px; width: auto"
+                /></a>
+                <a href="https://terminaltrove.com/" target="_blank"
+                  ><img
+                    src="/sponsors/terminal_trove.png"
+                    alt="Terminal Trove"
+                    style="height: 40px; width: auto"
+                /></a>
+                <a href="https://www.recall.ai/" target="_blank"
+                  ><img
+                    src="/sponsors/recall.jpg"
+                    alt="Recall"
+                    style="height: 40px; width: auto"
+                /></a>
+                <a href="https://opensource.sap.com/" target="_blank"
+                  ><img
+                    src="/sponsors/sap.png"
+                    alt="SAP"
+                    style="height: 40px; width: auto"
+                /></a>
+              </div>
+            </div>
+            <script src="https://utteranc.es/client.js"
+                    repo="orhun/personal-blog"
+                    issue-term="url"
+                    label="comments"
+                    theme="github-dark"
+                    crossorigin="anonymous"
+                    async>
+            </script>
+        </footer>
+    
+</article>
+
+
+    </body>
+
+    <script type="text/javascript" src="https://blog.orhun.dev/elasticlunr.min.js"></script>
+    <script type="text/javascript" src="https://blog.orhun.dev/js/search.js"></script>
+
+</html>

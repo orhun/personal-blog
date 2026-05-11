@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <meta http-equiv="content-type" content="text/html; charset=utf-8">
+      <meta property="og:type" content="website" />
+      
+      <meta property="og:url" content="https://blog.orhun.dev/introducing-tuitar/"/>
+      
+      
+      <meta property="og:title" content="Building a guitar trainer with embedded Rust - Orhun&#x27;s Blog" />
+      
+      <meta property="og:image" content="https://blog.orhun.dev/poorly-drawn-rat.png" />
+      
+      <meta name="description" content="All I wanted was to learn how to play guitar, but ended up building a DIY kit for it." />
+      <meta property="og:description" content="All I wanted was to learn how to play guitar, but ended up building a DIY kit for it."/>
+      
+
+      <!-- Enable responsiveness on mobile devices-->
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+      <link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png">
+      <link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png">
+      <link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png">
+      <link rel="manifest" href="/favicon/site.webmanifest">
+
+      <script async src="https://umami.orhun.dev/script.js" data-website-id="56ca5ca7-ba9f-416e-8bee-a132c155d56b"></script>
+
+      <link rel="stylesheet" href="https://unpkg.com/applause-button/dist/applause-button.css" />
+      <script src="https://unpkg.com/applause-button/dist/applause-button.js"></script>
+
+      
+      <title>Building a guitar trainer with embedded Rust - Orhun&#x27;s Blog</title>
+      
+      <link rel="alternate" type="application/rss+xml" title="Orhun&#x27;s Blog RSS Feed" href="https://blog.orhun.dev/rss.xml" />
+
+      
+          <link rel="stylesheet" href="https://blog.orhun.dev/site.css">
+      
+
+      
+      
+    </head>
+
+    <body class="hack dark main container">
+        
+    
+        
+                
+                    <header>
+                    <nav itemscope itemtype="http://schema.org/SiteNavigationElement" class="nav-flex">
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://blog.orhun.dev">
+                                <span itemprop="name">Home</span>
+                            </a>
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://blog.orhun.dev/categories">
+                                <span itemprop="name">Categories</span>
+                            </a>
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://github.com/orhun/personal-blog">
+                                <span itemprop="name">Source</span>
+                            </a>
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://github.com/orhun">
+                                <span itemprop="name">GitHub</span>
+                            </a>
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://blog.orhun.dev/rss.xml">
+                                <span itemprop="name">RSS</span>
+                            </a>
+                        
+                            <a itemprop="url"
+                              class=""
+                              href="https://orhun.dev">
+                                <span itemprop="name">About</span>
+                            </a>
+                        
+                        <div class="search-container">
+                            <input type="text" id="search" placeholder="Search...">
+                            <div class="search-results">
+                                <div class="search-results__items"></div>
+                            </div>
+                        </div>
+                    </nav>
+                    </header>
+                
+            
+    
+
+<article itemscope itemtype="http://schema.org/BlogPosting">
+    <header>
+        <h1 itemprop="headline">Building a guitar trainer with embedded Rust</h1>
+        <span class="muted">
+    <svg style="margin-bottom:-3px" class="i-clock" viewBox="0 0 32 32"
+         width="16" height="16" fill="none" stroke="currentcolor"
+         stroke-linecap="round" stroke-linejoin="round" stroke-width="6.25%">
+        <circle cx="16" cy="16" r="14"/>
+        <path d="M16 8 L16 16 20 20"/>
+    </svg>
+    <span>17 minute read</span>
+    <svg style="margin-bottom: -3px" class="i-edit" viewBox="0 0 32 32"
+         width="16" height="16" fill="none" stroke="currentcolor"
+         stroke-linecap="round" stroke-linejoin="round" stroke-width="6.25%">
+        <path d="M30 7 L25 2 5 22 3 29 10 27 Z M21 6 L26 11 Z M5 22 L10 27 Z"/>
+    </svg>
+
+    Published: 2026-03-28
+</span>
+    </header>
+    <div itemprop="articleBody">
+      <p>All I wanted was to learn how to play guitar, but ended up building a DIY kit for it.</p>
+<span id="continue-reading"></span>
+<p><g>TL;DR:</g></p>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/tZm7cLaHAR0?si=ilAY4rk8yqG-OIfX" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+<p><a rel="external" href="https://github.com/orhun/tuitar">https://github.com/orhun/tuitar</a></p>
+<hr />
+<p>In the beginning of 2025, I picked up playing guitar again after a long break, thanks to the encouragement of a friend.
+It was fun at first but my engineer mind wanted to optimize the learning process somehow. I'm sure it would be better if I took my time, but it wasn't for me to wait until I could play properly.
+I needed practical knowledge right away, so that I could include simple chords and solos in my music. I needed a shortcut to unblock myself, otherwise I felt like my creativity was stifled.</p>
+<p>That's when I decided to build a tool to practice electric guitar, without even an idea of what that would look like. As if that wasn't enough craziness, I also submitted this project idea to the <a rel="external" href="https://rustforgeconf.com/">Rust Forge conference</a> so that I could speedrun the development if the talk got accepted.
+(i.e. <em>talk-driven development</em>: set a deadline and become responsible to deliver something)</p>
+<p>Coincidentally, the <a rel="external" href="https://ratatui.rs/">Ratatui</a> project had a new backend called <a rel="external" href="https://github.com/ratatui/mousefood">Mousefood</a> at the time. This allowed running terminal UIs on embedded devices (e.g. ESP32). This seemed like a perfect opportunity to hack with terminal UIs, embedded and guitar tooling. However, since I still wasn't confident about what to build, I took a trip to Berlin in May to visit <a rel="external" href="https://www.superbooth.com/">Superbooth</a> (a huge synthesizer fair). In the end, I had <a rel="external" href="https://blog.orhun.dev/am-i-a-musician-yet/">more inspiration</a> than I needed.</p>
+<q>
+Ok, it seems like you are getting a bit sidetracked. I mean, getting excited about synthesizers is cool and all, but what about the guitar tool?
+</q>
+<p>Oh yeah, that. My talk got accepted. So it was time to roll up my sleeves.
+I realized if I overthink this, I would never get started. So I decided to make a very simple guitar tuner first. (Of course, not embedded yet, just a terminal app.)</p>
+<p>1. Get audio input from the microphone (using <a rel="external" href="https://docs.rs/cpal/">cpal</a>)<br />
+2. Perform FFT on the audio input (using <a rel="external" href="https://docs.rs/rustfft">rustfft</a>)<br />
+3. Find the fundamental frequency and map it to a musical note (using <a rel="external" href="https://docs.rs/pitchy">pitchy</a>)<br />
+4. Plot everything on a chart (using <a rel="external" href="https://docs.rs/ratatui">ratatui</a>)</p>
+<img src="/fft.png" width="80%"/>
+<p>That was some progress and it motivated me to keep going. The next step was to port this simple MVP to embedded. I quickly locally-purchased an <a rel="external" href="https://www.analog.com/en/products/max4466.html">MAX4466 microphone module</a> and <a rel="external" href="https://lilygo.cc/products/t-display">ESP32 T-Display</a> to start experimenting.</p>
+<p>For context, the Mousefood backend works by translating terminal cells into <a rel="external" href="https://docs.rs/embedded-graphics">embedded-graphics</a> text primitives and pushes them onto any <a rel="external" href="https://docs.rs/embedded-graphics/latest/embedded_graphics/draw_target/trait.DrawTarget.html">DrawTarget</a> (usually a display driver e.g. in my case it is the tiny screen on ESP32 T-Display).</p>
+<q>
+So it's basically a framebuffer... How about the toolchain needed for this?
+</q>
+<p>On ESP32, the main Rust frameworks are <a rel="external" href="https://github.com/esp-rs/esp-hal">ESP-HAL</a> (no_std) and ESP-IDF-HAL (std). <a rel="external" href="https://github.com/esp-rs/esp-idf-hal">ESP-IDF-HAL</a> is a wrapper around Espressif's official SDK (ESP-IDF) and it has better support for peripherals. However, it is a bit heavy for small applications since it includes FreeRTOS and other components. ESP-HAL is a pure Rust implementation and it is more lightweight.</p>
+<p>Today, Ratatui/mousefood supports no_std <a rel="external" href="https://ratatui.rs/highlights/v030/">after the 0.30 release</a>. Back then, my only option was to go with ESP-IDF-HAL and include the standard library and a bunch of other C dependencies.</p>
+<q>
+It's fine though! We are only prototyping, right?
+</q>
+<p>Unfortunately, it was more painful than you would expect.</p>
+<p>Setting up the toolchain was so cursed that at some point I needed to symlink a legacy soname (libxml2.so.2.13.8 as libxml2.so.2) for compatibility. In the end, I was able to render a rectangle using Ratatui though.</p>
+<img src="/ratatui-rectangle.png" width="50%"/>
+<q>
+Is this how the progress look like? Just a tiny rectangle?
+</q>
+<p>Chill... let me hook up the microphone. It's just a matter of changing the cpal input with a MAX4466 connected to an ADC pin and we should be able to do pitch detection inside of this tiny rectangle. Just need to change the callback and the rest should work the same.</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="rust"><span class="giallo-l"><span style="color: #61AFEF;">let</span><span style="color: #C6CCD7;"> sample_callback</span><span style="color: #E06C75;"> = |</span><span style="color: #C6CCD7;">data</span><span style="color: #E06C75;">: &amp;</span><span>[</span><span style="color: #E5C07B;">i16</span><span>],</span><span style="color: #C6CCD7;"> _</span><span style="color: #E06C75;">|</span><span> { };</span></span>
+<span class="giallo-l"><span style="color: #61AFEF;">let</span><span style="color: #C6CCD7;"> sample_rate</span><span style="color: #E06C75;"> =</span><span style="color: #C6CCD7;"> supported_config</span><span style="color: #E06C75;">.</span><span>sample_rate</span><span style="color: #E06C75;">.</span><span style="color: #56B6C2;">0</span><span>;</span></span></code></pre>
+<p>Just change that with:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="rust"><span class="giallo-l"><span style="color: #61AFEF;">let</span><span style="color: #C6CCD7;"> sample</span><span style="color: #E06C75;"> =</span><span style="color: #C6CCD7;"> mic_adc_channel</span><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">read</span><span>()</span><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">unwrap_or</span><span>(</span><span style="color: #56B6C2;">0</span><span>);</span></span>
+<span class="giallo-l"><span style="color: #61AFEF;">let</span><span style="color: #C6CCD7;"> sample_rate</span><span style="color: #E06C75;"> =</span><span style="color: #5F6672;font-style: italic;"> /* ??? */</span><span>;</span></span></code></pre>
+<p>Wait... we know the sample rate of my computer's microphone. But what's the sample rate of this tiny analog microphone module? That doesn't really work with what I have already. And why all of a sudden this <code>rustfft</code> function is crashing now? I forgot I had only 520 KB of RAM. Ugh!</p>
+<q>
+Just use <a href="https://docs.rs/microfft">microfft</a> for doing FFT bro. But I ain't know nothing about that sample rate issue. Maybe ask a friend.
+</q>
+<p>Yeah, that's what I did. We had a fun one hour trying to figure out stuff and went over the rough edges.</p>
+<img src="/fft-paper.jpg" width="80%"/>
+<p><em>The real engineering sometimes happens on a piece of paper... that no one can read.</em></p>
+<p>It turns out, I can just use a dynamic sample rate. I tried many fancy things (like using scoped threads to read the samples) but the following is a simple loop which just worked fine:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="rust"><span class="giallo-l"><span style="color: #61AFEF;">let mut</span><span style="color: #C6CCD7;"> samples</span><span style="color: #E06C75;"> =</span><span style="color: #E5C07B;"> Vec</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">with_capacity</span><span>(</span><span style="color: #56B6C2;">512</span><span>);</span></span>
+<span class="giallo-l"><span style="color: #61AFEF;">let</span><span style="color: #C6CCD7;"> adc</span><span style="color: #E06C75;"> =</span><span style="color: #E5C07B;"> AdcDriver</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">new</span><span>(</span><span style="color: #C6CCD7;">peripherals</span><span style="color: #E06C75;">.</span><span>adc1);</span></span>
+<span class="giallo-l"><span style="color: #61AFEF;">let mut</span><span style="color: #C6CCD7;"> mic_adc_channel</span><span style="color: #E06C75;"> =</span><span style="color: #E5C07B;"> AdcChannelDriver</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">new</span><span>(</span><span style="color: #C6CCD7;">adc</span><span>,</span><span style="color: #C6CCD7;"> peripherals</span><span style="color: #E06C75;">.</span><span>pins</span><span style="color: #E06C75;">.</span><span>gpio36,</span><span style="color: #E06C75;"> &amp;</span><span style="color: #C6CCD7;">cfg</span><span>);</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #E06C75;">loop</span><span> {</span></span>
+<span class="giallo-l"><span style="color: #61AFEF;">    let</span><span style="color: #C6CCD7;"> instant</span><span style="color: #E06C75;"> =</span><span style="color: #E5C07B;"> Instant</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">now</span><span>();</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">    while</span><span style="color: #C6CCD7;"> samples</span><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">len</span><span>() &lt;</span><span style="color: #56B6C2;"> 512</span><span> {</span></span>
+<span class="giallo-l"><span style="color: #61AFEF;">        let</span><span style="color: #C6CCD7;"> sample</span><span style="color: #E06C75;"> =</span><span style="color: #C6CCD7;"> mic_adc_channel</span><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">read</span><span>()</span><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">unwrap_or</span><span>(</span><span style="color: #56B6C2;">0</span><span>);</span></span>
+<span class="giallo-l"><span style="color: #C6CCD7;">        samples</span><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">push</span><span>(</span><span style="color: #C6CCD7;">sample</span><span>);</span></span>
+<span class="giallo-l"><span>    }</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #C6CCD7;">    transform</span><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">process</span><span>(</span><span style="color: #E06C75;">&amp;</span><span style="color: #C6CCD7;">samples</span><span>);</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #61AFEF;">    let</span><span style="color: #C6CCD7;"> elapsed</span><span style="color: #E06C75;"> =</span><span style="color: #C6CCD7;"> instant</span><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">elapsed</span><span>();</span></span>
+<span class="giallo-l"><span style="color: #61AFEF;">    let</span><span style="color: #C6CCD7;"> sample_rate</span><span style="color: #E06C75;"> =</span></span>
+<span class="giallo-l"><span style="color: #C6CCD7;">        samples</span><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">len</span><span>()</span><span style="color: #E06C75;"> as</span><span style="color: #E5C07B;"> f64</span><span style="color: #E06C75;"> /</span><span style="color: #C6CCD7;"> elapsed</span><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">as_secs_f64</span><span>();</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;">    /* render UI */</span></span>
+<span class="giallo-l"><span>}</span></span></code></pre>
+<p><em>Continuously fill a buffer with 512 samples as fast as possible, process them, then derive the sample rate by dividing the number of samples by the elapsed wall-clock time. Profit.</em></p>
+<p>Next, add some Ratatui magic (e.g. widgets) on top and I got myself a tiny guitar tuner:</p>
+<p align="right">
+<center>
+<video controls width="80%">
+  <source src="/tuner.mp4" type="video/mp4">
+  Your browser does not support the video tag.
+</video>
+</center>
+</p>
+<q>
+That's cool, I guess this alone is already helpful for learning guitar. So the next step is to practice some jams and start preparing the talk?
+</q>
+<p>I mean I could do that. But how about we push this thing a bit further? I mean, you are a rat and I'm surprised why you haven't asked about that rat magic. How about we implement a Ratatui fretboard widget and show the played notes real-time?</p>
+<q>
+You got me. I forgot we are literally rendering terminal UIs on a tiny screen. Rendering a fretboard with unicode characters would be straightforward
+</q>
+<p>It was!</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="rust"><span class="giallo-l"><span style="color: #61AFEF;">let</span><span style="color: #C6CCD7;"> fretboard</span><span style="color: #E06C75;"> =</span><span style="color: #E5C07B;"> Fretboard</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">default</span><span>();</span></span>
+<span class="giallo-l"><span style="color: #61AFEF;">let mut</span><span style="color: #C6CCD7;"> state</span><span style="color: #E06C75;"> =</span><span style="color: #E5C07B;"> FretboardState</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">default</span><span>();</span></span>
+<span class="giallo-l"><span style="color: #C6CCD7;">state</span><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">set_active_note</span><span>(</span><span style="color: #61AFEF;">Note</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">A</span><span>(</span><span style="color: #56B6C2;">4</span><span>));</span></span>
+<span class="giallo-l"><span style="color: #C6CCD7;">frame</span><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">render_stateful_widget</span><span>(</span><span style="color: #C6CCD7;">fretboard</span><span>,</span><span style="color: #C6CCD7;"> area</span><span>,</span><span style="color: #E06C75;"> &amp;</span><span style="color: #61AFEF;">mut</span><span style="color: #C6CCD7;"> state</span><span>);</span></span></code></pre><pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="plain"><span class="giallo-l"><span>E4 ║─┼───┼───┼───┼───┼⬤─┼───┼───┼───┼───┼───┼───║</span></span>
+<span class="giallo-l"><span>B3 ║─┼───┼───┼───┼───┼───┼───┼───┼───┼───┼⬤─┼───║</span></span>
+<span class="giallo-l"><span>G3 ║─┼───┼───┼───┼───┼───┼───┼───┼───┼───┼───┼───║</span></span>
+<span class="giallo-l"><span>D3 ║─┼───┼───┼─•─┼───┼─•─┼───┼─•─┼───┼─•─┼───┼───║</span></span>
+<span class="giallo-l"><span>A2 ║─┼───┼───┼───┼───┼───┼───┼───┼───┼───┼───┼───║</span></span>
+<span class="giallo-l"><span>E2 ║─┼───┼───┼───┼───┼───┼───┼───┼───┼───┼───┼───║</span></span>
+<span class="giallo-l"><span>     1   2   3   4   5   6   7   8   9  10  11  12</span></span></code></pre>
+<p>I also made the <a rel="external" href="https://crates.io/crates/ratatui-fretboard">ratatui-fretboard</a> very customizable so that if I get a bass guitar in the future I could also support that. (I recently got a bass guitar btw)</p>
+<img src="/ratatui-fretboard.png" width="60%"/>
+<small>
+Tbh you can also render things like this but pls don't.
+</small>
+<p>The result was satisfying to see:</p>
+<img src="/ratatui-fretboard-tft.png" width="70%"/>
+<p>At that stage, I was still testing things with an <a rel="external" href="https://www.szynalski.com/tone-generator/">online tone generator</a>. I would simply play 440Hz and expect to see that A4 note detected on the display. Or I would simply play my classical guitar sometimes.</p>
+<p>With the excitement of seeing this fretboard widget work, I decided to pick up my electric guitar and give this a spin. But guess what was wrong... it wasn't possible to get a reliable read without cranking up the guitar amplifier's volume and waking up my neighbors.</p>
+<q>
+Ah I see... Maybe connect your electric guitar directly to this somehow? I mean... It's electric, right? Just connect the 6.35mm jack to the same ADC pins that you use for reading the samples from the MAX4466 module.
+</q>
+<p>Uh... I listened to the advice of a rat and it didn't work...</p>
+<q>
+Maybe the signal is too weak? Use a low-power dual operational amplifier (op-amp) such as <a href="https://en.wikipedia.org/wiki/LM358">LM358</a> to amplify the signal. It's a tiny electrical component that has 8 pins. You simply power it from an external source and it makes small voltage signals bigger and easier for the ADC to read.
+</q>
+<p>But then we will need more voltage, right?</p>
+<q>
+Essentially, yes. Let's power everything from a 9V battery. You need to regulate the voltage to power the ESP32 though... It uses 3V.
+</q>
+<p>Yes, yes. I tried out <a rel="external" href="http://www.advanced-monolithic.com/pdf/ds1117.pdf">AMS1117</a> for regulating the voltage but that heats up too much and makes the display jittery. I think I will go with a buck converter such as the <a rel="external" href="https://www.monolithicpower.com/en/mp1584.html">MP1584</a> for more efficiency. It might be more noisy on the circuit compared to AMS1117 but at least it runs cool.</p>
+<p>But hold on a second, how do you know all of these electronics things again?</p>
+<q>
+That's how we started programming, remember? Hacking DIY projects back in the <a href="https://en.wikipedia.org/wiki/PIC_microcontrollers">PIC microcontrollers</a> era and making our own <a href="https://github.com/orhun/picasso">development board</a> as a competitor to Arduino.
+It was all before Rust and the world was a different place back then.
+But hey, did it work?</q>
+<p>Yes sir! I connected my guitar to this and can see the played notes real-time!</p>
+<p align="right">
+<center>
+<video controls width="80%">
+  <source src="/fretboard.mp4" type="video/mp4">
+  Your browser does not support the video tag.
+</video>
+</center>
+</p>
+<q>
+Looks cool, but how do you even see this tiny screen if you place this device far from you?
+</q>
+<p>Uhhh... I don't...</p>
+<p>That's why it was time to upgrade. Instead of using ESP32 T-Display, I wanted an external display and another ESP32 controller. I locally sourced these two components:</p>
+<table>
+<tr>
+<td>
+<p>TFT SPI 120×160 (v1.1)</p>
+<table><thead><tr><th><strong>Spec</strong></th><th><strong>Value</strong></th></tr></thead><tbody>
+<tr><td>Size</td><td>1.8"</td></tr>
+<tr><td>Resolution</td><td>120×160</td></tr>
+<tr><td>Driver IC</td><td>ST7735</td></tr>
+<tr><td>Interface</td><td>SPI</td></tr>
+<tr><td>Voltage</td><td>3.3 V</td></tr>
+</tbody></table>
+</td>
+<td>
+<p><strong>ESP32-WROOM-32D</strong></p>
+<table><thead><tr><th><strong>Spec</strong></th><th><strong>Value</strong></th></tr></thead><tbody>
+<tr><td>MCU</td><td>ESP32-D0WD</td></tr>
+<tr><td>Cores</td><td>2 (Xtensa LX6)</td></tr>
+<tr><td>Clock</td><td>Up to 240 MHz</td></tr>
+<tr><td>Flash</td><td>4 MB</td></tr>
+<tr><td>RAM</td><td>520 KB SRAM</td></tr>
+<tr><td>Crystal</td><td>40 MHz</td></tr>
+<tr><td>Voltage</td><td>3.0 – 3.6 V</td></tr>
+</tbody></table>
+</td>
+</tr>
+</table>
+<p>I figured out the correct pins, connected everything together and it worked.</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="rust"><span class="giallo-l"><span style="color: #61AFEF;">let</span><span style="color: #C6CCD7;"> peripherals</span><span style="color: #E06C75;"> =</span><span style="color: #E5C07B;"> Peripherals</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">take</span><span>()</span><span style="color: #E06C75;">?</span><span>;</span></span>
+<span class="giallo-l"><span style="color: #61AFEF;">let</span><span style="color: #C6CCD7;"> spi</span><span style="color: #E06C75;"> =</span><span style="color: #C6CCD7;"> peripherals</span><span style="color: #E06C75;">.</span><span>spi2;</span></span>
+<span class="giallo-l"><span style="color: #61AFEF;">let</span><span style="color: #C6CCD7;"> sclk</span><span style="color: #E06C75;"> =</span><span style="color: #C6CCD7;"> peripherals</span><span style="color: #E06C75;">.</span><span>pins</span><span style="color: #E06C75;">.</span><span>gpio14;</span></span>
+<span class="giallo-l"><span style="color: #61AFEF;">let</span><span style="color: #C6CCD7;"> sdo</span><span style="color: #E06C75;"> =</span><span style="color: #C6CCD7;"> peripherals</span><span style="color: #E06C75;">.</span><span>pins</span><span style="color: #E06C75;">.</span><span>gpio13;</span></span>
+<span class="giallo-l"><span style="color: #61AFEF;">let</span><span style="color: #C6CCD7;"> sdi</span><span style="color: #E06C75;"> =</span><span style="color: #E5C07B;"> Option</span><span style="color: #E06C75;">::</span><span>&lt;</span><span style="color: #61AFEF;">esp_idf_svc</span><span style="color: #E06C75;">::</span><span style="color: #61AFEF;">hal</span><span style="color: #E06C75;">::</span><span style="color: #61AFEF;">gpio</span><span style="color: #E06C75;">::</span><span style="color: #E5C07B;">Gpio0</span><span>&gt;</span><span style="color: #E06C75;">::</span><span style="color: #E5C07B;">None</span><span>;</span></span>
+<span class="giallo-l"><span style="color: #61AFEF;">let</span><span style="color: #C6CCD7;"> cs</span><span style="color: #E06C75;"> =</span><span style="color: #E5C07B;"> Some</span><span>(</span><span style="color: #C6CCD7;">peripherals</span><span style="color: #E06C75;">.</span><span>pins</span><span style="color: #E06C75;">.</span><span>gpio25);</span></span>
+<span class="giallo-l"><span style="color: #61AFEF;">let</span><span style="color: #C6CCD7;"> rst</span><span style="color: #E06C75;"> =</span><span style="color: #E5C07B;"> PinDriver</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">output</span><span>(</span><span style="color: #C6CCD7;">peripherals</span><span style="color: #E06C75;">.</span><span>pins</span><span style="color: #E06C75;">.</span><span>gpio33)</span><span style="color: #E06C75;">?</span><span>;</span></span>
+<span class="giallo-l"><span style="color: #61AFEF;">let</span><span style="color: #C6CCD7;"> dc</span><span style="color: #E06C75;"> =</span><span style="color: #E5C07B;"> PinDriver</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">output</span><span>(</span><span style="color: #C6CCD7;">peripherals</span><span style="color: #E06C75;">.</span><span>pins</span><span style="color: #E06C75;">.</span><span>gpio27)</span><span style="color: #E06C75;">?</span><span>;</span></span>
+<span class="giallo-l"><span style="color: #61AFEF;">let</span><span style="color: #C6CCD7;"> driver_config</span><span style="color: #E06C75;"> =</span><span style="color: #E5C07B;"> Default</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">default</span><span>();</span></span>
+<span class="giallo-l"><span style="color: #61AFEF;">let</span><span style="color: #C6CCD7;"> spi_config</span><span style="color: #E06C75;"> =</span><span style="color: #E5C07B;"> SpiConfig</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">new</span><span>()</span><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">baudrate</span><span>(</span><span style="color: #56B6C2;">40</span><span style="color: #E5C07B;">u32</span><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">MHz</span><span>()</span><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">into</span><span>());</span></span>
+<span class="giallo-l"><span style="color: #61AFEF;">let</span><span style="color: #C6CCD7;"> spi</span><span style="color: #E06C75;"> =</span><span style="color: #E5C07B;"> SpiDeviceDriver</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">new_single</span><span>(</span><span style="color: #C6CCD7;">spi</span><span>,</span><span style="color: #C6CCD7;"> sclk</span><span>,</span><span style="color: #C6CCD7;"> sdo</span><span>,</span><span style="color: #C6CCD7;"> sdi</span><span>,</span><span style="color: #C6CCD7;"> cs</span><span>,</span><span style="color: #E06C75;"> &amp;</span><span style="color: #C6CCD7;">driver_config</span><span>,</span><span style="color: #E06C75;"> &amp;</span><span style="color: #C6CCD7;">spi_config</span><span>)</span><span style="color: #E06C75;">?</span><span>;</span></span>
+<span class="giallo-l"><span style="color: #61AFEF;">let mut</span><span style="color: #C6CCD7;"> display</span><span style="color: #E06C75;"> =</span><span style="color: #56B6C2;"> ST7735</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">new</span><span>(</span></span>
+<span class="giallo-l"><span style="color: #C6CCD7;">    spi</span><span>,</span><span style="color: #C6CCD7;"> dc</span><span>,</span><span style="color: #C6CCD7;"> rst</span><span>,</span><span style="color: #56B6C2;"> true</span><span>,</span><span style="color: #56B6C2;"> false</span><span>,</span><span style="color: #56B6C2;"> 160</span><span>,</span><span style="color: #56B6C2;"> 128</span></span>
+<span class="giallo-l"><span>);</span></span>
+<span class="giallo-l"><span style="color: #61AFEF;">let</span><span style="color: #C6CCD7;"> backend</span><span style="color: #E06C75;"> =</span><span style="color: #E5C07B;"> EmbeddedBackend</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">new</span><span>(</span><span style="color: #E06C75;">&amp;</span><span style="color: #61AFEF;">mut</span><span style="color: #C6CCD7;"> display</span><span>,</span><span style="color: #61AFEF;"> EmbeddedBackendConfig</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">default</span><span>());</span></span></code></pre>
+<p>Then it didn't work for a while. Then it worked again. I have no idea what's going on…</p>
+<p>Hey rat chef, can you take a look at the connections for me and tell me what might be wrong?</p>
+<img src="/breadboard.png" width="60%"/>
+<br>
+<q>
+Holy cheese... It looks like doing everything on a breadboard might be the problem here. The connections might be loose, there might be noise from the components or anything could happen. Let's make a PCB and wrap this up.
+</q>
+<p>While we're at it, let's have a proper name for this project and a logo. I have so many ideas to implement too!</p>
+<q>
+How about <b>Tuitar</b>? GUIs vs TUIs, you know...
+You are essentially running a TUI to learn GUItar.
+</q>
+<p>Haha brilliant!</p>
+<p>Next steps: create schematics, design PCB, order it from JLC, solder everything, hope for the best.</p>
+<img src="/schematics.png" width="100%"/>
+<br>
+<img src="/tuitar-pcb.png" width="70%"/>
+<p>And here is the final PCB:</p>
+<img src="/tuitar-board.jpg" width="70%"/>
+<p>While doing this, I also wrote every step down the assembly (with pictures) and printed a small booklet from it. Thinking that this will be a DIY kit one day.</p>
+<q>
+How about we add a couple of other modes to this though? For example, a “Tuitar” hero, or something that you can load songs and practice?
+</q>
+<p>Good idea. I can also polish the UI/UX a lot! I have 2 buttons and 2 potentiometers to tweak things. I also need to add more colors and styles.</p>
+<p>Here is the random mode (aka Tuitar hero):</p>
+<img src="/tuitar-fretboard-random.gif" width="70%"/>
+<p>A random note on the fretboard is shown, you play it in the given time and get points.</p>
+<p>Implementing the "song mode" was more difficult though. Firstly, I had to purchase a pro plan from <a rel="external" href="https://www.songsterr.com">Songsterr</a> to download the MIDI files of the songs that I want to load to the device. Speaking of, I decided to support both MIDI and Guitar Pro formats with <a rel="external" href="https://docs.rs/midly">midly</a> and <a rel="external" href="http://docs.rs/guitarpro">guitarpro</a> libraries.</p>
+<q>
+We can't parse these MIDI files during runtime though. 512kb RAM, remember?
+</q>
+<p>Yup, that's why I parse them during build time and simply ship them as a part of the firmware for now. I know I know… I can do so many other things instead (e.g. this ESP32 device has Wi-Fi and Bluetooth). But remember, I'm still prototyping!!! (if you believe that)</p>
+<p>Parsing MIDI files looks like this:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="rust"><span class="giallo-l"><span style="color: #E5C07B;">Smf</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">parse</span><span>(</span><span style="color: #C6CCD7;">data</span><span>)</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">    .</span><span>tracks[</span><span style="color: #C6CCD7;">track</span><span>]</span><span style="color: #5F6672;font-style: italic;"> // select track</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">    .</span><span style="color: #B57EDC;">iter</span><span>()</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">    .</span><span style="color: #B57EDC;">filter_map</span><span>(</span><span style="color: #E06C75;">|</span><span style="color: #C6CCD7;">e</span><span style="color: #E06C75;">| match</span><span style="color: #C6CCD7;"> e</span><span style="color: #E06C75;">.</span><span>kind {</span></span>
+<span class="giallo-l"><span style="color: #61AFEF;">        TrackEventKind</span><span style="color: #E06C75;">::</span><span style="color: #E5C07B;">Midi</span><span> {</span></span>
+<span class="giallo-l"><span style="color: #C6CCD7;">            message</span><span style="color: #E06C75;">:</span><span style="color: #61AFEF;"> MidiMessage</span><span style="color: #E06C75;">::</span><span style="color: #E5C07B;">NoteOn</span><span> {</span><span style="color: #C6CCD7;"> key</span><span>,</span><span style="color: #C6CCD7;"> vel</span><span> },</span></span>
+<span class="giallo-l"><span style="color: #C6CCD7;">            channel</span><span>,</span></span>
+<span class="giallo-l"><span>        }</span><span style="color: #E06C75;"> if</span><span style="color: #C6CCD7;"> channel</span><span style="color: #E06C75;"> !=</span><span style="color: #56B6C2;"> 9</span><span style="color: #E06C75;"> &amp;&amp;</span><span style="color: #C6CCD7;"> vel</span><span style="color: #E06C75;"> &gt;</span><span style="color: #56B6C2;"> 0</span><span style="color: #E06C75;"> =&gt;</span><span> {</span></span>
+<span class="giallo-l"><span style="color: #E5C07B;">            Some</span><span>(</span></span>
+<span class="giallo-l"><span style="color: #5F6672;font-style: italic;">                // midi to note</span></span>
+<span class="giallo-l"><span>            )</span></span>
+<span class="giallo-l"><span>        }</span></span>
+<span class="giallo-l"><span style="color: #C6CCD7;">        _</span><span style="color: #E06C75;"> =&gt;</span><span style="color: #E5C07B;"> None</span><span>,</span></span>
+<span class="giallo-l"><span>    })</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">    .</span><span style="color: #B57EDC;">map</span><span>(</span><span style="color: #E06C75;">|</span><span style="color: #C6CCD7;">n</span><span style="color: #E06C75;">|</span><span style="color: #B57EDC;"> vec!</span><span>[</span><span style="color: #C6CCD7;">n</span><span>])</span><span style="color: #5F6672;font-style: italic;"> // group notes per beat (simplified)</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">    .</span><span style="color: #B57EDC;">collect</span><span>()</span></span></code></pre>
+<p>And then I generate a "notes array" at build time (i.e. in build.rs):</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="rust"><span class="giallo-l"><span style="color: #61AFEF;">let mut</span><span style="color: #C6CCD7;"> code</span><span style="color: #E06C75;"> =</span><span style="color: #E5C07B;"> String</span><span style="color: #E06C75;">::</span><span style="color: #B57EDC;">new</span><span>();</span></span>
+<span class="giallo-l"><span style="color: #C6CCD7;">code</span><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">push_str</span><span>(&quot;</span><span style="color: #98C379;">pub struct Song </span><span>{</span><span style="color: #98C379;"> pub name: &amp;&#39;static str, pub notes: &amp;&#39;static [&amp;&#39;static str] </span><span>}</span><span style="color: #56B6C2;">\n\n</span><span>&quot;);</span></span>
+<span class="giallo-l"><span style="color: #C6CCD7;">code</span><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">push_str</span><span>(&quot;</span><span style="color: #98C379;">pub const DEMO: Song = Song {</span><span style="color: #56B6C2;">\n</span><span>&quot;);</span></span>
+<span class="giallo-l"><span style="color: #C6CCD7;">code</span><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">push_str</span><span>(&quot;</span><span style="color: #98C379;">    name: </span><span style="color: #56B6C2;">\&quot;</span><span style="color: #98C379;">Demo Song</span><span style="color: #56B6C2;">\&quot;</span><span style="color: #98C379;">,</span><span style="color: #56B6C2;">\n</span><span>&quot;);</span></span>
+<span class="giallo-l"><span style="color: #C6CCD7;">code</span><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">push_str</span><span>(&quot;</span><span style="color: #98C379;">    notes: &amp;[</span><span style="color: #56B6C2;">\n</span><span>&quot;);</span></span>
+<span class="giallo-l"><span style="color: #E06C75;">for</span><span style="color: #C6CCD7;"> n</span><span style="color: #E06C75;"> in</span><span style="color: #C6CCD7;"> notes</span><span> {</span><span style="color: #C6CCD7;"> code</span><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">push_str</span><span>(</span><span style="color: #E06C75;">&amp;</span><span style="color: #B57EDC;">format!</span><span>(&quot;        {</span><span style="color: #98C379;">n</span><span>}</span><span style="color: #98C379;">,</span><span style="color: #56B6C2;">\n</span><span>&quot;)); }</span></span>
+<span class="giallo-l"><span style="color: #C6CCD7;">code</span><span style="color: #E06C75;">.</span><span style="color: #B57EDC;">push_str</span><span>(&quot;</span><span style="color: #98C379;">    ],</span><span style="color: #56B6C2;">\n</span><span style="color: #98C379;">};</span><span style="color: #56B6C2;">\n</span><span>&quot;);</span></span></code></pre>
+<p>This way I can practice the songs by playing note-by-note!</p>
+<img src="/tuitar-fretboard-song.gif" width="70%"/>
+<p>In other words, if I play the shown note it disappears and the next one is being shown.
+There is no metronome or other controls yet though.</p>
+<p>Fast forward to the future...</p>
+<q>
+Did you go to New Zealand?
+</q>
+<p>Yes... I live-demoed Tuitar and gave away one of the prototype kits. It has already been built and working fine! Hopefully it will help someone learn the guitar in other parts of the world.</p>
+<img src="/tuitar-thumbnail.png" width="80%"/>
+<br>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/es48dmNWMVQ?si=inoj7sPPmLEPlJXV&amp;start=29905" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+<br>
+<br>
+<img src="/tuitar-promo-pcb.jpg" width="100%"/>
+<p>P.S. All of the development was recorded.<br />
+I built Tuitar on livestream as a part of a series called <a href="https://www.youtube.com/playlist?list=PLxqHy2Zr5TiUiLYsNbFF8ACf_Er_7MgP-">Becoming a Musician</a><br />
+(38 episodes as of now, 100+ hours of content)<br />
+You can literally watch me suffer...</p>
+<hr />
+<h1 id="debugging-a-strange-crash">Debugging a strange crash</h1>
+<p>I experienced a really strange firmware crash while building Tuitar.
+I say "strange", but it actually makes sense when you understand what's going on.</p>
+<p>Simply put: the firmware would only <strong>run correctly</strong> when built using a specific Cargo target directory on my system. If I do a fresh build, I would always get a crash during startup and the program would go into an infinite boot-loop.</p>
+<p>The logs were like the following:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="plain"><span class="giallo-l"><span>Guru Meditation Error: Core 0 panic&#39;ed (LoadProhibited). Exception was unhandled</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span>Core 0 register dump:</span></span>
+<span class="giallo-l"><span>PC      : 0x40068775  PS      : 0x00060333  A0      : 0x8008bc17  A1      : 0x3ffb44c0</span></span>
+<span class="giallo-l"><span>0x40068775: _xPortEnterCriticalTimeout</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span>A2      : 0x124e170  A3      : 0xffffffff  A4      : 0x00001000  A5      : 0x00006323</span></span>
+<span class="giallo-l"><span>A6      : 0x00000000 A7      : 0x00000000  A8      : 0x00060320  A9      : 0x3ffb44c0</span></span>
+<span class="giallo-l"><span>A10     : 0x00000000 A11     : 0x00060320  A12     : 0x00000000  A13     : 0x00000009</span></span>
+<span class="giallo-l"><span>A14     : 0x00000000 A15     : 0x00000000  SAR     : 0x0000001f  EXCCAUSE: 0x0000001c</span></span>
+<span class="giallo-l"><span>EXCVADDR: 0x124e170  LBEG    : 0x4008cc20  LEND    : 0x4008cc20  LCOUNT  : 0x00000000</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span>Backtrace: 0x40068775:0x3ffb44c0 0x4008bc14:0x3ffb44f0 0x40083991:0x3ffb4510 0x4008bb50:0x3ffb4540</span></span>
+<span class="giallo-l"><span>0x4008d127:0x3ffb4560 0x4012d7fe:0x3ffb4580 0x400dffba:0x3ffb45b0 0x400d4366:0x3ffb45d0</span></span>
+<span class="giallo-l"><span>0x4008d127:0x3ffb45e0 0x4012d7fe:0x3ffb4580 0x400dffba:0x3ffb45b0 0x400d4366:0x3ffb45d0</span></span>
+<span class="giallo-l"><span>0x4008d127:0x3ffb45e0 0x4012d7fe:0x3ffb4580 0x400dffba:0x3ffb45b0 0x400d4366:0x3ffb45d0</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span>Backtrace:</span></span>
+<span class="giallo-l"><span>0x40068775: _xPortEnterCriticalTimeout</span></span>
+<span class="giallo-l"><span>    at ????:??</span></span>
+<span class="giallo-l"><span>0x4008bb50: heap_caps_aligned_alloc_offs</span></span>
+<span class="giallo-l"><span>    at ????:??</span></span>
+<span class="giallo-l"><span>0x40083991: heap_caps_aligned_alloc_base</span></span>
+<span class="giallo-l"><span>    at ????:??</span></span>
+<span class="giallo-l"><span>0x4008bc14: heap_caps_aligned_alloc</span></span>
+<span class="giallo-l"><span>    at ????:??</span></span>
+<span class="giallo-l"><span>0x4008d127: posix_memalign</span></span>
+<span class="giallo-l"><span>    at ????:??</span></span>
+<span class="giallo-l"><span>0x4012d7fe: _rustc:: __rdl_alloc</span></span>
+<span class="giallo-l"><span>    at ????:??</span></span>
+<span class="giallo-l"><span>0x400dffba: _rustc:: __rust_alloc</span></span>
+<span class="giallo-l"><span>    at ????:??</span></span>
+<span class="giallo-l"><span>0x400d4366: &lt;tuitar_firmware::transform::Transform as tuitar_core::transform::Transformer&gt;::find_fundamental_frequency</span></span>
+<span class="giallo-l"><span>    at ????:??</span></span>
+<span class="giallo-l"><span>0x400d4fc9: tuitar_core::state::State&lt;T&gt;::process_samples</span></span>
+<span class="giallo-l"><span>    at ????:??</span></span>
+<span class="giallo-l"><span>0x400de742: tuitar_firmware::main</span></span>
+<span class="giallo-l"><span>    at ????:??</span></span>
+<span class="giallo-l"><span>0x4014e33f: std::sys::backtrace::__rust_begin_short_backtrace</span></span>
+<span class="giallo-l"><span>    at ????:??</span></span>
+<span class="giallo-l"><span>0x400d4e8c: std::rt::lang_start::{{closure}}</span></span>
+<span class="giallo-l"><span>    at ????:??</span></span>
+<span class="giallo-l"><span>0x4013e293: std::rt::lang_start_internal</span></span>
+<span class="giallo-l"><span>    at ????:??</span></span>
+<span class="giallo-l"><span>0x400de923: main</span></span>
+<span class="giallo-l"><span>    at ????:??</span></span>
+<span class="giallo-l"><span>0x400d4777: main</span></span>
+<span class="giallo-l"><span>    at ????:??</span></span>
+<span class="giallo-l"><span>0x4016d713: main_task</span></span>
+<span class="giallo-l"><span>    at ????:??</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span>ELF file SHA256: 0000000000000000</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span>Rebooting...</span></span></code></pre>
+<blockquote>
+<p>Guru Meditation Error: Core 0 panic'ed (LoadProhibited). Exception was unhandled.</p>
+</blockquote>
+<q>
+Huh? Guru Meditation Error? That sounds scary and spiritual.
+</q>
+<p>It refers to a <a rel="external" href="https://en.wikipedia.org/wiki/Guru_Meditation">famous critical system crash notification</a> that originated from the Amiga era of computing.</p>
+<q>
+Got it. One thing that I'm sure is that this is some obscure toolchain bug, just wipe your system, reboot and it will be fine, most likely.
+</q>
+<p>Uhh, to make this matter worse, this issue turned out to be reproducible from 16,500 km away from me. Remember the person that I gave away the DIY kit in New Zealand? He sent me those logs above... He built the entire kit and got stuck running the firmware.
+I'm also getting the same issue if I build with any target directory other than <em>/home/orhun/gh/esp32-playground/spi_display_example/target</em></p>
+<q>
+Wait, are you still using that target directory from the ESP32 playground repo we cloned back in March? It's been months man!
+</q>
+<p>Yes, yes I know... but I had no other option. I mean, I tried making sense of the logs but they simply indicate that the firmware starts correctly, but very early in execution it attempts a misaligned or invalid memory access during heap allocation. Also the <a rel="external" href="https://docs.espressif.com/projects/esp-idf/en/stable/esp32/api-guides/fatal-errors.html">fatal errors section</a> in the Espressif documentation didn't give me any leads to follow:</p>
+<img src="/load-prohibited.png" width="85%"/>
+<p>I kept reading the logs to figure out what might be wrong:</p>
+<pre class="giallo" style="color: #A9B2C3; background-color: #21252B;"><code data-lang="plain"><span class="giallo-l"><span>0x4012d7fe - __rustc::__rdl_alloc</span></span>
+<span class="giallo-l"><span>    at ????:??</span></span>
+<span class="giallo-l"><span>0x400dffba - __rustc::__rust_alloc</span></span>
+<span class="giallo-l"><span>    at ????:??</span></span>
+<span class="giallo-l"><span>0x400d4366 - &lt;tuitar_firmware::transform::Transform as tuitar_core::transform::Transformer&gt;::find_fundamental_frequency</span></span>
+<span class="giallo-l"><span>    at ????:??</span></span>
+<span class="giallo-l"><span>0x400d4fc9 - tuitar_core::state::State&lt;T&gt;::process_samples</span></span>
+<span class="giallo-l"><span>    at ????:??</span></span>
+<span class="giallo-l"><span>0x400de042 - tuitar_firmware::main</span></span></code></pre><q>
+So it consistently crashes while executing "find_fundamental_frequency" function? I'm assuming it also calls __rustc::__rdl_alloc and __rustc::__rust_alloc which means this might be a memory allocation issue? What is that fundamental frequency function doing anyways?
+</q>
+<p>I guess it might be allocating more memory than it should? I tried executing nothing in there and reflashed the firmware, but now it crashes at one of the "render" functions. Ugh... It is so strange.</p>
+<q>
+So you basically moved the crash to another function?
+</q>
+<p>Yes, it shows that the issue is not related to any code path, it simply happens when the execution reaches a sufficiently deep or memory-intensive call.
+But I still don't understand the significance of /home/orhun/gh/esp32-playground/spi_display_example/target. Maybe it has a deeper meaning and I need to become a target-directory-Guru and start meditating to understand it</p>
+<q>
+Nah come on, it's just a target directory. What is in it anyways?
+</q>
+<p>It simply contains build artifacts, compiled objects and a bunch of C/SDK artifacts produced by the ESP-IDF. Wait a minute... Maybe it is something caused by <a rel="external" href="https://github.com/esp-rs/esp-idf-sys">esp-idf-sys</a>? It essentially downloads esp-idf, its gcc toolchain, and builds it. If something is incompatible or goes wrong then it might lead to this strange situation.
+Hey rat, get the tools, we're diving into the target directory.</p>
+<q>
+Ahoi chef! I got <a href="https://github.com/GNOME/meld">meld</a> to compare directories.
+</q>
+<p>After some digging and diffing, I found the root cause:</p>
+<img src="/esp-idf-sys-log.png" width="100%"/>
+<p>The old target directory has the stack size set to <g>8192</g> whereas the newly created targets always have <g>3584</g> which is the default. It's a <g>stack overflow</g> issue!</p>
+<q>
+Wait a minute... I thought we were already overriding that value in the sdkconfig.defaults file. Even the available Rust templates out there override that value to 8000, as you can see <a href="https://github.com/esp-rs/esp-idf-template/blob/master/cargo/sdkconfig.defaults">here</a>. Why isn't that taking effect for the Tuitar firmware?
+</q>
+<p>I figured out the rest by just thinking. Normal human thinking.</p>
+<p>It's because <g>sdkconfig.defaults</g> lives in the <code>firmware/</code> directory. And it's only being read if it is at the project root. This is not documented anywhere…</p>
+<p>I guess I moved that file to a subdirectory while I was splitting up the project into workspace crates in the past.
+So the fix was simply move it back to the workspace root:</p>
+<img src="/tuitar-fix.png" width="100%"/>
+<blockquote>
+<p>renamed: firmware/sdkconfig.defaults ⟶ sdkconfig.defaults</p>
+</blockquote>
+<p>Time to notify the "customers":</p>
+<q>
+Oh boi, finally everyone's happy.
+</q>
+<p>Now, I also found the <a rel="external" href="https://github.com/esp-rs/esp-idf-sys/blob/dc61350013fd375a532d7d93ee91edf117433267/build/pio.rs#L114">exact line</a> in the esp-idf-sys:</p>
+<img src="/esp-idf-sys-bug.png" width="90%"/>
+<p>Moral of the story? Maybe I should contribute to their documentation.</p>
+<hr />
+<p>Tuitar GitHub: <a rel="external" href="https://github.com/orhun/tuitar"><strong>https://github.com/orhun/tuitar</strong></a></p>
+<ul>
+<li><a rel="external" href="https://github.com/orhun/tuitar/tree/main/hardware">Hardware details</a></li>
+<li><a rel="external" href="https://github.com/orhun/tuitar/tree/main/firmware">Firmware details</a></li>
+<li><a rel="external" href="https://www.youtube.com/watch?v=tZm7cLaHAR0">Promo video</a></li>
+<li><a rel="external" href="https://www.youtube.com/watch?v=es48dmNWMVQ&amp;t=29905s">RustForge talk</a></li>
+</ul>
+<p>Hackster article: <a rel="external" href="https://www.hackster.io/news/fret-not-this-esp32-gadget-makes-guitar-practice-a-breeze-dcc26bcef0ba">This ESP32 Gadget Makes Guitar Practice a Breeze</a></p>
+<img src="/tuitar-bell-curve.jpg" width="60%"/>
+<p>Hope you enjoyed the read! 🐁</p>
+
+    </div>
+
+    
+        <footer>
+            <hr>
+            <p>
+                
+                    Published by Orhun Parmaksız
+                
+                
+                    
+                    in <a href="https://blog.orhun.dev/categories/projects/">Projects</a>
+                
+                
+            </p>
+            
+            
+            <div style="display: flex; justify-content: space-between; align-items: center">
+              <div>
+                <iframe
+                  src="https://github.com/sponsors/orhun/button"
+                  title="Sponsor @orhun"
+                  height="35"
+                  width="116"
+                  style="border: 0"
+                ></iframe>
+                <a href="https://www.buymeacoffee.com/orhun" target="_blank"
+                  ><img
+                    src="https://cdn.buymeacoffee.com/buttons/v2/default-white.png"
+                    alt="Buy Me A Coffee"
+                    style="height: 40px !important; width: 150px !important"
+                /></a>
+              </div>
+              <div>
+                <applause-button
+                  style="width: 50px; height: 50px"
+                  url="https://blog.orhun.dev&#x2F;introducing-tuitar&#x2F;"
+                  color="white"
+                  multiclap="true"
+                />
+              </div>
+              <div>
+                <div style="width: auto; height: 39px">
+                  <p style="margin: 0; color: #fff; font-style: italic">✨ Sponsored by:</p>
+                </div>
+                <a href="https://www.jetbrains.com/" target="_blank"
+                  ><img
+                    src="/sponsors/jetbrains.png"
+                    alt="JetBrains"
+                    style="height: 45px; width: auto"
+                /></a>
+                <a href="https://terminaltrove.com/" target="_blank"
+                  ><img
+                    src="/sponsors/terminal_trove.png"
+                    alt="Terminal Trove"
+                    style="height: 40px; width: auto"
+                /></a>
+                <a href="https://www.recall.ai/" target="_blank"
+                  ><img
+                    src="/sponsors/recall.jpg"
+                    alt="Recall"
+                    style="height: 40px; width: auto"
+                /></a>
+                <a href="https://opensource.sap.com/" target="_blank"
+                  ><img
+                    src="/sponsors/sap.png"
+                    alt="SAP"
+                    style="height: 40px; width: auto"
+                /></a>
+              </div>
+            </div>
+            <script src="https://utteranc.es/client.js"
+                    repo="orhun/personal-blog"
+                    issue-term="url"
+                    label="comments"
+                    theme="github-dark"
+                    crossorigin="anonymous"
+                    async>
+            </script>
+        </footer>
+    
+</article>
+
+
+    </body>
+
+    <script type="text/javascript" src="https://blog.orhun.dev/elasticlunr.min.js"></script>
+    <script type="text/javascript" src="https://blog.orhun.dev/js/search.js"></script>
+
+</html>
