@@ -34,9 +34,6 @@ I had a long-running relationship with JetBrains, both as a user and collaborato
 
 They reached out to me last year to collaborate [on a livestream](https://www.youtube.com/live/UXnxzWbngz4). That was a great experience and we were both happy how it went. After that, they showed support for my personal projects and [Ratatui](https://ratatui.rs) which I really appreciated. And they have been sponsoring me since then <3
 
-So when I heard that they were [looking for a Rust Developer Advocate](https://www.linkedin.com/posts/vitaly-bragilevsky_folks-were-looking-for-a-rust-developer-share-7419425534188859394-wdXU), I immediately thought it was a great opportunity to work with them and do the things that I already do but at a larger scale.
-<small>I guess some people in the comments also agreed, so they tagged me :D</small>
-
 <q>So, what are you going to do there exactly? What does "Rust Developer Advocate" mean?</q>
 
 I will be working closely with the Rust community to:
