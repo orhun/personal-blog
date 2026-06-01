@@ -10,9 +10,7 @@ Good morning from JetBrains Berlin office!
 
 <!-- more -->
 
-TODO: add a photo of me in front of a JetBrains logo, from the office, doing double biceps pose or something cool
-
----
+<img class="glowing-border" src="/jetbrains.jpg" width="100%"/>
 
 Recently [I moved to Berlin](https://blog.orhun.dev/moving-to-berlin/). Let me tell you about what I'm doing here.
 
