@@ -1,5 +1,3 @@
-{% import "post_macros.html" as post_macros %}
-
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -11,16 +9,16 @@
       {% else %}
       <meta property="og:url" content="{{ config.base_url | safe }}"/>
       {% endif %}
-      {% if page.title %}
+      {% if page?.title %}
       <meta property="og:title" content="{{ page.title | safe }} - {{ config.title }}" />
       {% elif config.title %}
       <meta property="og:title" content="{{ config.title | safe }}" />
       {% endif %}
       <meta property="og:image" content="{{ config.base_url | safe }}/poorly-drawn-rat.png" />
-      {% if page.description %}
+      {% if page?.description %}
       <meta name="description" content="{{ page.description }}" />
       <meta property="og:description" content="{{ page.description }}"/>
-      {% elif page.summary %}
+      {% elif page?.summary %}
       <meta name="description" content="{{ page.summary | striptags | trim }}" />
       <meta property="og:description" content="{{ page.summary | striptags | trim }}"/>
       {% elif config.description %}
@@ -41,20 +39,20 @@
       <link rel="stylesheet" href="https://unpkg.com/applause-button/dist/applause-button.css" />
       <script src="https://unpkg.com/applause-button/dist/applause-button.js"></script>
 
-      {% if page.title %}
-      <title>{% block title %}{{ page.title }}{% endblock title %} - {{ config.title }}</title>
-      {% elif config.title %}
-      <title>{% block title %}{{ config.title }}{% endblock title %}</title>
+      {% if page?.title or config.title %}
+      <title>
+          {% if page?.title %}{{ page.title }} - {{ config.title }}{% else %}{{ config.title }}{% endif %}
+      </title>
       {% endif %}
 
       {%- if config.generate_feeds %}
       {%- for feed in config.feed_filenames %}
 
-      {%- if feed is containing('atom') %}
+      {%- if feed is containing(pat='atom') %}
       <link rel="alternate" type="application/atom+xml" title="{{ config.title }} Atom Feed" href="{{ get_url(path=feed, trailing_slash=false, lang=lang) | safe }}" />
       {%- endif %}
 
-      {%- if feed is containing('rss') %}
+      {%- if feed is containing(pat='rss') %}
       <link rel="alternate" type="application/rss+xml" title="{{ config.title }} RSS Feed" href="{{ get_url(path=feed, trailing_slash=false, lang=lang) | safe }}" />
       {%- endif %}
 
@@ -100,7 +98,7 @@
                     </header>
                 {% endif %}
                 {% for page in paginator.pages  %}
-                    {{ post_macros::page_in_list(page=page) }}
+                    {{<post_macros.page_in_list page={page}/>}}
                 {% endfor %}
 
                 <nav>

@@ -105,7 +105,7 @@ Now you can render TUIs directly in the browser using DOM, Canvas or WebGL backe
 
 The following demo embeds a Ratatui application compiled to WebAssembly, initialized in the browser and injected into a static Zola layout:
 
-{{ ratzilla() }}
+{{<ratzilla/>}}
 
 You can press arrow keys to interact with it.
 
