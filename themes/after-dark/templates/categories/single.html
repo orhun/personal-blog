@@ -1,5 +1,4 @@
 {% extends "index.html" %}
-{% import "post_macros.html" as post_macros %}
 
 {% block content %}
     {% block header %}
@@ -9,6 +8,6 @@
     <h1>{{ term.name }}</h1>
 
     {% for page in term.pages %}
-        {{ post_macros::page_in_list(page=page) }}
+        {{<post_macros.page_in_list page={page}/>}}
     {% endfor %}
 {% endblock content %}

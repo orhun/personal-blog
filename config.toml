@@ -11,6 +11,18 @@ default_language = "en"
 # The site theme to use.
 theme = "after-dark"
 
+# These posts contain literal Tera/GitHub Actions syntax in code examples.
+skip_content_templating = [
+  "setting-up-this-blog.md",
+  "stdout-vs-stderr.md",
+  "zig-bits-03.md",
+  "packaging-rust-for-npm.md",
+  "automated-rust-releases.md",
+  "introducing-tuitar.md",
+  "blazingly-fast-file-sharing.md",
+  "introducing-runst.md",
+]
+
 # Whether to automatically compile all Sass files in the sass directory
 compile_sass = false
 
