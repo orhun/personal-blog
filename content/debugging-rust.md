@@ -140,4 +140,8 @@ Rust debugging isn't one workflow. You can use `println!`, `rust-lldb`, RustRove
 
 🐀: Just pick the tool that works for you!
 
-If you want
+If you'd like to watch this in action, check out the [video version of this post](https://www.youtube.com/watch?v=11ZNl7ETsOQ), recorded at Rust Berlin.
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/11ZNl7ETsOQ" title="Debugging Rust in 2026 — Rust Berlin talk" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+
+Cheers!
