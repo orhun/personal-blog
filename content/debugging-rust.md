@@ -82,48 +82,62 @@ We can also use the TUI to visualize it:
 
 🐀: Yay, the rubber band is now wrapped around all the points.
 
-Unlike print debugging, this lets us inspect more state without editing and recompiling the program after every question. The trade-off is manual workflow, settings useful breakpoints and knowing which debugger commands to run.
+Unlike print debugging, this lets us inspect more state without editing and recompiling the program after every question. The trade-off is a manual workflow: setting useful breakpoints and knowing which debugger commands to run.
 
 🐀: Okay, but is there a more friendly way to debug this?
 
 ## 3. RustRover's debugger
 
-[RustRover](https://www.jetbrains.com/rust/) provides a graphical interface for GDB and LLDB, which means we can use the same workflow as before but with a more user-friendly interface.
+[RustRover](https://www.jetbrains.com/rust/) is JetBrains' cross-platform IDE built specifically for Rust. It integrates Cargo projects, tests, code analysis and debugging in one place (and it is free for non-commercial use!).
+
+The recommended way to install it is through the [JetBrains Toolbox App](https://www.jetbrains.com/help/rust/installation-guide.html), which also handles updates and lets you switch between stable and early-access-preview versions.
+
+RustRover provides a graphical interface for GDB and LLDB, which means we can use the same workflow as before but with a more user-friendly interface. Click the gutter to set a breakpoint, then click the debug icon next to the failing test.
 
 <video controls muted width="100%">
   <source src="/debugging-rust-rover.mp4" type="video/mp4">
 </video>
 
-There is also some interesting Rust-specific machinery behind the interface. In my [Rust in Production episode with Matthias Endler](https://corrode.dev/podcast/s06e09-jetbrains/), I explained how RustRover turns the source into its own PSI, then a typed high-level representation and finally MIR. When we evaluate a Rust expression or call a function during a debug session, RustRover lowers it to MIR and sends it to the debugger to execute against the paused process. So the debugger actually understands the Rust expression we are asking it to evaluate!
+The [RustRover debugger documentation](https://www.jetbrains.com/help/rust/debugging-code.html) covers custom configurations, stepping, watches and expression evaluation in more detail!
 
----
+🐀: Interesting... I thought this type of debuggers are only availabe for more mature languages like Python or Java. How does it work under the hood?
 
-The main reason is that the setup is difficult, and prints are simply easier/faster. The top two complaints among users are poor value representation and inability to print variables; stepping breaks most on async and macros. These are sports for us to focus attention.
+Good question! There is actually some interesting Rust-specific machinery behind the debugger. In my [Rust in Production episode with Matthias Endler](https://corrode.dev/podcast/s06e09-jetbrains/), I explained how RustRover turns the source into its own PSI, then a typed high-level representation and finally MIR. When we evaluate a Rust expression or call a function during a debug session, RustRover lowers it to MIR and sends it to the debugger to execute against the paused process.
 
-Rust debugging survey 2026 results: [blog.rust-lang.org]: https://blog.rust-lang.org/2026/09/07/rust-debugging-survey-2026-results/
+🐀: So the debugger actually understands the Rust expression we are asking it to evaluate! Amazing.
 
-LLDB wins by ≥6 points on Windows, WSL and macOS (Linux is the only place the GDB CLI wins by 0.4%)
-Only 46% use a debugger at all; 81%+ of non-users of debugger say prints are simply easier/faster. The setup is difficult for the users, this is not a beginner-friendly feature.
-The top two complaints among users are poor value representation (74%) and inability to print variables (55%); stepping breaks most on async (28%) and macros (23%). These are sports for us to focus attention. 
-44% of respondents use debuggers is if they are debugging programs that use Rust alongside other programming languages.
+## Bonus: AI-assisted debugging
 
-1. println!, dbg!, or tracing
+Recently we started to see the "AI-assisted" prefix in many things... programming, writing, ordering food, etc. and I thought why not try it for debugging as well?
 
-Unit tests as the debugging loop
+🐀: So basically ask the agent to fix the bug for us?
 
-2. rust-gdb or rust-lldb in a terminal
+Not exactly. The agent is not a replacement for the debugger, but it can help us understand the problem and suggest fixes. Instead, we will ask the agent to debug the problem and watch it in action with RustRover's debugger!
 
-3. RustRover's debugger (GDB/LLDB)
+Starting with RustRover 2026.3, the IDE's integrated [MCP server](https://www.jetbrains.com/help/idea/mcp-server.html) (Model Context Protocol) can expose the debugger to agents such as Codex and Claude Code. This means that instead of clicking around manually, the agent can start a debug session, set breakpoints, step through the program, read variables and evaluate expressions for us.
 
-4. AI assisted debugging
+Simply open **Settings → Tools → MCP Server**, enable the server and click **Auto-Configure** next to your agent. Restart the agent afterwards and you're set!
 
-Asking the agent to debug the problems
+![](/rustrover-mcp-client.png)
 
----
+Also, see the [agentic debugging documentation](https://www.jetbrains.com/help/idea/agentic-debugging.html) for more details.
 
-Hi! I've been experimenting with the debugger skill for RR, here's the demo of how it looks (with the IJ Air plugin!).
-(This is my old implementation of the Graham algorithm with a bug injected. I asked AI to debug it and fix it, the middle part of the video is sped up)
+Once the MCP is connected, we can give the agent a goal like this:
 
-https://jetbrains.slack.com/archives/GAY612Q1L/p1785958605543789
+> _Debug and fix this problem with RustRover MCP_
 
-https://docs.google.com/document/d/1BkNCufCFRN-oBrvHfazG7Hx5qRaSp7Nf_eOtMhaoU50/edit?tab=t.0
+The result is:
+
+<video controls muted width="100%">
+  <source src="/rustrover-mcp-debugger.mp4" type="video/mp4">
+</video>
+
+🐀: Oh cool, you're running Codex inside RustRover with the new [Air plugin](https://plugins.jetbrains.com/plugin/33314-air), and we can watch it run the failing test, set breakpoints, inspect runtime values and fix the bug!
+
+## Conclusion
+
+Rust debugging isn't one workflow. You can use `println!`, `rust-lldb`, RustRover or even an AI-assisted debugger. Each has its own trade-offs and is suitable for different scenarios.
+
+🐀: Just pick the tool that works for you!
+
+If you want
